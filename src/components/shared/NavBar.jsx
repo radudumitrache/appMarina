@@ -4,6 +4,7 @@ import '../css/shared/NavBar.css'
 const NAV_SLUGS = [
   { label: 'Dashboard', slug: 'dashboard' },
   { label: 'Lessons',   slug: 'lessons'   },
+  { label: 'Tests',     slug: 'tests'     },
 ]
 
 export default function NavBar() {
