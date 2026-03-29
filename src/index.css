@@ -1,0 +1,86 @@
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* ── Surfaces ─────────────────────────────────────────────────────────── */
+  --bg         : #060b14;
+  --surface-1  : #0b1220;
+  --surface-2  : #111b2e;
+  --surface-3  : #1a2740;
+
+  /* ── Borders ──────────────────────────────────────────────────────────── */
+  --border     : #253550;
+  --border-hover: #3a4f6a;
+
+  /* ── Text ─────────────────────────────────────────────────────────────── */
+  --text       : #e4edf6;
+  --text-2     : #9db0c5;
+  --text-3     : #6b83a0;
+
+  /* ── Accent — Seafoam Teal ────────────────────────────────────────────── */
+  --accent     : #0bbda4;
+  --accent-hover: #0fd4b8;
+  --accent-dim : rgba(11, 189, 164, 0.12);
+  --accent-rim : rgba(11, 189, 164, 0.22);
+
+  /* ── Secondary — Brass Gold ───────────────────────────────────────────── */
+  --gold       : #d9a030;
+  --gold-dim   : rgba(217, 160, 48, 0.12);
+
+  /* ── Semantic ─────────────────────────────────────────────────────────── */
+  --success    : #2ec77a;
+  --error      : #e05252;
+
+  /* ── Typography ───────────────────────────────────────────────────────── */
+  --font-brand : 'Orbitron', monospace;
+  --font-ui    : 'Plus Jakarta Sans', sans-serif;
+  --font-mono  : 'IBM Plex Mono', monospace;
+
+  /* ── Shape ────────────────────────────────────────────────────────────── */
+  --radius-sm  : 6px;
+  --radius-md  : 10px;
+  --radius-lg  : 14px;
+
+  /* ── Motion ───────────────────────────────────────────────────────────── */
+  --ease             : cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-default     : cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out         : cubic-bezier(0.0, 0, 0.2, 1);
+  --duration-fast    : 120ms;
+  --duration-default : 220ms;
+  --duration-enter   : 380ms;
+  --duration-exit    : 200ms;
+  --duration-page    : 480ms;
+
+  /* ── Legacy aliases (kept for unmigrated components) ─────────────────── */
+  --muted      : #9db0c5;
+  --surface    : #0b1220;
+}
+
+html, body, #root { height: 100%; width: 100%; }
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}

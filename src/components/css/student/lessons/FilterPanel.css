@@ -1,0 +1,113 @@
+/* ─── Panel container ─────────────────────────────────────────────────────
+   Solid surface — no glassmorphism (flat page, not over a photo).           */
+.fp-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 288px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  z-index: 50;
+  animation: fadeUp var(--duration-default) var(--ease-default) both;
+  overflow: hidden;
+}
+
+/* ─── Header ──────────────────────────────────────────────────────────────── */
+.fp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+}
+
+.fp-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.fp-clear {
+  background: none;
+  border: none;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color var(--duration-fast), background var(--duration-fast);
+}
+
+.fp-clear:hover {
+  color: var(--error);
+  background: rgba(224, 82, 82, 0.08);
+}
+
+/* ─── Divider ─────────────────────────────────────────────────────────────── */
+.fp-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* ─── Section ─────────────────────────────────────────────────────────────── */
+.fp-section {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fp-section-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ─── Chips ───────────────────────────────────────────────────────────────── */
+.fp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fp-chip {
+  padding: 5px 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast),
+              border-color var(--duration-fast),
+              color var(--duration-fast);
+}
+
+.fp-chip:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.fp-chip--active {
+  background: var(--accent-dim);
+  border-color: var(--accent-rim);
+  color: var(--accent);
+}
+
+.fp-chip--active:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent-rim);
+  color: var(--accent);
+}

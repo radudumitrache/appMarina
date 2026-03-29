@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run preview)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "if": "Write(src/**)|Edit(src/**)",
+            "prompt": "The tool input is: $ARGUMENTS\n\nThe file being written or edited is inside src/. Before allowing this, verify:\n1. If the file path is src/components/**, does the JSX live under src/components/<role>/<feature>/ and the CSS under src/components/css/<role>/<feature>/? Role must be one of: student, teacher, admin, shared.\n2. If the file path is src/pages/**, does the JSX live under src/pages/<role>/ and the CSS under src/pages/css/<role>/?\n3. Does the CSS file (if being written) use only CSS variables (var(--...)) and never hardcode hex values?\n4. Is the CSS import at the top of any JSX file using the correct relative path to the mirror css/ folder?\n\nIf all checks pass, output: {\"decision\": \"allow\"}\nIf any check fails, output: {\"decision\": \"block\", \"reason\": \"<which rule was violated and the correct path/pattern to use>\"}",
+            "timeout": 15,
+            "statusMessage": "Checking file placement & design system rules..."
+          }
+        ]
+      }
+    ]
+  }
+}

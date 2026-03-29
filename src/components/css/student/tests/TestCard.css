@@ -1,0 +1,182 @@
+/* Base card */
+.test-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.test-card--pending:hover {
+  background: var(--surface-2);
+  border-color: var(--accent-rim);
+}
+
+.test-card--completed:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+}
+
+/* Number tag */
+.test-card-num {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+}
+
+.test-card--pending .test-card-num {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* Body */
+.test-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.test-card-title {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.test-card--completed .test-card-title {
+  color: var(--text-2);
+}
+
+/* Meta row */
+.test-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.test-meta-author {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.test-meta-sep {
+  font-size: 11px;
+  color: var(--text-3);
+  opacity: 0.5;
+}
+
+.test-meta-class {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+/* Due date */
+.test-card-due {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.test-card-due--ok      { color: var(--text-3); }
+.test-card-due--soon    { color: var(--gold); }
+.test-card-due--overdue { color: var(--error); }
+
+/* Start button */
+.test-card-action {
+  flex-shrink: 0;
+}
+
+.test-start-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-rim);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+
+.test-start-btn:hover {
+  background: rgba(11, 189, 164, 0.20);
+  border-color: var(--accent);
+}
+
+/* Grade display */
+.test-card-grade-wrap {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 56px;
+}
+
+.test-card-grade {
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+  font-family: var(--font-mono);
+}
+
+.grade-value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.grade-pct {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.65;
+}
+
+.grade--pass { color: var(--success); }
+.grade--good { color: var(--accent); }
+.grade--warn { color: var(--gold); }
+.grade--fail { color: var(--error); }
+
+.test-grade-label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
