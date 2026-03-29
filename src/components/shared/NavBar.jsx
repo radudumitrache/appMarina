@@ -5,6 +5,10 @@ const NAV_SLUGS = [
   { label: 'Dashboard', slug: 'dashboard' },
   { label: 'Lessons',   slug: 'lessons'   },
   { label: 'Tests',     slug: 'tests'     },
+  { label: 'Progress',  slug: 'progress'  },
+  { label: 'My Class',  slug: 'my-class'  },
+  { label: 'Support',   slug: 'support'   },
+  { label: 'Settings',  slug: 'profile'   },
 ]
 
 export default function NavBar() {
@@ -35,12 +39,16 @@ export default function NavBar() {
         })}
       </div>
 
-      <div className="nav-avatar">
+      <button
+        className={`nav-avatar ${pathname === `/${role}/profile` ? 'nav-avatar--active' : ''}`}
+        onClick={() => navigate(`/${role}/profile`)}
+        title="My Profile"
+      >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
         </svg>
-      </div>
+      </button>
     </nav>
   )
 }

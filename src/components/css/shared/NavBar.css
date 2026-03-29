@@ -60,4 +60,6 @@
   transition: border-color 0.15s, color 0.15s;
 }
 
-.nav-avatar:hover { border-color: var(--accent); color: var(--accent); }
+.nav-avatar { background: none; }
+.nav-avatar:hover        { border-color: var(--accent); color: var(--accent); }
+.nav-avatar--active      { border-color: var(--accent-rim); color: var(--accent); background: var(--accent-dim); }
