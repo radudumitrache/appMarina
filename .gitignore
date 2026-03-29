@@ -6,6 +6,7 @@ dist/
 
 # Vite
 .vite/
+node_modules
 
 # Environment variables
 .env
