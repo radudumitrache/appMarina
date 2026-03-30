@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import '../css/admin/Dashboard.css'
@@ -66,15 +67,22 @@ const MAIN_ACTIONS = [
 export default function Dashboard() {
   const navigate = useNavigate()
   const { logout } = useAuth()
+  const [uiLeaving,    setUiLeaving]    = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
 
   const handleLogout = () => {
+    setUiLeaving(true)
+    setTimeout(() => setTransitioning(true), 1350)
+  }
+
+  const handleTransitionEnd = () => {
     logout()
     navigate('/')
   }
 
   return (
-    <div className="dashboard-page">
-      <img className="dashboard-bg" src="/dashboard background screen.png" alt="" />
+    <div className={`dashboard-page${uiLeaving ? ' dashboard-page--leaving' : ''}`}>
+      <video className="dashboard-bg" autoPlay muted loop playsInline src="/shipInThePortToshipInThePort.mp4" />
       <div className="dashboard-overlay" />
 
       <div className="dash-role-badge">Admin</div>
@@ -104,7 +112,7 @@ export default function Dashboard() {
           <button
             key={action.id}
             className="dash-btn"
-            style={{ animationDelay: `${i * 0.07}s` }}
+            style={{ animationDelay: `${0.5 + i * 0.07}s` }}
             onClick={() => navigate(action.path)}
           >
             <span className="dash-btn-icon">{action.icon}</span>
@@ -112,6 +120,19 @@ export default function Dashboard() {
           </button>
         ))}
       </div>
+
+      {transitioning && (
+        <div className="page-transition">
+          <video
+            className="page-transition-video"
+            autoPlay muted playsInline
+            onEnded={handleTransitionEnd}
+            onError={handleTransitionEnd}
+            src="/shipInThePortToshipInTheSea.mp4"
+            onLoadedMetadata={(e) => { e.target.playbackRate = 2 }}
+          />
+        </div>
+      )}
     </div>
   )
 }

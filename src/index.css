@@ -63,7 +63,31 @@ body {
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Dashboard/lesson pages lock scroll at the page level */
+.page-no-scroll {
   overflow: hidden;
+  height: 100%;
+}
+
+/* ─── Page transition curtain ────────────────────────────────────────────── */
+.page-transition-curtain {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  transform: scaleY(0);
+  transform-origin: bottom center;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Suspense fallback — invisible dark screen while chunks load */
+.page-suspense-fallback {
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg);
 }
 
 ::-webkit-scrollbar { width: 3px; }
@@ -83,4 +107,24 @@ body {
 @keyframes slideInLeft {
   from { opacity: 0; transform: translateX(-10px); }
   to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOutLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-30px); }
+}
+
+/* ─── Shared full-screen transition overlay ──────────────────────────────── */
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  animation: fadeIn 0.2s ease both;
+}
+
+.page-transition-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

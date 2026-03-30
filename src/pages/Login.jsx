@@ -9,15 +9,16 @@ const ACCOUNTS = {
   adminTest:   { password: '1234', role: 'admin'   },
 }
 
+// phase: 'idle' → 'leaving' → [bg holds ~1s] → 'transitioning' → navigate
 export default function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [transitioning, setTransitioning] = useState(false)
-  const [role, setRole] = useState(null)
-  const [error, setError] = useState('')
-  const transitionVideoRef = useRef(null)
-  const navigate = useNavigate()
-  const { login } = useAuth()
+  const [error, setError]       = useState('')
+  const [phase, setPhase]       = useState('idle')
+  const [role, setRole]         = useState(null)
+  const transitionVideoRef      = useRef(null)
+  const navigate                = useNavigate()
+  const { login }               = useAuth()
 
   const handleLogin = (e) => {
     e.preventDefault()
@@ -33,10 +34,12 @@ export default function Login() {
     setError('')
     login(username, account.role)
     setRole(account.role)
-    setTransitioning(true)
+    setPhase('leaving')
+    // 380ms slide-out + ~1000ms bg-only hold before transition video
+    setTimeout(() => setPhase('transitioning'), 1380)
   }
 
-  const handleTransitionEnd = () => navigate(`/${role}/dashboard`)
+  const handleTransitionEnd  = () => navigate(`/${role}/dashboard`)
   const handleTransitionError = () => navigate(`/${role}/dashboard`)
 
   return (
@@ -44,11 +47,11 @@ export default function Login() {
       <video
         className="login-bg"
         autoPlay muted loop playsInline
-        src="/login background .mp4"
+        src="/shipInTheSeaToshipInTheSea.mp4"
       />
       <div className="login-overlay" />
 
-      <div className="login-card">
+      <div className={`login-card${phase === 'leaving' ? ' login-card--leaving' : ''}`}>
         <div className="login-brand">
           <span className="login-logo">SEAFARER</span>
           <span className="login-tagline">Maritime VR Training</span>
@@ -62,6 +65,7 @@ export default function Login() {
             value={username}
             onChange={(e) => { setUsername(e.target.value); setError('') }}
             autoComplete="username"
+            disabled={phase !== 'idle'}
           />
           <div className="login-input-wrapper">
             <input
@@ -71,22 +75,25 @@ export default function Login() {
               value={password}
               onChange={(e) => { setPassword(e.target.value); setError('') }}
               autoComplete="current-password"
+              disabled={phase !== 'idle'}
             />
             {error && <p className="login-error">{error}</p>}
           </div>
-          <button className="login-btn" type="submit">Sign in</button>
+          <button className="login-btn" type="submit" disabled={phase !== 'idle'}>
+            Sign in
+          </button>
         </form>
       </div>
 
-      {transitioning && (
-        <div className="login-transition" onClick={handleTransitionEnd}>
+      {phase === 'transitioning' && (
+        <div className="page-transition" onClick={handleTransitionEnd}>
           <video
             ref={transitionVideoRef}
-            className="login-transition-video"
+            className="page-transition-video"
             autoPlay muted playsInline
             onEnded={handleTransitionEnd}
             onError={handleTransitionError}
-            src="/login_dashboard_transition.mp4"
+            src="/shipInTheSeaToshipInThePort.mp4"
             onLoadedMetadata={(e) => { e.target.playbackRate = 2.5 }}
           />
         </div>

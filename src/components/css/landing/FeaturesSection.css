@@ -1,0 +1,28 @@
+.features-section {
+  padding: 120px 48px 128px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card-outer {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 900px) {
+  .features-section {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}

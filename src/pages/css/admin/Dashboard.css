@@ -30,6 +30,14 @@
   );
 }
 
+/* ─── Leaving state ──────────────────────────────────────────────────────── */
+.dashboard-page--leaving .dash-controls,
+.dashboard-page--leaving .dash-role-badge,
+.dashboard-page--leaving .dash-nav {
+  animation: slideOutLeft 0.35s var(--ease-out) both;
+  pointer-events: none;
+}
+
 /* ─── Top-left controls ──────────────────────────────────────────────────── */
 .dash-controls {
   position: absolute;
@@ -45,6 +53,7 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   animation: fadeIn 0.5s var(--ease) both;
+  animation-delay: 0.35s;
 }
 
 .ctrl-btn {
@@ -89,6 +98,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   animation: fadeIn 0.5s var(--ease) both;
+  animation-delay: 0.4s;
 }
 
 /* ─── Main nav ───────────────────────────────────────────────────────────── */

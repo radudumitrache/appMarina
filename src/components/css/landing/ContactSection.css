@@ -1,0 +1,130 @@
+.contact-section {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 120px 48px 0;
+}
+
+.contact-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-form {
+  margin-top: 48px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+}
+
+.form-input,
+.form-textarea {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 16px;
+  outline: none;
+  transition:
+    border-color 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    background   220ms cubic-bezier(0.16, 1, 0.3, 1);
+  resize: vertical;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-3);
+}
+
+.form-input:hover,
+.form-textarea:hover {
+  border-color: var(--border-hover);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--accent-rim);
+  background: var(--surface-2);
+}
+
+.form-textarea {
+  min-height: 110px;
+}
+
+.form-submit {
+  align-self: flex-start;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  padding: 13px 32px;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background 120ms;
+}
+
+.form-submit:hover {
+  background: var(--accent-hover);
+}
+
+.landing-footer {
+  margin-top: 96px;
+  padding: 28px 0 36px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-wordmark {
+  font-family: var(--font-brand);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+}
+
+.footer-copy {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 900px) {
+  .contact-section {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

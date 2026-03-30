@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
@@ -64,6 +65,7 @@ const NAV_TILES = [
 ]
 
 const SPRING = [0.16, 1, 0.3, 1]
+const LEAVE  = { duration: 0.3, ease: [0, 0, 0.2, 1] }
 
 const tileVariants = {
   hidden: { opacity: 0, y: 16 },
@@ -71,7 +73,7 @@ const tileVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      delay: Math.min(i, 6) * 0.04 + 0.22,
+      delay: Math.min(i, 6) * 0.04 + 0.52,
       duration: 0.38,
       ease: SPRING,
     },
@@ -79,26 +81,33 @@ const tileVariants = {
 }
 
 export default function StudentDashboard() {
-  const navigate = useNavigate()
+  const navigate      = useNavigate()
   const { user, logout } = useAuth()
+  const [uiLeaving,   setUiLeaving]   = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
 
   const handleLogout = () => {
+    setUiLeaving(true)
+    // 350ms slide-out + ~1000ms bg-only hold
+    setTimeout(() => setTransitioning(true), 1350)
+  }
+
+  const handleTransitionEnd = () => {
     logout()
     navigate('/')
   }
 
   return (
     <div className="dashboard-page">
-      {/* Atmosphere */}
-      <img className="dashboard-bg" src="/dashboard background screen.png" alt="" />
+      <video className="dashboard-bg" autoPlay muted loop playsInline src="/shipInThePortToshipInThePort.mp4" />
       <div className="dashboard-overlay" />
 
-      {/* ── Role badge — top left ─────────────────────────────────────────────── */}
+      {/* ── Role badge ───────────────────────────────────────────────────────── */}
       <motion.div
         className="dash-role-badge"
         initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.48, ease: SPRING }}
+        animate={uiLeaving ? { opacity: 0, x: -20 } : { opacity: 1, y: 0 }}
+        transition={uiLeaving ? LEAVE : { duration: 0.48, ease: SPRING, delay: 0.35 }}
       >
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
@@ -107,12 +116,12 @@ export default function StudentDashboard() {
         <span>Student</span>
       </motion.div>
 
-      {/* ── Control pill — top right ──────────────────────────────────────────── */}
+      {/* ── Controls ─────────────────────────────────────────────────────────── */}
       <motion.div
         className="dash-controls"
         initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.48, ease: SPRING }}
+        animate={uiLeaving ? { opacity: 0, x: -20 } : { opacity: 1, y: 0 }}
+        transition={uiLeaving ? LEAVE : { duration: 0.48, ease: SPRING, delay: 0.4 }}
       >
         <button className="ctrl-btn" type="button" onClick={() => navigate('/student/profile')}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -133,14 +142,17 @@ export default function StudentDashboard() {
       </motion.div>
 
       {/* ── Center content ────────────────────────────────────────────────────── */}
-      <main className="dash-main">
-
-        {/* Brand + greeting */}
+      <motion.main
+        className="dash-main"
+        initial={{ opacity: 1, x: 0 }}
+        animate={uiLeaving ? { opacity: 0, x: -20 } : { opacity: 1, x: 0 }}
+        transition={uiLeaving ? LEAVE : {}}
+      >
         <motion.div
           className="dash-brand"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.52, ease: SPRING }}
+          transition={{ duration: 0.52, ease: SPRING, delay: 0.45 }}
         >
           <span className="dash-wordmark">SEAFARER</span>
           <div className="dash-brand-divider" aria-hidden="true" />
@@ -150,7 +162,6 @@ export default function StudentDashboard() {
           </p>
         </motion.div>
 
-        {/* Nav tile grid — 3 + 2 */}
         <nav className="dash-grid" aria-label="Student navigation">
           <div className="dash-row">
             {NAV_TILES.slice(0, 3).map((tile, i) => (
@@ -191,8 +202,21 @@ export default function StudentDashboard() {
             ))}
           </div>
         </nav>
+      </motion.main>
 
-      </main>
+      {/* ── Logout transition overlay ─────────────────────────────────────────── */}
+      {transitioning && (
+        <div className="page-transition">
+          <video
+            className="page-transition-video"
+            autoPlay muted playsInline
+            onEnded={handleTransitionEnd}
+            onError={handleTransitionEnd}
+            src="/shipInThePortToshipInTheSea.mp4"
+            onLoadedMetadata={(e) => { e.target.playbackRate = 2 }}
+          />
+        </div>
+      )}
     </div>
   )
 }

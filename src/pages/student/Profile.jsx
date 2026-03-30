@@ -188,7 +188,7 @@ export default function Profile() {
 
             <button
               className="logout-btn"
-              onClick={() => { logout(); navigate('/') }}
+              onClick={() => { logout(); navigate('/', { state: { logout: true } }) }}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
