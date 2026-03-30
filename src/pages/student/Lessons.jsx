@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import NavBar from '../../components/shared/NavBar'
+import NavBar from '../../components/student/NavBar'
 import LessonCard from '../../components/student/lessons/LessonCard'
 import FilterPanel from '../../components/student/lessons/FilterPanel'
 import '../css/student/Lessons.css'

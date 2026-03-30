@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import NavBar from '../../components/shared/NavBar'
+import NavBar from '../../components/student/NavBar'
 import TestCard from '../../components/student/tests/TestCard'
 import '../css/student/Tests.css'
 

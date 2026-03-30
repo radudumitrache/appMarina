@@ -9,6 +9,13 @@ import StudentMyClass  from './pages/student/MyClass'
 import StudentSupport  from './pages/student/Support'
 import StudentProfile  from './pages/student/Profile'
 import TeacherDashboard from './pages/teacher/Dashboard'
+import TeacherClasses     from './pages/teacher/Classes'
+import TeacherClassDetail  from './pages/teacher/ClassDetail'
+import TeacherProgress      from './pages/teacher/Progress'
+import TeacherTestBuilder   from './pages/teacher/TestBuilder'
+import TeacherCourseBuilder from './pages/teacher/CourseBuilder'
+import TeacherSupport       from './pages/teacher/Support'
+import TeacherProfile      from './pages/teacher/Profile'
 import AdminDashboard from './pages/admin/Dashboard'
 
 export default function App() {
@@ -25,6 +32,13 @@ export default function App() {
           <Route path="/student/support"  element={<StudentSupport />} />
           <Route path="/student/profile"  element={<StudentProfile />} />
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher/classes"          element={<TeacherClasses />} />
+          <Route path="/teacher/classes/:id"    element={<TeacherClassDetail />} />
+          <Route path="/teacher/progress"     element={<TeacherProgress />} />
+          <Route path="/teacher/assignments"  element={<TeacherTestBuilder />} />
+          <Route path="/teacher/builder"      element={<TeacherCourseBuilder />} />
+          <Route path="/teacher/support"      element={<TeacherSupport />} />
+          <Route path="/teacher/profile"      element={<TeacherProfile />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

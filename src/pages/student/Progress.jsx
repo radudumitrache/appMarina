@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import NavBar from '../../components/shared/NavBar'
+import NavBar from '../../components/student/NavBar'
 import '../css/student/Progress.css'
 
 // ── Data ──────────────────────────────────────────────────────────────────────

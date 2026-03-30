@@ -1,32 +1,27 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import '../css/shared/NavBar.css'
+import '../css/admin/NavBar.css'
 
-const NAV_SLUGS = [
+const LINKS = [
   { label: 'Dashboard', slug: 'dashboard' },
-  { label: 'Lessons',   slug: 'lessons'   },
-  { label: 'Tests',     slug: 'tests'     },
-  { label: 'Progress',  slug: 'progress'  },
-  { label: 'My Class',  slug: 'my-class'  },
-  { label: 'Support',   slug: 'support'   },
-  { label: 'Settings',  slug: 'profile'   },
+  { label: 'Users',     slug: 'users'     },
+  { label: 'Courses',   slug: 'courses'   },
+  { label: 'Reports',   slug: 'reports'   },
+  { label: 'Settings',  slug: 'settings'  },
 ]
 
 export default function NavBar() {
-  const navigate = useNavigate()
+  const navigate     = useNavigate()
   const { pathname } = useLocation()
 
-  // Derive role from current path: "/student/lessons" → "student"
-  const role = pathname.split('/')[1] || 'student'
-
   return (
-    <nav className="navbar">
-      <span className="nav-logo" onClick={() => navigate(`/${role}/dashboard`)}>
+    <nav className="navbar navbar--admin">
+      <span className="nav-logo" onClick={() => navigate('/admin/dashboard')}>
         SEAFARER
       </span>
 
       <div className="nav-links">
-        {NAV_SLUGS.map((l) => {
-          const path = `/${role}/${l.slug}`
+        {LINKS.map((l) => {
+          const path = `/admin/${l.slug}`
           return (
             <button
               key={l.slug}
@@ -40,8 +35,8 @@ export default function NavBar() {
       </div>
 
       <button
-        className={`nav-avatar ${pathname === `/${role}/profile` ? 'nav-avatar--active' : ''}`}
-        onClick={() => navigate(`/${role}/profile`)}
+        className={`nav-avatar ${pathname === '/admin/profile' ? 'nav-avatar--active' : ''}`}
+        onClick={() => navigate('/admin/profile')}
         title="My Profile"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
-import NavBar from '../../components/shared/NavBar'
+import NavBar from '../../components/student/NavBar'
 import '../css/student/Profile.css'
 
 // ── Static data ───────────────────────────────────────────────────────────────
