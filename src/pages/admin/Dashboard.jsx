@@ -18,9 +18,9 @@ const MAIN_ACTIONS = [
     ),
   },
   {
-    id: 'courses',
-    label: 'Courses',
-    path: '/admin/courses',
+    id: 'lessons',
+    label: 'Lessons',
+    path: '/admin/lessons',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -29,21 +29,21 @@ const MAIN_ACTIONS = [
     ),
   },
   {
-    id: 'analytics',
-    label: 'Analytics',
-    path: '/admin/analytics',
+    id: 'classes',
+    label: 'Classes',
+    path: '/admin/classes',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="18" y1="20" x2="18" y2="10"/>
-        <line x1="12" y1="20" x2="12" y2="4"/>
-        <line x1="6"  y1="20" x2="6"  y2="14"/>
-        <polyline points="2 20 22 20"/>
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
       </svg>
     ),
   },
   {
     id: 'settings',
-    label: 'System Settings',
+    label: 'Settings',
     path: '/admin/settings',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
@@ -77,7 +77,7 @@ export default function Dashboard() {
 
   const handleTransitionEnd = () => {
     logout()
-    navigate('/')
+    navigate('/login')
   }
 
   return (

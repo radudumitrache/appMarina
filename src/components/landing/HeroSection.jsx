@@ -75,7 +75,7 @@ export default function HeroSection() {
   /* ── Hero entrance ───────────────────────────────────── */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from('.hero-label, .hero-headline, .hero-sub, .hero-cta', {
+      gsap.from('.hero-label, .hero-headline, .hero-sub, .hero-cta-group', {
         opacity: 0,
         y: 24,
         duration: 0.9,
@@ -112,13 +112,21 @@ export default function HeroSection() {
           Immersive bridge simulations built to IMO&nbsp;standards —<br />
           for the next generation of seafarers
         </p>
-        <button
-          className="hero-cta"
-          onClick={() => transitionTo('/')}
-          onMouseEnter={preloadLogin}
-        >
-          Enter Platform
-        </button>
+        <div className="hero-cta-group">
+          <button
+            className="hero-cta"
+            onClick={() => transitionTo('/login')}
+            onMouseEnter={preloadLogin}
+          >
+            Enter Platform
+          </button>
+          <button
+            className="hero-cta hero-cta--outline"
+            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+          >
+            Contact Us
+          </button>
+        </div>
       </div>
       <div className="hero-scroll-hint">
         <span className="scroll-hint-line" />

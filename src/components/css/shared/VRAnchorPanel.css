@@ -1,0 +1,387 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   VRAnchorPanel
+   Glass panel floating over the VR panorama background.
+   Glass is permitted here per surfaces.md: element floats over photographic bg.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.vr-ap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 340px;
+  height: 100%;
+  background: rgba(11, 18, 32, 0.88);
+  border-left: 1px solid var(--border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 20;
+
+  /* Entrance: slides in from the right */
+  animation: vr-panel-in var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) both;
+
+  /* hide scrollbar */
+  scrollbar-width: none;
+}
+.vr-ap::-webkit-scrollbar { display: none; }
+
+@keyframes vr-panel-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Close button ──────────────────────────────────────────────────────── */
+.vr-ap-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast, 120ms),
+              border-color var(--duration-fast, 120ms),
+              color var(--duration-fast, 120ms);
+  z-index: 2;
+}
+.vr-ap-close:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   WAYPOINT LAYOUT
+   ══════════════════════════════════════════════════════════════════════════ */
+.vr-ap--waypoint {
+  padding: 48px 28px 32px;
+  gap: 0;
+  border-left-color: var(--accent-rim, rgba(11,189,164,0.22));
+}
+
+/* Kicker row: dot + "WAYPOINT" label + status badge */
+.vr-ap-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.04s both;
+}
+
+.vr-ap-type-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.vr-ap-type-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vr-ap-kicker--gold .vr-ap-type-label { color: var(--gold); }
+
+/* Status badges */
+.vr-ap-badge {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 6px);
+}
+.vr-ap-badge--active {
+  color: var(--success);
+  background: rgba(46, 199, 122, 0.12);
+  border: 1px solid rgba(46, 199, 122, 0.2);
+}
+.vr-ap-badge--locked {
+  color: var(--gold);
+  background: var(--gold-dim);
+  border: 1px solid rgba(217, 160, 48, 0.2);
+}
+
+/* Title */
+.vr-ap-title {
+  font-family: var(--font-ui);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 20px;
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.08s both;
+}
+.vr-ap-title--sm { font-size: 18px; margin: 4px 0 0; }
+
+.vr-ap-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 20px;
+  animation: fadeIn var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.1s both;
+}
+
+/* Body text */
+.vr-ap-body {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin: 0 0 20px;
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.12s both;
+}
+
+/* Meta rows (Category, Bearing …) */
+.vr-ap-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.14s both;
+}
+.vr-ap-meta-row + .vr-ap-meta-row { border-top: none; padding-top: 4px; }
+
+.vr-ap-meta-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.03em;
+}
+.vr-ap-meta-value {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.vr-ap-mono { font-family: var(--font-mono); letter-spacing: 0.02em; }
+
+/* CTA button — accent (teal) variant */
+.vr-ap-cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-md, 10px);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: auto;
+  transition: opacity var(--duration-fast, 120ms),
+              transform var(--duration-fast, 120ms);
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.18s both;
+}
+.vr-ap-cta:active { transform: scale(0.98); }
+
+.vr-ap-cta--accent {
+  background: var(--accent);
+  color: var(--bg);           /* per colors.md: text on teal → always --bg */
+}
+.vr-ap-cta--accent:hover { opacity: 0.88; }
+
+.vr-ap-cta--gold {
+  background: var(--gold-dim);
+  border: 1px solid rgba(217, 160, 48, 0.25);
+  color: var(--gold);
+}
+.vr-ap-cta--gold:hover {
+  background: rgba(217, 160, 48, 0.18);
+  border-color: rgba(217, 160, 48, 0.4);
+}
+
+/* Arrow nudge on hover */
+.vr-ap-cta-arrow {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  transition: transform var(--duration-fast, 120ms);
+}
+.vr-ap-cta:hover .vr-ap-cta-arrow { transform: translateX(3px); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   IMAGE PIN LAYOUT
+   ══════════════════════════════════════════════════════════════════════════ */
+.vr-ap--image {
+  padding: 0;
+  gap: 0;
+}
+
+/* Full-bleed image header */
+.vr-ap-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  flex-shrink: 0;
+  overflow: hidden;
+  animation: fadeIn var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) both;
+}
+
+.vr-ap-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Gradient overlay on the image — merges into panel background */
+.vr-ap-image-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgba(11, 18, 32, 0.88) 100%
+  );
+}
+
+/* Type kicker inside image */
+.vr-ap-image-kicker {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--accent);
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.06s both;
+}
+
+/* Close button repositioned for image layout */
+.vr-ap--image .vr-ap-close {
+  top: 12px;
+  right: 12px;
+  background: rgba(11, 18, 32, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Body section */
+.vr-ap-image-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px 28px 32px;
+  gap: 0;
+}
+
+.vr-ap--image .vr-ap-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+  animation-delay: 0.08s;
+}
+
+.vr-ap--image .vr-ap-body {
+  margin-bottom: 16px;
+  animation-delay: 0.12s;
+}
+
+/* Reference row */
+.vr-ap-ref-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0 16px;
+  border-top: 1px solid var(--border);
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.14s both;
+}
+
+.vr-ap-ref-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.vr-ap-ref-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-rim);
+  border-radius: var(--radius-sm, 6px);
+  padding: 3px 9px;
+  letter-spacing: 0.02em;
+}
+
+.vr-ap-ref-tag--gold {
+  color: var(--gold);
+  background: var(--gold-dim);
+  border-color: rgba(217, 160, 48, 0.22);
+}
+
+.vr-ap--image .vr-ap-cta { margin-top: 0; animation-delay: 0.18s; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   INFO / TECHNICAL NOTE LAYOUT
+   ══════════════════════════════════════════════════════════════════════════ */
+.vr-ap--info {
+  padding: 48px 28px 32px;
+  border-left-color: rgba(217, 160, 48, 0.22);
+}
+
+/* Icon + heading row */
+.vr-ap-info-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.04s both;
+}
+
+/* Gold-tinted icon circle */
+.vr-ap-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md, 10px);
+  background: var(--gold-dim);
+  border: 1px solid rgba(217, 160, 48, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vr-ap-icon-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Summary — slightly larger / more prominent than body */
+.vr-ap-summary {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0 0 14px;
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.10s both;
+}
+
+.vr-ap--info .vr-ap-body { animation-delay: 0.13s; }
+.vr-ap--info .vr-ap-ref-row { animation-delay: 0.15s; }
+.vr-ap--info .vr-ap-cta { margin-top: 4px; animation-delay: 0.18s; }

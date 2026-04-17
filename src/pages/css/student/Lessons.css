@@ -368,11 +368,31 @@
   line-height: 1;
 }
 
-/* ─── Empty state ────────────────────────────────────────────────────────── */
+/* ─── Empty / loading states ─────────────────────────────────────────────── */
 .lessons-empty {
   font-family: var(--font-ui);
   font-size: 14px;
   color: var(--text-3);
   padding: 40px 0;
   grid-column: 1 / -1;
+}
+
+.lessons-loading {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.lessons-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: lessons-spin 0.7s linear infinite;
+}
+
+@keyframes lessons-spin {
+  to { transform: rotate(360deg); }
 }

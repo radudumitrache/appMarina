@@ -1,4 +1,4 @@
-import { AUTHORS, DURATIONS, DIFFICULTIES, DEFAULT_FILTERS } from '../../../pages/student/Lessons'
+import { DURATIONS, DIFFICULTIES } from '../../../pages/student/Lessons'
 import '../../css/student/lessons/FilterPanel.css'
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@ function Chip({ active, onClick, children }) {
 
 // ── Main component ─────────────────────────────────────────────────────────
 
-export default function FilterPanel({ filters, onChange, onClear }) {
+export default function FilterPanel({ filters, onChange, onClear, authors = [] }) {
   const hasAny =
     filters.authors.length > 0 ||
     filters.status !== 'all'   ||
@@ -54,7 +54,7 @@ export default function FilterPanel({ filters, onChange, onClear }) {
       <div className="fp-section">
         <SectionHeader label="Author" />
         <div className="fp-chips">
-          {AUTHORS.map(author => (
+          {authors.map(author => (
             <Chip
               key={author}
               active={filters.authors.includes(author)}

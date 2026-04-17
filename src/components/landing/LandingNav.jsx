@@ -16,7 +16,7 @@ export default function LandingNav() {
       </nav>
       <button
         className="landing-nav-cta"
-        onClick={() => transitionTo('/')}
+        onClick={() => transitionTo('/login')}
         onMouseEnter={preloadLogin}
       >
         Sign In

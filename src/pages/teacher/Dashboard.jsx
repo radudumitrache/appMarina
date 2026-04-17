@@ -76,7 +76,7 @@ export default function Dashboard() {
 
   const handleTransitionEnd = () => {
     logout()
-    navigate('/')
+    navigate('/login')
   }
 
   return (

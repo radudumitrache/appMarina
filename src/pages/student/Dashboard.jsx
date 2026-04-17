@@ -94,7 +94,7 @@ export default function StudentDashboard() {
 
   const handleTransitionEnd = () => {
     logout()
-    navigate('/')
+    navigate('/login')
   }
 
   return (

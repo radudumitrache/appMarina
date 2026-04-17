@@ -4,8 +4,8 @@ import '../css/admin/NavBar.css'
 const LINKS = [
   { label: 'Dashboard', slug: 'dashboard' },
   { label: 'Users',     slug: 'users'     },
-  { label: 'Courses',   slug: 'courses'   },
-  { label: 'Reports',   slug: 'reports'   },
+  { label: 'Lessons',   slug: 'lessons'   },
+  { label: 'Classes',   slug: 'classes'   },
   { label: 'Settings',  slug: 'settings'  },
 ]
 
@@ -22,10 +22,11 @@ export default function NavBar() {
       <div className="nav-links">
         {LINKS.map((l) => {
           const path = `/admin/${l.slug}`
+          const isActive = pathname === path || pathname.startsWith(`${path}/`)
           return (
             <button
               key={l.slug}
-              className={`nav-link ${pathname === path ? 'nav-link--active' : ''}`}
+              className={`nav-link ${isActive ? 'nav-link--active' : ''}`}
               onClick={() => navigate(path)}
             >
               {l.label}

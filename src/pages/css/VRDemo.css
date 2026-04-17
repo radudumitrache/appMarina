@@ -1,0 +1,347 @@
+/* ─── Page ────────────────────────────────────────────────────────────────── */
+.vr-demo-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+/* The VRViewer fills the whole page */
+.vr-demo-page .vr-viewer {
+  position: absolute;
+  inset: 0;
+}
+
+/* ─── Scene name overlay (top-left) ──────────────────────────────────────── */
+.vr-scene-label {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  pointer-events: none;
+  animation: fadeIn 0.4s ease both;
+}
+
+/* Teal tag — VR is role-neutral content, not admin */
+.vr-scene-label-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-rim);
+  border-radius: var(--radius-sm);
+  padding: 2px 7px;
+}
+
+/* ─── Top-right control cluster ─────────────────────────────────────────── */
+.vr-top-right {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+  animation: fadeIn 0.6s ease 0.3s both;
+}
+
+.vr-hint-inline {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.vr-hint-inline--edit {
+  color: rgba(217, 160, 48, 0.7);
+}
+
+/* ─── Edit Anchors button ────────────────────────────────────────────────── */
+.vr-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  background: rgba(11, 18, 32, 0.72);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background var(--duration-fast, 120ms),
+              border-color var(--duration-fast, 120ms),
+              color var(--duration-fast, 120ms);
+}
+
+.vr-edit-btn:hover {
+  background: rgba(11, 18, 32, 0.9);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.vr-edit-btn--active {
+  background: var(--gold-dim);
+  border-color: rgba(217, 160, 48, 0.45);
+  color: var(--gold);
+}
+
+.vr-edit-btn--active:hover {
+  background: rgba(217, 160, 48, 0.2);
+  border-color: rgba(217, 160, 48, 0.65);
+}
+
+/* ─── Anchor type picker ─────────────────────────────────────────────────── */
+.vr-picker-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+}
+
+.vr-picker {
+  position: absolute;
+  width: 196px;
+  background: rgba(11, 18, 32, 0.96);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 10px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 31;
+  overflow: hidden;
+  animation: fadeUp 0.18s ease both;
+}
+
+.vr-picker-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 11px 14px 7px;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.vr-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--duration-fast, 120ms);
+}
+.vr-picker-item:last-of-type { border-bottom: none; }
+.vr-picker-item:hover { background: var(--surface-2); }
+
+.vr-picker-icon {
+  font-size: 15px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.vr-picker-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.vr-picker-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.vr-picker-sub {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.vr-picker-cancel {
+  display: block;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  text-align: center;
+  transition: background var(--duration-fast, 120ms), color var(--duration-fast, 120ms);
+}
+.vr-picker-cancel:hover { background: var(--surface-2); color: var(--text); }
+
+/* ─── Polygon drawing toolbar ────────────────────────────────────────────── */
+.vr-poly-bar {
+  position: absolute;
+  bottom: 110px;    /* sits above the thumbnail strip */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 18px;
+  background: rgba(11, 18, 32, 0.92);
+  border: 1px solid rgba(11, 189, 164, 0.3);
+  border-radius: var(--radius-md, 10px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 15;
+  white-space: nowrap;
+  animation: fadeUp 0.22s ease both;
+}
+
+.vr-poly-bar-count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.vr-poly-bar-hint {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 400;
+}
+
+.vr-poly-bar-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.vr-poly-btn {
+  height: 30px;
+  padding: 0 13px;
+  border-radius: var(--radius-sm, 6px);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--duration-fast, 120ms),
+              background var(--duration-fast, 120ms);
+  border: 1px solid transparent;
+}
+
+.vr-poly-btn--finish {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.vr-poly-btn--finish:hover { opacity: 0.85; }
+
+.vr-poly-btn--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.vr-poly-btn--undo {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text-2);
+}
+.vr-poly-btn--undo:hover { background: var(--surface-3); color: var(--text); }
+
+.vr-poly-btn--cancel {
+  background: none;
+  border-color: var(--border);
+  color: var(--text-3);
+}
+.vr-poly-btn--cancel:hover { background: var(--surface-2); color: var(--text); }
+
+/* ─── Thumbnail strip (bottom) ───────────────────────────────────────────── */
+.vr-strip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px 20px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  justify-content: center;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+
+  /* hide scrollbar */
+  scrollbar-width: none;
+}
+.vr-strip::-webkit-scrollbar { display: none; }
+
+/* ─── Individual thumbnail ───────────────────────────────────────────────── */
+.vr-thumb {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 3px 3px 7px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+  animation: fadeUp 0.35s ease both;
+}
+
+.vr-thumb:hover {
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-3px);
+}
+
+.vr-thumb--active {
+  border-color: var(--error, #e05252);
+}
+
+.vr-thumb--active:hover {
+  border-color: var(--error, #e05252);
+  transform: translateY(-3px);
+}
+
+.vr-thumb-img {
+  width: 100px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 5px;
+  display: block;
+}
+
+.vr-thumb-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  white-space: nowrap;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vr-thumb--active .vr-thumb-label {
+  color: #fff;
+}
+

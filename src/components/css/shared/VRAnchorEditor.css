@@ -1,0 +1,264 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   VRAnchorEditor
+   Slide-in editing panel — glass over VR photographic background.
+   Uses gold accent (teacher tool).
+   ───────────────────────────────────────────────────────────────────────── */
+
+.vr-ae {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 340px;
+  height: 100%;
+  background: rgba(11, 18, 32, 0.92);
+  border-left: 1px solid rgba(217, 160, 48, 0.25);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 20;
+  padding: 0 0 32px;
+
+  animation: vr-ae-in var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) both;
+
+  scrollbar-width: none;
+}
+.vr-ae::-webkit-scrollbar { display: none; }
+
+@keyframes vr-ae-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+.vr-ae-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.vr-ae-header-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vr-ae-header-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.vr-ae-header-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Close button */
+.vr-ae-close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast, 120ms),
+              border-color var(--duration-fast, 120ms),
+              color var(--duration-fast, 120ms);
+  flex-shrink: 0;
+}
+.vr-ae-close:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+/* ── Polygon type badge ─────────────────────────────────────────────────── */
+.vr-ae-polygon-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 20px 0;
+  padding: 8px 12px;
+  background: rgba(11, 189, 164, 0.08);
+  border: 1px solid var(--accent-rim);
+  border-radius: var(--radius-sm, 6px);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+}
+
+.vr-ae-polygon-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* ── Field container ───────────────────────────────────────────────────── */
+.vr-ae-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 20px 0;
+}
+
+.vr-ae-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 10px;
+}
+
+.vr-ae-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────────────── */
+.vr-ae-input,
+.vr-ae-textarea,
+.vr-ae-select {
+  background: var(--surface-3, #1a2740);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color var(--duration-fast, 120ms),
+              background var(--duration-fast, 120ms);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.vr-ae-input:focus,
+.vr-ae-textarea:focus,
+.vr-ae-select:focus {
+  border-color: rgba(217, 160, 48, 0.5);
+  background: var(--surface-2, #111b2e);
+}
+
+.vr-ae-input::placeholder,
+.vr-ae-textarea::placeholder {
+  color: var(--text-3);
+}
+
+.vr-ae-input--mono {
+  font-family: var(--font-mono);
+}
+
+.vr-ae-textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.55;
+}
+
+.vr-ae-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b83a0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+/* ── Type tab row ───────────────────────────────────────────────────────── */
+.vr-ae-type-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.vr-ae-type-tab {
+  flex: 1;
+  padding: 6px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  background: none;
+  color: var(--text-3);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background var(--duration-fast, 120ms),
+              border-color var(--duration-fast, 120ms),
+              color var(--duration-fast, 120ms);
+  white-space: nowrap;
+}
+
+.vr-ae-type-tab:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.vr-ae-type-tab--active {
+  background: var(--gold-dim);
+  border-color: rgba(217, 160, 48, 0.35);
+  color: var(--gold);
+}
+
+/* ── Action buttons ─────────────────────────────────────────────────────── */
+.vr-ae-actions {
+  display: flex;
+  gap: 8px;
+  padding: 20px 20px 0;
+  margin-top: auto;
+}
+
+.vr-ae-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-md, 10px);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--duration-fast, 120ms),
+              transform var(--duration-fast, 120ms);
+}
+.vr-ae-btn:active { transform: scale(0.97); }
+
+.vr-ae-btn--save {
+  flex: 1;
+  background: var(--gold);
+  color: var(--bg);
+  justify-content: center;
+}
+.vr-ae-btn--save:hover { opacity: 0.88; }
+
+.vr-ae-btn--delete {
+  background: rgba(224, 82, 82, 0.12);
+  border: 1px solid rgba(224, 82, 82, 0.25);
+  color: var(--error);
+  padding: 0 14px;
+}
+.vr-ae-btn--delete:hover {
+  background: rgba(224, 82, 82, 0.2);
+  border-color: rgba(224, 82, 82, 0.45);
+}

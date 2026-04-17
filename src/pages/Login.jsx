@@ -3,12 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import './css/Login.css'
 
-const ACCOUNTS = {
-  studentTest: { password: '1234', role: 'student' },
-  teacherTest: { password: '1234', role: 'teacher' },
-  adminTest:   { password: '1234', role: 'admin'   },
-}
-
 // phase: 'idle' → 'leaving' → [bg holds ~1s] → 'transitioning' → navigate
 export default function Login() {
   const [username, setUsername] = useState('')
@@ -20,23 +14,23 @@ export default function Login() {
   const navigate                = useNavigate()
   const { login }               = useAuth()
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     if (!username.trim() || !password.trim()) {
       setError('Please fill in both fields')
       return
     }
-    const account = ACCOUNTS[username]
-    if (!account || account.password !== password) {
-      setError('Invalid username or password')
-      return
+    try {
+      const userRole = await login(username, password)
+      setError('')
+      setRole(userRole)
+      setPhase('leaving')
+      // 380ms slide-out + ~1000ms bg-only hold before transition video
+      setTimeout(() => setPhase('transitioning'), 1380)
+    } catch (err) {
+      const detail = err.response?.data?.detail
+      setError(detail || 'Invalid username or password')
     }
-    setError('')
-    login(username, account.role)
-    setRole(account.role)
-    setPhase('leaving')
-    // 380ms slide-out + ~1000ms bg-only hold before transition video
-    setTimeout(() => setPhase('transitioning'), 1380)
   }
 
   const handleTransitionEnd  = () => navigate(`/${role}/dashboard`)

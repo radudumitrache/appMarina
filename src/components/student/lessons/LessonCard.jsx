@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import '../../css/student/lessons/LessonCard.css'
 
 const CheckIcon = () => (
@@ -16,16 +17,25 @@ const LockIcon = () => (
 )
 
 export default function LessonCard({ lesson, index, viewMode = 'grid', onToggleComplete }) {
+  const navigate = useNavigate()
   const delay = `${Math.min(index, 6) * 0.04}s`
   const lockedClass = lesson.locked ? 'lesson-card--locked' : ''
+
+  const handleCardClick = () => {
+    if (!lesson.locked) navigate(`/student/lessons/${lesson.id}`, { state: { lesson } })
+  }
 
   if (viewMode === 'list') {
     return (
       <div
         className={`lesson-card lesson-card--list ${lockedClass}`}
         style={{ animationDelay: delay }}
+        onClick={handleCardClick}
+        role={lesson.locked ? undefined : 'button'}
+        tabIndex={lesson.locked ? undefined : 0}
+        onKeyDown={e => { if (!lesson.locked && (e.key === 'Enter' || e.key === ' ')) handleCardClick() }}
       >
-        <span className="lesson-num">{String(lesson.id).padStart(2, '0')}</span>
+        <span className="lesson-num">{String(index + 1).padStart(2, '0')}</span>
 
         <div className="lesson-body">
           <span className="lesson-title">{lesson.title}</span>
@@ -62,8 +72,12 @@ export default function LessonCard({ lesson, index, viewMode = 'grid', onToggleC
     <div
       className={`lesson-card lesson-card--grid ${lockedClass}`}
       style={{ animationDelay: delay }}
+      onClick={handleCardClick}
+      role={lesson.locked ? undefined : 'button'}
+      tabIndex={lesson.locked ? undefined : 0}
+      onKeyDown={e => { if (!lesson.locked && (e.key === 'Enter' || e.key === ' ')) handleCardClick() }}
     >
-      <span className="lesson-num">{String(lesson.id).padStart(2, '0')}</span>
+      <span className="lesson-num">{String(index + 1).padStart(2, '0')}</span>
 
       <div className="lesson-body">
         <span className="lesson-title">{lesson.title}</span>

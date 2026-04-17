@@ -87,6 +87,15 @@
   margin: 0;
 }
 
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .hero-cta {
   display: inline-block;
   font-family: var(--font-ui);
@@ -98,13 +107,23 @@
   padding: 13px 32px;
   border-radius: 10px;
   letter-spacing: -0.01em;
-  margin-top: 8px;
   cursor: pointer;
   transition: background 120ms;
 }
 
 .hero-cta:hover {
   background: var(--accent-hover);
+}
+
+.hero-cta--outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.hero-cta--outline:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .hero-scroll-hint {
