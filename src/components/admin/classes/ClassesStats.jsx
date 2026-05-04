@@ -1,4 +1,4 @@
-import '../../../css/admin/classes/ClassesStats.css'
+import '../../css/admin/classes/ClassesStats.css'
 
 export default function ClassesStats({ stats }) {
   const items = [

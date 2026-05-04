@@ -1,5 +1,5 @@
 import { useTheme } from '../../../context/ThemeContext'
-import '../../../css/admin/dashboard/DashControls.css'
+import '../../css/admin/dashboard/DashControls.css'
 
 export default function DashControls({ onSettingsClick, onLogoutClick }) {
   const { theme, toggleTheme } = useTheme()

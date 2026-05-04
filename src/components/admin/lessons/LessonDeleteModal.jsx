@@ -1,4 +1,4 @@
-import '../../../css/admin/lessons/LessonDeleteModal.css'
+import '../../css/admin/lessons/LessonDeleteModal.css'
 
 function XIcon() {
   return (

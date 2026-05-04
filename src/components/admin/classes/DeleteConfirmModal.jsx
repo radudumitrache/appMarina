@@ -1,4 +1,4 @@
-import '../../../css/admin/classes/ClassFormModal.css'
+import '../../css/admin/classes/ClassFormModal.css'
 
 function XIcon() {
   return (

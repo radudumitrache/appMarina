@@ -1,4 +1,4 @@
-import '../../../css/admin/lessons/LessonFormPanel.css'
+import '../../css/admin/lessons/LessonFormPanel.css'
 
 function XIcon() {
   return (

@@ -1,4 +1,4 @@
-import '../../../css/admin/lessons/LessonRow.css'
+import '../../css/admin/lessons/LessonRow.css'
 
 export default function LessonRow({ lesson, categories, index, onEdit, onToggleStatus, onDelete }) {
   const catLabel = categories.find(c => c.id === lesson.cat)?.label

@@ -1,4 +1,4 @@
-import '../../../css/admin/dashboard/DashNav.css'
+import '../../css/admin/dashboard/DashNav.css'
 
 export default function DashNav({ actions, onNavigate }) {
   return (

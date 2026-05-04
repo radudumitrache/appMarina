@@ -1,4 +1,4 @@
-import '../../../css/admin/dashboard/PageTransition.css'
+import '../../css/admin/dashboard/PageTransition.css'
 
 export default function PageTransition({ src, onEnd }) {
   return (

@@ -1,4 +1,4 @@
-import '../../../css/admin/classes/ClassCard.css'
+import '../../css/admin/classes/ClassCard.css'
 
 export default function ClassCard({
   cls,

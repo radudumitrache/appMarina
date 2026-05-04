@@ -1,4 +1,4 @@
-import '../../../css/admin/lessons/LessonsSidebar.css'
+import '../../css/admin/lessons/LessonsSidebar.css'
 
 export default function LessonsSidebar({ categories, activeCategory, onCategoryChange, lessons }) {
   const published = lessons.filter(l => l.status === 'published').length

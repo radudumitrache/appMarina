@@ -1,4 +1,4 @@
-import '../../../css/admin/classes/ClassesHeader.css'
+import '../../css/admin/classes/ClassesHeader.css'
 
 export default function ClassesHeader({ filteredCount, search, onSearchChange, statusFilter, onStatusFilterChange, onCreateNew }) {
   return (

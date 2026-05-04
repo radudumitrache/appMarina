@@ -1,4 +1,4 @@
-import '../../../css/admin/lessons/LessonsToolbar.css'
+import '../../css/admin/lessons/LessonsToolbar.css'
 
 export default function LessonsToolbar({ title, filteredCount, search, onSearchChange, statusFilter, onStatusFilterChange, onCreateNew }) {
   return (
