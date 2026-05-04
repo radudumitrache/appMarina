@@ -1,4 +1,5 @@
 import { totalDuration } from './courseBuilderUtils'
+import '../../css/teacher/course-builder/CourseSidebar.css'
 
 export default function CourseSidebar({
   loading,

@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { TransitionProvider } from './context/TransitionContext'
+import { ThemeProvider } from './context/ThemeContext'
 import PrivateRoute from './components/shared/PrivateRoute'
 
 const Landing             = lazy(() => import('./pages/Landing'))
@@ -29,6 +30,7 @@ const AdminUsers          = lazy(() => import('./pages/admin/Users'))
 const AdminLessons        = lazy(() => import('./pages/admin/Lessons'))
 const AdminClasses        = lazy(() => import('./pages/admin/Classes'))
 const AdminClassDetail    = lazy(() => import('./pages/admin/ClassDetail'))
+const AdminSupport        = lazy(() => import('./pages/admin/Support'))
 
 function PageShell() {
   return (
@@ -67,6 +69,7 @@ function PageShell() {
           <Route path="/admin/lessons"        element={<PrivateRoute allowedRoles={['admin']}><AdminLessons /></PrivateRoute>} />
           <Route path="/admin/classes"        element={<PrivateRoute allowedRoles={['admin']}><AdminClasses /></PrivateRoute>} />
           <Route path="/admin/classes/:id"    element={<PrivateRoute allowedRoles={['admin']}><AdminClassDetail /></PrivateRoute>} />
+          <Route path="/admin/support"        element={<PrivateRoute allowedRoles={['admin']}><AdminSupport /></PrivateRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -77,10 +80,12 @@ function PageShell() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <PageShell />
-      </BrowserRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <PageShell />
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

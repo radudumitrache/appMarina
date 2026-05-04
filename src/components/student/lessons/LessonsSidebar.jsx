@@ -1,3 +1,4 @@
+import '../../css/student/lessons/LessonsSidebar.css'
 import { CATEGORIES } from '../../../pages/student/Lessons'
 
 function getCatStats(lessons, catId) {

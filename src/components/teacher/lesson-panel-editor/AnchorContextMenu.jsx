@@ -14,10 +14,12 @@ import { IconEdit, IconTrash } from './LPEIcons'
  *   onClose     {Function}
  */
 export default function AnchorContextMenu({ anchor, anchorType, x, y, onEdit, onDelete, onClose }) {
-  const label     = anchorType === 'nav'
+  const label = anchorType === 'nav'
     ? `→ Tour #${anchor.target_vr_tour}`
     : (anchor.title || 'Untitled')
-  const typeLabel = anchorType === 'nav' ? 'Navigator' : 'Text Anchor'
+  const typeLabel = anchorType === 'nav' ? 'Navigator Anchor'
+    : anchorType === 'poly' ? 'Polygon Anchor'
+    : 'Text Anchor'
 
   // Clamp so the card never bleeds off the right / bottom edge
   const style = {

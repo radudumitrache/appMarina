@@ -1,0 +1,122 @@
+.lesson-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  gap: 16px;
+  animation: fadeUp 0.3s var(--ease-default) both;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+.lesson-row:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-2);
+}
+
+.lesson-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.lesson-row-title {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lesson-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lesson-cat-badge {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.lesson-meta-sep { color: var(--text-3); font-size: 11px; }
+
+.lesson-duration {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.lesson-difficulty {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.lesson-difficulty--easy         { color: var(--success); }
+.lesson-difficulty--intermediate { color: var(--gold); }
+.lesson-difficulty--advanced     { color: var(--error); }
+
+.lesson-author {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.lesson-row-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.lesson-status-badge {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+}
+.lesson-status-badge--published { color: var(--success); background: rgba(46, 199, 122, 0.12); }
+.lesson-status-badge--draft     { color: var(--text-3);  background: rgba(255,255,255,0.06);   }
+
+.lesson-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+.lesson-row:hover .lesson-row-actions { opacity: 1; }
+
+.row-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.row-btn:hover          { background: rgba(255,255,255,0.06); color: var(--text); }
+.row-btn--warn:hover    { color: var(--gold); }
+.row-btn--ok:hover      { color: var(--success); }
+.row-btn--delete:hover  { color: var(--error); }

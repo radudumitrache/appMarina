@@ -56,6 +56,47 @@
   --surface    : #0b1220;
 }
 
+/* ─── Light Theme — Nautical Chart ───────────────────────────────────────── */
+[data-theme="light"] {
+  /* Surfaces */
+  --bg         : #f2f7fc;   /* sea-mist white */
+  --surface-1  : #ffffff;   /* card — nautical chart paper */
+  --surface-2  : #e4eef8;   /* hover fill */
+  --surface-3  : #d4e6f0;   /* input backgrounds */
+
+  /* Borders */
+  --border     : #b4ccde;   /* muted steel-blue grid */
+  --border-hover: #7aaac4;
+
+  /* Text */
+  --text       : #0d1b2c;   /* deep navy — primary */
+  --text-2     : #2c4968;   /* medium navy — secondary */
+  --text-3     : #587898;   /* steel blue — placeholders */
+
+  /* Accent teal — unchanged, used for borders/icons/highlights */
+  --accent     : #0bbda4;
+  --accent-hover: #0fd4b8;
+  --accent-dim : rgba(11, 189, 164, 0.10);
+  --accent-rim : rgba(11, 189, 164, 0.25);
+
+  /* Gold — darkened for legibility on light surfaces */
+  --gold       : #9e6e10;
+  --gold-dim   : rgba(158, 110, 16, 0.12);
+
+  /* Semantic — deepened for light background contrast */
+  --success    : #1a8a4e;
+  --error      : #c03030;
+
+  /* Legacy aliases */
+  --muted      : #587898;
+  --surface    : #ffffff;
+}
+
+/* Glass recipe — light variant (login card, dashboard control pill) */
+[data-theme="light"] .glass {
+  background: rgba(242, 247, 252, 0.82);
+}
+
 html, body, #root { height: 100%; width: 100%; }
 
 body {

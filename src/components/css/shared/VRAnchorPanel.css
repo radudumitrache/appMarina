@@ -385,3 +385,130 @@
 .vr-ap--info .vr-ap-body { animation-delay: 0.13s; }
 .vr-ap--info .vr-ap-ref-row { animation-delay: 0.15s; }
 .vr-ap--info .vr-ap-cta { margin-top: 4px; animation-delay: 0.18s; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TEXT ANCHOR LAYOUT  (resizable width, full HTML body)
+   ══════════════════════════════════════════════════════════════════════════ */
+.vr-ap--text {
+  padding: 48px 28px 32px;
+  border-left-color: var(--accent-rim, rgba(11,189,164,0.22));
+  /* width is set inline by the TextPanel component */
+  min-width: 260px;
+  max-width: 700px;
+}
+
+/* Left-edge drag handle */
+.vr-ap-resize-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 10;
+}
+.vr-ap-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 40px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background var(--duration-fast, 120ms);
+}
+.vr-ap-resize-handle:hover::after { background: var(--accent); }
+
+/* Kicker row inside text panel */
+.vr-ap-text-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.04s both;
+}
+
+/* HTML body — prose styles for stored rich-text content */
+.vr-ap-html-body {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-2);
+  line-height: 1.7;
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.12s both;
+}
+
+.vr-ap-html-body h1,
+.vr-ap-html-body h2,
+.vr-ap-html-body h3 {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin: 20px 0 8px;
+  line-height: 1.25;
+}
+.vr-ap-html-body h1 { font-size: 22px; }
+.vr-ap-html-body h2 { font-size: 18px; }
+.vr-ap-html-body h3 { font-size: 15px; }
+
+.vr-ap-html-body p  { margin: 0 0 12px; }
+
+.vr-ap-html-body strong,
+.vr-ap-html-body b  { font-weight: 600; color: var(--text); }
+
+.vr-ap-html-body em,
+.vr-ap-html-body i  { font-style: italic; }
+
+.vr-ap-html-body ul,
+.vr-ap-html-body ol {
+  padding-left: 20px;
+  margin: 0 0 12px;
+}
+.vr-ap-html-body li { margin-bottom: 4px; }
+
+.vr-ap-html-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+.vr-ap-html-body img {
+  max-width: 100%;
+  border-radius: var(--radius-md, 10px);
+  margin: 8px 0;
+  display: block;
+}
+
+.vr-ap-html-body video {
+  max-width: 100%;
+  border-radius: var(--radius-md, 10px);
+  margin: 8px 0;
+  display: block;
+}
+
+/* ─── Light theme ────────────────────────────────────────────────────────── */
+[data-theme="light"] .vr-ap {
+  background: rgba(242, 247, 252, 0.92);
+  border-left-color: var(--border);
+}
+[data-theme="light"] .vr-ap--waypoint {
+  border-left-color: var(--accent-rim);
+}
+[data-theme="light"] .vr-ap--info {
+  border-left-color: rgba(158, 110, 16, 0.28);
+}
+[data-theme="light"] .vr-ap-image-gradient {
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgba(242, 247, 252, 0.92) 100%
+  );
+}
+[data-theme="light"] .vr-ap--image .vr-ap-close {
+  background: rgba(242, 247, 252, 0.80);
+  border-color: var(--border);
+  color: var(--text-3);
+}

@@ -159,3 +159,34 @@
   color: var(--text);
   letter-spacing: 0.01em;
 }
+
+/* ─── Light theme — keep dashboard in blue-glass family ──────────────────── */
+[data-theme="light"] .dashboard-page   { background: #0d2340; }
+[data-theme="light"] .dashboard-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(5, 18, 40, 0.45) 0%,
+    rgba(8, 28, 60, 0.18) 50%,
+    rgba(5, 18, 40, 0.60) 100%
+  );
+}
+[data-theme="light"] .dash-btn {
+  background: rgba(15, 45, 95, 0.62);
+  border-color: rgba(70, 130, 195, 0.28);
+}
+[data-theme="light"] .dash-btn:hover {
+  background: rgba(11, 189, 164, 0.14);
+  border-color: rgba(11, 189, 164, 0.32);
+  transform: translateY(-3px);
+}
+[data-theme="light"] .dash-btn-label  { color: #c8ddf0; }
+[data-theme="light"] .dash-controls {
+  background: rgba(15, 45, 95, 0.65);
+  border-color: rgba(70, 130, 195, 0.28);
+}
+[data-theme="light"] .dash-role-badge {
+  background: rgba(15, 45, 95, 0.65);
+  border-color: rgba(70, 130, 195, 0.28);
+}
+[data-theme="light"] .ctrl-btn         { color: rgba(180, 215, 240, 0.75); }
+[data-theme="light"] .ctrl-btn:hover   { color: #e4edf6; background: rgba(255, 255, 255, 0.07); }

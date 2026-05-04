@@ -98,7 +98,12 @@ export function usePanelEditor(lessonId, initialLesson) {
     setSaving(true)
     try {
       const res = await updatePanel(lessonId, panelId, data)
-      setPanels(prev => prev.map(p => p.id === panelId ? res.data : p))
+      setPanels(prev => prev.map(p => {
+        if (p.id !== panelId) return p
+        // Preserve current vr_tour (anchors with descriptions) — the panel update
+        // endpoint only saves title/body/scene_url and may return anchors without description
+        return { ...res.data, vr_tour: p.vr_tour ?? res.data.vr_tour }
+      }))
     } catch {
       setError('Could not save changes.')
     } finally {

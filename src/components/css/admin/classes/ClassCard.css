@@ -1,0 +1,192 @@
+.class-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeUp 0.35s var(--ease-default) both;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+.class-card:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-2);
+}
+.class-card--archived { opacity: 0.6; }
+
+.class-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.class-card-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.class-card-name {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.class-status-badge {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.class-status-badge--active   { color: var(--success); background: rgba(46, 199, 122, 0.12); }
+.class-status-badge--archived { color: var(--text-3);  background: rgba(255,255,255,0.06);   }
+
+.class-card-desc {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+.class-card-teacher {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-3);
+}
+
+.class-teacher-name {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.class-card-counts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.class-count-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: border-color var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+}
+.class-count-btn:hover {
+  border-color: rgba(224, 82, 82, 0.3);
+  color: var(--error);
+  background: rgba(224, 82, 82, 0.05);
+}
+
+.class-count-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.class-count-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: inherit;
+}
+
+.class-count-sep {
+  color: var(--border-hover);
+  font-size: 14px;
+}
+
+.class-expand {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  animation: fadeUp 0.2s var(--ease-default) both;
+}
+
+.class-expand-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.class-expand-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.class-expand-chip {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 8px;
+}
+
+.class-expand-empty {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.class-card-actions {
+  display: flex;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.class-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  justify-content: center;
+  padding: 7px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+}
+.class-action-btn:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+.class-action-btn--manage:hover,
+.class-action-btn--delete:hover {
+  background: rgba(224, 82, 82, 0.08);
+  border-color: rgba(224, 82, 82, 0.3);
+  color: var(--error);
+}

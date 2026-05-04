@@ -1,4 +1,5 @@
 import { CAT_LABELS, CAT_COLORS, formatDuration } from './courseBuilderUtils'
+import '../../css/teacher/course-builder/LessonBank.css'
 
 export default function LessonBank({
   bankOpen,

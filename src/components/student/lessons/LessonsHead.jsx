@@ -1,3 +1,5 @@
+import '../../css/student/lessons/LessonsHead.css'
+
 export default function LessonsHead({ title, count, viewMode, onViewModeChange }) {
   return (
     <div className="lessons-head">

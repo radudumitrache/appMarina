@@ -1,8 +1,9 @@
 /**
  * VRAnchorPanel — slide-in detail panel for VR scene hotspots.
  *
- * Three layout variants driven by `anchor.type`:
+ * Four layout variants driven by `anchor.type`:
  *
+ *  'text'      HTML content panel — no CTA. Resizable width.
  *  'waypoint'  Teal accent. Navigation point with category + CTA.
  *  'image'     Full-bleed image header, reference tag, CTA.
  *  'info'      Gold accent. Icon + body text + regulation reference + CTA.
@@ -10,7 +11,7 @@
  * Glass is explicitly permitted here because this panel floats
  * directly over the VR photographic background (surfaces.md rule).
  */
-import { useState } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import '../../components/css/shared/VRAnchorPanel.css'
 
 /* ── Icons ─────────────────────────────────────────────────────────────── */
@@ -58,6 +59,60 @@ function IconInfo() {
       <line x1="12" y1="8" x2="12" y2="12"/>
       <line x1="12" y1="16" x2="12.01" y2="16"/>
     </svg>
+  )
+}
+
+/* ── Text anchor panel (HTML content, resizable) ───────────────────────── */
+function TextPanel({ anchor, onClose }) {
+  const [width, setWidth]     = useState(340)
+  const dragging              = useRef(false)
+  const startX                = useRef(0)
+  const startW                = useRef(0)
+
+  const onMouseDown = useCallback(e => {
+    e.preventDefault()
+    dragging.current = true
+    startX.current   = e.clientX
+    startW.current   = width
+    document.body.style.userSelect = 'none'
+  }, [width])
+
+  useEffect(() => {
+    const onMove = e => {
+      if (!dragging.current) return
+      const delta = startX.current - e.clientX
+      setWidth(Math.min(700, Math.max(260, startW.current + delta)))
+    }
+    const onUp = () => {
+      dragging.current = false
+      document.body.style.userSelect = ''
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup',   onUp)
+    return () => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup',   onUp)
+      document.body.style.userSelect = ''
+    }
+  }, [])
+
+  return (
+    <aside className="vr-ap vr-ap--text" style={{ width }}>
+      <div className="vr-ap-resize-handle" onMouseDown={onMouseDown} />
+      <button className="vr-ap-close" onClick={onClose} aria-label="Close">
+        <IconX />
+      </button>
+      <div className="vr-ap-text-kicker">
+        <span className="vr-ap-type-dot" />
+        <span className="vr-ap-type-label">Info</span>
+      </div>
+      <h2 className="vr-ap-title">{anchor.label}</h2>
+      <div className="vr-ap-divider" />
+      <div
+        className="vr-ap-html-body"
+        dangerouslySetInnerHTML={{ __html: anchor.description || '' }}
+      />
+    </aside>
   )
 }
 
@@ -195,6 +250,7 @@ function InfoPanel({ anchor, onClose }) {
 export default function VRAnchorPanel({ anchor, onClose }) {
   if (!anchor) return null
 
+  if (anchor.type === 'text')     return <TextPanel     anchor={anchor} onClose={onClose} />
   if (anchor.type === 'waypoint') return <WaypointPanel anchor={anchor} onClose={onClose} />
   if (anchor.type === 'image')    return <ImagePanel    anchor={anchor} onClose={onClose} />
   if (anchor.type === 'info')     return <InfoPanel     anchor={anchor} onClose={onClose} />

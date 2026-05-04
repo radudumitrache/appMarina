@@ -1,0 +1,197 @@
+.cd-panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cd-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.cd-panel-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.cd-panel-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--error);
+  background: rgba(224, 82, 82, 0.1);
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+
+.cd-adder {
+  position: relative;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.cd-adder-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cd-adder-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.cd-adder-input {
+  width: 100%;
+  height: 34px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 12px 0 32px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+.cd-adder-input::placeholder { color: var(--text-3); }
+.cd-adder-input:focus { border-color: rgba(224, 82, 82, 0.35); }
+
+.cd-dropdown {
+  position: absolute;
+  top: calc(100% - 4px);
+  left: 16px;
+  right: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  z-index: 50;
+  overflow: hidden;
+  animation: fadeUp 0.15s var(--ease-default) both;
+}
+
+.cd-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.cd-dropdown-item:hover { background: rgba(224, 82, 82, 0.07); color: var(--text); }
+.cd-dropdown-item svg   { color: var(--error); flex-shrink: 0; }
+
+.cd-dropdown-empty {
+  display: block;
+  padding: 10px 14px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.cd-member-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cd-empty-hint {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  font-style: italic;
+  padding: 16px 12px;
+}
+
+.cd-member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast);
+  animation: fadeUp 0.25s var(--ease-default) both;
+}
+.cd-member-row:hover { background: rgba(255,255,255,0.04); }
+
+.cd-member-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(224, 82, 82, 0.12);
+  border: 1px solid rgba(224, 82, 82, 0.2);
+  color: var(--error);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cd-lesson-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cd-member-name {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cd-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast), background var(--duration-fast), color var(--duration-fast);
+  flex-shrink: 0;
+}
+.cd-member-row:hover .cd-remove-btn { opacity: 1; }
+.cd-remove-btn:hover { background: rgba(224, 82, 82, 0.1); color: var(--error); }

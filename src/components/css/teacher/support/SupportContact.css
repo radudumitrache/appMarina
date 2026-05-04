@@ -1,0 +1,51 @@
+.ts-contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ts-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast);
+}
+
+.ts-contact-row:hover { background: var(--surface-2); }
+
+.ts-contact-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--gold);
+}
+
+.ts-contact-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ts-contact-label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ts-contact-value {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}

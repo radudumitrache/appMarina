@@ -1,0 +1,52 @@
+.lessons-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.lessons-title {
+  font-family: var(--font-ui);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.lessons-count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.view-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.view-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+.view-btn--active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}

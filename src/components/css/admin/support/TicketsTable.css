@@ -1,0 +1,140 @@
+.as-table-wrap {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+}
+
+.as-table-empty {
+  padding: 40px;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.as-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.as-table thead th {
+  padding: 11px 16px;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.as-row {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.as-row:last-child { border-bottom: none; }
+.as-row:hover { background: var(--surface-2); }
+.as-row--selected { background: rgba(224, 82, 82, 0.05); }
+.as-row--selected:hover { background: rgba(224, 82, 82, 0.08); }
+
+.as-row td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.as-ticket-id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.as-ticket-subject {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 260px;
+}
+
+.as-author {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.as-author-name {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.as-author-role {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.as-tag {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.as-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.as-status--open {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-rim);
+  color: var(--accent);
+}
+
+.as-status--pending {
+  background: var(--gold-dim);
+  border: 1px solid rgba(217, 160, 48, 0.25);
+  color: var(--gold);
+}
+
+.as-status--resolved {
+  background: rgba(46, 199, 122, 0.10);
+  border: 1px solid rgba(46, 199, 122, 0.22);
+  color: var(--success);
+}
+
+.as-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.as-reply-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+}

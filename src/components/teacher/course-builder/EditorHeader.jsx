@@ -1,3 +1,5 @@
+import '../../css/teacher/course-builder/EditorHeader.css'
+
 export default function EditorHeader({
   selected,
   onTitleChange,

@@ -1,0 +1,92 @@
+.lpe-add-wrap {
+  position: absolute;
+  bottom: 72px;
+  left: 20px;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  transition: opacity 0.18s ease;
+}
+
+.lpe-add-trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 16px 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(212,160,23,0.4);
+  background: rgba(6, 11, 20, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--gold, #d4a017);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.lpe-add-trigger:hover:not(:disabled) {
+  background: rgba(212,160,23,0.12);
+  border-color: rgba(212,160,23,0.65);
+}
+
+.lpe-add-trigger--open {
+  background: rgba(212,160,23,0.12);
+  border-color: rgba(212,160,23,0.65);
+}
+
+.lpe-add-trigger:disabled { opacity: 0.4; cursor: default; }
+
+.lpe-add-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(10, 16, 28, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  animation: lpe-fade-up 0.15s ease;
+}
+
+@keyframes lpe-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lpe-add-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.lpe-add-menu-item:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.lpe-add-menu-item--vr:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent-rim);
+  background: var(--accent-dim);
+}
+
+.lpe-add-menu-item:disabled { opacity: 0.4; cursor: default; }

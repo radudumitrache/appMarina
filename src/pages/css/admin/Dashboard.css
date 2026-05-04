@@ -16,7 +16,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center top;
-  opacity: 0.32;
+  opacity: 0.25;
 }
 
 .dashboard-overlay {
@@ -24,9 +24,9 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(8, 9, 15, 0.5) 0%,
-    rgba(8, 9, 15, 0.25) 50%,
-    rgba(8, 9, 15, 0.7) 100%
+    rgba(6, 11, 20, 0.5) 0%,
+    rgba(6, 11, 20, 0.25) 50%,
+    rgba(6, 11, 20, 0.7) 100%
   );
 }
 
@@ -38,48 +38,6 @@
   pointer-events: none;
 }
 
-/* ─── Top-left controls ──────────────────────────────────────────────────── */
-.dash-controls {
-  position: absolute;
-  top: 28px;
-  left: 28px;
-  z-index: 20;
-  display: flex;
-  gap: 8px;
-  padding: 6px;
-  background: rgba(8, 9, 15, 0.55);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  animation: fadeIn 0.5s var(--ease) both;
-  animation-delay: 0.35s;
-}
-
-.ctrl-btn {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.ctrl-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text);
-}
-
-.ctrl-btn--logout:hover {
-  color: #f87171;
-}
-
 /* ─── Role badge ─────────────────────────────────────────────────────────── */
 .dash-role-badge {
   position: absolute;
@@ -87,75 +45,34 @@
   right: 28px;
   z-index: 20;
   padding: 6px 14px;
-  background: rgba(8, 9, 15, 0.55);
+  background: rgba(6, 11, 20, 0.55);
   border: 1px solid var(--border);
   border-radius: 8px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   font-family: var(--font-ui);
   font-size: 12px;
-  color: var(--accent);
+  color: var(--error);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  animation: fadeIn 0.5s var(--ease) both;
-  animation-delay: 0.4s;
+  animation: fadeIn 0.5s var(--ease-default) 0.4s both;
 }
 
-/* ─── Main nav ───────────────────────────────────────────────────────────── */
-.dash-nav {
-  position: relative;
-  z-index: 10;
-  display: grid;
-  grid-template-columns: repeat(3, 200px);
-  grid-template-rows: repeat(2, 180px);
-  gap: 16px;
+/* ─── Light theme — keep dashboard in blue-glass family ──────────────────── */
+[data-theme="light"] .dashboard-page   { background: #0a1e3c; }
+[data-theme="light"] .dashboard-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(5, 18, 40, 0.45) 0%,
+    rgba(8, 28, 60, 0.18) 50%,
+    rgba(5, 18, 40, 0.60) 100%
+  );
 }
-
-.dash-nav > :nth-child(4) { grid-column: 1; }
-.dash-nav > :nth-child(5) { grid-column: 2; }
-
-/* ─── Button tile ────────────────────────────────────────────────────────── */
-.dash-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  background: rgba(8, 9, 15, 0.58);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, transform 0.2s var(--ease);
-  animation: fadeUp 0.45s var(--ease) both;
+[data-theme="light"] .dash-role-badge {
+  background: rgba(15, 45, 95, 0.65);
+  border-color: rgba(70, 130, 195, 0.28);
 }
-
-.dash-btn:hover {
-  background: rgba(45, 232, 208, 0.07);
-  border-color: rgba(45, 232, 208, 0.3);
-  transform: translateY(-3px);
-}
-
-.dash-btn:active {
-  transform: translateY(-1px);
-}
-
-.dash-btn-icon {
-  color: var(--accent);
-  opacity: 0.85;
-  display: flex;
-  transition: opacity 0.2s;
-}
-
-.dash-btn:hover .dash-btn-icon {
-  opacity: 1;
-}
-
-.dash-btn-label {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
-  letter-spacing: 0.01em;
+[data-theme="light"] .dash-controls {
+  background: rgba(15, 45, 95, 0.65);
+  border-color: rgba(70, 130, 195, 0.28);
 }

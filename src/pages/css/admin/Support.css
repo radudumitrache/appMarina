@@ -1,0 +1,112 @@
+/* ── Page shell ───────────────────────────────────────── */
+.as-page {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.as-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.as-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── Main area ────────────────────────────────────────── */
+.as-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 28px 40px;
+  gap: 16px;
+  animation: fadeUp var(--duration-enter) var(--ease-default) 0.05s both;
+}
+
+/* ── Toolbar ──────────────────────────────────────────── */
+.as-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.as-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.as-toolbar-title {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.as-toolbar-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+}
+
+.as-toolbar-alert {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--error);
+  background: rgba(224, 82, 82, 0.08);
+  border: 1px solid rgba(224, 82, 82, 0.22);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+}
+
+.as-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Search ───────────────────────────────────────────── */
+.as-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.as-search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.as-search {
+  height: 34px;
+  width: 220px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 12px 0 30px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--duration-fast), width var(--duration-default);
+}
+
+.as-search::placeholder { color: var(--text-3); }
+.as-search:focus { border-color: rgba(224, 82, 82, 0.35); width: 280px; }

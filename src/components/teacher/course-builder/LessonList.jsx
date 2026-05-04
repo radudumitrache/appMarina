@@ -1,4 +1,5 @@
 import { CAT_LABELS, CAT_COLORS, formatDuration } from './courseBuilderUtils'
+import '../../css/teacher/course-builder/LessonList.css'
 
 export default function LessonList({ selectedLessons, loadingDetail, onRemove, onMove, onNavigatePanels }) {
   if (loadingDetail) {

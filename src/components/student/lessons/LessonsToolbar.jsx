@@ -1,3 +1,4 @@
+import '../../css/student/lessons/LessonsToolbar.css'
 import FilterPanel from './FilterPanel'
 
 const VISIBILITY_OPTIONS = [

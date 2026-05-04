@@ -1,0 +1,229 @@
+.ts-active-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold);
+  background: var(--gold-dim);
+  border: 1px solid rgba(217, 160, 48, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+
+.ts-filter {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 2px;
+}
+
+.ts-filter-btn {
+  padding: 4px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.ts-filter-btn:hover { color: var(--text); }
+
+.ts-filter-btn--active {
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+.ts-ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ts-ticket-row {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+  transition: border-color var(--duration-fast);
+  overflow: hidden;
+}
+
+.ts-ticket-row:hover { border-color: var(--border-hover); }
+.ts-ticket-row--expanded { border-color: var(--border-hover); }
+
+.ts-ticket-summary {
+  all: unset;
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.ts-ticket-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ts-ticket-id {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+}
+
+.ts-ticket-subject {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ts-ticket-status {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ts-status--open     { background: var(--gold-dim);               border: 1px solid rgba(217,160,48,0.25);   color: var(--gold);    }
+.ts-status--pending  { background: rgba(74,159,212,0.10);          border: 1px solid rgba(74,159,212,0.25);   color: #4a9fd4;        }
+.ts-status--resolved { background: rgba(46,199,122,0.10);          border: 1px solid rgba(46,199,122,0.22);   color: var(--success); }
+
+.ts-ticket-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ts-ticket-cat,
+.ts-ticket-date,
+.ts-ticket-reply {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.ts-ticket-sep {
+  font-size: 10px;
+  color: var(--text-3);
+  opacity: 0.4;
+}
+
+.ts-ticket-chevron {
+  flex-shrink: 0;
+  color: var(--text-3);
+  transition: transform var(--duration-fast);
+}
+
+.ts-ticket-chevron--open { transform: rotate(180deg); }
+
+.ts-ticket-detail {
+  border-top: 1px solid var(--border);
+  padding: 14px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--surface-1);
+}
+
+.ts-ticket-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ts-ticket-detail-label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ts-ticket-detail-body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+
+.ts-ticket-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ts-ticket-comment {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ts-ticket-comment-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ts-ticket-comment-author {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.ts-ticket-comment-date {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.ts-ticket-comment-body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.ts-ticket-no-replies {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.ts-empty {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  padding: 8px 0;
+}

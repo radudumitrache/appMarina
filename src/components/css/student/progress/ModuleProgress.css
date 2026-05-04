@@ -1,0 +1,64 @@
+.module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.module-row {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.module-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.module-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.module-row-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.module-hours {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.module-fraction {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+  min-width: 28px;
+  text-align: right;
+}
+
+.module-bar-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.module-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s var(--ease-default);
+}
+
+.module-bar-fill--complete { background: var(--success); }
+.module-bar-fill--progress { background: var(--accent); }
+.module-bar-fill--none     { background: transparent; }

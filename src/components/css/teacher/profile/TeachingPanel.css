@@ -1,0 +1,45 @@
+.tp-snapshot {
+  display: flex;
+  align-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.tp-snapshot-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 12px;
+}
+
+.tp-snapshot-value {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.tp-snapshot-suffix {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.tp-snapshot-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.tp-snapshot-sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border);
+}

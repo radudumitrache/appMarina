@@ -1,0 +1,74 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: fadeIn 0.15s var(--ease-default) both;
+}
+
+.modal {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 440px;
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.22s var(--ease-default) both;
+  overflow: hidden;
+}
+.modal--sm { width: 380px; }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal-body { padding: 20px 24px; }
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.confirm-text {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.confirm-name { color: var(--text); font-weight: 600; }
+
+.btn-danger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  background: rgba(224, 82, 82, 0.15);
+  border: 1px solid rgba(224, 82, 82, 0.3);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--error);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.btn-danger:hover { background: rgba(224, 82, 82, 0.25); }

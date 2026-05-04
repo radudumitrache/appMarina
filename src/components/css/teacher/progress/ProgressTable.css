@@ -1,0 +1,187 @@
+.tp-table-wrap {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeUp var(--duration-enter) var(--ease-default) 0.12s both;
+}
+
+.tp-table-head {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.tp-table-head .tp-col {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.tp-col--student  { flex: 2;   min-width: 0; }
+.tp-col--class    { flex: 1.5; min-width: 0; }
+.tp-col--progress { flex: 1.5; min-width: 120px; }
+.tp-col--lessons  { width: 72px;  flex-shrink: 0; }
+.tp-col--score    { width: 84px;  flex-shrink: 0; }
+.tp-col--last     { width: 96px;  flex-shrink: 0; }
+.tp-col--status   { width: 90px;  flex-shrink: 0; }
+
+.tp-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+  transition: background var(--duration-fast);
+}
+
+.tp-row:last-child { border-bottom: none; }
+.tp-row:hover { background: var(--surface-2); }
+
+.tp-row--risk { border-left: 2px solid rgba(224, 82, 82, 0.4); }
+
+.tp-student-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.tp-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.tp-avatar--on-track { background: var(--gold-dim);             color: var(--gold);    border: 1px solid rgba(217,160,48,0.2); }
+.tp-avatar--complete { background: rgba(46,199,122,0.10);       color: var(--success); border: 1px solid rgba(46,199,122,0.2); }
+.tp-avatar--at-risk  { background: rgba(224,82,82,0.10);        color: var(--error);   border: 1px solid rgba(224,82,82,0.2);  }
+
+.tp-student-name {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tp-class-name {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tp-progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tp-bar-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.tp-bar-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 99px;
+  transition: width 0.6s var(--ease-default);
+  transition-delay: 0.1s;
+}
+
+.tp-bar-fill--complete { background: var(--success); }
+
+.tp-pct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+  width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.tp-mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.tp-muted { color: var(--text-3); }
+
+.tp-score {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.score--pass { color: var(--success); }
+.score--good { color: var(--gold); }
+.score--warn { color: #d97c30; }
+.score--fail { color: var(--error); }
+.score--none { color: var(--text-3); }
+
+.tp-badge {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.badge--risk     { background: rgba(224,82,82,0.10);  color: var(--error);   border: 1px solid rgba(224,82,82,0.22);  }
+.badge--on-track { background: var(--gold-dim);        color: var(--gold);    border: 1px solid rgba(217,160,48,0.22); }
+.badge--complete { background: rgba(46,199,122,0.10);  color: var(--success); border: 1px solid rgba(46,199,122,0.22); }
+
+.tp-table-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.tp-footer-count {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.tp-footer-num {
+  font-family: var(--font-mono);
+  color: var(--text-2);
+}
+
+.tp-empty {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-3);
+  padding: 48px 20px;
+  text-align: center;
+}

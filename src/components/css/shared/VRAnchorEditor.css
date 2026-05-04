@@ -262,3 +262,45 @@
   background: rgba(224, 82, 82, 0.2);
   border-color: rgba(224, 82, 82, 0.45);
 }
+
+/* ─── Light theme ────────────────────────────────────────────────────────── */
+[data-theme="light"] .vr-ae {
+  background: rgba(242, 247, 252, 0.94);
+  border-left-color: rgba(158, 110, 16, 0.25);
+}
+[data-theme="light"] .vr-ae-header {
+  border-bottom-color: var(--border);
+}
+[data-theme="light"] .vr-ae-close {
+  border-color: var(--border);
+  color: var(--text-3);
+}
+[data-theme="light"] .vr-ae-close:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text-2);
+}
+[data-theme="light"] .vr-ae-input,
+[data-theme="light"] .vr-ae-textarea,
+[data-theme="light"] .vr-ae-select {
+  background: var(--surface-3);
+  border-color: var(--border);
+  color: var(--text);
+}
+[data-theme="light"] .vr-ae-input:focus,
+[data-theme="light"] .vr-ae-textarea:focus,
+[data-theme="light"] .vr-ae-select:focus {
+  background: var(--surface-2);
+  border-color: rgba(158, 110, 16, 0.5);
+}
+[data-theme="light"] .vr-ae-type-tab {
+  border-color: var(--border);
+  color: var(--text-3);
+}
+[data-theme="light"] .vr-ae-type-tab:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+[data-theme="light"] .vr-ae-btn--save {
+  color: #0d1b2c;
+}

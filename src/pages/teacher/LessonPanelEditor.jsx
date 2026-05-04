@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { usePanelEditor }  from '../../components/teacher/lesson-panel-editor/usePanelEditor'
+import { usePlacement }    from '../../components/teacher/lesson-panel-editor/usePlacement'
 import PanelPreview        from '../../components/teacher/lesson-panel-editor/PanelPreview'
 import AnchorContextMenu   from '../../components/teacher/lesson-panel-editor/AnchorContextMenu'
 import TopBar              from '../../components/teacher/lesson-panel-editor/TopBar'
@@ -9,6 +10,7 @@ import AddPanelMenu        from '../../components/teacher/lesson-panel-editor/Ad
 import PanelStrip          from '../../components/teacher/lesson-panel-editor/PanelStrip'
 import DeleteDialog        from '../../components/teacher/lesson-panel-editor/DeleteDialog'
 import EditDrawer          from '../../components/teacher/lesson-panel-editor/EditDrawer'
+import PlacementHint       from '../../components/teacher/lesson-panel-editor/PlacementHint'
 import '../css/teacher/LessonPanelEditor.css'
 
 export default function LessonPanelEditor() {
@@ -33,61 +35,50 @@ export default function LessonPanelEditor() {
     handleQuickDeleteAnchor,
   } = usePanelEditor(id, state?.lesson)
 
-  const [anchorMenu,         setAnchorMenu]         = useState(null)  // { anchor, anchorType, x, y }
-  const [focusAnchor,        setFocusAnchor]        = useState(null)  // { anchor, type, ts }
-  const [placementMode,      setPlacementMode]      = useState(null)  // 'text'|'nav'|'poly'|'poly_pt'|'poly_pt_move'|null
-  const [placementContext,   setPlacementContext]   = useState(null)  // extra data for poly_pt modes
-  const [newAnchorPlacement, setNewAnchorPlacement] = useState(null)  // { type, x, y, z, ts }
-  const [polyPoints,         setPolyPoints]         = useState([])    // in-progress polygon vertices
-  const [newPolyPlacement,   setNewPolyPlacement]   = useState(null)  // completed polygon for AnchorSection
-  const [newPolyPoint,       setNewPolyPoint]       = useState(null)  // single point for poly_pt / poly_pt_move
-  const [activePolyPoints,   setActivePolyPoints]   = useState([])   // edit-mode hotspots for open polygon
+  const editorRef                     = useRef(null)
+  const [liveBody,    setLiveBody]    = useState(null)
+  const [showHtml,    setShowHtml]    = useState(false)
+  const [activeTags,  setActiveTags]  = useState([])
 
-  function handleSceneClick(lon, lat) {
-    if (!placementMode) return
-    const lonR = lon * Math.PI / 180
-    const latR = lat * Math.PI / 180
-    const r = 500
-    const x = parseFloat((r * Math.cos(latR) * Math.cos(lonR)).toFixed(2))
-    const y = parseFloat((r * Math.sin(latR)).toFixed(2))
-    const z = parseFloat((r * Math.cos(latR) * Math.sin(lonR)).toFixed(2))
-
-    if (placementMode === 'poly') {
-      setPolyPoints(prev => [...prev, { lon, lat, x, y, z, order: prev.length }])
-      return  // stay in poly placement mode for more clicks
+  const handleToggleHtml = () => {
+    const el = editorRef.current
+    if (!showHtml) {
+      if (el) el.contentEditable = 'false'
+      setShowHtml(true)
+    } else {
+      if (el) {
+        el.innerHTML       = liveBody ?? panel?.text_content?.body ?? ''
+        el.contentEditable = 'true'
+      }
+      setShowHtml(false)
     }
-
-    if (placementMode === 'poly_pt' || placementMode === 'poly_pt_move') {
-      setNewPolyPoint({ lon, lat, x, y, z, ...placementContext, ts: Date.now() })
-      setPlacementMode(null)
-      setPlacementContext(null)
-      return
-    }
-
-    setNewAnchorPlacement({ type: placementMode, lon, lat, x, y, z, ts: Date.now() })
-    setPlacementMode(null)
   }
 
-  function handleEnterPlacement(type, context = null) {
-    setPlacementMode(type)
-    setPlacementContext(context)
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false)
+    setLiveBody(null)
+    setShowHtml(false)
+    setActiveTags([])
+    if (editorRef.current) editorRef.current.contentEditable = 'true'
   }
 
-  function handleFinishPolygon() {
-    if (polyPoints.length < 3) return
-    if (!drawerOpen) setDrawerOpen(true)
-    setNewPolyPlacement({ points: polyPoints, ts: Date.now() })
-    setPolyPoints([])
-    setPlacementMode(null)
-  }
+  const {
+    anchorMenu, setAnchorMenu,
+    focusAnchor,
+    placementMode,
+    newAnchorPlacement, setNewAnchorPlacement,
+    polyPoints, setPolyPoints,
+    newPolyPlacement, setNewPolyPlacement,
+    newPolyPoint, setNewPolyPoint,
+    activePolyPoints, setActivePolyPoints,
+    handleSceneClick,
+    handleEnterPlacement,
+    handleFinishPolygon,
+    handleCancelPolyPlacement,
+    handleCancelPlacement,
+    handleAnchorEdit,
+  } = usePlacement(setDrawerOpen)
 
-  function handleCancelPolyPlacement() {
-    setPolyPoints([])
-    setPlacementMode(null)
-    setPlacementContext(null)
-  }
-
-  /* ── Loading / error gates ────────────────────────────────────────────── */
   if (loading) {
     return <div className="lpe-page"><div className="lpe-loading"><div className="lpe-spinner" /></div></div>
   }
@@ -102,6 +93,7 @@ export default function LessonPanelEditor() {
       </div>
     )
   }
+
   return (
     <div
       className={`lpe-page${activeTextAnchor ? ' lpe-page--panel-open' : ''}`}
@@ -113,6 +105,11 @@ export default function LessonPanelEditor() {
         <PanelPreview
           panel={panel}
           editMode={drawerOpen}
+          showHtml={showHtml}
+          liveBody={liveBody}
+          editorRef={editorRef}
+          onBodyChange={setLiveBody}
+          onTagsChange={setActiveTags}
           placementMode={placementMode}
           onSceneClick={handleSceneClick}
           pendingPlacement={newAnchorPlacement}
@@ -154,19 +151,20 @@ export default function LessonPanelEditor() {
       />
 
       {panels.length > 0 && (
-        <PanelStrip
-          panels={panels}
-          panelIdx={panelIdx}
-          onSelect={setPanelIdx}
-        />
+        <PanelStrip panels={panels} panelIdx={panelIdx} onSelect={setPanelIdx} />
       )}
 
       {drawerOpen && panel && (
         <EditDrawer
           key={panel.id}
           panel={panel}
+          editorRef={editorRef}
+          liveBody={liveBody}
+          showHtml={showHtml}
+          onToggleHtml={handleToggleHtml}
+          activeTags={activeTags}
           onSave={handleSavePanel}
-          onClose={() => setDrawerOpen(false)}
+          onClose={handleCloseDrawer}
           saving={saving}
           lessonId={id}
           onAnchorsChange={handleAnchorsChange}
@@ -178,45 +176,19 @@ export default function LessonPanelEditor() {
           onNewPolySaved={() => setNewPolyPlacement(null)}
           newPolyPoint={newPolyPoint}
           onNewPolyPointSaved={() => setNewPolyPoint(null)}
-          onActivePolyPointsChange={pts => setActivePolyPoints(pts ?? [])}
+          onActivePolyPointsChange={pts => setActivePolyPoints(pts ?? null)}
         />
       )}
 
       {placementMode && (
-        <div className="lpe-placement-hint">
-          {placementMode === 'poly' ? (
-            <>
-              <span>
-                {polyPoints.length === 0
-                  ? 'Click on the scene to place polygon vertices'
-                  : `${polyPoints.length} ${polyPoints.length === 1 ? 'vertex' : 'vertices'} — click to add more`}
-              </span>
-              {polyPoints.length > 0 && (
-                <button className="lpe-placement-undo" onClick={() => setPolyPoints(prev => prev.slice(0, -1))}>
-                  Undo
-                </button>
-              )}
-              <button
-                className="lpe-placement-finish"
-                onClick={handleFinishPolygon}
-                disabled={polyPoints.length < 3}
-              >
-                Finish{polyPoints.length >= 3 ? ` (${polyPoints.length})` : ''}
-              </button>
-              <button className="lpe-placement-cancel" onClick={handleCancelPolyPlacement}>Cancel</button>
-            </>
-          ) : (
-            <>
-              <span>Click on the scene to place the {
-                placementMode === 'text'         ? 'text anchor' :
-                placementMode === 'nav'          ? 'navigator anchor' :
-                placementMode === 'poly_pt'      ? 'new point' :
-                placementMode === 'poly_pt_move' ? 'point (new position)' : 'anchor'
-              }</span>
-              <button className="lpe-placement-cancel" onClick={() => { setPlacementMode(null); setPlacementContext(null) }}>Cancel</button>
-            </>
-          )}
-        </div>
+        <PlacementHint
+          placementMode={placementMode}
+          polyPoints={polyPoints}
+          onUndo={() => setPolyPoints(prev => prev.slice(0, -1))}
+          onFinish={handleFinishPolygon}
+          onCancelPoly={handleCancelPolyPlacement}
+          onCancelSimple={handleCancelPlacement}
+        />
       )}
 
       {anchorMenu && (
@@ -225,12 +197,7 @@ export default function LessonPanelEditor() {
           anchorType={anchorMenu.anchorType}
           x={anchorMenu.x}
           y={anchorMenu.y}
-          onEdit={() => {
-            const { anchor, anchorType } = anchorMenu
-            setAnchorMenu(null)
-            setDrawerOpen(true)
-            setFocusAnchor({ anchor, type: anchorType, ts: Date.now() })
-          }}
+          onEdit={handleAnchorEdit}
           onDelete={() => { handleQuickDeleteAnchor(anchorMenu.anchorType, anchorMenu.anchor.id); setAnchorMenu(null) }}
           onClose={() => setAnchorMenu(null)}
         />

@@ -1,4 +1,5 @@
 import { totalDuration } from './courseBuilderUtils'
+import '../../css/teacher/course-builder/SummaryBar.css'
 
 export default function SummaryBar({ selectedLessons }) {
   const uniqueCategories = [...new Set(selectedLessons.map(l => l.category).filter(Boolean))].length

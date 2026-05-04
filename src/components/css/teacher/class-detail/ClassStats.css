@@ -1,0 +1,50 @@
+.cd-stats {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+  animation: fadeUp var(--duration-enter) var(--ease-default) 0.03s both;
+}
+
+.cd-stat-card {
+  flex: 1;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cd-stat-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.cd-stat-value {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.cd-stat-sub {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.cd-stat-subject {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-top: 4px;
+}

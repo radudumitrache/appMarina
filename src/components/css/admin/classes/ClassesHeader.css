@@ -1,0 +1,96 @@
+.classes-adm-header {
+  height: 68px;
+  flex-shrink: 0;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  animation: fadeIn 0.3s var(--ease-default) 0.05s both;
+}
+
+.classes-adm-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.classes-adm-title {
+  font-family: var(--font-ui);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.classes-adm-count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.classes-adm-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-wrap-inline {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.classes-adm-header .search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.search-input-inline {
+  width: 240px;
+  height: 34px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 12px 0 34px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--duration-fast), width var(--duration-default);
+}
+.search-input-inline::placeholder { color: var(--text-3); }
+.search-input-inline:focus { border-color: rgba(224, 82, 82, 0.35); }
+
+.classes-status-filter {
+  display: flex;
+  align-items: center;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 2px;
+}
+
+.status-filter-btn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.status-filter-btn:hover { color: var(--text); }
+.status-filter-btn--active {
+  background: rgba(224, 82, 82, 0.12);
+  color: var(--error);
+}

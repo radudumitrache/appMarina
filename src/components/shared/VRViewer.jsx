@@ -149,16 +149,10 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     let lon = 0, lat = 0
     let isDragging = false, lastX = 0, lastY = 0
     let mouseDownX = 0, mouseDownY = 0
-    let autoRotate = true
-    let autoRotateTimeout = null
+    let autoRotate = false
 
     // Expose autoRotate control so the editMode effect can freeze it
     stateRef.current.setAutoRotate = (v) => { autoRotate = v }
-
-    const scheduleAutoRotate = () => {
-      clearTimeout(autoRotateTimeout)
-      autoRotateTimeout = setTimeout(() => { autoRotate = true }, 3000)
-    }
 
     // Mouse
     const onMouseDown = (e) => {
@@ -193,7 +187,6 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       const dy = e.clientY - mouseDownY
       const wasDrag = Math.sqrt(dx * dx + dy * dy) > 5
       isDragging = false
-      if (!editModeRef.current) scheduleAutoRotate()
 
       if (!wasDrag && !e.target.closest('.vr-hotspot')) {
         if (editModeRef.current && onSceneClickRef.current) {
@@ -216,7 +209,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
           const hovId = hitPolygon(e.clientX, e.clientY)
           if (hovId != null) {
             const pa = polyAnchorsRef.current.find(p => p.id === hovId)
-            if (pa?.onClick) pa.onClick(pa)
+            if (pa?.onClick) pa.onClick(pa, e.clientX, e.clientY)
           }
         }
       }
@@ -247,7 +240,6 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       const dy = t.clientY - mouseDownY
       const wasDrag = Math.sqrt(dx * dx + dy * dy) > 10
       isDragging = false
-      if (!editModeRef.current) scheduleAutoRotate()
 
       if (!wasDrag && !e.target.closest('.vr-hotspot')) {
         if (editModeRef.current && onSceneClickRef.current) {
@@ -269,7 +261,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
           const hovId = hitPolygon(t.clientX, t.clientY)
           if (hovId != null) {
             const pa = polyAnchorsRef.current.find(p => p.id === hovId)
-            if (pa?.onClick) pa.onClick(pa)
+            if (pa?.onClick) pa.onClick(pa, t.clientX, t.clientY)
           }
         }
       }
@@ -358,7 +350,6 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
 
     return () => {
       cancelAnimationFrame(animId)
-      clearTimeout(autoRotateTimeout)
       ro.disconnect()
       container.removeEventListener('mousedown',  onMouseDown)
       window.removeEventListener('mousemove',     onMouseMove)

@@ -1,0 +1,265 @@
+/* Modal shell — shared with DeleteConfirmModal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: fadeIn 0.15s var(--ease-default) both;
+}
+
+.modal {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 440px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.22s var(--ease-default) both;
+  overflow: hidden;
+}
+.modal--wide { width: 680px; }
+.modal--sm   { width: 380px; }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+.modal-body {
+  flex: 1;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.modal-body--scroll { overflow-y: auto; }
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* Buttons */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  background: var(--error);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bg);
+  cursor: pointer;
+  transition: opacity var(--duration-fast), transform var(--duration-fast);
+}
+.btn-primary:hover    { opacity: 0.88; }
+.btn-primary:active   { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color var(--duration-fast), color var(--duration-fast);
+}
+.btn-ghost:hover { border-color: var(--border-hover); color: var(--text-2); }
+
+.btn-danger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  background: rgba(224, 82, 82, 0.15);
+  border: 1px solid rgba(224, 82, 82, 0.3);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--error);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.btn-danger:hover { background: rgba(224, 82, 82, 0.25); }
+
+/* Form */
+.form-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.03em;
+}
+
+.form-input,
+.form-select {
+  height: 36px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--duration-fast);
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-input::placeholder { color: var(--text-3); }
+.form-input:focus,
+.form-select:focus { border-color: rgba(224, 82, 82, 0.4); }
+
+.form-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b83a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+.form-select option { background: var(--surface-2); color: var(--text); }
+
+.form-radio-group {
+  display: flex;
+  gap: 8px;
+}
+
+.form-radio {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  transition: border-color var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+  user-select: none;
+}
+.form-radio input { display: none; }
+.form-radio:hover { border-color: var(--border-hover); color: var(--text); }
+.form-radio--active {
+  border-color: rgba(224, 82, 82, 0.4);
+  background: rgba(224, 82, 82, 0.08);
+  color: var(--error);
+}
+
+/* Checklist */
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--duration-fast);
+}
+.checklist-item input { display: none; }
+.checklist-item:hover           { background: rgba(255,255,255,0.05); }
+.checklist-item--checked        { background: rgba(224, 82, 82, 0.06); }
+
+.checklist-check {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border-hover);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+  color: var(--bg);
+}
+.checklist-item--checked .checklist-check {
+  background: var(--error);
+  border-color: var(--error);
+}
+
+.checklist-label { font-family: var(--font-ui); font-size: 13px; color: var(--text-2); }
+.checklist-item--checked .checklist-label { color: var(--text); }
+
+/* Delete confirm */
+.confirm-text {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.confirm-name { color: var(--text); font-weight: 600; }

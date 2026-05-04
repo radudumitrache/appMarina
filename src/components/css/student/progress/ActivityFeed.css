@@ -1,0 +1,72 @@
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activity-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast);
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.activity-row:hover { background: var(--surface-2); }
+
+.activity-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.activity-icon--lesson {
+  background: var(--accent-dim);
+  border-color: var(--accent-rim);
+  color: var(--accent);
+}
+
+.activity-icon--test {
+  background: rgba(46, 199, 122, 0.10);
+  border-color: rgba(46, 199, 122, 0.22);
+  color: var(--success);
+}
+
+.activity-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activity-text {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-sub {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.activity-date {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}

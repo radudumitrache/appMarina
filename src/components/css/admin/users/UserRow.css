@@ -1,0 +1,128 @@
+.users-table-wrap {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.users-table th {
+  padding: 0 16px 10px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.users-table td {
+  padding: 12px 16px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  border-bottom: 1px solid rgba(37, 53, 80, 0.5);
+  vertical-align: middle;
+}
+
+.user-row {
+  animation: fadeUp 0.3s var(--ease-default) both;
+  transition: background var(--duration-fast);
+}
+
+.user-row:hover { background: rgba(255,255,255,0.02); }
+.user-row:last-child td { border-bottom: none; }
+
+.user-name  { font-weight: 500 !important; color: var(--text) !important; }
+
+.user-email {
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  color: var(--text-3) !important;
+  letter-spacing: 0.01em;
+}
+
+.user-class {
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  letter-spacing: 0.02em;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.role-badge--student { color: var(--accent); background: var(--accent-dim); }
+.role-badge--teacher { color: var(--gold);   background: var(--gold-dim);   }
+
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+
+.status-dot--active   { background: var(--success); }
+.status-dot--inactive { background: var(--text-3);  }
+
+.status-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  text-transform: capitalize;
+}
+
+.user-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.user-row:hover .user-row-actions { opacity: 1; }
+
+.row-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.row-btn:hover         { background: rgba(255,255,255,0.06); color: var(--text);    }
+.row-btn--warn:hover   { color: var(--gold);    }
+.row-btn--ok:hover     { color: var(--success); }
+.row-btn--delete:hover { color: var(--error);   }
+
+.users-empty {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-3);
+  padding: 40px 16px;
+  text-align: center;
+}

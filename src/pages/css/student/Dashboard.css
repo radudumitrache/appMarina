@@ -214,3 +214,39 @@
 .nav-tile:hover .nav-tile-label {
   color: var(--text);
 }
+
+/* ─── Light theme — keep dashboard in blue-glass family ──────────────────── */
+[data-theme="light"] .dashboard-page   { background: #0a1e3c; }
+[data-theme="light"] .dashboard-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(5, 18, 40, 0.45) 0%,
+    rgba(8, 28, 60, 0.15) 50%,
+    rgba(5, 18, 40, 0.62) 100%
+  );
+}
+[data-theme="light"] .dash-role-badge {
+  background: rgba(15, 45, 95, 0.68);
+  border-color: rgba(70, 130, 195, 0.28);
+}
+[data-theme="light"] .dash-controls {
+  background: rgba(15, 45, 95, 0.68);
+  border-color: rgba(70, 130, 195, 0.28);
+}
+[data-theme="light"] .ctrl-btn         { color: rgba(180, 215, 240, 0.75); }
+[data-theme="light"] .ctrl-btn:hover   { color: #e4edf6; background: rgba(255, 255, 255, 0.07); }
+[data-theme="light"] .ctrl-divider     { background: rgba(70, 130, 195, 0.28); }
+[data-theme="light"] .dash-wordmark    { color: #c8ddf0; }
+[data-theme="light"] .dash-greeting    { color: rgba(160, 205, 235, 0.65); }
+[data-theme="light"] .dash-username    { color: rgba(180, 215, 240, 0.85); }
+[data-theme="light"] .dash-brand-divider { background: rgba(70, 130, 195, 0.28); }
+[data-theme="light"] .nav-tile {
+  background: rgba(15, 45, 95, 0.62);
+  border-color: rgba(70, 130, 195, 0.25);
+}
+[data-theme="light"] .nav-tile:hover {
+  background: rgba(11, 189, 164, 0.14);
+  border-color: rgba(11, 189, 164, 0.32);
+}
+[data-theme="light"] .nav-tile-label         { color: rgba(190, 220, 245, 0.80); }
+[data-theme="light"] .nav-tile:hover .nav-tile-label { color: #e4edf6; }
