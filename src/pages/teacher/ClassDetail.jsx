@@ -8,10 +8,12 @@ import StudentList from '../../components/teacher/class-detail/StudentList'
 import LessonsCoursesTab from '../../components/teacher/class-detail/LessonsCoursesTab'
 import TestList from '../../components/teacher/class-detail/TestList'
 import AnnouncementsTab from '../../components/teacher/class-detail/AnnouncementsTab'
-import CreateLessonModal from '../../components/teacher/class-detail/CreateLessonModal'
+// import CreateLessonModal from '../../components/teacher/class-detail/CreateLessonModal'
 import CreateTestModal from '../../components/teacher/class-detail/CreateTestModal'
-import { getClass, getClassStudents, getClassLessons, getAnnouncements } from '../../api/classes'
-import { createLesson } from '../../api/lessons'
+import ClassFormModal from '../../components/teacher/classes/ClassFormModal'
+import DeleteConfirmModal from '../../components/admin/classes/DeleteConfirmModal'
+import { getClass, getClassStudents, getClassLessons, getAnnouncements, updateClass, deleteClass } from '../../api/classes'
+// import { createLesson } from '../../api/lessons'
 import { getTests } from '../../api/tests'
 import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/ClassDetail.css'
@@ -28,8 +30,13 @@ export default function ClassDetail() {
   const [tab, setTab]               = useState('students')
   const [search, setSearch]         = useState('')
 
-  const [showLessonModal, setShowLessonModal] = useState(false)
+  // const [showLessonModal, setShowLessonModal] = useState(false)
   const [showTestModal,   setShowTestModal]   = useState(false)
+  const [showEditModal,   setShowEditModal]   = useState(false)
+  const [editForm,        setEditForm]        = useState({})
+  const [editErrors,      setEditErrors]      = useState({})
+  const [editSaving,      setEditSaving]      = useState(false)
+  const [deleteTarget,    setDeleteTarget]    = useState(null)
 
   useEffect(() => {
     Promise.all([
@@ -117,18 +124,49 @@ export default function ClassDetail() {
 
   function handleTabChange(next) { setTab(next); setSearch('') }
 
-  // Called when a new lesson is created and assigned via CreateLessonModal
-  function handleLessonCreated(classLesson, lesson) {
-    const num = lessons.length + 1
-    setLessons(prev => [...prev, {
-      id:        lesson.id,
-      num:       String(num).padStart(2, '0'),
-      title:     lesson.title,
-      cat:       lesson.category ?? '—',
-      duration:  lesson.duration_minutes ? `${lesson.duration_minutes} min` : '—',
-      completed: 0,
-      total:     totalStudents,
-    }])
+  function openEdit() {
+    setEditForm({
+      name: cls.name, code: cls.code, subject: cls.subject ?? '',
+      semester: cls.semester ?? '', start_date: cls.start_date ?? '',
+      end_date: cls.end_date ?? '', status: cls.status ?? 'active',
+    })
+    setEditErrors({})
+    setShowEditModal(true)
+  }
+
+  async function handleEditSave() {
+    const errs = {}
+    if (!editForm.name?.trim())     errs.name       = 'Class name is required.'
+    if (!editForm.code?.trim())     errs.code       = 'Class code is required.'
+    if (!editForm.subject?.trim())  errs.subject    = 'Subject is required.'
+    if (!editForm.semester?.trim()) errs.semester   = 'Semester is required.'
+    if (!editForm.start_date)       errs.start_date = 'Start date is required.'
+    if (!editForm.end_date)         errs.end_date   = 'End date is required.'
+    if (Object.keys(errs).length) { setEditErrors(errs); return }
+    setEditSaving(true)
+    setEditErrors({})
+    try {
+      const { data } = await updateClass(id, editForm)
+      setCls(data)
+      setShowEditModal(false)
+    } catch (err) {
+      const d = err?.response?.data
+      if (d && typeof d === 'object' && !Array.isArray(d)) {
+        setEditErrors(Object.fromEntries(Object.entries(d).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])))
+      } else {
+        setEditErrors({ non_field_errors: 'Something went wrong. Please try again.' })
+      }
+    } finally {
+      setEditSaving(false)
+    }
+  }
+
+  async function handleDelete() {
+    try {
+      await deleteClass(id)
+      window.location.href = '/teacher/classes'
+    } catch {}
+    setDeleteTarget(null)
   }
 
   // Called when a lesson's metadata is updated inline in LessonsCoursesTab
@@ -166,7 +204,11 @@ export default function ClassDetail() {
     <div className="cd-page">
       <div className="cd-layout">
         <NavBar />
-        <ClassHeader name={cls.name} code={cls.code} status={cls.status} />
+        <ClassHeader
+          name={cls.name} code={cls.code} status={cls.status}
+          onEdit={openEdit}
+          onDelete={() => setDeleteTarget(cls)}
+        />
 
         <div className="cd-content">
           <ClassStats
@@ -194,7 +236,6 @@ export default function ClassDetail() {
               <LessonsCoursesTab
                 classId={id}
                 classLessons={lessons}
-                onNewLesson={() => setShowLessonModal(true)}
                 onClassLessonUpdate={handleClassLessonUpdate}
               />
             )}
@@ -213,18 +254,32 @@ export default function ClassDetail() {
       </div>
     </div>
 
-    {showLessonModal && (
-      <CreateLessonModal
-        classId={id}
-        onClose={() => setShowLessonModal(false)}
-        onCreated={handleLessonCreated}
-      />
-    )}
     {showTestModal && (
       <CreateTestModal
         classId={id}
         onClose={() => setShowTestModal(false)}
         onCreated={handleTestCreated}
+      />
+    )}
+    {showEditModal && (
+      <ClassFormModal
+        mode="edit"
+        form={editForm}
+        errors={editErrors}
+        saving={editSaving}
+        onChange={(field, value) => {
+          setEditForm(f => ({ ...f, [field]: value }))
+          setEditErrors(e => { const n = { ...e }; delete n[field]; return n })
+        }}
+        onClose={() => setShowEditModal(false)}
+        onSave={handleEditSave}
+      />
+    )}
+    {deleteTarget && (
+      <DeleteConfirmModal
+        target={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
       />
     )}
     </>

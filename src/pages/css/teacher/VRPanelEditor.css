@@ -32,7 +32,17 @@
 
 .vrpe-no-scene-title {
   font-size: 15px;
+  font-weight: 600;
   color: var(--text-2);
+}
+
+.vrpe-no-scene-hint {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
 }
 
 .vrpe-no-scene-btn {

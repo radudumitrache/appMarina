@@ -1,8 +1,13 @@
+.announcements-panel {
+  max-height: min(600px, calc(100vh - 320px));
+}
+
 .announcements-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 420px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding-right: 2px;
 }
@@ -103,6 +108,8 @@
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+  max-height: 260px;
+  overflow-y: auto;
 }
 
 .announcement-footer {

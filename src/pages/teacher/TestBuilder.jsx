@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import NavBar          from '../../components/teacher/NavBar'
 import TestSidebar     from '../../components/teacher/test-builder/TestSidebar'
 import TestEditorMain  from '../../components/teacher/test-builder/TestEditorMain'
@@ -10,9 +11,13 @@ import { getClasses } from '../../api/classes'
 import '../css/teacher/TestBuilder.css'
 
 export default function TestBuilder() {
+  const [searchParams] = useSearchParams()
   const [tests,      setTests]      = useState([])
   const [classes,    setClasses]    = useState([])
-  const [selectedId, setSelectedId] = useState(null)
+  const [selectedId, setSelectedId] = useState(() => {
+    const p = searchParams.get('test')
+    return p ? Number(p) : null
+  })
   const [testDetail, setTestDetail] = useState(null)
   const [loading,    setLoading]    = useState(true)
   const [saving,     setSaving]     = useState(false)

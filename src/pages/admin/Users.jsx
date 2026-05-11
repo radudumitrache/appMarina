@@ -2,11 +2,10 @@ import { useState, useEffect } from 'react'
 import NavBar from '../../components/admin/NavBar'
 import UsersSidebar from '../../components/admin/users/UsersSidebar'
 import UsersToolbar from '../../components/admin/users/UsersToolbar'
-import UserRow from '../../components/admin/users/UserRow'
 import UserFormModal from '../../components/admin/users/UserFormModal'
 import CsvImportModal from '../../components/admin/users/CsvImportModal'
+import UsersTable from '../../components/admin/users/UsersTable'
 import { getUsers, createUser, bulkCreateUsers, updateUser, deleteUser } from '../../api/admin'
-import Sk from '../../components/shared/Skeleton'
 import '../css/admin/Users.css'
 
 const EMPTY_FORM = { name: '', email: '', role: 'student', password: '' }
@@ -48,11 +47,18 @@ export default function Users() {
   const [editTarget, setEditTarget] = useState(null)
   const [form, setForm]             = useState(EMPTY_FORM)
   const [csvRows, setCsvRows]       = useState([])
+  const [saving, setSaving]         = useState(false)
+  const [formError, setFormError]   = useState('')
+  const [loadError, setLoadError]   = useState('')
+  const [importing, setImporting]   = useState(false)
 
   useEffect(() => {
     getUsers()
       .then(res => setUsers(res.data.map(mapUser)))
-      .catch(() => {})
+      .catch(err => {
+        const status = err?.response?.status
+        setLoadError(status === 403 ? 'Permission denied. Make sure your account has admin access.' : 'Failed to load users.')
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -77,12 +83,15 @@ export default function Users() {
     setModal('edit')
   }
 
-  const closeModal = () => { setModal(null); setEditTarget(null); setCsvRows([]) }
+  const closeModal = () => { setModal(null); setEditTarget(null); setCsvRows([]); setFormError('') }
 
-  const handleFormChange = (field, value) => setForm(f => ({ ...f, [field]: value }))
+  const handleFormChange = (field, value) => { setForm(f => ({ ...f, [field]: value })); setFormError('') }
 
   const handleSave = async () => {
     if (!form.name.trim() || !form.email.trim()) return
+    if (modal === 'create' && !form.password) { setFormError('Password is required.'); return }
+    if (form.password && form.password.length < 8) { setFormError('Password must be at least 8 characters.'); return }
+
     const [firstName, ...rest] = form.name.trim().split(' ')
     const payload = {
       first_name: firstName,
@@ -91,6 +100,8 @@ export default function Users() {
       role: form.role,
       ...(form.password && { password: form.password }),
     }
+    setSaving(true)
+    setFormError('')
     try {
       if (modal === 'create') {
         const { data } = await createUser({ ...payload, username: form.email.split('@')[0] })
@@ -100,7 +111,18 @@ export default function Users() {
         setUsers(prev => prev.map(u => u.id === editTarget.id ? mapUser(data) : u))
       }
       closeModal()
-    } catch {}
+    } catch (err) {
+      const d = err?.response?.data
+      if (d) {
+        const msg = typeof d === 'string' ? d
+          : d.detail ?? Object.entries(d).map(([k, v]) => `${k}: ${[].concat(v).join(', ')}`).join(' | ')
+        setFormError(msg)
+      } else {
+        setFormError('Something went wrong. Please try again.')
+      }
+    } finally {
+      setSaving(false)
+    }
   }
 
   const toggleStatus = async (id) => {
@@ -134,13 +156,18 @@ export default function Users() {
         return { first_name: firstName, last_name: rest.join(' '), email: r.email, role: r.role }
       }),
     }
+    setImporting(true)
     try {
       const { data } = await bulkCreateUsers(payload)
       setUsers(prev => [...prev, ...data.users.map(mapUser)])
       if (data.errors.length > 0)
         console.warn('Some users could not be imported:', data.errors)
-    } catch {}
-    closeModal()
+      closeModal()
+    } catch (err) {
+      console.error('CSV import failed:', err)
+    } finally {
+      setImporting(false)
+    }
   }
 
   const downloadTemplate = () => {
@@ -177,62 +204,15 @@ export default function Users() {
               onNewUser={openCreate}
             />
 
+            {loadError && <div className="users-load-error">{loadError}</div>}
             <div className="users-table-wrap">
-              {loading ? (
-                <table className="users-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th><th>Role</th><th>Email</th><th>Class</th><th>Status</th><th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.from({ length: 8 }).map((_, i) => (
-                      <tr key={i} style={{ opacity: 1 - i * 0.09 }}>
-                        <td><div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <Sk w={32} h={32} r={16} style={{ flexShrink: 0 }} />
-                          <div><Sk w={110} h={13} mb={5} /><Sk w={80} h={11} /></div>
-                        </div></td>
-                        <td><Sk w={58} h={20} r={4} /></td>
-                        <td><Sk w={150} h={13} /></td>
-                        <td><Sk w={70}  h={13} /></td>
-                        <td><Sk w={55}  h={20} r={10} /></td>
-                        <td><div style={{ display: 'flex', gap: 4 }}>
-                          <Sk w={28} h={28} r={6} /><Sk w={28} h={28} r={6} />
-                        </div></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <table className="users-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Role</th>
-                      <th>Email</th>
-                      <th>Class</th>
-                      <th>Status</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.length === 0 ? (
-                      <tr><td colSpan={6} className="users-empty">No users found.</td></tr>
-                    ) : (
-                      filtered.map((user, i) => (
-                        <UserRow
-                          key={user.id}
-                          user={user}
-                          index={i}
-                          onEdit={() => openEdit(user)}
-                          onToggleStatus={() => toggleStatus(user.id)}
-                          onDelete={() => handleDelete(user.id)}
-                        />
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              )}
+              <UsersTable
+                loading={loading}
+                users={filtered}
+                onEdit={openEdit}
+                onToggleStatus={toggleStatus}
+                onDelete={handleDelete}
+              />
             </div>
           </main>
         </div>
@@ -245,6 +225,8 @@ export default function Users() {
           onChange={handleFormChange}
           onClose={closeModal}
           onSave={handleSave}
+          saving={saving}
+          error={formError}
           classes={[]}
         />
       )}
@@ -252,6 +234,7 @@ export default function Users() {
       {modal === 'csv' && (
         <CsvImportModal
           csvRows={csvRows}
+          importing={importing}
           onClose={closeModal}
           onImport={handleCSVImport}
           onFileParsed={(raw) => setCsvRows(parseCSV(raw))}

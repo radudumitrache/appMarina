@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { getCourse, addCourseLesson, removeCourseLesson } from '../../../api/lessons'
 import '../../css/teacher/class-detail/CourseLessonModal.css'
 
@@ -64,7 +65,7 @@ export default function CourseLessonModal({ course, classLessons, onClose }) {
   const cat = l => CAT_LABELS[l.cat ?? l.category] ?? l.cat ?? l.category ?? ''
   const dur = l => l.duration ?? (l.duration_minutes ? `${l.duration_minutes} min` : '')
 
-  return (
+  return createPortal(
     <div className="clm-backdrop" onClick={onClose}>
       <div className="clm-modal" onClick={e => e.stopPropagation()}>
 
@@ -190,6 +191,7 @@ export default function CourseLessonModal({ course, classLessons, onClose }) {
           <button className="clm-done" onClick={onClose}>Done</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

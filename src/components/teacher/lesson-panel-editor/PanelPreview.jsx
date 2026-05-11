@@ -66,6 +66,7 @@ export default function PanelPreview({
   panel, editMode, showHtml, liveBody, editorRef, onBodyChange, onTagsChange,
   placementMode, onSceneClick, pendingPlacement, pendingPolyPoints,
   activePolyPoints, activeTextAnchor, onAnchorClick, onEditModeAnchorClick, onCloseAnchorPanel,
+  onAnchorDrag,
 }) {
   const sceneSrc = useMemo(() => {
     if (!panel?.vr_tour?.scene_url) return null
@@ -74,6 +75,7 @@ export default function PanelPreview({
 
   const hotspots = useMemo(() => {
     if (!panel?.vr_tour) return []
+    const drag = editMode && onAnchorDrag ? (x, y, z) => onAnchorDrag(x, y, z) : undefined
     const text = (panel.vr_tour.text_anchors ?? []).map(a => {
       const { lon, lat } = posToLonLat(a.pos_x, a.pos_y, a.pos_z)
       return {
@@ -82,6 +84,7 @@ export default function PanelPreview({
         onClick: editMode
           ? (e) => onEditModeAnchorClick(a, 'text', e.clientX, e.clientY)
           : () => onAnchorClick({ type: 'text', label: a.title, description: a.description }),
+        onDrag: drag,
       }
     })
     const nav = (panel.vr_tour.navigator_anchors ?? []).map(a => {
@@ -90,11 +93,12 @@ export default function PanelPreview({
         id: `nav-${a.id}`, lon, lat, label: a.title || `→ Panel #${a.target_panel}`,
         className: 'vr-hotspot--anchor',
         onClick: editMode ? (e) => onEditModeAnchorClick(a, 'nav', e.clientX, e.clientY) : null,
+        onDrag: drag,
       }
     })
     const pending = pendingPlacement ? [{
       id: '__pending__', lon: pendingPlacement.lon, lat: pendingPlacement.lat,
-      label: '', className: 'vr-hotspot--pending', onClick: null,
+      label: '', className: 'vr-hotspot--pending', onClick: null, onDrag: drag,
     }] : []
     const polyPts = (pendingPolyPoints ?? []).map((pt, i) => ({
       id: `__poly_pt_${i}__`, lon: pt.lon, lat: pt.lat,

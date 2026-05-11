@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import DatePicker from '../../admin/classes/DatePicker'
 import '../../css/teacher/profile/PersonalInfoPanel.css'
 
 const TIMEZONES = [
@@ -80,7 +81,14 @@ export default function PersonalInfoPanel({ profile, onSave }) {
         {field('Last Name',     'lastName')}
         {field('Email',         'email',       'email', true)}
         {field('Phone',         'phone')}
-        {field('Date of Birth', 'dateOfBirth', 'date')}
+
+        <div className="tp-form-field">
+          <label className="tp-form-label">Date of Birth</label>
+          {editing
+            ? <DatePicker value={draft.dateOfBirth} onChange={val => setDraft(d => ({ ...d, dateOfBirth: val }))} placeholder="Date of birth" />
+            : <span className="tp-form-value">{formatDate(profile.dateOfBirth)}</span>}
+        </div>
+
         {field('Nationality',   'nationality')}
 
         <div className="tp-form-field">

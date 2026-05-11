@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import NavBar from '../../components/student/NavBar'
-import { getTest, getMySubmission } from '../../api/tests'
+import { getTest, getMySubmission, getSubmissionById } from '../../api/tests'
 import PanelSection from '../../components/student/test-review/PanelSection'
 import { buildReviewPanels, gradeColor } from '../../components/student/test-review/reviewHelpers'
 import '../css/student/TestReview.css'
 
 export default function TestReview() {
-  const { id }   = useParams()
-  const navigate = useNavigate()
+  const { id, submissionId } = useParams()
+  const navigate             = useNavigate()
+  const [searchParams]       = useSearchParams()
+  const subFromQuery         = searchParams.get('sub')
+  const resolvedSubId        = submissionId ?? subFromQuery
 
   const [test,       setTest]       = useState(null)
   const [submission, setSubmission] = useState(null)
@@ -16,14 +19,25 @@ export default function TestReview() {
   const [error,      setError]      = useState(null)
 
   useEffect(() => {
-    Promise.all([getTest(id), getMySubmission(id)])
-      .then(([testRes, subRes]) => {
-        setTest(testRes.data)
-        setSubmission(subRes.data)
-      })
-      .catch(() => setError('Could not load review data.'))
-      .finally(() => setLoading(false))
-  }, [id])
+    if (resolvedSubId) {
+      getSubmissionById(resolvedSubId)
+        .then(subRes => {
+          setSubmission(subRes.data)
+          return getTest(subRes.data.test)
+        })
+        .then(testRes => setTest(testRes.data))
+        .catch(() => setError('Could not load review data.'))
+        .finally(() => setLoading(false))
+    } else {
+      Promise.all([getTest(id), getMySubmission(id)])
+        .then(([testRes, subRes]) => {
+          setTest(testRes.data)
+          setSubmission(subRes.data)
+        })
+        .catch(() => setError('Could not load review data.'))
+        .finally(() => setLoading(false))
+    }
+  }, [id, resolvedSubId])
 
   if (loading) {
     return (

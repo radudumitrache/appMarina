@@ -80,7 +80,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
   const editModeRef     = useRef(editMode)
   const onSceneClickRef = useRef(onSceneClick)
   const pickSphereRef   = useRef(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => { hotspotsRef.current    = hotspots        }, [hotspots])
   useEffect(() => { onReadyRef.current     = onSceneReady    }, [onSceneReady])
@@ -151,6 +151,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     let isDragging = false, lastX = 0, lastY = 0
     let mouseDownX = 0, mouseDownY = 0
     let autoRotate = false
+    let draggingHotspot = null
 
     // Expose autoRotate control so the editMode effect can freeze it
     stateRef.current.setAutoRotate = (v) => { autoRotate = v }
@@ -159,6 +160,17 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     const onMouseDown = (e) => {
       mouseDownX = e.clientX
       mouseDownY = e.clientY
+      // Check for draggable hotspot
+      const el = e.target.closest('[data-hid]')
+      if (el) {
+        const hid = el.getAttribute('data-hid')
+        const hs = hotspotsRef.current.find(h => h.id === hid)
+        if (hs?.onDrag) {
+          draggingHotspot = hs
+          container.style.cursor = 'grabbing'
+          return
+        }
+      }
       if (editModeRef.current) return   // no drag in edit mode
       if (e.target.closest('.vr-hotspot')) return
       isDragging = true
@@ -168,6 +180,19 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     }
 
     const onMouseMove = (e) => {
+      if (draggingHotspot) {
+        getNDC(e.clientX, e.clientY)
+        raycaster.setFromCamera(mouse2d, camera)
+        const sphere = pickSphereRef.current
+        if (sphere) {
+          const hits = raycaster.intersectObject(sphere)
+          if (hits.length > 0) {
+            const p = hits[0].point
+            draggingHotspot.onDrag(p.x, p.y, p.z)
+          }
+        }
+        return
+      }
       if (isDragging) {
         lon -= (e.clientX - lastX) * 0.25
         lat += (e.clientY - lastY) * 0.25
@@ -184,6 +209,11 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     }
 
     const onMouseUp = (e) => {
+      if (draggingHotspot) {
+        draggingHotspot = null
+        container.style.cursor = ''
+        return
+      }
       const dx = e.clientX - mouseDownX
       const dy = e.clientY - mouseDownY
       const wasDrag = Math.sqrt(dx * dx + dy * dy) > 5
@@ -481,11 +511,12 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
         {hotspots.map((hs) => (
           <div
             key={hs.id}
+            data-hid={hs.id}
             ref={(el) => {
               if (el) hotspotElsRef.current[hs.id] = el
               else    delete hotspotElsRef.current[hs.id]
             }}
-            className={`vr-hotspot ${hs.className || ''}`}
+            className={`vr-hotspot ${hs.className || ''}${hs.onDrag ? ' vr-hotspot--draggable' : ''}`}
             onClick={hs.onClick}
           >
             {hs.render

@@ -4,9 +4,10 @@ import '../../css/teacher/class-detail/ClassHeader.css'
 
 const STATUS_LABELS = { active: 'Active', complete: 'Complete', archived: 'Archived' }
 
-export default function ClassHeader({ name, code, status }) {
+export default function ClassHeader({ name, code, status, onEdit, onDelete }) {
   const navigate = useNavigate()
-  const [copied, setCopied] = useState(false)
+  const [copied,   setCopied]   = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code).then(() => {
@@ -33,20 +34,44 @@ export default function ClassHeader({ name, code, status }) {
           </div>
         </div>
         <div className="cd-header-actions">
-          <button className="cd-btn-secondary">
+          <button className="cd-btn-secondary" onClick={onEdit}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
             Edit Class
           </button>
-          <button className="cd-btn-icon" title="More options">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="5"  r="1"/>
-              <circle cx="12" cy="12" r="1"/>
-              <circle cx="12" cy="19" r="1"/>
-            </svg>
-          </button>
+          <div className="cd-menu-wrap">
+            <button
+              className={`cd-btn-icon${menuOpen ? ' cd-btn-icon--active' : ''}`}
+              title="More options"
+              onClick={() => setMenuOpen(o => !o)}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="5"  r="1"/>
+                <circle cx="12" cy="12" r="1"/>
+                <circle cx="12" cy="19" r="1"/>
+              </svg>
+            </button>
+            {menuOpen && (
+              <>
+                <div className="cd-menu-backdrop" onClick={() => setMenuOpen(false)} />
+                <div className="cd-menu">
+                  <button
+                    className="cd-menu-item cd-menu-item--danger"
+                    onClick={() => { setMenuOpen(false); onDelete?.() }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                      <path d="M9 6V4h6v2"/>
+                    </svg>
+                    Delete Class
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

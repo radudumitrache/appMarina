@@ -258,6 +258,9 @@
 /* ── Type 7: Pending placement dot ──────────────────────────────────────────
  * Gold pulsing dot shown at the click position before the anchor form is saved.
  */
+.vr-hotspot--draggable { cursor: grab !important; }
+.vr-hotspot--draggable:active { cursor: grabbing !important; }
+
 .vr-hotspot--pending {
   pointer-events: none !important;
   cursor: default !important;

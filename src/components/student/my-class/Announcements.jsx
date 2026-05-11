@@ -72,7 +72,7 @@ function AnnouncementRow({ ann, index, defaultOpen }) {
 
 export default function Announcements({ items }) {
   return (
-    <section className="myclass-section">
+    <section className="myclass-section announcements-panel">
       <div className="section-head">
         <span className="section-title">Announcements</span>
         <span className="section-meta">

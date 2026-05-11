@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createTest } from '../../../api/tests'
 import '../../css/teacher/class-detail/AssignLessonModal.css'
 
-const EMPTY = { title: '', due_date: '', time_limit_minutes: '30' }
+const EMPTY = { title: '', time_limit_minutes: '30' }
 
 export default function CreateTestModal({ classId, onClose, onCreated }) {
   const [form, setForm]     = useState(EMPTY)
@@ -26,7 +26,6 @@ export default function CreateTestModal({ classId, onClose, onCreated }) {
         title:              form.title.trim(),
         classroom:          classId,
         time_limit_minutes: Number(form.time_limit_minutes),
-        due_date:           form.due_date || null,
       })
       onCreated(data)
       onClose()
@@ -72,28 +71,17 @@ export default function CreateTestModal({ classId, onClose, onCreated }) {
             {err('title')}
           </div>
 
-          <div className="alm-form-2col">
-            <div className="alm-form-row">
-              <label className="alm-label">Time Limit (minutes) <span className="alm-required">*</span></label>
-              <input
-                className={`alm-input${errors.time_limit_minutes ? ' alm-input--error' : ''}`}
-                type="number"
-                min="1"
-                placeholder="30"
-                value={form.time_limit_minutes}
-                onChange={e => set('time_limit_minutes', e.target.value)}
-              />
-              {err('time_limit_minutes')}
-            </div>
-            <div className="alm-form-row">
-              <label className="alm-label">Due Date</label>
-              <input
-                className="alm-input"
-                type="date"
-                value={form.due_date}
-                onChange={e => set('due_date', e.target.value)}
-              />
-            </div>
+          <div className="alm-form-row">
+            <label className="alm-label">Time Limit (minutes) <span className="alm-required">*</span></label>
+            <input
+              className={`alm-input${errors.time_limit_minutes ? ' alm-input--error' : ''}`}
+              type="number"
+              min="1"
+              placeholder="30"
+              value={form.time_limit_minutes}
+              onChange={e => set('time_limit_minutes', e.target.value)}
+            />
+            {err('time_limit_minutes')}
           </div>
         </div>
 

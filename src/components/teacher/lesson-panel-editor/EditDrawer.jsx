@@ -79,7 +79,7 @@ export default function EditDrawer({
   newAnchorPlacement, onNewAnchorSaved,
   newPolyPlacement, onNewPolySaved,
   newPolyPoint, onNewPolyPointSaved,
-  onActivePolyPointsChange,
+  onActivePolyPointsChange, draggedAnchorPos,
 }) {
   const savedBody        = panel.text_content?.body ?? ''
   const savedMediaFileId = panel.vr_tour?.media_file ?? null
@@ -324,6 +324,7 @@ export default function EditDrawer({
             onNewPolyPointSaved={onNewPolyPointSaved}
             onActivePolyPointsChange={onActivePolyPointsChange}
             onAnchorEditingChange={setAnchorEditing}
+            draggedAnchorPos={draggedAnchorPos}
           />
         )}
       </div>

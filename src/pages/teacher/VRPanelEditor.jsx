@@ -278,22 +278,15 @@ export default function VRPanelEditor() {
     loadAnchors()
   }
 
-  if (loading) {
-    return (
-      <div className="vrpe-page">
-        <div className="vrpe-loading">
-          <div className="vrpe-spinner" />
-          <span className="vrpe-loading-label">Loading scene…</span>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="vrpe-page">
 
       <div className="vrpe-viewer">
-        {sceneUrl ? (
+        {loading ? (
+          <div className="vrpe-loading">
+            <div className="vrpe-spinner" />
+          </div>
+        ) : sceneUrl ? (
           <VRViewer
             src={sceneUrl}
             hotspots={hotspots}
@@ -304,7 +297,12 @@ export default function VRPanelEditor() {
         ) : (
           <div className="vrpe-no-scene">
             <div className="vrpe-no-scene-inner">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4, marginBottom: 16 }}>
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
               <span className="vrpe-no-scene-title">No 360° scene selected</span>
+              <span className="vrpe-no-scene-hint">Choose an equirectangular image to start building this panel.</span>
               <button className="vrpe-no-scene-btn" onClick={() => setSceneModal(true)}>Select Scene</button>
             </div>
           </div>

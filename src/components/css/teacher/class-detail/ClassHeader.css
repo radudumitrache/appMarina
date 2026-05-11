@@ -190,11 +190,58 @@
   transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
 }
 
-.cd-btn-icon:hover {
+.cd-btn-icon:hover,
+.cd-btn-icon--active {
   background: var(--surface-2);
   border-color: var(--border-hover);
   color: var(--text);
 }
+
+.cd-menu-wrap {
+  position: relative;
+}
+
+.cd-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+}
+
+.cd-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  min-width: 160px;
+  padding: 4px;
+  animation: fadeUp 0.15s var(--ease-default) both;
+}
+
+.cd-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.cd-menu-item:hover { background: var(--surface-3); color: var(--text); }
+
+.cd-menu-item--danger { color: var(--error); }
+.cd-menu-item--danger:hover { background: rgba(224,82,82,0.1); color: var(--error); }
 
 .cd-btn-primary {
   display: flex;

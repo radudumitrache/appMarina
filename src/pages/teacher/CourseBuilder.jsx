@@ -35,7 +35,8 @@ export default function CourseBuilder() {
     handleNewCourse,
     handleTitleChange, handleDescChange, handleClassroomChange, handleToggleStatus, handleDeleteCourse,
     handleAddLesson, handleRemoveLesson, handleMoveLesson,
-    handleCreateLesson, handleUpdateLesson, handleDeleteLesson,
+    // handleCreateLesson,
+    handleUpdateLesson, handleDeleteLesson,
     ensureAllCoursesLoaded,
   } = useCourseBuilder()
 
@@ -121,7 +122,7 @@ export default function CourseBuilder() {
                   onRemoveLesson={handleRemoveLesson}
                   onMoveLesson={handleMoveLesson}
                   onAddLesson={handleAddLesson}
-                  onCreateLesson={handleCreateLesson}
+                  // onCreateLesson={handleCreateLesson}
                 />
               ) : !loading ? (
                 <main className="cb-main cb-main--empty">
@@ -137,7 +138,7 @@ export default function CourseBuilder() {
                 lessonBank={lessonBank}
                 lessonCourseMap={lessonCourseMap}
                 saving={saving}
-                onCreateLesson={handleCreateLesson}
+                // onCreateLesson={handleCreateLesson}
                 onUpdateLesson={handleUpdateLesson}
                 onDeleteLesson={handleDeleteLesson}
               />

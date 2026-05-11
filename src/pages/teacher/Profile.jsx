@@ -4,7 +4,7 @@ import { useAuth } from '../../auth/AuthContext'
 import NavBar              from '../../components/teacher/NavBar'
 import ProfileCard         from '../../components/teacher/profile/ProfileCard'
 import PersonalInfoPanel   from '../../components/teacher/profile/PersonalInfoPanel'
-import TeachingPanel       from '../../components/teacher/profile/TeachingPanel'
+// import TeachingPanel       from '../../components/teacher/profile/TeachingPanel'
 import SecurityPanel       from '../../components/teacher/profile/SecurityPanel'
 import { getMe, updateMe } from '../../api/users'
 import { changePassword }  from '../../api/auth'
@@ -15,7 +15,7 @@ import '../css/teacher/Profile.css'
 
 const TABS = [
   { id: 'personal',  label: 'Personal Info' },
-  { id: 'teaching',  label: 'Teaching'      },
+  // { id: 'teaching',  label: 'Teaching'      },
   { id: 'security',  label: 'Security'      },
 ]
 
@@ -141,7 +141,7 @@ export default function Profile() {
           </div>
 
           {activeTab === 'personal' && <PersonalInfoPanel profile={profile} onSave={handleSave}       />}
-          {activeTab === 'teaching' && <TeachingPanel     profile={profile} stats={stats}             />}
+          {/* {activeTab === 'teaching' && <TeachingPanel     profile={profile} stats={stats}             />} */}
           {activeTab === 'security' && <SecurityPanel     onChangePassword={changePassword}           />}
         </div>
       </div>

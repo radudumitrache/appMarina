@@ -42,6 +42,7 @@ export default function LessonPanelEditor() {
   const [liveBody,    setLiveBody]    = useState(null)
   const [showHtml,    setShowHtml]    = useState(false)
   const [activeTags,  setActiveTags]  = useState([])
+  const [draggedAnchorPos, setDraggedAnchorPos] = useState(null)
 
   const handleToggleHtml = () => {
     const el = editorRef.current
@@ -122,6 +123,7 @@ export default function LessonPanelEditor() {
           onAnchorClick={setActiveTextAnchor}
           onEditModeAnchorClick={(anchor, anchorType, x, y) => setAnchorMenu({ anchor, anchorType, x, y })}
           onCloseAnchorPanel={() => setActiveTextAnchor(null)}
+          onAnchorDrag={(x, y, z) => setDraggedAnchorPos({ x, y, z, ts: Date.now() })}
         />
       )}
 
@@ -182,6 +184,7 @@ export default function LessonPanelEditor() {
           newPolyPoint={newPolyPoint}
           onNewPolyPointSaved={() => setNewPolyPoint(null)}
           onActivePolyPointsChange={pts => setActivePolyPoints(pts ?? null)}
+          draggedAnchorPos={draggedAnchorPos}
         />
       )}
 

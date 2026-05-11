@@ -371,6 +371,7 @@ export default function AnchorSection({
   onNewPolyPointSaved,       // () → void
   onActivePolyPointsChange,  // (hotspots | null) → void — scene hotspots for editing polygon points
   onAnchorEditingChange,     // (boolean) → void — true when an anchor edit form is open
+  draggedAnchorPos,          // { x, y, z, ts } | null — live drag from VRViewer
 }) {
   const [textAnchors, setTextAnchors] = useState(initialTextAnchors ?? [])
   const [navAnchors,  setNavAnchors]  = useState(initialNavAnchors  ?? [])
@@ -428,9 +429,9 @@ export default function AnchorSection({
   useEffect(() => {
     if (!newAnchorPlacement) return
     setForm({ type: newAnchorPlacement.type, anchor: null })
-    setPosX(String(newAnchorPlacement.x))
-    setPosY(String(newAnchorPlacement.y))
-    setPosZ(String(newAnchorPlacement.z))
+    setPosX(String(newAnchorPlacement.x ?? 0))
+    setPosY(String(newAnchorPlacement.y ?? 0))
+    setPosZ(String(newAnchorPlacement.z ?? -1))
     setATitle('')
     setADesc('')
     setTargetTour('')
@@ -470,9 +471,9 @@ export default function AnchorSection({
   function openForm(type, anchor = null) {
     setPolyForm(null)
     setForm({ type, anchor })
-    setPosX(anchor?.pos_x ?? '')
-    setPosY(anchor?.pos_y ?? '')
-    setPosZ(anchor?.pos_z ?? '')
+    setPosX(String(anchor?.pos_x ?? 0))
+    setPosY(String(anchor?.pos_y ?? 0))
+    setPosZ(String(anchor?.pos_z ?? -1))
     setATitle(anchor?.title ?? '')
     setADesc(anchor?.description ?? '')
     setTargetTour(anchor?.target_panel ?? '')
@@ -482,7 +483,17 @@ export default function AnchorSection({
   function closeForm() {
     setForm(null)
     setAnchorError(null)
+    setTextAnchors(prev => prev.filter(a => a.id !== '__preview__'))
+    setNavAnchors(prev => prev.filter(a => a.id !== '__preview__'))
   }
+
+  // When the user drags an anchor hotspot in the VR scene, update the open form's position
+  useEffect(() => {
+    if (!draggedAnchorPos || !form) return
+    setPosX(draggedAnchorPos.x.toFixed(4))
+    setPosY(draggedAnchorPos.y.toFixed(4))
+    setPosZ(draggedAnchorPos.z.toFixed(4))
+  }, [draggedAnchorPos])
 
   async function handleSave() {
     setAnchorSaving(true)
@@ -502,7 +513,10 @@ export default function AnchorSection({
           ))
         } else {
           const res = await createTextAnchor(lessonId, panelId, data)
-          setTextAnchors(prev => [...prev, { ...res.data, title: aTitle, description: aDesc, ...pos }])
+          setTextAnchors(prev => [
+            ...prev.filter(a => a.id !== '__preview__'),
+            { ...res.data, title: aTitle, description: aDesc, ...pos },
+          ])
           onNewAnchorSaved?.()
         }
       } else {
@@ -518,7 +532,10 @@ export default function AnchorSection({
           setNavAnchors(prev => prev.map(a => a.id === form.anchor.id ? res.data : a))
         } else {
           const res = await createNavigatorAnchor(lessonId, panelId, data)
-          setNavAnchors(prev => [...prev, res.data])
+          setNavAnchors(prev => [
+            ...prev.filter(a => a.id !== '__preview__'),
+            res.data,
+          ])
           onNewAnchorSaved?.()
         }
       }
@@ -549,17 +566,29 @@ export default function AnchorSection({
 
   // Real-time hotspot preview: sync live pos values into anchor arrays
   useEffect(() => {
-    if (!form?.anchor) return
+    if (!form) return
     const x = parseFloat(posX), y = parseFloat(posY), z = parseFloat(posZ)
     if ([x, y, z].some(Number.isNaN)) return
-    if (form.type === 'text') {
-      setTextAnchors(prev => prev.map(a =>
-        a.id === form.anchor.id ? { ...a, pos_x: x, pos_y: y, pos_z: z } : a
-      ))
+
+    if (form.anchor) {
+      // Existing anchor — update position in place
+      if (form.type === 'text') {
+        setTextAnchors(prev => prev.map(a =>
+          a.id === form.anchor.id ? { ...a, pos_x: x, pos_y: y, pos_z: z } : a
+        ))
+      } else {
+        setNavAnchors(prev => prev.map(a =>
+          a.id === form.anchor.id ? { ...a, pos_x: x, pos_y: y, pos_z: z } : a
+        ))
+      }
     } else {
-      setNavAnchors(prev => prev.map(a =>
-        a.id === form.anchor.id ? { ...a, pos_x: x, pos_y: y, pos_z: z } : a
-      ))
+      // New anchor — upsert a temporary preview hotspot
+      const preview = { id: '__preview__', pos_x: x, pos_y: y, pos_z: z, title: '●' }
+      if (form.type === 'text') {
+        setTextAnchors(prev => [...prev.filter(a => a.id !== '__preview__'), preview])
+      } else {
+        setNavAnchors(prev => [...prev.filter(a => a.id !== '__preview__'), preview])
+      }
     }
   }, [posX, posY, posZ])
 
@@ -1140,14 +1169,16 @@ export default function AnchorSection({
               <button
                 className="lpe-anchor-add-btn"
                 onClick={e => { e.stopPropagation(); onEnterPlacement?.('nav') ?? openForm('nav') }}
-                disabled={saving}
+                disabled={saving || panels.length < 2}
+                title={panels.length < 2 ? 'Add a second panel first' : undefined}
               >
                 <IconPlus /> Add
               </button>
             </div>
             {openSections.nav && (
               <div className="lpe-anchor-list">
-                {navAnchors.length === 0 && <p className="lpe-anchor-empty">No navigator anchors yet.</p>}
+                {panels.length < 2 && <p className="lpe-anchor-empty">At least 2 panels required to add a navigator anchor.</p>}
+                {panels.length >= 2 && navAnchors.length === 0 && <p className="lpe-anchor-empty">No navigator anchors yet.</p>}
                 {navAnchors.map(a => (
                   <div key={a.id} className="lpe-anchor-item lpe-anchor-item--clickable" onClick={() => openForm('nav', a)}>
                     <span className="lpe-anchor-item-title">→ {a.title || (panelIdToTitle[a.target_panel] ?? `Panel #${a.target_panel}`)}</span>

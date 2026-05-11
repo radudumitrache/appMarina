@@ -1,5 +1,6 @@
 import '../../css/admin/classes/ClassFormModal.css'
 import '../../css/teacher/classes/ClassFormModal.css'
+import DatePicker from '../../admin/classes/DatePicker'
 
 const PREFIXES = ['MN', 'BR', 'SF', 'NG', 'EG', 'CR', 'CM', 'DC', 'MC', 'NV']
 const SUFFIXES = ['A', 'B', 'C', 'D', 'E', 'X', 'Y', 'Z', '1', '2']
@@ -28,18 +29,18 @@ function Label({ children, required }) {
   )
 }
 
-export default function ClassFormModal({ form, errors = {}, onChange, onClose, onSave }) {
+export default function ClassFormModal({ mode = 'create', form, errors = {}, onChange, onClose, onSave, saving }) {
   const err = field => errors[field]
     ? <span className="form-field-error">{errors[field]}</span>
     : null
 
-  const hasErrors = Object.keys(errors).length > 0
+  const isEdit = mode === 'edit'
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">New Class</h3>
+          <h3 className="modal-title">{isEdit ? 'Edit Class' : 'New Class'}</h3>
           <button className="modal-close" onClick={onClose}><XIcon /></button>
         </div>
         <div className="modal-body modal-body--scroll">
@@ -116,30 +117,30 @@ export default function ClassFormModal({ form, errors = {}, onChange, onClose, o
           <div className="form-2col">
             <div className="form-row">
               <Label required>Start Date</Label>
-              <input
-                className={`form-input${errors.start_date ? ' form-input--error' : ''}`}
-                type="date"
+              <DatePicker
                 value={form.start_date}
-                onChange={e => onChange('start_date', e.target.value)}
+                onChange={val => onChange('start_date', val)}
+                placeholder="Start date"
+                hasError={!!errors.start_date}
               />
               {err('start_date')}
             </div>
             <div className="form-row">
               <Label required>End Date</Label>
-              <input
-                className={`form-input${errors.end_date ? ' form-input--error' : ''}`}
-                type="date"
+              <DatePicker
                 value={form.end_date}
-                onChange={e => onChange('end_date', e.target.value)}
+                onChange={val => onChange('end_date', val)}
+                placeholder="End date"
+                hasError={!!errors.end_date}
               />
               {err('end_date')}
             </div>
           </div>
         </div>
         <div className="modal-footer">
-          <button className="btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="btn-primary" onClick={onSave}>
-            Create Class
+          <button className="btn-ghost" onClick={onClose} disabled={saving}>Cancel</button>
+          <button className="btn-primary" onClick={onSave} disabled={saving}>
+            {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Create Class'}
           </button>
         </div>
       </div>

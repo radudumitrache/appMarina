@@ -58,6 +58,7 @@ export const deleteLocalizationPoint = (tid, pid, aid, ptid)       => api.delete
 
 // Submissions
 export const submitTest       = (id, answers)   => api.post(`/tests/${id}/submit/`, { answers })
-export const getMySubmission  = (id)            => api.get(`/tests/${id}/submission/`)
-export const getAllSubmissions = (id)            => api.get(`/tests/${id}/submissions/`)
+export const getMySubmission       = (id)  => api.get(`/tests/${id}/submission/`)
+export const getSubmissionById     = (sid) => api.get(`/tests/my-submissions/${sid}/`)
+export const getAllSubmissions      = (id)  => api.get(`/tests/${id}/submissions/`)
 export const gradeSubmission  = (id, sid, data) => api.patch(`/tests/${id}/submissions/${sid}/`, data)

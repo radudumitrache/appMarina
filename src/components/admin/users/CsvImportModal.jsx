@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import '../../css/admin/users/UserFormModal.css'
 import '../../css/admin/users/CsvImportModal.css'
 
-export default function CsvImportModal({ csvRows, onClose, onImport, onFileParsed, onDownloadTemplate }) {
+export default function CsvImportModal({ csvRows, importing, onClose, onImport, onFileParsed, onDownloadTemplate }) {
   const fileRef              = useRef(null)
   const [password, setPassword] = useState('')
   const [showPwd, setShowPwd]   = useState(false)
@@ -134,13 +134,20 @@ export default function CsvImportModal({ csvRows, onClose, onImport, onFileParse
         </div>
 
         <div className="modal-footer">
-          <button className="btn-ghost" onClick={onClose}>Cancel</button>
+          <button className="btn-ghost" onClick={onClose} disabled={importing}>Cancel</button>
           <button
             className="btn-primary"
             onClick={() => onImport(password)}
-            disabled={!canImport}
+            disabled={!canImport || importing}
           >
-            Import {csvRows.length > 0 ? `${csvRows.length} Users` : 'Users'}
+            {importing ? (
+              <>
+                <span className="csv-spinner" />
+                Importing…
+              </>
+            ) : (
+              `Import ${csvRows.length > 0 ? `${csvRows.length} Users` : 'Users'}`
+            )}
           </button>
         </div>
       </div>

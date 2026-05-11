@@ -4,11 +4,10 @@ import NavBar from '../../components/teacher/NavBar'
 import ClassesHeader from '../../components/teacher/classes/ClassesHeader'
 import ClassesStats from '../../components/teacher/classes/ClassesStats'
 import ClassesToolbar from '../../components/teacher/classes/ClassesToolbar'
-import ClassCard from '../../components/teacher/classes/ClassCard'
+import ClassesGrid from '../../components/teacher/classes/ClassesGrid'
 import ClassFormModal from '../../components/teacher/classes/ClassFormModal'
 import DeleteConfirmModal from '../../components/admin/classes/DeleteConfirmModal'
 import { getClasses, createClass, deleteClass } from '../../api/classes'
-import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/Classes.css'
 
 const EMPTY_FORM = {
@@ -114,40 +113,12 @@ export default function Classes() {
             onSearchChange={setSearch}
           />
 
-          {loading ? (
-            <div className="classes-grid">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="class-card" style={{ opacity: 1 - i * 0.15, animation: 'none' }}>
-                  <div className="class-card-top">
-                    <Sk w={`${55 + (i % 3) * 10}%`} h={15} r={4} />
-                    <Sk w={52} h={18} r={4} style={{ flexShrink: 0 }} />
-                  </div>
-                  <div className="class-card-meta">
-                    <Sk w={90} h={13} r={3} />
-                    <Sk w={90} h={13} r={3} />
-                  </div>
-                  <div className="class-card-actions" style={{ borderTop: '1px solid var(--border)', paddingTop: 4 }}>
-                    <Sk h={34} r={6} />
-                    <Sk w={34} h={34} r={6} style={{ flexShrink: 0 }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : filtered.length === 0 ? (
-            <p className="classes-empty">No classes match your search.</p>
-          ) : (
-            <div className="classes-grid">
-              {filtered.map((cls, i) => (
-                <ClassCard
-                  key={cls.id}
-                  cls={cls}
-                  index={i}
-                  onView={() => navigate(`/teacher/classes/${cls.id}`)}
-                  onDelete={() => setDeleteTarget(cls)}
-                />
-              ))}
-            </div>
-          )}
+          <ClassesGrid
+            loading={loading}
+            classes={filtered}
+            onView={cls => navigate(`/teacher/classes/${cls.id}`)}
+            onDelete={setDeleteTarget}
+          />
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import '../../css/admin/users/UserFormModal.css'
 
-export default function UserFormModal({ mode, form, onChange, onClose, onSave, classes }) {
+export default function UserFormModal({ mode, form, onChange, onClose, onSave, saving, error, classes }) {
   const handleRoleChange = (role) => {
     onChange('role', role)
   }
@@ -72,14 +72,15 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, c
             />
           </div>
         </div>
+        {error && <div className="modal-error">{error}</div>}
         <div className="modal-footer">
-          <button className="btn-ghost" onClick={onClose}>Cancel</button>
+          <button className="btn-ghost" onClick={onClose} disabled={saving}>Cancel</button>
           <button
             className="btn-primary"
             onClick={onSave}
-            disabled={!form.name.trim() || !form.email.trim()}
+            disabled={saving || !form.name.trim() || !form.email.trim()}
           >
-            {mode === 'create' ? 'Create User' : 'Save Changes'}
+            {saving ? 'Saving…' : mode === 'create' ? 'Create User' : 'Save Changes'}
           </button>
         </div>
       </div>
