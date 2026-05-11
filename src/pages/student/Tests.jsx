@@ -1,35 +1,17 @@
-import { useState } from 'react'
-import NavBar from '../../components/student/NavBar'
+import { useState, useEffect } from 'react'
+import NavBar       from '../../components/student/NavBar'
 import TestsSidebar from '../../components/student/tests/TestsSidebar'
 import TestsToolbar from '../../components/student/tests/TestsToolbar'
 import TestsContent from '../../components/student/tests/TestsContent'
+import { getTests }   from '../../api/tests'
+import { getClasses } from '../../api/classes'
 import '../css/student/Tests.css'
-
-const CLASS_LABELS = {
-  nav:    'Maritime Nav 101',
-  safety: 'Safety & Emergency',
-  eng:    'Engineering Ops',
-  comms:  'Communications',
-}
-
-const INITIAL_TESTS = [
-  { id: 1,  title: 'Bridge Navigation Fundamentals', author: 'Capt. Rodriguez', classId: 'nav',    dueDate: '2026-04-01', completed: false, grade: null },
-  { id: 2,  title: 'Emergency Protocol Assessment',  author: 'Instr. Chen',     classId: 'safety', dueDate: '2026-04-12', completed: false, grade: null },
-  { id: 3,  title: 'Radar & ARPA Systems Exam',      author: 'Prof. Whitmore',  classId: null,     dueDate: null,         completed: false, grade: null },
-  { id: 4,  title: 'Engine Room Operations Quiz',    author: 'Eng. Vasquez',    classId: 'eng',    dueDate: '2026-04-20', completed: false, grade: null },
-  { id: 5,  title: 'GMDSS Radio Procedures',         author: 'Instr. Chen',     classId: 'comms',  dueDate: '2026-03-27', completed: false, grade: null },
-  { id: 6,  title: 'Helm Control Basics Test',       author: 'Capt. Rodriguez', classId: 'nav',    dueDate: null,         completed: true,  grade: 92   },
-  { id: 7,  title: 'Fire Safety Assessment',         author: 'Instr. Chen',     classId: 'safety', dueDate: null,         completed: true,  grade: 78   },
-  { id: 8,  title: 'Chart Reading Fundamentals',     author: 'Prof. Whitmore',  classId: null,     dueDate: null,         completed: true,  grade: 85   },
-  { id: 9,  title: 'Load Calculation Quiz',          author: 'Prof. Whitmore',  classId: null,     dueDate: null,         completed: true,  grade: 61   },
-  { id: 10, title: 'Man Overboard Drill Test',       author: 'Instr. Chen',     classId: 'safety', dueDate: null,         completed: true,  grade: 45   },
-]
 
 function getClassStats(tests, classId) {
   const subset =
     classId === 'all'  ? tests :
-    classId === 'open' ? tests.filter(t => t.classId === null) :
-    tests.filter(t => t.classId === classId)
+    classId === 'open' ? tests.filter(t => !t.class_id) :
+    tests.filter(t => t.class_id === classId)
   return {
     total:   subset.length,
     pending: subset.filter(t => !t.completed).length,
@@ -43,40 +25,55 @@ function avgGrade(tests) {
   return Math.round(done.reduce((s, t) => s + t.grade, 0) / done.length)
 }
 
-const CLASSES_LABELS_MAP = {
-  all:    'All Tests',
-  nav:    'Maritime Nav 101',
-  safety: 'Safety & Emergency',
-  eng:    'Engineering Ops',
-  comms:  'Communications',
-  open:   'Open Access',
-}
-
 export default function Tests() {
-  const [tests,        setTests]        = useState(INITIAL_TESTS)
+  const [tests,        setTests]        = useState([])
+  const [classes,      setClasses]      = useState([])
+  const [loading,      setLoading]      = useState(true)
+  const [error,        setError]        = useState(null)
   const [activeClass,  setActiveClass]  = useState('all')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [searchQuery,  setSearchQuery]  = useState('')
 
+  useEffect(() => {
+    Promise.all([getTests({}), getClasses()])
+      .then(([testsRes, classesRes]) => {
+        console.log('[Tests] API returned', testsRes.data.length, 'tests:', testsRes.data)
+        setTests(testsRes.data)
+        setClasses(classesRes.data)
+      })
+      .catch(err => {
+        console.error('[Tests] API error:', err.response ?? err)
+        setError(err.response?.data?.detail ?? err.message ?? 'Failed to load tests.')
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  const activeLabel =
+    activeClass === 'all'  ? 'All Tests'    :
+    activeClass === 'open' ? 'Open Access'  :
+    classes.find(c => c.code === activeClass)?.name ?? 'Tests'
+
   const byClass =
     activeClass === 'all'  ? tests :
-    activeClass === 'open' ? tests.filter(t => t.classId === null) :
-    tests.filter(t => t.classId === activeClass)
+    activeClass === 'open' ? tests.filter(t => !t.class_id) :
+    tests.filter(t => t.class_id === activeClass)
 
   const bySource =
     sourceFilter === 'all'   ? byClass :
-    sourceFilter === 'class' ? byClass.filter(t => t.classId !== null) :
-    byClass.filter(t => t.classId === null)
+    sourceFilter === 'class' ? byClass.filter(t => t.class_id) :
+    byClass.filter(t => !t.class_id)
 
-  const filtered  = bySource.filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase().trim()))
+  const filtered  = bySource.filter(t =>
+    t.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
+  )
   const pending   = filtered.filter(t => !t.completed)
   const completed = filtered.filter(t => t.completed)
 
   const sortedPending = [...pending].sort((a, b) => {
-    if (!a.dueDate && !b.dueDate) return 0
-    if (!a.dueDate) return 1
-    if (!b.dueDate) return -1
-    return new Date(a.dueDate) - new Date(b.dueDate)
+    if (!a.due_date && !b.due_date) return 0
+    if (!a.due_date) return 1
+    if (!b.due_date) return -1
+    return new Date(a.due_date) - new Date(b.due_date)
   })
 
   const overall = getClassStats(tests, 'all')
@@ -90,6 +87,7 @@ export default function Tests() {
         <div className="tests-body">
           <TestsSidebar
             tests={tests}
+            classes={classes}
             activeClass={activeClass}
             onClassChange={setActiveClass}
             overall={overall}
@@ -98,8 +96,10 @@ export default function Tests() {
 
           <main className="tests-main">
             <div className="tests-head">
-              <h2 className="tests-title">{CLASSES_LABELS_MAP[activeClass]}</h2>
-              <span className="tests-count">{filtered.length} tests</span>
+              <h2 className="tests-title">{activeLabel}</h2>
+              <span className="tests-count">
+                {loading ? '…' : `${filtered.length} tests`}
+              </span>
             </div>
 
             <TestsToolbar
@@ -109,11 +109,16 @@ export default function Tests() {
               onSourceFilter={setSourceFilter}
             />
 
-            <TestsContent
-              sortedPending={sortedPending}
-              completed={completed}
-              classLabels={CLASS_LABELS}
-            />
+            {loading ? (
+              <p className="tests-empty">Loading…</p>
+            ) : error ? (
+              <p className="tests-empty tests-error">{error}</p>
+            ) : (
+              <TestsContent
+                sortedPending={sortedPending}
+                completed={completed}
+              />
+            )}
           </main>
         </div>
       </div>

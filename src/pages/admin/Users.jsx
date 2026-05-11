@@ -1,56 +1,60 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import NavBar from '../../components/admin/NavBar'
 import UsersSidebar from '../../components/admin/users/UsersSidebar'
 import UsersToolbar from '../../components/admin/users/UsersToolbar'
 import UserRow from '../../components/admin/users/UserRow'
 import UserFormModal from '../../components/admin/users/UserFormModal'
 import CsvImportModal from '../../components/admin/users/CsvImportModal'
+import { getUsers, createUser, bulkCreateUsers, updateUser, deleteUser } from '../../api/admin'
+import Sk from '../../components/shared/Skeleton'
 import '../css/admin/Users.css'
 
-const CLASSES = ['SEC-2024-A', 'SEC-2024-B', 'SEC-2024-C', 'SEC-2023-A']
+const EMPTY_FORM = { name: '', email: '', role: 'student', password: '' }
 
-let nextId = 13
-const INITIAL_USERS = [
-  { id: 1,  name: 'Alice Chen',      email: 'alice@seafarer.edu',     role: 'student', className: 'SEC-2024-A', status: 'active'   },
-  { id: 2,  name: 'Bob Martinez',    email: 'bob@seafarer.edu',       role: 'student', className: 'SEC-2024-A', status: 'active'   },
-  { id: 3,  name: 'Clara Novak',     email: 'clara@seafarer.edu',     role: 'student', className: 'SEC-2024-B', status: 'active'   },
-  { id: 4,  name: 'Daniel Park',     email: 'daniel@seafarer.edu',    role: 'student', className: 'SEC-2024-B', status: 'inactive' },
-  { id: 5,  name: 'Eva Rossi',       email: 'eva@seafarer.edu',       role: 'student', className: 'SEC-2024-A', status: 'active'   },
-  { id: 6,  name: 'Frank Okafor',    email: 'frank@seafarer.edu',     role: 'student', className: 'SEC-2024-C', status: 'active'   },
-  { id: 7,  name: 'Grace Yamamoto',  email: 'grace@seafarer.edu',     role: 'student', className: 'SEC-2023-A', status: 'active'   },
-  { id: 8,  name: 'Hugo Brennan',    email: 'hugo@seafarer.edu',      role: 'student', className: 'SEC-2024-C', status: 'inactive' },
-  { id: 9,  name: 'Capt. Rodriguez', email: 'rodriguez@seafarer.edu', role: 'teacher', className: '—',         status: 'active'   },
-  { id: 10, name: 'Prof. Whitmore',  email: 'whitmore@seafarer.edu',  role: 'teacher', className: '—',         status: 'active'   },
-  { id: 11, name: 'Instr. Chen',     email: 'i.chen@seafarer.edu',    role: 'teacher', className: '—',         status: 'active'   },
-  { id: 12, name: 'Eng. Vasquez',    email: 'vasquez@seafarer.edu',   role: 'teacher', className: '—',         status: 'inactive' },
-]
-
-const EMPTY_FORM = { name: '', email: '', role: 'student', className: 'SEC-2024-A', password: '' }
+function mapUser(u) {
+  const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username
+  return {
+    id: u.id,
+    name: fullName,
+    username: u.username,
+    email: u.email,
+    role: u.profile?.role ?? 'student',
+    className: '—',
+    status: u.profile?.account_status === 'suspended' ? 'inactive' : 'active',
+  }
+}
 
 function parseCSV(raw) {
   const lines = raw.trim().split('\n').filter(Boolean)
   const header = lines[0].toLowerCase()
   const start = header.includes('name') || header.includes('email') ? 1 : 0
   return lines.slice(start).map(line => {
-    const [name = '', email = '', role = '', cls = ''] =
+    const [name = '', email = '', role = ''] =
       line.split(',').map(c => c.trim().replace(/^["']|["']$/g, ''))
     return {
       name,
       email,
       role: role.toLowerCase() === 'teacher' ? 'teacher' : 'student',
-      className: cls || 'SEC-2024-A',
     }
   }).filter(r => r.name && r.email)
 }
 
 export default function Users() {
-  const [users, setUsers]           = useState(INITIAL_USERS)
+  const [users, setUsers]           = useState([])
+  const [loading, setLoading]       = useState(true)
   const [search, setSearch]         = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
   const [modal, setModal]           = useState(null)
   const [editTarget, setEditTarget] = useState(null)
   const [form, setForm]             = useState(EMPTY_FORM)
   const [csvRows, setCsvRows]       = useState([])
+
+  useEffect(() => {
+    getUsers()
+      .then(res => setUsers(res.data.map(mapUser)))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
 
   const counts = {
     all:     users.length,
@@ -69,7 +73,7 @@ export default function Users() {
 
   const openEdit = (user) => {
     setEditTarget(user)
-    setForm({ name: user.name, email: user.email, role: user.role, className: user.className, password: '' })
+    setForm({ name: user.name, email: user.email, role: user.role, password: '' })
     setModal('edit')
   }
 
@@ -77,30 +81,70 @@ export default function Users() {
 
   const handleFormChange = (field, value) => setForm(f => ({ ...f, [field]: value }))
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim() || !form.email.trim()) return
-    if (modal === 'create') {
-      setUsers(prev => [...prev, { id: nextId++, ...form, status: 'active' }])
-    } else if (modal === 'edit' && editTarget) {
-      setUsers(prev => prev.map(u => u.id === editTarget.id ? { ...u, ...form } : u))
+    const [firstName, ...rest] = form.name.trim().split(' ')
+    const payload = {
+      first_name: firstName,
+      last_name: rest.join(' '),
+      email: form.email,
+      role: form.role,
+      ...(form.password && { password: form.password }),
     }
-    closeModal()
+    try {
+      if (modal === 'create') {
+        const { data } = await createUser({ ...payload, username: form.email.split('@')[0] })
+        setUsers(prev => [...prev, mapUser(data)])
+      } else if (modal === 'edit' && editTarget) {
+        const { data } = await updateUser(editTarget.id, payload)
+        setUsers(prev => prev.map(u => u.id === editTarget.id ? mapUser(data) : u))
+      }
+      closeModal()
+    } catch {}
   }
 
-  const toggleStatus = (id) =>
-    setUsers(prev => prev.map(u =>
-      u.id === id ? { ...u, status: u.status === 'active' ? 'inactive' : 'active' } : u
-    ))
+  const toggleStatus = async (id) => {
+    const user = users.find(u => u.id === id)
+    if (!user) return
+    const apiStatus  = user.status === 'active' ? 'suspended' : 'active'
+    const uiStatus   = apiStatus === 'suspended' ? 'inactive' : 'active'
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, status: uiStatus } : u))
+    try {
+      await updateUser(id, { account_status: apiStatus })
+    } catch {
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, status: user.status } : u))
+    }
+  }
 
-  const deleteUser = (id) => setUsers(prev => prev.filter(u => u.id !== id))
+  const handleDelete = async (id) => {
+    const snapshot = users
+    setUsers(prev => prev.filter(u => u.id !== id))
+    try {
+      await deleteUser(id)
+    } catch {
+      setUsers(snapshot)
+    }
+  }
 
-  const handleCSVImport = () => {
-    setUsers(prev => [...prev, ...csvRows.map(r => ({ id: nextId++, ...r, status: 'active' }))])
+  const handleCSVImport = async (password) => {
+    const payload = {
+      password,
+      users: csvRows.map(r => {
+        const [firstName, ...rest] = r.name.trim().split(' ')
+        return { first_name: firstName, last_name: rest.join(' '), email: r.email, role: r.role }
+      }),
+    }
+    try {
+      const { data } = await bulkCreateUsers(payload)
+      setUsers(prev => [...prev, ...data.users.map(mapUser)])
+      if (data.errors.length > 0)
+        console.warn('Some users could not be imported:', data.errors)
+    } catch {}
     closeModal()
   }
 
   const downloadTemplate = () => {
-    const csv = 'name,email,role,class\nJohn Doe,john@seafarer.edu,student,SEC-2024-A\nJane Smith,jane@seafarer.edu,teacher,—\n'
+    const csv = 'name,email,role\nJohn Doe,john@seafarer.edu,student\nJane Smith,jane@seafarer.edu,teacher\n'
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
     a.download = 'users_template.csv'
@@ -134,34 +178,61 @@ export default function Users() {
             />
 
             <div className="users-table-wrap">
-              <table className="users-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Email</th>
-                    <th>Class</th>
-                    <th>Status</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.length === 0 ? (
-                    <tr><td colSpan={6} className="users-empty">No users found.</td></tr>
-                  ) : (
-                    filtered.map((user, i) => (
-                      <UserRow
-                        key={user.id}
-                        user={user}
-                        index={i}
-                        onEdit={() => openEdit(user)}
-                        onToggleStatus={() => toggleStatus(user.id)}
-                        onDelete={() => deleteUser(user.id)}
-                      />
-                    ))
-                  )}
-                </tbody>
-              </table>
+              {loading ? (
+                <table className="users-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th><th>Role</th><th>Email</th><th>Class</th><th>Status</th><th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <tr key={i} style={{ opacity: 1 - i * 0.09 }}>
+                        <td><div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <Sk w={32} h={32} r={16} style={{ flexShrink: 0 }} />
+                          <div><Sk w={110} h={13} mb={5} /><Sk w={80} h={11} /></div>
+                        </div></td>
+                        <td><Sk w={58} h={20} r={4} /></td>
+                        <td><Sk w={150} h={13} /></td>
+                        <td><Sk w={70}  h={13} /></td>
+                        <td><Sk w={55}  h={20} r={10} /></td>
+                        <td><div style={{ display: 'flex', gap: 4 }}>
+                          <Sk w={28} h={28} r={6} /><Sk w={28} h={28} r={6} />
+                        </div></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <table className="users-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Role</th>
+                      <th>Email</th>
+                      <th>Class</th>
+                      <th>Status</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.length === 0 ? (
+                      <tr><td colSpan={6} className="users-empty">No users found.</td></tr>
+                    ) : (
+                      filtered.map((user, i) => (
+                        <UserRow
+                          key={user.id}
+                          user={user}
+                          index={i}
+                          onEdit={() => openEdit(user)}
+                          onToggleStatus={() => toggleStatus(user.id)}
+                          onDelete={() => handleDelete(user.id)}
+                        />
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           </main>
         </div>
@@ -174,7 +245,7 @@ export default function Users() {
           onChange={handleFormChange}
           onClose={closeModal}
           onSave={handleSave}
-          classes={CLASSES}
+          classes={[]}
         />
       )}
 

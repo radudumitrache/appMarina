@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { getPanels } from '../../api/lessons'
+import { getLesson, getPanels } from '../../api/lessons'
 import LessonTopBar from '../../components/student/lesson-reader/LessonTopBar'
 import VRPanel from '../../components/student/lesson-reader/VRPanel'
 import TextPanel from '../../components/student/lesson-reader/TextPanel'
@@ -33,9 +33,6 @@ export default function LessonReader() {
   const navigate  = useNavigate()
   const { state } = useLocation()
 
-  // Lesson metadata comes from navigation state (passed by LessonCard click).
-  // This avoids a GET /api/lessons/{pk}/ call that returns 404 when the detail
-  // endpoint is not yet exposed, as documented in PANELS_AND_VR.md.
   const [lesson,   setLesson]   = useState(state?.lesson ?? null)
   const [panels,   setPanels]   = useState([])
   const [panelIdx, setPanelIdx] = useState(0)
@@ -46,15 +43,15 @@ export default function LessonReader() {
 
   useEffect(() => {
     setLoading(true)
-    getPanels(id)
-      .then(res => {
-        const sorted = [...res.data].sort((a, b) => a.order - b.order)
+    Promise.all([getLesson(id), getPanels(id)])
+      .then(([lessonRes, panelsRes]) => {
+        setLesson(lessonRes.data)
+        const sorted = [...panelsRes.data].sort((a, b) => a.order - b.order)
         setPanels(sorted)
       })
       .catch(err => {
-        // 403 means the backend hasn't yet opened panel reads to students.
         if (err?.response?.status === 403) {
-          setError('Panel content is not yet available for students. Ask your teacher to publish this lesson.')
+          setError('You are not enrolled in a class that includes this lesson.')
         } else {
           setError('Could not load lesson content.')
         }
@@ -88,7 +85,11 @@ export default function LessonReader() {
     }
     for (const na of activeTour.navigator_anchors ?? []) {
       const { lon, lat } = vec3ToLonLat(na.pos_x, na.pos_y, na.pos_z)
-      out.push({ id: `na-${na.id}`, lon, lat, label: 'Go →', className: 'vr-hotspot--anchor vr-hotspot--nav', onClick: () => { setAnchor(null); setTourId(na.target_vr_tour) } })
+      out.push({ id: `na-${na.id}`, lon, lat, label: na.title || 'Go →', className: 'vr-hotspot--anchor vr-hotspot--nav', onClick: () => {
+        setAnchor(null)
+        const idx = panels.findIndex(p => p.id === na.target_panel)
+        if (idx !== -1) setPanelIdx(idx)
+      } })
     }
     return out
   }, [activeTour])

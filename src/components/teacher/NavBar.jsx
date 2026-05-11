@@ -8,6 +8,7 @@ const LINKS = [
   { label: 'Course Builder',   slug: 'builder'     },
   { label: 'Student Progress', slug: 'progress'    },
   { label: 'Test Builder',     slug: 'assignments' },
+  { label: 'Media',            slug: 'media'       },
   { label: 'Support',          slug: 'support'     },
 ]
 

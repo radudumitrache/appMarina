@@ -11,7 +11,9 @@ export default function AssignmentList({ assignments }) {
         <span className="cd-col cd-col--action" />
       </div>
 
-      {assignments.map((a, i) => {
+      {assignments.length === 0 ? (
+        <p className="cd-empty">No assignments have been created yet.</p>
+      ) : assignments.map((a, i) => {
         const subPct = Math.round((a.submitted / a.total) * 100)
         return (
           <div

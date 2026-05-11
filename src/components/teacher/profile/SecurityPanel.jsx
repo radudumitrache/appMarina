@@ -1,24 +1,33 @@
 import { useState } from 'react'
 import '../../css/teacher/profile/SecurityPanel.css'
 
-export default function SecurityPanel() {
+export default function SecurityPanel({ onChangePassword }) {
   const [pwCurrent, setPwCurrent] = useState('')
   const [pwNew,     setPwNew]     = useState('')
   const [pwConfirm, setPwConfirm] = useState('')
   const [pwErrors,  setPwErrors]  = useState({})
   const [pwSaved,   setPwSaved]   = useState(false)
+  const [saving,    setSaving]    = useState(false)
 
-  function handlePwSubmit(e) {
+  async function handlePwSubmit(e) {
     e.preventDefault()
     const errs = {}
     if (!pwCurrent)          errs.current = 'Enter your current password.'
     if (pwNew.length < 8)    errs.next    = 'Password must be at least 8 characters.'
     if (pwNew !== pwConfirm) errs.confirm = 'Passwords do not match.'
     if (Object.keys(errs).length) { setPwErrors(errs); return }
-    setPwErrors({})
-    setPwSaved(true)
-    setPwCurrent(''); setPwNew(''); setPwConfirm('')
-    setTimeout(() => setPwSaved(false), 3000)
+    setSaving(true)
+    try {
+      await onChangePassword(pwCurrent, pwNew)
+      setPwErrors({})
+      setPwSaved(true)
+      setPwCurrent(''); setPwNew(''); setPwConfirm('')
+      setTimeout(() => setPwSaved(false), 3000)
+    } catch {
+      setPwErrors({ current: 'Current password is incorrect.' })
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -56,8 +65,8 @@ export default function SecurityPanel() {
               <input className="tp-form-input" type="password" value={pwConfirm} onChange={e => { setPwConfirm(e.target.value); setPwErrors(v => ({ ...v, confirm: '' })) }} />
               {pwErrors.confirm && <span className="tp-form-error">{pwErrors.confirm}</span>}
             </div>
-            <button type="submit" className="tp-btn-primary" style={{ alignSelf: 'flex-start' }}>
-              Update password
+            <button type="submit" className="tp-btn-primary" style={{ alignSelf: 'flex-start' }} disabled={saving}>
+              {saving ? 'Saving…' : 'Update password'}
             </button>
           </form>
         )}

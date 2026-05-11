@@ -1,0 +1,55 @@
+/* ── Code field with generate button ─────────────────────────────────────── */
+.form-code-wrap {
+  display: flex;
+  gap: 6px;
+}
+
+.form-input--code {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-gen-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+}
+
+.form-gen-btn:hover {
+  background: rgba(212, 160, 23, 0.10);
+  border-color: rgba(212, 160, 23, 0.40);
+  color: var(--gold);
+}
+
+/* Teacher accent overrides on top of the shared admin modal CSS */
+.btn-primary {
+  background: var(--gold);
+  color: #0d1117;
+}
+.btn-primary:hover { opacity: 0.88; }
+
+.form-input:focus,
+.form-select:focus { border-color: rgba(212, 160, 23, 0.45); }
+
+.form-radio--active {
+  border-color: rgba(212, 160, 23, 0.45);
+  background: rgba(212, 160, 23, 0.08);
+  color: var(--gold);
+}
+
+.checklist-item--checked        { background: rgba(212, 160, 23, 0.06); }
+.checklist-item--checked .checklist-check { background: var(--gold); border-color: var(--gold); }
+
+.form-label-required {
+  color: var(--gold);
+  margin-left: 2px;
+}

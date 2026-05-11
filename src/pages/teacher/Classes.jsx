@@ -1,55 +1,139 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NavBar from '../../components/teacher/NavBar'
 import ClassesHeader from '../../components/teacher/classes/ClassesHeader'
 import ClassesStats from '../../components/teacher/classes/ClassesStats'
 import ClassesToolbar from '../../components/teacher/classes/ClassesToolbar'
 import ClassCard from '../../components/teacher/classes/ClassCard'
-import { CLASSES } from './classesMock'
+import ClassFormModal from '../../components/teacher/classes/ClassFormModal'
+import DeleteConfirmModal from '../../components/admin/classes/DeleteConfirmModal'
+import { getClasses, createClass, deleteClass } from '../../api/classes'
+import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/Classes.css'
+
+const EMPTY_FORM = {
+  name: '', code: '', subject: '',
+  semester: '', start_date: '', end_date: '', status: 'active',
+}
 
 export default function Classes() {
   const navigate = useNavigate()
-  const [tab, setTab]       = useState('all')
-  const [search, setSearch] = useState('')
+  const [classes, setClasses]       = useState([])
+  const [loading, setLoading]       = useState(true)
+  const [tab, setTab]               = useState('all')
+  const [search, setSearch]         = useState('')
+  const [showModal, setShowModal]     = useState(false)
+  const [form, setForm]               = useState(EMPTY_FORM)
+  const [formErrors, setFormErrors]   = useState({})
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
-  const filtered = CLASSES
+  useEffect(() => {
+    getClasses()
+      .then(({ data }) => setClasses(data.map(cls => ({
+        ...cls,
+        students:     cls.student_count,
+        lessonsTotal: cls.lesson_count,
+        lessonsDone:  0,
+      }))))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const filtered = classes
     .filter(c => tab === 'all' || c.status === tab)
     .filter(c =>
       c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
-      c.subject.toLowerCase().includes(search.toLowerCase().trim())
+      (c.subject || '').toLowerCase().includes(search.toLowerCase().trim())
     )
 
-  const totalStudents = CLASSES.reduce((sum, c) => sum + c.students, 0)
-  const activeCount   = CLASSES.filter(c => c.status === 'active').length
-  const avgProgress   = Math.round(
-    CLASSES.reduce((sum, c) => sum + (c.lessonsDone / c.lessonsTotal) * 100, 0) / CLASSES.length
-  )
+  const openCreate = () => { setForm(EMPTY_FORM); setFormErrors({}); setShowModal(true) }
+  const closeModal = () => { setShowModal(false); setFormErrors({}) }
+
+  const executeDelete = async () => {
+    try {
+      await deleteClass(deleteTarget.id)
+      setClasses(prev => prev.filter(c => c.id !== deleteTarget.id))
+    } catch {}
+    setDeleteTarget(null)
+  }
+
+  const handleFormChange = (field, value) => {
+    setForm(f => ({ ...f, [field]: value }))
+    setFormErrors(e => { const n = { ...e }; delete n[field]; return n })
+  }
+
+  const handleSave = async () => {
+    const clientErrors = {}
+    if (!form.name.trim())     clientErrors.name       = 'Class name is required.'
+    if (!form.code.trim())     clientErrors.code       = 'Class code is required.'
+    if (!form.subject.trim())  clientErrors.subject    = 'Subject is required.'
+    if (!form.semester.trim()) clientErrors.semester   = 'Semester is required.'
+    if (!form.start_date)      clientErrors.start_date = 'Start date is required.'
+    if (!form.end_date)        clientErrors.end_date   = 'End date is required.'
+    if (Object.keys(clientErrors).length) { setFormErrors(clientErrors); return }
+
+    setFormErrors({})
+    try {
+      const { data } = await createClass(form)
+      setClasses(prev => [{ ...data, students: data.student_count, lessonsTotal: data.lesson_count, lessonsDone: 0 }, ...prev])
+      closeModal()
+    } catch (err) {
+      const d = err?.response?.data
+      if (d && typeof d === 'object' && !Array.isArray(d)) {
+        setFormErrors(Object.fromEntries(Object.entries(d).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])))
+      } else {
+        setFormErrors({ non_field_errors: 'Something went wrong. Please try again.' })
+      }
+    }
+  }
+
+  const totalStudents = classes.reduce((sum, c) => sum + c.student_count, 0)
+  const activeCount   = classes.filter(c => c.status === 'active').length
+  const avgProgress   = 0
 
   return (
+    <>
     <div className="classes-page">
       <div className="classes-layout">
         <NavBar />
 
-        <ClassesHeader />
+        <ClassesHeader onCreateNew={openCreate} />
 
         <div className="classes-content">
           <ClassesStats
-            totalClasses={CLASSES.length}
+            totalClasses={classes.length}
             totalStudents={totalStudents}
             activeCount={activeCount}
             avgProgress={avgProgress}
           />
 
           <ClassesToolbar
-            classes={CLASSES}
+            classes={classes}
             tab={tab}
             onTabChange={setTab}
             search={search}
             onSearchChange={setSearch}
           />
 
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="classes-grid">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="class-card" style={{ opacity: 1 - i * 0.15, animation: 'none' }}>
+                  <div className="class-card-top">
+                    <Sk w={`${55 + (i % 3) * 10}%`} h={15} r={4} />
+                    <Sk w={52} h={18} r={4} style={{ flexShrink: 0 }} />
+                  </div>
+                  <div className="class-card-meta">
+                    <Sk w={90} h={13} r={3} />
+                    <Sk w={90} h={13} r={3} />
+                  </div>
+                  <div className="class-card-actions" style={{ borderTop: '1px solid var(--border)', paddingTop: 4 }}>
+                    <Sk h={34} r={6} />
+                    <Sk w={34} h={34} r={6} style={{ flexShrink: 0 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
             <p className="classes-empty">No classes match your search.</p>
           ) : (
             <div className="classes-grid">
@@ -59,7 +143,7 @@ export default function Classes() {
                   cls={cls}
                   index={i}
                   onView={() => navigate(`/teacher/classes/${cls.id}`)}
-                  onManage={() => {}}
+                  onDelete={() => setDeleteTarget(cls)}
                 />
               ))}
             </div>
@@ -67,5 +151,23 @@ export default function Classes() {
         </div>
       </div>
     </div>
+
+    {showModal && (
+      <ClassFormModal
+        form={form}
+        errors={formErrors}
+        onChange={handleFormChange}
+        onClose={closeModal}
+        onSave={handleSave}
+      />
+    )}
+    {deleteTarget && (
+      <DeleteConfirmModal
+        target={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={executeDelete}
+      />
+    )}
+    </>
   )
 }

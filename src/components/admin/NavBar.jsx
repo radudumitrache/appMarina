@@ -6,9 +6,10 @@ const LINKS = [
   { label: 'Dashboard', slug: 'dashboard' },
   { label: 'Users',     slug: 'users'     },
   { label: 'Lessons',   slug: 'lessons'   },
+  { label: 'Tests',     slug: 'tests'     },
   { label: 'Classes',   slug: 'classes'   },
+  { label: 'Media',     slug: 'media'     },
   { label: 'Support',   slug: 'support'   },
-  { label: 'Settings',  slug: 'settings'  },
 ]
 
 export default function NavBar() {
@@ -55,9 +56,9 @@ export default function NavBar() {
         </button>
 
         <button
-          className={`nav-avatar ${pathname === '/admin/profile' ? 'nav-avatar--active' : ''}`}
-          onClick={() => navigate('/admin/profile')}
-          title="My Profile"
+          className={`nav-avatar ${pathname === '/admin/settings' ? 'nav-avatar--active' : ''}`}
+          onClick={() => navigate('/admin/settings')}
+          title="Settings"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>

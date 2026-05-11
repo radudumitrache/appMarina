@@ -1,60 +1,170 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import NavBar from '../../components/admin/NavBar'
 import ClassDetailTopbar from '../../components/admin/class-detail/ClassDetailTopbar'
 import ClassDetailHeader from '../../components/admin/class-detail/ClassDetailHeader'
 import ManagementPanel from '../../components/admin/class-detail/ManagementPanel'
 import EditDetailsModal from '../../components/admin/class-detail/EditDetailsModal'
+import {
+  getClass, updateClass,
+  getClassStudents, enrollStudent, removeStudent,
+  getClassLessons, assignLesson, unassignLesson,
+} from '../../api/classes'
+import { getUsers, getTeachers } from '../../api/admin'
+import { getLessons } from '../../api/lessons'
+import Sk from '../../components/shared/Skeleton'
 import '../css/admin/ClassDetail.css'
-
-const ALL_STUDENTS = [
-  { id: 1,  name: 'Alice Chen'      },
-  { id: 2,  name: 'Bob Martinez'    },
-  { id: 3,  name: 'Clara Novak'     },
-  { id: 4,  name: 'Daniel Park'     },
-  { id: 5,  name: 'Eva Rossi'       },
-  { id: 6,  name: 'Frank Okafor'    },
-  { id: 7,  name: 'Grace Yamamoto'  },
-  { id: 8,  name: 'Hugo Brennan'    },
-  { id: 9,  name: 'Isla Torres'     },
-  { id: 10, name: 'James Okonkwo'   },
-  { id: 11, name: 'Kira Petrov'     },
-  { id: 12, name: 'Liam Walsh'      },
-]
-
-const ALL_LESSONS = [
-  { id: 1,  title: 'Helm Control Basics'        },
-  { id: 2,  title: 'Chart Reading Fundamentals' },
-  { id: 3,  title: 'Radar & ARPA Systems'       },
-  { id: 5,  title: 'Fire Safety Protocols'      },
-  { id: 6,  title: 'Man Overboard Response'     },
-  { id: 8,  title: 'Main Engine Operations'     },
-  { id: 10, title: 'Load Calculation'           },
-  { id: 12, title: 'GMDSS Radio Operations'     },
-]
-
-const TEACHERS = ['Capt. Rodriguez', 'Prof. Whitmore', 'Instr. Chen', 'Eng. Vasquez']
-
-const INITIAL_CLASSES = [
-  { id: 1, name: 'SEC-2024-A', teacher: 'Capt. Rodriguez',  students: [1, 2, 5],     lessons: [1, 2, 3, 5],     status: 'active',   description: 'Main cohort — Spring 2024'    },
-  { id: 2, name: 'SEC-2024-B', teacher: 'Prof. Whitmore',   students: [3, 4, 11],    lessons: [1, 3, 6, 8],     status: 'active',   description: 'Advanced track — Spring 2024' },
-  { id: 3, name: 'SEC-2024-C', teacher: 'Instr. Chen',      students: [6, 8, 12],    lessons: [1, 2, 5, 12],    status: 'active',   description: 'Evening cohort — Spring 2024' },
-  { id: 4, name: 'SEC-2023-A', teacher: 'Eng. Vasquez',     students: [7, 9, 10],    lessons: [1, 2, 3, 8, 10], status: 'archived', description: 'Completed cohort — 2023'      },
-]
 
 export default function AdminClassDetail() {
   const { id }   = useParams()
   const navigate = useNavigate()
 
-  const base = INITIAL_CLASSES.find(c => c.id === Number(id))
-
-  const [cls, setCls]               = useState(base || null)
-  const [editMode, setEditMode]     = useState(false)
-  const [editForm, setEditForm]     = useState(null)
+  const [cls, setCls]                   = useState(null)
+  const [students, setStudents]         = useState([])
+  const [lessons, setLessons]           = useState([])
+  const [allStudents, setAllStudents]   = useState([])
+  const [allLessons, setAllLessons]     = useState([])
+  const [teachers, setTeachers]         = useState([])
+  const [loading, setLoading]           = useState(true)
+  const [editMode, setEditMode]         = useState(false)
+  const [editForm, setEditForm]         = useState(null)
   const [studentSearch, setStudentSearch] = useState('')
   const [lessonSearch,  setLessonSearch]  = useState('')
   const [studentFocus,  setStudentFocus]  = useState(false)
   const [lessonFocus,   setLessonFocus]   = useState(false)
+
+  useEffect(() => {
+    Promise.all([
+      getClass(id),
+      getClassStudents(id),
+      getClassLessons(id),
+      getUsers({ 'userprofile__role': 'student' }),
+      getLessons(),
+      getTeachers(),
+    ]).then(([clsRes, stuRes, lesRes, allStuRes, allLesRes, tchRes]) => {
+      setCls(clsRes.data)
+      setStudents(stuRes.data.map(e => ({ id: e.student, name: e.student_name, email: e.student_email })))
+      setLessons(lesRes.data.map(cl => ({ id: cl.lesson, title: cl.lesson_detail.title })))
+      setAllStudents(allStuRes.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })))
+      setAllLessons(allLesRes.data.map(l => ({ id: l.id, title: l.title })))
+      setTeachers(tchRes.data)
+    }).finally(() => setLoading(false))
+  }, [id])
+
+  const openEdit = () => {
+    setEditForm({
+      name:       cls.name,
+      code:       cls.code,
+      subject:    cls.subject,
+      teacher:    cls.teacher,
+      semester:   cls.semester,
+      start_date: cls.start_date,
+      end_date:   cls.end_date,
+      status:     cls.status,
+    })
+    setEditMode(true)
+  }
+
+  const saveEdit = async () => {
+    if (!editForm.name.trim()) return
+    try {
+      const { data } = await updateClass(id, editForm)
+      setCls(data)
+    } catch {}
+    setEditMode(false)
+  }
+
+  const handleEditChange = (field, value) => setEditForm(f => ({ ...f, [field]: value }))
+
+  const enrolledIds = useMemo(() => new Set(students.map(s => s.id)), [students])
+  const assignedIds = useMemo(() => new Set(lessons.map(l => l.id)),  [lessons])
+
+  const studentSuggestions = useMemo(() => {
+    const q = studentSearch.trim().toLowerCase()
+    if (!q) return []
+    return allStudents.filter(s => !enrolledIds.has(s.id) && (s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)))
+  }, [studentSearch, allStudents, enrolledIds])
+
+  const lessonSuggestions = useMemo(() => {
+    const q = lessonSearch.trim().toLowerCase()
+    if (!q) return []
+    return allLessons.filter(l => !assignedIds.has(l.id) && l.title.toLowerCase().includes(q))
+  }, [lessonSearch, allLessons, assignedIds])
+
+  const addStudent = async s => {
+    setStudentSearch('')
+    try {
+      await enrollStudent(id, { email: s.email })
+      setStudents(prev => [...prev, s])
+    } catch {}
+  }
+
+  const handleRemoveStudent = async uid => {
+    setStudents(prev => prev.filter(s => s.id !== uid))
+    try {
+      await removeStudent(id, uid)
+    } catch {
+      setStudents(prev => [...prev])
+    }
+  }
+
+  const addLesson = async l => {
+    setLessonSearch('')
+    try {
+      await assignLesson(id, { lesson: l.id })
+      setLessons(prev => [...prev, l])
+    } catch {}
+  }
+
+  const handleRemoveLesson = async lid => {
+    setLessons(prev => prev.filter(l => l.id !== lid))
+    try {
+      await unassignLesson(id, lid)
+    } catch {
+      setLessons(prev => [...prev])
+    }
+  }
+
+  const toggleArchive = async () => {
+    const newStatus = cls.status === 'active' ? 'archived' : 'active'
+    try {
+      const { data } = await updateClass(id, { status: newStatus })
+      setCls(data)
+    } catch {}
+  }
+
+  if (loading) {
+    return (
+      <div className="cd-page">
+        <NavBar />
+        <div style={{ padding: '24px 40px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <Sk w={120} h={13} r={4} />
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <Sk w={220} h={26} r={6} />
+            <Sk w={64} h={20} r={4} />
+          </div>
+          <Sk w={160} h={13} r={4} />
+          <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} style={{ flex: 1, background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Sk w={90} h={14} r={4} />
+                  <Sk w={100} h={32} r={6} />
+                </div>
+                {Array.from({ length: 4 }).map((_, j) => (
+                  <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--border)', opacity: 1 - j * 0.15 }}>
+                    <Sk w={28} h={28} r={14} style={{ flexShrink: 0 }} />
+                    <Sk w={`${50 + (j % 3) * 12}%`} h={12} r={4} />
+                    <Sk w={20} h={20} r={4} style={{ marginLeft: 'auto', flexShrink: 0 }} />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!cls) {
     return (
@@ -68,39 +178,6 @@ export default function AdminClassDetail() {
     )
   }
 
-  const openEdit = () => {
-    setEditForm({ name: cls.name, teacher: cls.teacher, description: cls.description || '', status: cls.status })
-    setEditMode(true)
-  }
-  const saveEdit = () => {
-    if (!editForm.name.trim()) return
-    setCls(c => ({ ...c, ...editForm }))
-    setEditMode(false)
-  }
-  const handleEditChange = (field, value) =>
-    setEditForm(f => ({ ...f, [field]: value }))
-
-  const enrolledStudents = ALL_STUDENTS.filter(s => cls.students.includes(s.id))
-  const assignedLessons  = ALL_LESSONS.filter(l => cls.lessons.includes(l.id))
-
-  const studentSuggestions = useMemo(() => {
-    const q = studentSearch.trim().toLowerCase()
-    if (!q) return []
-    return ALL_STUDENTS.filter(s => !cls.students.includes(s.id) && s.name.toLowerCase().includes(q))
-  }, [studentSearch, cls.students])
-
-  const lessonSuggestions = useMemo(() => {
-    const q = lessonSearch.trim().toLowerCase()
-    if (!q) return []
-    return ALL_LESSONS.filter(l => !cls.lessons.includes(l.id) && l.title.toLowerCase().includes(q))
-  }, [lessonSearch, cls.lessons])
-
-  const addStudent    = s   => { setCls(c => ({ ...c, students: [...c.students, s.id] })); setStudentSearch('') }
-  const removeStudent = sid => setCls(c => ({ ...c, students: c.students.filter(x => x !== sid) }))
-  const addLesson     = l   => { setCls(c => ({ ...c, lessons: [...c.lessons, l.id] })); setLessonSearch('') }
-  const removeLesson  = lid => setCls(c => ({ ...c, lessons: c.lessons.filter(x => x !== lid) }))
-  const toggleArchive = ()  => setCls(c => ({ ...c, status: c.status === 'active' ? 'archived' : 'active' }))
-
   return (
     <div className="cd-page">
       <NavBar />
@@ -112,13 +189,13 @@ export default function AdminClassDetail() {
         onEdit={openEdit}
       />
 
-      <ClassDetailHeader cls={cls} />
+      <ClassDetailHeader cls={cls} studentCount={students.length} lessonCount={lessons.length} />
 
       <div className="cd-panels">
         <ManagementPanel
           title="Students"
           type="student"
-          items={enrolledStudents}
+          items={students}
           searchValue={studentSearch}
           onSearchChange={setStudentSearch}
           searchPlaceholder="Search students to add…"
@@ -127,12 +204,13 @@ export default function AdminClassDetail() {
           onFocus={() => setStudentFocus(true)}
           onBlur={() => setTimeout(() => setStudentFocus(false), 150)}
           onAdd={addStudent}
-          onRemove={removeStudent}
+          onRemove={handleRemoveStudent}
+          onSelectItem={s => navigate(`/admin/students/${s.id}/progress`)}
         />
         <ManagementPanel
           title="Lessons"
           type="lesson"
-          items={assignedLessons}
+          items={lessons}
           searchValue={lessonSearch}
           onSearchChange={setLessonSearch}
           searchPlaceholder="Search lessons to assign…"
@@ -141,7 +219,7 @@ export default function AdminClassDetail() {
           onFocus={() => setLessonFocus(true)}
           onBlur={() => setTimeout(() => setLessonFocus(false), 150)}
           onAdd={addLesson}
-          onRemove={removeLesson}
+          onRemove={handleRemoveLesson}
         />
       </div>
 
@@ -151,7 +229,7 @@ export default function AdminClassDetail() {
           onChange={handleEditChange}
           onClose={() => setEditMode(false)}
           onSave={saveEdit}
-          teachers={TEACHERS}
+          teachers={teachers}
         />
       )}
     </div>

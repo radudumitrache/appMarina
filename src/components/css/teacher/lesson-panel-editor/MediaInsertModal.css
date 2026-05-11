@@ -1,0 +1,240 @@
+.mim-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mim-modal {
+  width: 680px;
+  max-width: calc(100vw - 48px);
+  max-height: 80vh;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: mim-appear 0.15s var(--ease-default) both;
+}
+
+@keyframes mim-appear {
+  from { opacity: 0; transform: scale(0.97) translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+
+.mim-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.mim-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mim-title {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.mim-folder-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.mim-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color var(--duration-fast), background var(--duration-fast);
+}
+
+.mim-close:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+
+/* ── Tabs ────────────────────────────────────────────────────────────── */
+
+.mim-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 10px 20px 0;
+  flex-shrink: 0;
+}
+
+.mim-tab {
+  padding: 6px 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.mim-tab:hover { color: var(--text-2); }
+
+.mim-tab--active {
+  color: var(--gold, #d4a017);
+  border-bottom-color: var(--gold, #d4a017);
+}
+
+/* ── Body ────────────────────────────────────────────────────────────── */
+
+.mim-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* ── Upload bar ──────────────────────────────────────────────────────── */
+
+.mim-upload-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.mim-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  background: rgba(212, 160, 23, 0.1);
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold, #d4a017);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+
+.mim-upload-btn:hover:not(:disabled) {
+  background: rgba(212, 160, 23, 0.18);
+  border-color: rgba(212, 160, 23, 0.55);
+}
+
+.mim-upload-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.mim-spinner {
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid rgba(212, 160, 23, 0.3);
+  border-top-color: var(--gold, #d4a017);
+  border-radius: 50%;
+  animation: mim-spin 0.7s linear infinite;
+}
+
+@keyframes mim-spin { to { transform: rotate(360deg); } }
+
+.mim-upload-err {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--error, #e05252);
+}
+
+/* ── Hint ────────────────────────────────────────────────────────────── */
+
+.mim-hint {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  margin: 0;
+}
+
+/* ── Grid ────────────────────────────────────────────────────────────── */
+
+.mim-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.mim-grid--image { grid-template-columns: repeat(4, 1fr); }
+.mim-grid--video { grid-template-columns: repeat(3, 1fr); }
+
+/* ── Item ────────────────────────────────────────────────────────────── */
+
+.mim-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+
+.mim-item:hover {
+  border-color: var(--gold, #d4a017);
+  background: rgba(212, 160, 23, 0.06);
+}
+
+.mim-thumb-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.mim-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mim-name {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}

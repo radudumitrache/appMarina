@@ -18,7 +18,7 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-export default function TestResults({ results, onViewAll }) {
+export default function TestResults({ results, onViewAll, onSelect }) {
   return (
     <section className="progress-section">
       <div className="section-head">
@@ -35,9 +35,10 @@ export default function TestResults({ results, onViewAll }) {
       <div className="test-results-list">
         {results.map((t, i) => (
           <div
-            className="test-result-row"
+            className={`test-result-row${onSelect ? ' test-result-row--clickable' : ''}`}
             key={t.id}
             style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
+            onClick={() => onSelect?.(t)}
           >
             <div className={`test-result-grade ${gradeClass(t.grade)}`}>
               <span className="test-result-grade-num">{t.grade}</span>
@@ -50,6 +51,11 @@ export default function TestResults({ results, onViewAll }) {
             <span className={`test-result-badge ${gradeClass(t.grade)}`}>
               {gradeLabel(t.grade)}
             </span>
+            {onSelect && (
+              <svg className="test-result-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            )}
           </div>
         ))}
       </div>

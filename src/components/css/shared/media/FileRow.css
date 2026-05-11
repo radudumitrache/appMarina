@@ -1,0 +1,91 @@
+.file-row {
+  animation: rowFadeIn 0.28s ease both;
+}
+
+@keyframes rowFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.file-row td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.file-row-name {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  max-width: 280px;
+}
+
+.file-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.file-type-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.file-type-badge--image { background: var(--accent-subtle); color: var(--accent); }
+.file-type-badge--video { background: color-mix(in srgb, var(--gold, #c9a84c) 12%, transparent); color: var(--gold, #c9a84c); }
+
+.location-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.location-badge--public {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+.location-badge--class {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.file-row-size, .file-row-date {
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+  font-size: 12px;
+}
+
+.file-row-actions {
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.file-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.file-action-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+.file-action-btn--delete:hover { background: color-mix(in srgb, var(--error) 12%, transparent); color: var(--error); }

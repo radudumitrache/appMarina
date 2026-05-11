@@ -4,6 +4,8 @@
   height: 100vh;
   overflow: hidden;
   background: var(--bg);
+  display: flex;
+  flex-direction: column;
 }
 
 .lessons-layout {
@@ -12,29 +14,154 @@
   height: 100%;
 }
 
-.lessons-body {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-}
-
 /* ─── Main content area ──────────────────────────────────────────────────── */
 .lessons-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
   padding: 28px 40px;
-  gap: 16px;
+  gap: 20px;
   animation: fadeUp var(--duration-enter) var(--ease-default) 0.05s both;
 }
 
-/* ─── Lesson list ────────────────────────────────────────────────────────── */
-.lessons-list {
-  overflow-y: auto;
-  padding-right: 4px;
+/* ─── Mode switcher ──────────────────────────────────────────────────────── */
+.les-switcher {
+  display: flex;
+  gap: 0;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  width: fit-content;
 }
 
+.les-switch-btn {
+  padding: 7px 18px;
+  border: none;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.les-switch-btn:hover { color: var(--text-2); }
+.les-switch-btn--active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ─── Section wrapper ────────────────────────────────────────────────────── */
+.les-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── Class tabs (multi-class) ───────────────────────────────────────────── */
+.les-class-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.les-class-tab {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+}
+.les-class-tab:hover { border-color: var(--accent); color: var(--text-2); }
+.les-class-tab--active {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb, 32 178 140) / 0.08);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ─── Class groups ───────────────────────────────────────────────────────── */
+.les-class-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.les-class-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.les-class-group-name {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.les-class-group-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb, 32 178 140) / 0.1);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+}
+
+.les-class-group-count {
+  margin-left: auto;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* ─── Course list ────────────────────────────────────────────────────────── */
+.les-course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─── Category pills ─────────────────────────────────────────────────────── */
+.les-cat-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.les-cat-pill {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+}
+.les-cat-pill:hover { border-color: var(--accent); color: var(--text-2); }
+.les-cat-pill--active {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb, 32 178 140) / 0.08);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ─── Lesson list (public grid) ──────────────────────────────────────────── */
 .lessons-list--grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -46,34 +173,41 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  align-content: start;
 }
 
-/* ─── Empty / loading states ─────────────────────────────────────────────── */
-.lessons-empty {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  color: var(--text-3);
-  padding: 40px 0;
-  grid-column: 1 / -1;
-}
-
-.lessons-loading {
-  grid-column: 1 / -1;
+/* ─── Empty state ────────────────────────────────────────────────────────── */
+.les-empty {
   display: flex;
-  justify-content: center;
-  padding: 60px 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 60px 20px;
+  color: var(--text-3);
+  font-family: var(--font-ui);
+  font-size: 13px;
 }
 
-.lessons-spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--border-strong);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: lessons-spin 0.7s linear infinite;
+.les-join-link {
+  background: none;
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
 }
 
-@keyframes lessons-spin {
-  to { transform: rotate(360deg); }
+/* ─── Loading skeletons ──────────────────────────────────────────────────── */
+.les-skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.les-sk-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
 }

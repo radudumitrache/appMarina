@@ -1,101 +1,145 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NavBar from '../../components/admin/NavBar'
 import ClassesHeader from '../../components/admin/classes/ClassesHeader'
 import ClassesStats from '../../components/admin/classes/ClassesStats'
-import ClassCard from '../../components/admin/classes/ClassCard'
+import ClassesSection from '../../components/admin/classes/ClassesSection'
 import ClassFormModal from '../../components/admin/classes/ClassFormModal'
 import DeleteConfirmModal from '../../components/admin/classes/DeleteConfirmModal'
+import { getClasses, createClass, updateClass, deleteClass } from '../../api/classes'
+import { getTeachers } from '../../api/admin'
 import '../css/admin/Classes.css'
 
-const TEACHERS = ['Capt. Rodriguez', 'Prof. Whitmore', 'Instr. Chen', 'Eng. Vasquez']
-
-const ALL_STUDENTS = [
-  { id: 1,  name: 'Alice Chen'      },
-  { id: 2,  name: 'Bob Martinez'    },
-  { id: 3,  name: 'Clara Novak'     },
-  { id: 4,  name: 'Daniel Park'     },
-  { id: 5,  name: 'Eva Rossi'       },
-  { id: 6,  name: 'Frank Okafor'    },
-  { id: 7,  name: 'Grace Yamamoto'  },
-  { id: 8,  name: 'Hugo Brennan'    },
-  { id: 9,  name: 'Isla Torres'     },
-  { id: 10, name: 'James Okonkwo'   },
-  { id: 11, name: 'Kira Petrov'     },
-  { id: 12, name: 'Liam Walsh'      },
-]
-
-const ALL_LESSONS = [
-  { id: 1,  title: 'Helm Control Basics'        },
-  { id: 2,  title: 'Chart Reading Fundamentals' },
-  { id: 3,  title: 'Radar & ARPA Systems'       },
-  { id: 5,  title: 'Fire Safety Protocols'      },
-  { id: 6,  title: 'Man Overboard Response'     },
-  { id: 8,  title: 'Main Engine Operations'     },
-  { id: 10, title: 'Load Calculation'           },
-  { id: 12, title: 'GMDSS Radio Operations'     },
-]
-
-let nextId = 5
-const INITIAL_CLASSES = [
-  { id: 1, name: 'SEC-2024-A', teacher: 'Capt. Rodriguez', students: [1, 2, 5],     lessons: [1, 2, 3, 5],     status: 'active',   description: 'Main cohort — Spring 2024'    },
-  { id: 2, name: 'SEC-2024-B', teacher: 'Prof. Whitmore',  students: [3, 4, 11],    lessons: [1, 3, 6, 8],     status: 'active',   description: 'Advanced track — Spring 2024' },
-  { id: 3, name: 'SEC-2024-C', teacher: 'Instr. Chen',     students: [6, 8, 12],    lessons: [1, 2, 5, 12],    status: 'active',   description: 'Evening cohort — Spring 2024' },
-  { id: 4, name: 'SEC-2023-A', teacher: 'Eng. Vasquez',    students: [7, 9, 10],    lessons: [1, 2, 3, 8, 10], status: 'archived', description: 'Completed cohort — 2023'      },
-]
-
-const EMPTY_FORM = { name: '', teacher: TEACHERS[0], students: [], lessons: [], status: 'active', description: '' }
+const EMPTY_FORM = {
+  name: '', code: '', subject: '', teacher: null,
+  semester: '', start_date: '', end_date: '', status: 'active',
+}
 
 export default function Classes() {
   const navigate = useNavigate()
-  const [classes, setClasses]               = useState(INITIAL_CLASSES)
-  const [search, setSearch]                 = useState('')
-  const [statusFilter, setStatusFilter]     = useState('all')
-  const [modal, setModal]                   = useState(null)   // null | 'create' | class-object
-  const [form, setForm]                     = useState(EMPTY_FORM)
-  const [deleteTarget, setDeleteTarget]     = useState(null)
-  const [expandedStudents, setExpandedStudents] = useState(null)
-  const [expandedLessons, setExpandedLessons]   = useState(null)
+  const [classes, setClasses]           = useState([])
+  const [teachers, setTeachers]         = useState([])
+  const [loading, setLoading]           = useState(true)
+  const [search, setSearch]             = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [modal, setModal]               = useState(null)
+  const [form, setForm]                 = useState(EMPTY_FORM)
+  const [formErrors, setFormErrors]     = useState({})
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
-  const filtered = classes
-    .filter(c => statusFilter === 'all' || c.status === statusFilter)
-    .filter(c =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.teacher.toLowerCase().includes(search.toLowerCase())
-    )
+  useEffect(() => {
+    Promise.all([getClasses(), getTeachers()])
+      .then(([clsRes, tchRes]) => {
+        setClasses(clsRes.data)
+        setTeachers(tchRes.data)
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  const matchesSearch = c =>
+    c.name.toLowerCase().includes(search.toLowerCase()) ||
+    (c.teacher_name || '').toLowerCase().includes(search.toLowerCase())
+
+  const activeClasses   = classes.filter(c => c.status === 'active'   && matchesSearch(c))
+  const archivedClasses = classes.filter(c => c.status === 'archived' && matchesSearch(c))
 
   const stats = {
     total:    classes.length,
     active:   classes.filter(c => c.status === 'active').length,
     archived: classes.filter(c => c.status === 'archived').length,
-    students: new Set(classes.flatMap(c => c.students)).size,
+    students: classes.reduce((sum, c) => sum + (c.student_count || 0), 0),
   }
 
-  const openCreate = () => { setForm(EMPTY_FORM); setModal('create') }
+  const openCreate = () => { setForm(EMPTY_FORM); setFormErrors({}); setModal('create') }
   const openEdit   = cls => {
-    setForm({ name: cls.name, teacher: cls.teacher, students: [...cls.students], lessons: [...cls.lessons], status: cls.status, description: cls.description || '' })
+    setForm({
+      name:       cls.name,
+      code:       cls.code,
+      subject:    cls.subject,
+      teacher:    cls.teacher,
+      semester:   cls.semester,
+      start_date: cls.start_date,
+      end_date:   cls.end_date,
+      status:     cls.status,
+    })
+    setFormErrors({})
     setModal(cls)
   }
 
-  const handleFormChange = (field, value) => setForm(f => ({ ...f, [field]: value }))
-
-  const handleSave = () => {
-    if (!form.name.trim()) return
-    if (modal === 'create') {
-      setClasses(prev => [...prev, { id: nextId++, ...form }])
-    } else {
-      setClasses(prev => prev.map(c => c.id === modal.id ? { ...c, ...form } : c))
-    }
-    setModal(null)
+  const handleFormChange = (field, value) => {
+    setForm(f => ({ ...f, [field]: value }))
+    setFormErrors(e => { const n = { ...e }; delete n[field]; return n })
   }
 
-  const toggleArchive = id =>
-    setClasses(prev => prev.map(c => c.id === id ? { ...c, status: c.status === 'active' ? 'archived' : 'active' } : c))
+  const handleSave = async () => {
+    const clientErrors = {}
+    if (!form.name.trim())     clientErrors.name       = 'Class name is required.'
+    if (!form.code.trim())     clientErrors.code       = 'Class code is required.'
+    if (!form.subject.trim())  clientErrors.subject    = 'Subject is required.'
+    if (!form.semester.trim()) clientErrors.semester   = 'Semester is required.'
+    if (!form.start_date)      clientErrors.start_date = 'Start date is required.'
+    if (!form.end_date)        clientErrors.end_date   = 'End date is required.'
+    if (modal === 'create' && !form.teacher) clientErrors.teacher = 'Please select a teacher.'
+    if (Object.keys(clientErrors).length) { setFormErrors(clientErrors); return }
+    setFormErrors({})
+    try {
+      if (modal === 'create') {
+        const { data } = await createClass(form)
+        setClasses(prev => [data, ...prev])
+      } else {
+        const { data } = await updateClass(modal.id, form)
+        setClasses(prev => prev.map(c => c.id === modal.id ? data : c))
+      }
+      setModal(null)
+    } catch (err) {
+      const data = err?.response?.data
+      if (data && typeof data === 'object' && !Array.isArray(data)) {
+        setFormErrors(
+          Object.fromEntries(
+            Object.entries(data).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
+          )
+        )
+      } else {
+        setFormErrors({ non_field_errors: 'Something went wrong. Please try again.' })
+      }
+    }
+  }
 
-  const executeDelete = () => {
-    setClasses(prev => prev.filter(c => c.id !== deleteTarget.id))
+  const toggleArchive = async id => {
+    const cls = classes.find(c => c.id === id)
+    if (!cls) return
+    const newStatus = cls.status === 'active' ? 'archived' : 'active'
+    setClasses(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c))
+    try {
+      const { data } = await updateClass(id, { status: newStatus })
+      setClasses(prev => prev.map(c => c.id === id ? data : c))
+    } catch {
+      setClasses(prev => prev.map(c => c.id === id ? cls : c))
+    }
+  }
+
+  const executeDelete = async () => {
+    try {
+      await deleteClass(deleteTarget.id)
+      setClasses(prev => prev.filter(c => c.id !== deleteTarget.id))
+    } catch {}
     setDeleteTarget(null)
   }
+
+  const sectionHandlers = {
+    onManage:        cls => navigate(`/admin/classes/${cls.id}`),
+    onEdit:          openEdit,
+    onToggleArchive: toggleArchive,
+    onDelete:        cls => setDeleteTarget(cls),
+  }
+
+  const showBoth     = statusFilter === 'all'
+  const showActive   = statusFilter === 'active'
+  const showArchived = statusFilter === 'archived'
+
+  const filteredCount = showBoth
+    ? activeClasses.length + archivedClasses.length
+    : showActive ? activeClasses.length : archivedClasses.length
 
   return (
     <div className="classes-adm-page">
@@ -103,7 +147,7 @@ export default function Classes() {
         <NavBar />
 
         <ClassesHeader
-          filteredCount={filtered.length}
+          filteredCount={filteredCount}
           search={search}
           onSearchChange={setSearch}
           statusFilter={statusFilter}
@@ -114,28 +158,49 @@ export default function Classes() {
         <ClassesStats stats={stats} />
 
         <div className="classes-adm-main">
-          {filtered.length === 0 ? (
-            <p className="classes-adm-empty">No classes found.</p>
-          ) : (
-            <div className="classes-grid">
-              {filtered.map((cls, i) => (
-                <ClassCard
-                  key={cls.id}
-                  cls={cls}
-                  index={i}
-                  allStudents={ALL_STUDENTS}
-                  allLessons={ALL_LESSONS}
-                  isStudentsExpanded={expandedStudents === cls.id}
-                  isLessonsExpanded={expandedLessons === cls.id}
-                  onToggleStudents={() => setExpandedStudents(expandedStudents === cls.id ? null : cls.id)}
-                  onToggleLessons={() => setExpandedLessons(expandedLessons === cls.id ? null : cls.id)}
-                  onManage={() => navigate(`/admin/classes/${cls.id}`)}
-                  onEdit={() => openEdit(cls)}
-                  onToggleArchive={() => toggleArchive(cls.id)}
-                  onDelete={() => setDeleteTarget(cls)}
+          {showBoth && (
+            <>
+              <ClassesSection
+                title="Active"
+                classes={activeClasses}
+                startIndex={0}
+                loading={loading}
+                skeletonCount={3}
+                {...sectionHandlers}
+              />
+              {(loading || archivedClasses.length > 0) && (
+                <ClassesSection
+                  title="Archived"
+                  classes={archivedClasses}
+                  startIndex={activeClasses.length}
+                  loading={loading}
+                  skeletonCount={1}
+                  {...sectionHandlers}
                 />
-              ))}
-            </div>
+              )}
+            </>
+          )}
+
+          {showActive && (
+            <ClassesSection
+              title="Active"
+              classes={activeClasses}
+              startIndex={0}
+              loading={loading}
+              skeletonCount={4}
+              {...sectionHandlers}
+            />
+          )}
+
+          {showArchived && (
+            <ClassesSection
+              title="Archived"
+              classes={archivedClasses}
+              startIndex={0}
+              loading={loading}
+              skeletonCount={2}
+              {...sectionHandlers}
+            />
           )}
         </div>
       </div>
@@ -144,12 +209,11 @@ export default function Classes() {
         <ClassFormModal
           mode={modal === 'create' ? 'create' : 'edit'}
           form={form}
+          errors={formErrors}
           onChange={handleFormChange}
-          onClose={() => setModal(null)}
+          onClose={() => { setModal(null); setFormErrors({}) }}
           onSave={handleSave}
-          teachers={TEACHERS}
-          allStudents={ALL_STUDENTS}
-          allLessons={ALL_LESSONS}
+          teachers={teachers}
         />
       )}
 

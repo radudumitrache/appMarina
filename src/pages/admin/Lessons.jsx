@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import NavBar from '../../components/admin/NavBar'
 import LessonsSidebar from '../../components/admin/lessons/LessonsSidebar'
 import LessonsToolbar from '../../components/admin/lessons/LessonsToolbar'
 import LessonRow from '../../components/admin/lessons/LessonRow'
 import LessonFormPanel from '../../components/admin/lessons/LessonFormPanel'
 import LessonDeleteModal from '../../components/admin/lessons/LessonDeleteModal'
+import { getLessons, createLesson, deleteLesson } from '../../api/lessons'
+import Sk from '../../components/shared/Skeleton'
 import '../css/admin/Lessons.css'
 
 const CATEGORIES = [
@@ -17,72 +20,67 @@ const CATEGORIES = [
 ]
 
 const DIFFICULTIES = ['easy', 'intermediate', 'advanced']
-const TEACHERS = ['Capt. Rodriguez', 'Prof. Whitmore', 'Instr. Chen', 'Eng. Vasquez']
-
-let nextId = 13
-const INITIAL_LESSONS = [
-  { id: 1,  cat: 'nav',   title: 'Helm Control Basics',        duration: '45 min', difficulty: 'easy',         status: 'published', author: 'Capt. Rodriguez', visibility: 'class'  },
-  { id: 2,  cat: 'nav',   title: 'Chart Reading Fundamentals', duration: '60 min', difficulty: 'easy',         status: 'published', author: 'Capt. Rodriguez', visibility: 'class'  },
-  { id: 3,  cat: 'nav',   title: 'Radar & ARPA Systems',       duration: '75 min', difficulty: 'intermediate', status: 'published', author: 'Prof. Whitmore',  visibility: 'public' },
-  { id: 4,  cat: 'nav',   title: 'Celestial Navigation',       duration: '90 min', difficulty: 'advanced',     status: 'draft',     author: 'Prof. Whitmore',  visibility: 'public' },
-  { id: 5,  cat: 'emg',   title: 'Fire Safety Protocols',      duration: '50 min', difficulty: 'easy',         status: 'published', author: 'Instr. Chen',     visibility: 'class'  },
-  { id: 6,  cat: 'emg',   title: 'Man Overboard Response',     duration: '60 min', difficulty: 'intermediate', status: 'published', author: 'Instr. Chen',     visibility: 'class'  },
-  { id: 7,  cat: 'emg',   title: 'Abandon Ship Procedure',     duration: '45 min', difficulty: 'intermediate', status: 'draft',     author: 'Prof. Whitmore',  visibility: 'public' },
-  { id: 8,  cat: 'eng',   title: 'Main Engine Operations',     duration: '80 min', difficulty: 'intermediate', status: 'published', author: 'Eng. Vasquez',    visibility: 'class'  },
-  { id: 9,  cat: 'eng',   title: 'Fuel Management Systems',    duration: '65 min', difficulty: 'intermediate', status: 'published', author: 'Eng. Vasquez',    visibility: 'class'  },
-  { id: 10, cat: 'cargo', title: 'Load Calculation',           duration: '70 min', difficulty: 'advanced',     status: 'published', author: 'Prof. Whitmore',  visibility: 'public' },
-  { id: 11, cat: 'cargo', title: 'Stability & Trim',           duration: '85 min', difficulty: 'advanced',     status: 'draft',     author: 'Prof. Whitmore',  visibility: 'public' },
-  { id: 12, cat: 'comm',  title: 'GMDSS Radio Operations',     duration: '55 min', difficulty: 'intermediate', status: 'published', author: 'Instr. Chen',     visibility: 'public' },
-]
 
 const EMPTY_FORM = {
-  title: '', cat: 'nav', duration: '60 min', difficulty: 'intermediate',
-  description: '', status: 'draft', visibility: 'class', author: '',
+  title: '', category: 'nav', duration_minutes: 60,
+  difficulty: 'intermediate', visibility: 'class',
+}
+
+function mapLesson(l) {
+  return {
+    id:               l.id,
+    title:            l.title,
+    category:         l.category,
+    duration:         `${l.duration_minutes} min`,
+    duration_minutes: l.duration_minutes,
+    difficulty:       l.difficulty,
+    visibility:       l.visibility,
+    author:           l.author_name ?? '',
+    locked:           l.locked,
+  }
 }
 
 export default function Lessons() {
-  const [lessons, setLessons]               = useState(INITIAL_LESSONS)
+  const navigate = useNavigate()
+
+  const [lessons, setLessons]               = useState([])
+  const [loading, setLoading]               = useState(true)
   const [search, setSearch]                 = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
-  const [statusFilter, setStatusFilter]     = useState('all')
+  const [visFilter, setVisFilter]           = useState('all')
   const [panel, setPanel]                   = useState(null)
   const [form, setForm]                     = useState(EMPTY_FORM)
   const [deleteTarget, setDeleteTarget]     = useState(null)
 
+  useEffect(() => {
+    getLessons()
+      .then(({ data }) => setLessons(data.map(mapLesson)))
+      .finally(() => setLoading(false))
+  }, [])
+
   const filtered = lessons
-    .filter(l => activeCategory === 'all' || l.cat === activeCategory)
-    .filter(l => statusFilter === 'all' || l.status === statusFilter)
+    .filter(l => activeCategory === 'all' || l.category === activeCategory)
+    .filter(l => visFilter === 'all' || l.visibility === visFilter)
     .filter(l => l.title.toLowerCase().includes(search.toLowerCase().trim()))
 
   const openCreate = () => { setForm(EMPTY_FORM); setPanel('create') }
-  const openEdit   = lesson => {
-    setForm({
-      title: lesson.title, cat: lesson.cat, duration: lesson.duration,
-      difficulty: lesson.difficulty, description: lesson.description || '',
-      status: lesson.status, visibility: lesson.visibility, author: lesson.author,
-    })
-    setPanel(lesson)
-  }
 
   const handleFormChange = (field, value) => setForm(f => ({ ...f, [field]: value }))
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.title.trim()) return
-    if (panel === 'create') {
-      setLessons(prev => [...prev, { id: nextId++, ...form }])
-    } else {
-      setLessons(prev => prev.map(l => l.id === panel.id ? { ...l, ...form } : l))
-    }
-    setPanel(null)
+    try {
+      const { data } = await createLesson(form)
+      setLessons(prev => [mapLesson(data), ...prev])
+      setPanel(null)
+    } catch {}
   }
 
-  const toggleStatus = id =>
-    setLessons(prev => prev.map(l =>
-      l.id === id ? { ...l, status: l.status === 'published' ? 'draft' : 'published' } : l
-    ))
-
-  const executeDelete = () => {
-    setLessons(prev => prev.filter(l => l.id !== deleteTarget.id))
+  const executeDelete = async () => {
+    try {
+      await deleteLesson(deleteTarget.id)
+      setLessons(prev => prev.filter(l => l.id !== deleteTarget.id))
+    } catch {}
     setDeleteTarget(null)
   }
 
@@ -107,13 +105,30 @@ export default function Lessons() {
               filteredCount={filtered.length}
               search={search}
               onSearchChange={setSearch}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
+              statusFilter={visFilter}
+              onStatusFilterChange={setVisFilter}
               onCreateNew={openCreate}
             />
 
             <div className="lessons-adm-list">
-              {filtered.length === 0 ? (
+              {loading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="lesson-row" style={{ opacity: 1 - i * 0.1, animation: 'none' }}>
+                    <div className="lesson-row-main">
+                      <Sk h={14} w={`${52 + (i % 3) * 8}%`} mb={8} />
+                      <div className="lesson-row-meta">
+                        <Sk h={18} w={72} r={4} />
+                        <Sk h={11} w={48} />
+                        <Sk h={11} w={70} />
+                        <Sk h={11} w={90} />
+                      </div>
+                    </div>
+                    <div className="lesson-row-right">
+                      <Sk h={22} w={62} r={4} />
+                    </div>
+                  </div>
+                ))
+              ) : filtered.length === 0 ? (
                 <p className="lessons-adm-empty">No lessons match your filters.</p>
               ) : (
                 filtered.map((lesson, i) => (
@@ -122,8 +137,7 @@ export default function Lessons() {
                     lesson={lesson}
                     categories={CATEGORIES}
                     index={i}
-                    onEdit={() => openEdit(lesson)}
-                    onToggleStatus={() => toggleStatus(lesson.id)}
+                    onView={() => navigate(`/admin/lessons/${lesson.id}/panels`, { state: { backPath: '/admin/lessons' } })}
                     onDelete={() => setDeleteTarget(lesson)}
                   />
                 ))
@@ -142,7 +156,6 @@ export default function Lessons() {
           onSave={handleSave}
           categories={CATEGORIES.filter(c => c.id !== 'all')}
           difficulties={DIFFICULTIES}
-          teachers={TEACHERS}
         />
       )}
 

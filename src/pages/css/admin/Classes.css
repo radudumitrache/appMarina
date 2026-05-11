@@ -30,6 +30,54 @@
   padding: 40px 0;
 }
 
+/* ─── Section ────────────────────────────────────────────────────────────── */
+.classes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.classes-section + .classes-section {
+  margin-top: 36px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.classes-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.classes-section-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.classes-section-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 1px 8px;
+  line-height: 1.6;
+}
+
+.classes-section-empty {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  padding: 20px 0;
+  grid-column: 1 / -1;
+}
+
 /* ─── Cards grid ─────────────────────────────────────────────────────────── */
 .classes-grid {
   display: grid;

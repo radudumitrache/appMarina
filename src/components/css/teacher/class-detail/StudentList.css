@@ -40,11 +40,14 @@
   border-color: var(--border);
 }
 
+.cd-row--clickable {
+  cursor: pointer;
+}
+
 /* Column widths — Students tab */
 .cd-col--student    { flex: 2; min-width: 0; }
-.cd-col--progress   { flex: 1.4; min-width: 120px; }
-.cd-col--lessons    { width: 80px; flex-shrink: 0; }
-.cd-col--last       { width: 100px; flex-shrink: 0; }
+.cd-col--progress   { width: 240px; flex-shrink: 0; }
+.cd-col--last       { width: 110px; flex-shrink: 0; }
 .cd-col--status     { width: 80px; flex-shrink: 0; }
 
 /* Column widths — Lessons tab */
@@ -54,11 +57,69 @@
 .cd-col--dur        { width: 80px; flex-shrink: 0; }
 .cd-col--completion { flex: 1; min-width: 140px; }
 
-/* Column widths — Assignments tab */
-.cd-col--assignment  { flex: 2; min-width: 0; }
-.cd-col--due         { width: 120px; flex-shrink: 0; }
-.cd-col--submissions { flex: 1; min-width: 140px; }
-.cd-col--score       { width: 80px; flex-shrink: 0; }
+/* Triple-action column */
+.cd-col--actions3 {
+  width: 96px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cd-row-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+.cd-row:hover .cd-row-actions { opacity: 1; }
+
+.cd-row-action--edit:hover {
+  background: rgba(217, 160, 48, 0.10);
+  color: var(--gold);
+}
+
+.cd-row-action--danger:hover {
+  background: rgba(224, 82, 82, 0.12);
+  color: var(--error);
+}
+
+.cd-confirm-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cd-confirm-text {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+/* Course list columns */
+.cd-col--course-title   { flex: 2; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cd-col--course-status  { width: 90px; flex-shrink: 0; }
+.cd-col--course-lessons { width: 80px; flex-shrink: 0; }
+
+.cd-course-desc {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Test status badges */
+.cd-badge--draft     { background: rgba(255,255,255,0.05); color: var(--text-3); border: 1px solid var(--border); }
+.cd-badge--published { background: rgba(46,199,122,0.10); color: var(--success); border: 1px solid rgba(46,199,122,0.2); }
+
+/* Column widths — Tests tab */
+.cd-col--test-title  { flex: 2; min-width: 0; }
+.cd-col--test-status { width: 90px; flex-shrink: 0; }
+.cd-col--test-due    { width: 110px; flex-shrink: 0; }
+.cd-col--test-time   { width: 80px; flex-shrink: 0; }
+.cd-col--test-q      { width: 80px; flex-shrink: 0; }
 
 .cd-col--action {
   width: 36px;
@@ -122,11 +183,22 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  padding-right: 20px;
+}
+
+.cd-pct {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  width: 36px;
+  flex-shrink: 0;
 }
 
 .cd-mini-bar {
   flex: 1;
-  height: 3px;
+  height: 4px;
   background: rgba(255, 255, 255, 0.07);
   border-radius: 99px;
   overflow: hidden;
@@ -140,16 +212,6 @@
 }
 
 .cd-mini-fill--done { background: var(--success); }
-
-.cd-pct {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-3);
-  letter-spacing: 0.02em;
-  width: 30px;
-  text-align: right;
-  flex-shrink: 0;
-}
 
 .cd-badge {
   display: inline-block;

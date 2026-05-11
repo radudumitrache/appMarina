@@ -1,0 +1,18 @@
+@keyframes sk-shimmer {
+  0%   { background-position: -100% center; }
+  100% { background-position: 200% center; }
+}
+
+.sk {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--surface-3) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 300% 100%;
+  animation: sk-shimmer 1.6s linear -0.8s infinite;
+  border-radius: 6px;
+  flex-shrink: 0;
+}

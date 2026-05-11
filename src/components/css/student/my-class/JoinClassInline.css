@@ -1,0 +1,57 @@
+.myclass-join-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.myclass-join-inline-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.myclass-join-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.myclass-join-input--inline {
+  max-width: 320px;
+}
+
+.myclass-join-inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.myclass-join-btn--sm {
+  height: 34px;
+  padding: 0 20px;
+  font-size: 12px;
+  width: auto;
+}
+
+.myclass-join-cancel {
+  height: 34px;
+  padding: 0 16px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+}
+.myclass-join-cancel:hover { color: var(--text); border-color: var(--border-hover); }

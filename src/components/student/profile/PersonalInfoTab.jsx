@@ -18,14 +18,24 @@ export default function PersonalInfoTab({ profile, onSave }) {
   const [editing, setEditing] = useState(false)
   const [draft,   setDraft]   = useState(profile)
   const [saved,   setSaved]   = useState(false)
+  const [saving,  setSaving]  = useState(false)
+  const [error,   setError]   = useState('')
 
-  function handleEdit()   { setDraft(profile); setEditing(true); setSaved(false) }
-  function handleCancel() { setEditing(false) }
-  function handleSave()   {
-    onSave(draft)
-    setEditing(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  function handleEdit()   { setDraft(profile); setEditing(true); setSaved(false); setError('') }
+  function handleCancel() { setEditing(false); setError('') }
+  async function handleSave() {
+    setSaving(true)
+    setError('')
+    try {
+      await onSave(draft)
+      setEditing(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch {
+      setError('Failed to save. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const set = (key) => (e) => setDraft(d => ({ ...d, [key]: e.target.value }))
@@ -38,8 +48,11 @@ export default function PersonalInfoTab({ profile, onSave }) {
           {saved && <span className="save-confirm">Saved</span>}
           {editing ? (
             <>
-              <button className="btn-secondary-sm" onClick={handleCancel}>Cancel</button>
-              <button className="btn-primary-sm"   onClick={handleSave}>Save changes</button>
+              {error && <span className="form-error">{error}</span>}
+              <button className="btn-secondary-sm" onClick={handleCancel} disabled={saving}>Cancel</button>
+              <button className="btn-primary-sm"   onClick={handleSave}  disabled={saving}>
+                {saving ? 'Saving…' : 'Save changes'}
+              </button>
             </>
           ) : (
             <button className="btn-secondary-sm" onClick={handleEdit}>

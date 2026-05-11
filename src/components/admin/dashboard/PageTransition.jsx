@@ -2,7 +2,7 @@ import '../../css/admin/dashboard/PageTransition.css'
 
 export default function PageTransition({ src, onEnd }) {
   return (
-    <div className="page-transition">
+    <div className="page-transition" onClick={onEnd}>
       <video
         className="page-transition-video"
         autoPlay muted playsInline

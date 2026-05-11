@@ -8,7 +8,31 @@
   flex-direction: column;
 }
 
-/* ── Scrollable content ───────────────────────────────── */
+.myclass-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* ── Sidebar + main two-column body ───────────────────── */
+.myclass-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.myclass-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Scrollable content area ──────────────────────────── */
 .myclass-content {
   flex: 1;
   overflow-y: auto;
@@ -16,65 +40,7 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
-}
-
-/* ── Stat cards ───────────────────────────────────────── */
-.myclass-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.stat-card {
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 20px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  animation: fadeUp var(--duration-enter) var(--ease-default) both;
-  transition: border-color var(--duration-fast);
-}
-
-.stat-card:hover { border-color: var(--border-hover); }
-
-.stat-label {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-3);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.stat-value-row {
-  display: flex;
-  align-items: baseline;
-  gap: 3px;
-}
-
-.stat-value {
-  font-family: var(--font-mono);
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
-.stat-suffix {
-  font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-3);
-  letter-spacing: 0.02em;
-}
-
-.stat-sub {
-  font-family: var(--font-ui);
-  font-size: 12px;
-  color: var(--text-3);
+  min-height: 0;
 }
 
 /* ── Two-column grid ──────────────────────────────────── */
@@ -91,7 +57,7 @@
   gap: 20px;
 }
 
-/* ── Section shell ────────────────────────────────────── */
+/* ── Section shell (used by ClassRoster / Announcements) ─ */
 .myclass-section {
   background: var(--surface-1);
   border: 1px solid var(--border);

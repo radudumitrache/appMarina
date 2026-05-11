@@ -1,0 +1,23 @@
+@import '../admin/SubmissionOverview.css';
+
+/* ─── Teacher overrides: gold accent instead of red ─── */
+.so-page--teacher .so-avatar {
+  background: rgba(217, 160, 48, 0.12);
+  border-color: rgba(217, 160, 48, 0.22);
+  color: var(--gold);
+}
+
+.so-page--teacher .so-grade-input:focus {
+  border-color: rgba(217, 160, 48, 0.4);
+}
+
+.so-page--teacher .so-grade-save {
+  background: rgba(217, 160, 48, 0.1);
+  border-color: rgba(217, 160, 48, 0.25);
+  color: var(--gold);
+}
+
+.so-page--teacher .so-grade-save:hover {
+  background: rgba(217, 160, 48, 0.18);
+  border-color: rgba(217, 160, 48, 0.4);
+}

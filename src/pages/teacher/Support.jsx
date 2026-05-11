@@ -6,6 +6,7 @@ import TicketList     from '../../components/teacher/support/TicketList'
 import SupportFAQ     from '../../components/teacher/support/SupportFAQ'
 import SupportContact from '../../components/teacher/support/SupportContact'
 import { getTickets, createTicket } from '../../api/support'
+import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/Support.css'
 
 function normalizeTicket(t) {
@@ -71,7 +72,21 @@ export default function Support() {
             <TicketForm onSubmit={handleSubmit} />
             {loading ? (
               <section className="ts-section">
-                <p className="ts-loading">Loading tickets…</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '14px 0', borderBottom: '1px solid var(--border)', opacity: 1 - i * 0.12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Sk w={70} h={12} r={3} style={{ flexShrink: 0 }} />
+                        <Sk w={`${40 + (i % 3) * 10}%`} h={12} r={3} />
+                        <Sk w={58} h={18} r={4} style={{ marginLeft: 'auto', flexShrink: 0 }} />
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <Sk w={60} h={10} r={3} />
+                        <Sk w={90} h={10} r={3} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </section>
             ) : error ? (
               <section className="ts-section">

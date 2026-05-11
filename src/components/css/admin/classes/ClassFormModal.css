@@ -255,6 +255,29 @@
 .checklist-label { font-family: var(--font-ui); font-size: 13px; color: var(--text-2); }
 .checklist-item--checked .checklist-label { color: var(--text); }
 
+/* Field-level validation errors */
+.form-input--error {
+  border-color: var(--error, #e05252) !important;
+  background: rgba(224, 82, 82, 0.05);
+}
+
+.form-field-error {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--error, #e05252);
+  margin-top: -2px;
+}
+
+.form-error-banner {
+  background: rgba(224, 82, 82, 0.1);
+  border: 1px solid rgba(224, 82, 82, 0.3);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--error, #e05252);
+}
+
 /* Delete confirm */
 .confirm-text {
   font-family: var(--font-ui);

@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .activity-row {
@@ -15,6 +18,8 @@
 }
 
 .activity-row:hover { background: var(--surface-2); }
+
+.activity-row--clickable { cursor: pointer; }
 
 .activity-icon {
   flex-shrink: 0;

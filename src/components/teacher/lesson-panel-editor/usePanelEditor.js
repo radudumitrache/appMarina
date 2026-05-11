@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { VR_SCENES, buildSceneUrl } from '../../shared/VRSceneRenderer'
 import {
   getLesson,
   getPanels,
@@ -51,7 +50,6 @@ export function usePanelEditor(lessonId, initialLesson) {
 
   /* ── Close transient UI on panel change ────────────────────────────────── */
   useEffect(() => {
-    setDrawerOpen(false)
     setAddMenuOpen(false)
   }, [panelIdx])
 
@@ -76,7 +74,7 @@ export function usePanelEditor(lessonId, initialLesson) {
       type,
       title: isText ? 'New Text Panel' : 'New VR Tour',
       order: panels.length,
-      ...(isText ? { body: '' } : { scene_url: buildSceneUrl(VR_SCENES[0].filename) }),
+      ...(isText ? { body: '<p></p>' } : {}),
     }
     setSaving(true)
     try {
@@ -100,9 +98,18 @@ export function usePanelEditor(lessonId, initialLesson) {
       const res = await updatePanel(lessonId, panelId, data)
       setPanels(prev => prev.map(p => {
         if (p.id !== panelId) return p
-        // Preserve current vr_tour (anchors with descriptions) — the panel update
-        // endpoint only saves title/body/scene_url and may return anchors without description
-        return { ...res.data, vr_tour: p.vr_tour ?? res.data.vr_tour }
+        // Keep local anchor data (preserves descriptions not returned by update endpoint)
+        // but always take scene_url / media_file from the server response.
+        return {
+          ...res.data,
+          vr_tour: p.vr_tour
+            ? {
+                ...p.vr_tour,
+                scene_url:  res.data.vr_tour?.scene_url,
+                media_file: res.data.vr_tour?.media_file,
+              }
+            : res.data.vr_tour,
+        }
       }))
     } catch {
       setError('Could not save changes.')

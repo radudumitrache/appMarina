@@ -27,7 +27,7 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config
 
-    if (error.response?.status === 401 && !original._retry) {
+    if (error.response?.status === 401 && !original._retry && !original.url?.includes('/auth/login/')) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
@@ -41,18 +41,21 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
+        const refreshToken = localStorage.getItem('seafarer_refresh')
         const { data } = await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/auth/token/refresh/`,
-          {},
-          { withCredentials: true }
+          { refresh: refreshToken }
         )
         sessionStorage.setItem('access_token', data.access)
+        if (data.refresh) localStorage.setItem('seafarer_refresh', data.refresh)
         processQueue(null, data.access)
         original.headers.Authorization = `Bearer ${data.access}`
         return api(original)
       } catch (refreshError) {
         processQueue(refreshError, null)
         sessionStorage.removeItem('access_token')
+        localStorage.removeItem('seafarer_refresh')
+        localStorage.removeItem('seafarer_user')
         window.location.href = '/login'
         return Promise.reject(refreshError)
       } finally {

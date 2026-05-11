@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import {
   listTextAnchors,
   createTextAnchor,
@@ -16,6 +16,8 @@ import {
 } from '../../../api/lessons'
 import { IconEdit, IconTrash, IconPlus, IconPin, IconCompass, IconPolygon, IconCrosshair, IconChevronUp, IconChevronDown } from './LPEIcons'
 import InlineStyleEditor from './InlineStyleEditor'
+import ImageStyleEditor  from './ImageStyleEditor'
+import MediaInsertModal  from './MediaInsertModal'
 
 function IconChevronRight() {
   return (
@@ -32,6 +34,28 @@ function IconArrowLeft() {
       <line x1="19" y1="12" x2="5" y2="12"/>
       <polyline points="12 19 5 12 12 5"/>
     </svg>
+  )
+}
+
+/* ── URL helpers for HTML view ──────────────────────────────────────────── */
+function compressHtml(html) {
+  if (!html) return html
+  return html.replace(/src="(https?:\/\/storage\.googleapis\.com[^"]+)"/g, (_, url) => {
+    const name = url.split('?')[0].split('/').pop()
+    return `src="${name}"`
+  })
+}
+function expandHtml(compressed, original) {
+  if (!compressed || !original) return compressed
+  const urlMap = {}
+  const re = /src="(https?:\/\/storage\.googleapis\.com[^"]+)"/g
+  let m
+  while ((m = re.exec(original)) !== null) {
+    const url = m[1], name = url.split('?')[0].split('/').pop()
+    urlMap[name] = url
+  }
+  return compressed.replace(/src="([^":/][^"]*?)"/g, (match, name) =>
+    urlMap[name] ? `src="${urlMap[name]}"` : match
   )
 }
 
@@ -54,40 +78,49 @@ const DESC_TAGS = [
   { label: 'I',     cmd: 'italic',                               desc: 'Italic' },
   { label: 'UL',    cmd: 'insertUnorderedList',                  desc: 'Bullet list' },
   { label: 'HR',    cmd: 'insertHorizontalRule',                 desc: 'Divider' },
-  { label: 'IMG',   img:   true,                                 desc: 'Image' },
-  { label: 'VIDEO', video: true,                                 desc: 'Video' },
+  { label: 'IMG',   media: 'image',                              desc: 'Image' },
+  { label: 'VIDEO', media: 'video',                              desc: 'Video' },
 ]
 
-function AnchorDescEditor({ initialHtml, onChange, editorKey }) {
+function AnchorDescEditor({ initialHtml, onChange, editorKey, classroomId }) {
   const editorRef      = useRef(null)
+  const imgSelectedRef = useRef(null)
+  const savedRangeRef  = useRef(null)
   const [showHtml,     setShowHtml]     = useState(false)
   const [rawHtml,      setRawHtml]      = useState('')
   const [activeTags,   setActiveTags]   = useState([])
   const [activeTagIdx, setActiveTagIdx] = useState(0)
+  const [mediaMode,    setMediaMode]    = useState(null)
 
-  // Tracks the previous showHtml value so the sync-back effect only fires
-  // when actually leaving HTML mode (true → false), not on mount or anchor switch.
   const prevShowHtmlRef = useRef(false)
 
   // Reset when anchor changes
   useEffect(() => {
-    prevShowHtmlRef.current = false  // don't treat anchor switch as "leaving HTML mode"
+    prevShowHtmlRef.current = false
+    imgSelectedRef.current  = null
     if (editorRef.current) editorRef.current.innerHTML = initialHtml || ''
     setShowHtml(false)
     setActiveTags([])
     setActiveTagIdx(0)
+    setMediaMode(null)
   // editorKey is the reset signal; intentionally not including initialHtml
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorKey])
 
-  // Track cursor position → active element stack
+  // Track cursor position → active element stack (img/video stays pinned)
   useEffect(() => {
     function onSelectionChange() {
       if (!editorRef.current) return
       const sel = window.getSelection()
-      if (!sel || sel.rangeCount === 0) { setActiveTags([]); return }
-      // Only track when focus is inside our editor
-      if (!editorRef.current.contains(sel.getRangeAt(0).startContainer)) return
+      if (!sel || sel.rangeCount === 0) {
+        if (!imgSelectedRef.current) setActiveTags([])
+        return
+      }
+      if (!editorRef.current.contains(sel.getRangeAt(0).startContainer)) {
+        // outside editor — keep img selection if pinned
+        if (!imgSelectedRef.current) setActiveTags([])
+        return
+      }
       let node = sel.getRangeAt(0).startContainer
       if (node.nodeType === 3) node = node.parentNode
       const tags = []
@@ -95,38 +128,68 @@ function AnchorDescEditor({ initialHtml, onChange, editorKey }) {
         if (node.nodeType === 1) tags.unshift({ tagName: node.tagName, element: node })
         node = node.parentNode
       }
-      setActiveTags(tags)
+      if (tags.length > 0) {
+        imgSelectedRef.current = null
+        setActiveTags(tags)
+      } else if (!imgSelectedRef.current) {
+        setActiveTags([])
+      }
       setActiveTagIdx(0)
     }
     document.addEventListener('selectionchange', onSelectionChange)
-    return () => document.removeEventListener('selectionchange', onSelectionChange)
+    return () => {
+      document.removeEventListener('selectionchange', onSelectionChange)
+      imgSelectedRef.current = null
+    }
   }, [])
 
   function fireInput() {
     editorRef.current?.dispatchEvent(new Event('input', { bubbles: true }))
   }
 
+  const handleEditorClick = useCallback(e => {
+    const tag = e.target.tagName
+    if (tag === 'IMG' || tag === 'VIDEO') {
+      imgSelectedRef.current = e.target
+      setActiveTags([{ tagName: tag.toLowerCase(), element: e.target }])
+      setActiveTagIdx(0)
+    } else {
+      imgSelectedRef.current = null
+    }
+  }, [])
+
+  const openMediaPicker = mode => {
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      savedRangeRef.current = sel.getRangeAt(0).cloneRange()
+    }
+    setMediaMode(mode)
+  }
+
+  const handleMediaInsert = (url, type) => {
+    const el = editorRef.current
+    if (el) {
+      el.focus()
+      const sel = window.getSelection()
+      if (savedRangeRef.current) {
+        sel.removeAllRanges()
+        sel.addRange(savedRangeRef.current)
+        savedRangeRef.current = null
+      }
+      const html = type === 'image'
+        ? `<img src="${url}" alt="" style="max-width:100%;" />`
+        : `<video src="${url}" controls style="max-width:100%;"></video>`
+      document.execCommand('insertHTML', false, html)
+      fireInput()
+    }
+    setMediaMode(null)
+  }
+
   function applyTag(tag) {
     const el = editorRef.current
     if (!el) return
     el.focus()
-
-    if (tag.img) {
-      const src = window.prompt('Image URL:')
-      if (!src) return
-      const alt = window.prompt('Alt text (optional):') ?? ''
-      document.execCommand('insertHTML', false, `<img src="${src}" alt="${alt}" style="max-width:100%">`)
-      fireInput(); return
-    }
-
-    if (tag.video) {
-      const src = window.prompt('Video URL:')
-      if (!src) return
-      document.execCommand('insertHTML', false,
-        `<video src="${src}" controls style="max-width:100%;border-radius:6px"></video>`)
-      fireInput(); return
-    }
-
+    if (tag.media) { openMediaPicker(tag.media); return }
     const sel = window.getSelection()
     const hasSelection = sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed
     if (hasSelection && tag.cmd === 'formatBlock') {
@@ -148,14 +211,9 @@ function AnchorDescEditor({ initialHtml, onChange, editorKey }) {
       setShowHtml(true)
     } else {
       setShowHtml(false)
-      // editorRef.current is null here because the div is unmounted while
-      // the textarea is visible — the useEffect below syncs rawHtml in after remount
     }
   }
 
-  // Sync rawHtml into the contenteditable after it remounts when leaving HTML view.
-  // Guard with prevShowHtmlRef so this only fires on true→false transitions,
-  // not on mount or when an anchor switch resets showHtml to false.
   const rawHtmlRef = useRef(rawHtml)
   rawHtmlRef.current = rawHtml
   useEffect(() => {
@@ -164,7 +222,6 @@ function AnchorDescEditor({ initialHtml, onChange, editorKey }) {
       onChange(rawHtmlRef.current)
     }
     prevShowHtmlRef.current = showHtml
-  // showHtml is the only trigger; rawHtmlRef/prevShowHtmlRef are refs
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showHtml])
 
@@ -227,13 +284,15 @@ function AnchorDescEditor({ initialHtml, onChange, editorKey }) {
               </button>
             ))}
           </div>
-          {activeTags[activeTagIdx] && (
-            <InlineStyleEditor
-              key={`${activeTagIdx}-${activeTags[activeTagIdx]?.tagName}`}
-              element={activeTags[activeTagIdx].element}
-              editorEl={editorRef.current}
-            />
-          )}
+          {activeTags[activeTagIdx] && (() => {
+            const t   = activeTags[activeTagIdx]
+            const tag = t.tagName.toLowerCase()
+            const key = `${activeTagIdx}-${tag}`
+            if (tag === 'img' || tag === 'video') {
+              return <ImageStyleEditor key={key} element={t.element} editorEl={editorRef.current} />
+            }
+            return <InlineStyleEditor key={key} element={t.element} editorEl={editorRef.current} />
+          })()}
         </div>
       )}
 
@@ -241,8 +300,12 @@ function AnchorDescEditor({ initialHtml, onChange, editorKey }) {
       {showHtml ? (
         <textarea
           className="lpe-textarea lpe-anchor-desc-html"
-          value={rawHtml}
-          onChange={e => { setRawHtml(e.target.value); onChange(e.target.value) }}
+          value={compressHtml(rawHtml)}
+          onChange={e => {
+            const expanded = expandHtml(e.target.value, rawHtml)
+            setRawHtml(expanded)
+            onChange(expanded)
+          }}
         />
       ) : (
         <div
@@ -251,7 +314,17 @@ function AnchorDescEditor({ initialHtml, onChange, editorKey }) {
           contentEditable
           suppressContentEditableWarning
           onInput={e => onChange(e.currentTarget.innerHTML)}
+          onClick={handleEditorClick}
           data-placeholder="Description…"
+        />
+      )}
+
+      {mediaMode && (
+        <MediaInsertModal
+          initialMode={mediaMode}
+          classroomId={classroomId}
+          onInsert={handleMediaInsert}
+          onClose={() => setMediaMode(null)}
         />
       )}
     </div>
@@ -282,6 +355,8 @@ function posToLonLat(x, y, z) {
 export default function AnchorSection({
   lessonId,
   panelId,
+  classroomId,
+  panels = [],
   initialTextAnchors,
   initialNavAnchors,
   initialPolyAnchors,
@@ -300,6 +375,18 @@ export default function AnchorSection({
   const [textAnchors, setTextAnchors] = useState(initialTextAnchors ?? [])
   const [navAnchors,  setNavAnchors]  = useState(initialNavAnchors  ?? [])
   const [polyAnchors, setPolyAnchors] = useState(initialPolyAnchors ?? [])
+
+  // All panels available as navigation targets (any type, excluding current)
+  const targetPanels = useMemo(() =>
+    panels.filter(p => p.id !== panelId)
+  , [panels, panelId])
+
+  // Map panel.id → panel title for display in the navigator anchor list
+  const panelIdToTitle = useMemo(() => {
+    const map = {}
+    for (const p of panels) map[p.id] = p.title
+    return map
+  }, [panels])
 
   // Fetch fresh text anchor data on mount so the description field is always populated
   // (the panel list endpoint may omit description; the dedicated endpoint includes it)
@@ -357,12 +444,6 @@ export default function AnchorSection({
   useEffect(() => {
     if (!newPolyPlacement) return
     const pts = newPolyPlacement.points
-    const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length
-    const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length
-    const cz = pts.reduce((s, p) => s + p.z, 0) / pts.length
-    setPolyPosX(String(parseFloat(cx.toFixed(2))))
-    setPolyPosY(String(parseFloat(cy.toFixed(2))))
-    setPolyPosZ(String(parseFloat(cz.toFixed(2))))
     setPolyTitle('')
     setPolyContent('')
     setPolyError(null)
@@ -387,13 +468,14 @@ export default function AnchorSection({
   const [targetTour, setTargetTour] = useState('')
 
   function openForm(type, anchor = null) {
+    setPolyForm(null)
     setForm({ type, anchor })
     setPosX(anchor?.pos_x ?? '')
     setPosY(anchor?.pos_y ?? '')
     setPosZ(anchor?.pos_z ?? '')
     setATitle(anchor?.title ?? '')
     setADesc(anchor?.description ?? '')
-    setTargetTour(anchor?.target_vr_tour ?? '')
+    setTargetTour(anchor?.target_panel ?? '')
     setAnchorError(null)
   }
 
@@ -426,11 +508,11 @@ export default function AnchorSection({
       } else {
         const tvt = parseInt(targetTour, 10)
         if (Number.isNaN(tvt)) {
-          setAnchorError('Target VR Tour must be a valid ID.')
+          setAnchorError('Please select a target panel.')
           setAnchorSaving(false)
           return
         }
-        const data = { ...pos, target_vr_tour: tvt }
+        const data = { ...pos, target_panel: tvt, title: aTitle.trim(), description: aDesc.trim() }
         if (form.anchor) {
           const res = await updateNavigatorAnchor(lessonId, panelId, form.anchor.id, data)
           setNavAnchors(prev => prev.map(a => a.id === form.anchor.id ? res.data : a))
@@ -496,21 +578,8 @@ export default function AnchorSection({
   }, [form, polyForm])
   const [polyTitle,   setPolyTitle]   = useState('')
   const [polyContent, setPolyContent] = useState('')
-  const [polyPosX,    setPolyPosX]    = useState('')
-  const [polyPosY,    setPolyPosY]    = useState('')
-  const [polyPosZ,    setPolyPosZ]    = useState('')
   const [polySaving,  setPolySaving]  = useState(false)
   const [polyError,   setPolyError]   = useState(null)
-
-  // Real-time polygon hotspot preview (must be after polyPosX/Y/Z declarations)
-  useEffect(() => {
-    if (!polyForm?.anchor) return
-    const x = parseFloat(polyPosX), y = parseFloat(polyPosY), z = parseFloat(polyPosZ)
-    if ([x, y, z].some(Number.isNaN)) return
-    setPolyAnchors(prev => prev.map(a =>
-      a.id === polyForm.anchor.id ? { ...a, pos_x: x, pos_y: y, pos_z: z } : a
-    ))
-  }, [polyPosX, polyPosY, polyPosZ])
 
   // Scene-placed single point: add to existing polygon or reposition
   useEffect(() => {
@@ -579,9 +648,6 @@ export default function AnchorSection({
     setPolyForm({ anchor })
     setPolyTitle(anchor?.title ?? '')
     setPolyContent(anchor?.content ?? '')
-    setPolyPosX(anchor?.pos_x ?? '')
-    setPolyPosY(anchor?.pos_y ?? '')
-    setPolyPosZ(anchor?.pos_z ?? '')
     setPolyError(null)
     setEditingPoint(null)
     setForm(null)
@@ -660,16 +726,11 @@ export default function AnchorSection({
   async function handlePolySave() {
     setPolySaving(true)
     setPolyError(null)
-    const pos = {
-      pos_x: parseFloat(polyPosX) || 0,
-      pos_y: parseFloat(polyPosY) || 0,
-      pos_z: parseFloat(polyPosZ) || 0,
-    }
     try {
-      const data = { ...pos, title: polyTitle, content: polyContent }
+      const data = { pos_x: 0, pos_y: 0, pos_z: 0, title: polyTitle, content: polyContent }
       if (polyForm.anchor) {
         const res = await updatePolygonAnchor(lessonId, panelId, polyForm.anchor.id, data)
-        const merged = { ...res.data, title: polyTitle, content: polyContent, ...pos }
+        const merged = { ...res.data, title: polyTitle, content: polyContent }
         setPolyAnchors(prev => prev.map(pa => pa.id === polyForm.anchor.id ? { ...pa, ...merged } : pa))
         setPolyForm(prev => ({ ...prev, anchor: { ...prev.anchor, ...merged } }))
       } else {
@@ -842,16 +903,47 @@ export default function AnchorSection({
                       editorKey={form.anchor?.id ?? 'new'}
                       initialHtml={aDesc}
                       onChange={setADesc}
+                      classroomId={classroomId}
                     />
                   </div>
                 </>
               )}
 
               {form.type === 'nav' && (
-                <div className="lpe-field">
-                  <label className="lpe-label">Target VR Tour ID</label>
-                  <input className="lpe-input lpe-input--mono" type="number" step="1" value={targetTour} onChange={e => setTargetTour(e.target.value)} placeholder="e.g. 7" />
-                </div>
+                <>
+                  <div className="lpe-field">
+                    <label className="lpe-label">Navigate to Panel</label>
+                    {targetPanels.length === 0 ? (
+                      <p className="lpe-anchor-empty">No other panels in this lesson.</p>
+                    ) : (
+                      <select
+                        className="lpe-style-select"
+                        value={targetTour}
+                        onChange={e => setTargetTour(e.target.value)}
+                      >
+                        <option value="">— select a panel —</option>
+                        {targetPanels.map(p => (
+                          <option key={p.id} value={p.id}>
+                            {p.title} ({p.type === 'vr_tour' ? '360°' : 'Text'})
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                  <div className="lpe-field">
+                    <label className="lpe-label">Label <span className="lpe-label-opt">(optional)</span></label>
+                    <input className="lpe-input" value={aTitle} onChange={e => setATitle(e.target.value)} placeholder="e.g. Engine Room →" />
+                  </div>
+                  <div className="lpe-field">
+                    <label className="lpe-label">Description <span className="lpe-label-opt">(optional)</span></label>
+                    <AnchorDescEditor
+                      editorKey={`nav-${form.anchor?.id ?? 'new'}`}
+                      initialHtml={aDesc}
+                      onChange={setADesc}
+                      classroomId={classroomId}
+                    />
+                  </div>
+                </>
               )}
 
               {error && <p className="lpe-anchor-form-error">{error}</p>}
@@ -876,33 +968,6 @@ export default function AnchorSection({
                 </p>
               )}
 
-              <div className="lpe-pos-sliders">
-                {[['X', polyPosX, setPolyPosX], ['Y', polyPosY, setPolyPosY], ['Z', polyPosZ, setPolyPosZ]].map(([label, val, set]) => (
-                  <div key={label} className="lpe-pos-slider-row">
-                    <div className="lpe-pos-slider-head">
-                      <span className="lpe-anchor-pos-label">{label}</span>
-                      <input
-                        className="lpe-pos-value-input"
-                        type="number"
-                        step="0.01"
-                        value={val}
-                        onChange={e => set(e.target.value)}
-                        placeholder="0.00"
-                      />
-                    </div>
-                    <input
-                      type="range"
-                      className="lpe-pos-slider"
-                      min="-500"
-                      max="500"
-                      step="0.01"
-                      value={parseFloat(val) || 0}
-                      onChange={e => set(e.target.value)}
-                    />
-                  </div>
-                ))}
-              </div>
-
               <div className="lpe-field">
                 <label className="lpe-label">Title</label>
                 <input className="lpe-input" value={polyTitle} onChange={e => setPolyTitle(e.target.value)} placeholder="Polygon region title…" />
@@ -914,6 +979,7 @@ export default function AnchorSection({
                   editorKey={polyForm.anchor?.id ?? 'new-poly'}
                   initialHtml={polyContent}
                   onChange={setPolyContent}
+                  classroomId={classroomId}
                 />
               </div>
 
@@ -1084,7 +1150,7 @@ export default function AnchorSection({
                 {navAnchors.length === 0 && <p className="lpe-anchor-empty">No navigator anchors yet.</p>}
                 {navAnchors.map(a => (
                   <div key={a.id} className="lpe-anchor-item lpe-anchor-item--clickable" onClick={() => openForm('nav', a)}>
-                    <span className="lpe-anchor-item-title">→ Tour #{a.target_vr_tour}</span>
+                    <span className="lpe-anchor-item-title">→ {a.title || (panelIdToTitle[a.target_panel] ?? `Panel #${a.target_panel}`)}</span>
                     <div className="lpe-anchor-item-actions">
                       <button className="lpe-anchor-icon-btn lpe-anchor-icon-btn--delete" title="Delete" onClick={e => { e.stopPropagation(); handleDelete('nav', a.id) }} disabled={saving}>
                         <IconTrash />

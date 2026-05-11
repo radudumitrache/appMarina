@@ -91,8 +91,8 @@
   padding: 3px 9px;
   border-radius: var(--radius-sm);
 }
-.lesson-status-badge--published { color: var(--success); background: rgba(46, 199, 122, 0.12); }
-.lesson-status-badge--draft     { color: var(--text-3);  background: rgba(255,255,255,0.06);   }
+.lesson-status-badge--public { color: var(--success); background: rgba(46, 199, 122, 0.12); }
+.lesson-status-badge--class  { color: var(--text-3);  background: rgba(255,255,255,0.06);   }
 
 .lesson-row-actions {
   display: flex;
@@ -120,3 +120,4 @@
 .row-btn--warn:hover    { color: var(--gold); }
 .row-btn--ok:hover      { color: var(--success); }
 .row-btn--delete:hover  { color: var(--error); }
+.row-btn--panels:hover  { color: var(--accent); }

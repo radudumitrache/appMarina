@@ -1,0 +1,756 @@
+/* ── Panel title & exercise list ── */
+.tt-panel-content {
+  flex: 1;
+}
+
+.tt-panel-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.tt-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.tt-empty {
+  color: var(--text-3);
+  font-size: 14px;
+  font-family: var(--font-ui);
+}
+
+/* ── Individual exercise card ── */
+.tt-exercise-wrap {
+  display: flex;
+  gap: 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  transition: border-color var(--duration-fast);
+}
+
+.tt-exercise-num {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-3);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.tt-exercise-answered {
+  background: var(--accent);
+  color: #000;
+}
+
+.tt-exercise-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tt-exercise-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.tt-exercise-text p { margin: 0 0 8px; }
+.tt-exercise-text p:last-child { margin-bottom: 0; }
+
+/* ── MCQ ── */
+.tt-mcq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tt-mcq-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-2);
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+.tt-mcq-option:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+.tt-mcq-option--selected {
+  background: var(--accent-dim);
+  border-color: var(--accent-rim);
+  color: var(--accent);
+}
+
+.tt-mcq-marker {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--accent-rim);
+  background: transparent;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+.tt-mcq-option--selected .tt-mcq-marker {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ── True / False ── */
+.tt-tf-options {
+  display: flex;
+  gap: 12px;
+}
+
+.tt-tf-btn {
+  flex: 1;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--text-2);
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+.tt-tf-btn:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+.tt-tf-btn--selected {
+  background: var(--accent-dim);
+  border-color: var(--accent-rim);
+  color: var(--accent);
+}
+
+/* ── Short answer ── */
+.tt-short-input {
+  width: 100%;
+  min-height: 100px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text);
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+.tt-short-input:focus { border-color: var(--accent); }
+.tt-short-input::placeholder { color: var(--text-3); }
+
+/* ── Argument (extended short answer) ── */
+.tt-argument-input {
+  min-height: 180px;
+}
+
+/* ── Arrange ── */
+.tt-arrange-hint {
+  font-size: 12px;
+  color: var(--text-3);
+  font-family: var(--font-ui);
+  margin-bottom: 8px;
+}
+
+.tt-arrange-list {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.tt-arrange-list--active {
+  user-select: none;
+}
+
+.tt-arrange-slot {
+  display: flex;
+  flex-direction: column;
+}
+
+.tt-arrange-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+.tt-arrange-item--src {
+  opacity: 0.3;
+  border-style: dashed;
+}
+
+/* insertion-point line */
+.tt-arrange-line {
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  margin: 1px 6px 5px;
+  box-shadow: 0 0 10px rgba(0, 200, 170, 0.45);
+  animation: tt-line-in 100ms ease both;
+}
+
+@keyframes tt-line-in {
+  from { opacity: 0; transform: scaleX(0.5); }
+  to   { opacity: 1; transform: scaleX(1); }
+}
+
+/* grab handle */
+.tt-arrange-grip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  cursor: grab;
+  color: var(--text-3);
+  touch-action: none;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.tt-arrange-grip:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.tt-arrange-grip:active { cursor: grabbing; }
+
+.tt-arrange-pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px 7px;
+  min-width: 26px;
+  text-align: center;
+  flex-shrink: 0;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.tt-arrange-text {
+  font-size: 14px;
+  color: var(--text-2);
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* floating ghost card */
+.tt-arrange-ghost {
+  position: fixed;
+  z-index: 9000;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--surface-1);
+  border: 1px solid var(--accent-rim);
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.45),
+    0 0 0 1px var(--accent-rim);
+  backdrop-filter: blur(6px);
+  rotate: 1.5deg;
+}
+
+.tt-arrange-grip--ghost {
+  color: var(--accent);
+  cursor: grabbing;
+}
+
+.tt-arrange-pos--ghost {
+  background: var(--accent-dim);
+  border-color: var(--accent-rim);
+  color: var(--accent);
+}
+
+.tt-arrange-note {
+  font-size: 13px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+/* ── VR panel — browser mode header ── */
+.tt-vr-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.tt-vr-browser-badge {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+}
+
+.tt-vr-anchor-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+
+/* ── Word completion input ── */
+.tt-word-input {
+  width: 100%;
+  max-width: 360px;
+  height: 40px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 14px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+.tt-word-input:focus { border-color: var(--accent); }
+.tt-word-input::placeholder { color: var(--text-3); }
+
+/* ── VR fullscreen overlay ── */
+.tt-vr-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── VR exercises side panel ── */
+.tt-vr-side {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 60px;
+  width: 256px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.68);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 10;
+  transition: width var(--duration-fast);
+}
+
+.tt-vr-side--collapsed {
+  width: 40px;
+}
+
+.tt-vr-side-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.tt-vr-side--collapsed .tt-vr-side-header {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.tt-vr-side-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tt-vr-side-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(0, 200, 170, 0.12);
+  border: 1px solid rgba(0, 200, 170, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+}
+
+.tt-vr-side-toggle {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.tt-vr-side-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.tt-vr-side-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tt-vr-side-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast);
+}
+.tt-vr-side-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.tt-vr-side-item--active {
+  background: rgba(0, 200, 170, 0.1);
+  border-color: rgba(0, 200, 170, 0.35);
+}
+.tt-vr-side-item--done {
+  border-color: rgba(0, 200, 120, 0.2);
+}
+.tt-vr-side-item--done.tt-vr-side-item--active {
+  background: rgba(0, 200, 120, 0.1);
+  border-color: rgba(0, 200, 120, 0.4);
+}
+
+.tt-vr-side-num {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+.tt-vr-side-item--done .tt-vr-side-num {
+  background: rgba(0, 200, 120, 0.15);
+  color: rgba(0, 200, 120, 0.8);
+}
+
+.tt-vr-side-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.tt-vr-side-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tt-vr-side-type {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.tt-vr-side-text {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.tt-vr-side-item--active .tt-vr-side-text {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.tt-vr-side-locating {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: var(--accent);
+  font-style: italic;
+}
+
+.tt-vr-side-check {
+  flex-shrink: 0;
+  color: rgba(0, 200, 120, 0.8);
+  margin-top: 2px;
+}
+
+.tt-vr-fullscreen-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.tt-vr-fullscreen-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+}
+
+.tt-vr-timer {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.tt-vr-timer--urgent {
+  color: var(--error);
+  border-color: rgba(224, 82, 82, 0.4);
+  background: rgba(224, 82, 82, 0.12);
+}
+
+.tt-vr-fullscreen-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: all;
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* ── Localization question card ───────────────────────── */
+.tt-loc-question {
+  position: absolute;
+  bottom: 80px;
+  left: 28px;
+  width: 300px;
+  max-height: 260px;
+  background: rgba(10, 20, 25, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 200, 160, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: all;
+  z-index: 10;
+}
+
+.tt-loc-question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tt-loc-question-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.tt-loc-question-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.tt-loc-question-close:hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tt-loc-question-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.tt-loc-question-text {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+.tt-loc-question-text p { margin: 0 0 6px; }
+.tt-loc-question-text p:last-child { margin-bottom: 0; }
+.tt-loc-question-text img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.tt-loc-question-hint {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--accent);
+  margin: 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Override nav button colors when on dark VR background */
+.tt-vr-fullscreen-nav .tt-nav-btn {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.75);
+}
+.tt-vr-fullscreen-nav .tt-nav-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.35);
+  color: #fff;
+}
+
+/* ── Footer navigation ── */
+.tt-panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.tt-nav-btn {
+  height: 36px;
+  padding: 0 20px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+.tt-nav-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+.tt-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tt-nav-btn--primary {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.tt-nav-btn--primary:hover:not(:disabled) {
+  opacity: 0.88;
+  color: #000;
+}

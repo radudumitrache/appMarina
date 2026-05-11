@@ -3,7 +3,6 @@ import '../../css/admin/users/UserFormModal.css'
 export default function UserFormModal({ mode, form, onChange, onClose, onSave, classes }) {
   const handleRoleChange = (role) => {
     onChange('role', role)
-    onChange('className', role === 'teacher' ? '—' : classes[0])
   }
 
   return (
@@ -59,18 +58,6 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, c
               ))}
             </div>
           </div>
-          {form.role === 'student' && (
-            <div className="form-row">
-              <label className="form-label">Class</label>
-              <select
-                className="form-select"
-                value={form.className}
-                onChange={e => onChange('className', e.target.value)}
-              >
-                {classes.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-          )}
           <div className="form-row">
             <label className="form-label">
               Password

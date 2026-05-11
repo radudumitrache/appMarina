@@ -1,6 +1,6 @@
 import '../../css/student/profile/AcademicTab.css'
 
-export default function AcademicTab({ profile }) {
+export default function AcademicTab({ profile, stats }) {
   return (
     <div className="profile-panel">
       <div className="panel-head">
@@ -30,23 +30,27 @@ export default function AcademicTab({ profile }) {
 
       <div className="academic-snapshot">
         <div className="snapshot-item">
-          <span className="snapshot-value">5</span>
+          <span className="snapshot-value">{stats?.lessons_complete ?? '—'}</span>
           <span className="snapshot-label">Lessons complete</span>
         </div>
         <div className="snapshot-sep" />
         <div className="snapshot-item">
-          <span className="snapshot-value">72<span className="snapshot-suffix">%</span></span>
+          <span className="snapshot-value">
+            {stats?.avg_grade != null ? <>{stats.avg_grade}<span className="snapshot-suffix">%</span></> : '—'}
+          </span>
           <span className="snapshot-label">Avg test grade</span>
         </div>
         <div className="snapshot-sep" />
         <div className="snapshot-item">
-          <span className="snapshot-value">5</span>
+          <span className="snapshot-value">{stats?.tests_taken ?? '—'}</span>
           <span className="snapshot-label">Tests taken</span>
         </div>
         <div className="snapshot-sep" />
         <div className="snapshot-item">
-          <span className="snapshot-value">7<span className="snapshot-suffix">th</span></span>
-          <span className="snapshot-label">Class rank</span>
+          <span className="snapshot-value">
+            {stats?.hours_trained != null ? <>{stats.hours_trained}<span className="snapshot-suffix">h</span></> : '—'}
+          </span>
+          <span className="snapshot-label">Hours trained</span>
         </div>
       </div>
 

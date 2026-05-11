@@ -68,6 +68,20 @@ export default function QuestionCard({ q, index, onUpdate, onDelete }) {
       {q.type === 'short' && (
         <div className="tb-short-hint">Students type a free-text response.</div>
       )}
+
+      {q.type === 'arrange' && (
+        <div className="tb-arrange-items">
+          {(q.items ?? []).map((item, ii) => (
+            <div key={ii} className="tb-arrange-item">
+              <span className="tb-arrange-order">{item.correct_order}</span>
+              <span className="tb-arrange-text">{item.text || <em>Empty item</em>}</span>
+            </div>
+          ))}
+          {(!q.items || q.items.length === 0) && (
+            <div className="tb-short-hint">Add items to define the correct sequence.</div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

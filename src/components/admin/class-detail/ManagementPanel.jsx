@@ -46,6 +46,7 @@ export default function ManagementPanel({
   onBlur,
   onAdd,
   onRemove,
+  onSelectItem,
 }) {
   return (
     <div className="cd-panel">
@@ -99,28 +100,37 @@ export default function ManagementPanel({
             No {type === 'student' ? 'students enrolled' : 'lessons assigned'} yet.
           </p>
         ) : (
-          items.map((item, i) => (
-            <div
-              key={item.id}
-              className={`cd-member-row${type === 'lesson' ? ' cd-member-row--lesson' : ''}`}
-              style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
-            >
-              {type === 'student'
-                ? <StudentAvatar name={item.name} />
-                : <LessonIcon />
-              }
-              <span className="cd-member-name">
-                {type === 'student' ? item.name : item.title}
-              </span>
-              <button
-                className="cd-remove-btn"
-                title={type === 'student' ? 'Remove student' : 'Unassign lesson'}
-                onClick={() => onRemove(item.id)}
+          items.map((item, i) => {
+            const clickable = type === 'student' && onSelectItem
+            return (
+              <div
+                key={item.id}
+                className={`cd-member-row${type === 'lesson' ? ' cd-member-row--lesson' : ''}${clickable ? ' cd-member-row--clickable' : ''}`}
+                style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
+                onClick={clickable ? () => onSelectItem(item) : undefined}
               >
-                <XIcon />
-              </button>
-            </div>
-          ))
+                {type === 'student'
+                  ? <StudentAvatar name={item.name} />
+                  : <LessonIcon />
+                }
+                <span className="cd-member-name">
+                  {type === 'student' ? item.name : item.title}
+                </span>
+                {clickable && (
+                  <svg className="cd-member-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                )}
+                <button
+                  className="cd-remove-btn"
+                  title={type === 'student' ? 'Remove student' : 'Unassign lesson'}
+                  onClick={e => { e.stopPropagation(); onRemove(item.id) }}
+                >
+                  <XIcon />
+                </button>
+              </div>
+            )
+          })
         )}
       </div>
     </div>

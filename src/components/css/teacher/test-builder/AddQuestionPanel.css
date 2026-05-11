@@ -107,3 +107,4 @@
 }
 
 .tb-add-q-confirm:hover { background: var(--color-gold-400, #f0b84a); }
+.tb-add-q-confirm:disabled { opacity: 0.4; cursor: not-allowed; }

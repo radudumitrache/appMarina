@@ -31,44 +31,83 @@ export default function EditDetailsModal({ editForm, onChange, onClose, onSave, 
               />
             </div>
             <div className="form-row">
+              <label className="form-label">Class Code</label>
+              <input
+                className="form-input"
+                type="text"
+                value={editForm.code}
+                onChange={e => onChange('code', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-2col">
+            <div className="form-row">
+              <label className="form-label">Subject</label>
+              <input
+                className="form-input"
+                type="text"
+                value={editForm.subject}
+                onChange={e => onChange('subject', e.target.value)}
+              />
+            </div>
+            <div className="form-row">
               <label className="form-label">Teacher</label>
               <select
                 className="form-select"
-                value={editForm.teacher}
-                onChange={e => onChange('teacher', e.target.value)}
+                value={editForm.teacher ?? ''}
+                onChange={e => onChange('teacher', Number(e.target.value))}
               >
-                {teachers.map(t => <option key={t} value={t}>{t}</option>)}
+                {teachers.map(t => (
+                  <option key={t.id} value={t.id}>
+                    {t.first_name && t.last_name ? `${t.first_name} ${t.last_name}` : t.username}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
-          <div className="form-row">
-            <label className="form-label">Description</label>
-            <input
-              className="form-input"
-              type="text"
-              placeholder="e.g. Main cohort — Spring 2025"
-              value={editForm.description}
-              onChange={e => onChange('description', e.target.value)}
-            />
+
+          <div className="form-2col">
+            <div className="form-row">
+              <label className="form-label">Semester</label>
+              <input
+                className="form-input"
+                type="text"
+                value={editForm.semester}
+                onChange={e => onChange('semester', e.target.value)}
+              />
+            </div>
+            <div className="form-row">
+              <label className="form-label">Status</label>
+              <div className="form-radio-group">
+                {['active', 'archived'].map(s => (
+                  <label key={s} className={`form-radio ${editForm.status === s ? 'form-radio--active' : ''}`}>
+                    <input type="radio" name="cd-status" value={s} checked={editForm.status === s} onChange={() => onChange('status', s)} />
+                    <span>{s.charAt(0).toUpperCase() + s.slice(1)}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="form-row">
-            <label className="form-label">Status</label>
-            <div className="form-radio-group">
-              {['active', 'archived'].map(s => (
-                <label
-                  key={s}
-                  className={`form-radio ${editForm.status === s ? 'form-radio--active' : ''}`}
-                >
-                  <input
-                    type="radio"
-                    name="cd-status"
-                    value={s}
-                    checked={editForm.status === s}
-                    onChange={() => onChange('status', s)}
-                  />
-                  <span>{s.charAt(0).toUpperCase() + s.slice(1)}</span>
-                </label>
-              ))}
+
+          <div className="form-2col">
+            <div className="form-row">
+              <label className="form-label">Start Date</label>
+              <input
+                className="form-input"
+                type="date"
+                value={editForm.start_date ?? ''}
+                onChange={e => onChange('start_date', e.target.value)}
+              />
+            </div>
+            <div className="form-row">
+              <label className="form-label">End Date</label>
+              <input
+                className="form-input"
+                type="date"
+                value={editForm.end_date ?? ''}
+                onChange={e => onChange('end_date', e.target.value)}
+              />
             </div>
           </div>
         </div>

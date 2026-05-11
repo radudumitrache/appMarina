@@ -116,6 +116,10 @@
   line-height: 1.65;
   color: var(--text-2);
   margin: 0;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
 }
 
 .lr-vr-strip {

@@ -112,6 +112,91 @@
   font-size: 15px;
   line-height: 1.85;
   color: var(--text-2);
-  white-space: pre-wrap;
   max-width: 680px;
+}
+
+/* ── Shared prose styles (used in both text panel and VR anchor popup) ── */
+.lr-prose { word-break: break-word; }
+
+.lr-prose p  { margin: 0 0 1em; }
+.lr-prose p:last-child { margin-bottom: 0; }
+
+.lr-prose h1,
+.lr-prose h2,
+.lr-prose h3,
+.lr-prose h4 {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  margin: 1.4em 0 0.5em;
+}
+.lr-prose h1 { font-size: 1.45em; }
+.lr-prose h2 { font-size: 1.25em; }
+.lr-prose h3 { font-size: 1.1em; }
+.lr-prose h4 { font-size: 1em; }
+.lr-prose h1:first-child,
+.lr-prose h2:first-child,
+.lr-prose h3:first-child { margin-top: 0; }
+
+.lr-prose ul,
+.lr-prose ol {
+  padding-left: 1.4em;
+  margin: 0 0 1em;
+}
+.lr-prose ul { list-style: disc; }
+.lr-prose ol { list-style: decimal; }
+.lr-prose li { margin-bottom: 0.35em; line-height: 1.7; }
+
+.lr-prose strong, .lr-prose b { font-weight: 700; color: var(--text); }
+.lr-prose em,     .lr-prose i { font-style: italic; }
+
+.lr-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lr-prose a:hover { opacity: 0.8; }
+
+.lr-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--text);
+}
+
+.lr-prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  overflow-x: auto;
+  margin: 0 0 1em;
+}
+.lr-prose pre code { background: none; border: none; padding: 0; }
+
+.lr-prose blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 16px;
+  margin: 0 0 1em;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.lr-prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5em 0;
+}
+
+.lr-prose img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  display: block;
+  margin: 1em 0;
 }

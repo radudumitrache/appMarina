@@ -3,22 +3,12 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import '../css/landing/TimelineSection.css'
 
-import seaToFrontVid from '../../../new videos/shipInTheSeaToshipFromTheFront.mp4'
-import frontToIntVid from '../../../new videos/shipFromTheFrontToshipInterior.mp4'
-import seaToPortVid  from '../../../new videos/shipInTheSeaToshipInThePort.mp4'
-
-import seaImg      from '../../../new videos/shipInTheSea.png'
-import frontImg    from '../../../new videos/shipFromTheFront.png'
-import interiorImg from '../../../new videos/shipInterior.png'
-import portImg     from '../../../new videos/shipInThePort.png'
-import vrImg       from '../../../new videos/vrHeadset.png'
-
 const PANELS = [
-  { num: '01', title: 'Open Ocean Navigation', desc: 'Master celestial and electronic navigation across open sea conditions, including ECDIS, chart work, and meteorology.',         image: seaImg,      video: null },
-  { num: '02', title: 'Vessel Identification',  desc: 'Close-quarters recognition of vessel types, running lights, day shapes, and sound signals under the COLREGs.',              image: frontImg,    video: seaToFrontVid },
-  { num: '03', title: 'Bridge Operations',      desc: 'Full bridge resource management — radar, ECDIS, VDR, and AIS systems operated under realistic traffic scenarios.',          image: interiorImg, video: frontToIntVid },
-  { num: '04', title: 'Port Maneuvering',       desc: 'Controlled berthing, cargo handling, port communication protocols, and emergency mooring procedures.',                      image: portImg,     video: seaToPortVid },
-  { num: '05', title: 'VR Certification',       desc: 'Standardised assessments recognised by maritime authorities worldwide — from cadet to officer qualification.',              image: vrImg,       video: null },
+  { num: '01', title: 'Open Ocean Navigation', desc: 'Master celestial and electronic navigation across open sea conditions, including ECDIS, chart work, and meteorology.',         image: '/shipInTheSea.png',      video: null },
+  { num: '02', title: 'Vessel Identification',  desc: 'Close-quarters recognition of vessel types, running lights, day shapes, and sound signals under the COLREGs.',              image: '/shipFromTheFront.png',    video: '/shipInTheSeaToshipFromTheFront.mp4' },
+  { num: '03', title: 'Bridge Operations',      desc: 'Full bridge resource management — radar, ECDIS, VDR, and AIS systems operated under realistic traffic scenarios.',          image: '/shipInterior.png', video: '/shipFromTheFrontToshipInterior.mp4' },
+  { num: '04', title: 'Port Maneuvering',       desc: 'Controlled berthing, cargo handling, port communication protocols, and emergency mooring procedures.',                      image: '/shipInThePort.png',     video: '/shipInTheSeaToshipInThePort.mp4' },
+  { num: '05', title: 'VR Certification',       desc: 'Standardised assessments recognised by maritime authorities worldwide — from cadet to officer qualification.',              image: '/vrHeadset.png',       video: null },
 ]
 
 export default function TimelineSection() {

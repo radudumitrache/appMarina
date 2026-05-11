@@ -9,7 +9,6 @@ const LINKS = [
   { label: 'Progress',  slug: 'progress'  },
   { label: 'My Class',  slug: 'my-class'  },
   { label: 'Support',   slug: 'support'   },
-  { label: 'Settings',  slug: 'profile'   },
 ]
 
 export default function NavBar() {

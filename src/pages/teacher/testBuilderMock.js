@@ -58,9 +58,22 @@ export const INITIAL_TESTS = [
 ]
 
 export const Q_TYPES = [
-  { id: 'mcq',   label: 'Multiple Choice' },
-  { id: 'tf',    label: 'True / False'    },
-  { id: 'short', label: 'Short Answer'    },
+  { id: 'mcq',      label: 'Multiple Choice' },
+  { id: 'tf',       label: 'True / False'    },
+  { id: 'short',    label: 'Short Answer'    },
+  { id: 'arrange',  label: 'Arrange Items'   },
+  { id: 'argument', label: 'Argument'        },
+]
+
+export const PANEL_TYPES = [
+  { id: 'exercise',    label: 'Exercise Panel' },
+  { id: 'vr_exercise', label: 'VR Panel'       },
+]
+
+export const VR_ANCHOR_TYPES = [
+  { id: 'mcq',             label: 'Multiple Choice' },
+  { id: 'word_completion', label: 'Word Completion' },
+  { id: 'localization',    label: 'Localization'    },
 ]
 
 export const STATUS_META = {
@@ -71,8 +84,9 @@ export const STATUS_META = {
 let nextQId = 100
 export function emptyQuestion(type) {
   const base = { id: ++nextQId, type, text: '' }
-  if (type === 'mcq')   return { ...base, options: ['', '', '', ''], correct: 0 }
-  if (type === 'tf')    return { ...base, correct: true }
-  if (type === 'short') return base
+  if (type === 'mcq')     return { ...base, options: ['', '', '', ''], correct: 0 }
+  if (type === 'tf')      return { ...base, correct: true }
+  if (type === 'short')   return base
+  if (type === 'arrange') return { ...base, items: [] }
   return base
 }

@@ -1,9 +1,11 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import '../../css/admin/users/UserFormModal.css'
 import '../../css/admin/users/CsvImportModal.css'
 
-export default function CsvImportModal({ csvRows, onClose, onImport, onFileParsed, onDrop, onDownloadTemplate }) {
-  const fileRef = useRef(null)
+export default function CsvImportModal({ csvRows, onClose, onImport, onFileParsed, onDownloadTemplate }) {
+  const fileRef              = useRef(null)
+  const [password, setPassword] = useState('')
+  const [showPwd, setShowPwd]   = useState(false)
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0]
@@ -23,6 +25,8 @@ export default function CsvImportModal({ csvRows, onClose, onImport, onFileParse
     reader.readAsText(file)
   }
 
+  const canImport = csvRows.length > 0 && password.length >= 8
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
@@ -35,12 +39,48 @@ export default function CsvImportModal({ csvRows, onClose, onImport, onFileParse
             </svg>
           </button>
         </div>
+
         <div className="modal-body">
           <p className="csv-hint">
-            Columns: <code className="csv-code">name, email, role, class</code>.
+            Columns: <code className="csv-code">name, email, role</code>.
             {' '}Role must be <code className="csv-code">student</code> or <code className="csv-code">teacher</code>.{' '}
             <button className="link-btn" onClick={onDownloadTemplate}>Download template</button>
           </p>
+
+          <div className="form-row">
+            <label className="form-label">
+              PASSWORD FOR ALL IMPORTED USERS <span className="form-hint">(min. 8 characters)</span>
+            </label>
+            <div className="csv-password-wrap">
+              <input
+                className="form-input"
+                type={showPwd ? 'text' : 'password'}
+                placeholder="Set a password for all imported accounts"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="csv-pwd-toggle"
+                onClick={() => setShowPwd(v => !v)}
+                tabIndex={-1}
+              >
+                {showPwd ? (
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                ) : (
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+
           <div
             className={`csv-drop-zone ${csvRows.length > 0 ? 'csv-drop-zone--loaded' : ''}`}
             onClick={() => fileRef.current?.click()}
@@ -76,7 +116,6 @@ export default function CsvImportModal({ csvRows, onClose, onImport, onFileParse
                       <th>Name</th>
                       <th>Email</th>
                       <th>Role</th>
-                      <th>Class</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -85,7 +124,6 @@ export default function CsvImportModal({ csvRows, onClose, onImport, onFileParse
                         <td className="user-name">{r.name}</td>
                         <td className="user-email">{r.email}</td>
                         <td><span className={`role-badge role-badge--${r.role}`}>{r.role}</span></td>
-                        <td className="user-class">{r.className}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -94,12 +132,13 @@ export default function CsvImportModal({ csvRows, onClose, onImport, onFileParse
             </div>
           )}
         </div>
+
         <div className="modal-footer">
           <button className="btn-ghost" onClick={onClose}>Cancel</button>
           <button
             className="btn-primary"
-            onClick={onImport}
-            disabled={csvRows.length === 0}
+            onClick={() => onImport(password)}
+            disabled={!canImport}
           >
             Import {csvRows.length > 0 ? `${csvRows.length} Users` : 'Users'}
           </button>

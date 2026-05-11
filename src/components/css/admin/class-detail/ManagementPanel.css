@@ -139,6 +139,19 @@
 }
 .cd-member-row:hover { background: rgba(255,255,255,0.04); }
 
+.cd-member-row--clickable { cursor: pointer; }
+.cd-member-row--clickable:hover { background: var(--surface-2); }
+
+.cd-member-chevron {
+  flex-shrink: 0;
+  color: var(--text-3);
+  transition: transform var(--duration-fast), color var(--duration-fast);
+}
+.cd-member-row--clickable:hover .cd-member-chevron {
+  transform: translateX(2px);
+  color: var(--text-2);
+}
+
 .cd-member-avatar {
   width: 28px;
   height: 28px;

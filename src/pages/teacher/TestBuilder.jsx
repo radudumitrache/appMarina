@@ -1,55 +1,126 @@
-import { useState } from 'react'
-import NavBar            from '../../components/teacher/NavBar'
-import TestSidebar       from '../../components/teacher/test-builder/TestSidebar'
-import TestEditorHeader  from '../../components/teacher/test-builder/TestEditorHeader'
-import TestMetaRow       from '../../components/teacher/test-builder/TestMetaRow'
-import QuestionCard      from '../../components/teacher/test-builder/QuestionCard'
-import AddQuestionPanel  from '../../components/teacher/test-builder/AddQuestionPanel'
-import { INITIAL_TESTS, emptyQuestion } from './testBuilderMock'
+import { useState, useEffect, useCallback } from 'react'
+import NavBar          from '../../components/teacher/NavBar'
+import TestSidebar     from '../../components/teacher/test-builder/TestSidebar'
+import TestEditorMain  from '../../components/teacher/test-builder/TestEditorMain'
+import {
+  getTests, createTest, updateTest, publishTest, getTest,
+  createTestPanel,
+} from '../../api/tests'
+import { getClasses } from '../../api/classes'
 import '../css/teacher/TestBuilder.css'
 
 export default function TestBuilder() {
-  const [tests,      setTests]     = useState(INITIAL_TESTS)
-  const [selectedId, setSelected]  = useState(1)
+  const [tests,      setTests]      = useState([])
+  const [classes,    setClasses]    = useState([])
+  const [selectedId, setSelectedId] = useState(null)
+  const [testDetail, setTestDetail] = useState(null)
+  const [loading,    setLoading]    = useState(true)
+  const [saving,     setSaving]     = useState(false)
 
-  const selected = tests.find(t => t.id === selectedId)
+  const [expandedPanelId, setExpandedPanelId] = useState(null)
+  const [addingPanel,     setAddingPanel]     = useState(false)
+  const [newPanelType,    setNewPanelType]    = useState('exercise')
+  const [newPanelTitle,   setNewPanelTitle]   = useState('')
 
-  function updateTest(id, patch) {
-    setTests(prev => prev.map(t => t.id === id ? { ...t, ...patch } : t))
+  useEffect(() => {
+    Promise.all([getTests({}), getClasses()])
+      .then(([testsRes, classesRes]) => {
+        setTests(testsRes.data)
+        setClasses(classesRes.data)
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  const loadDetail = useCallback((id) => {
+    if (!id) return
+    getTest(id).then(res => setTestDetail(res.data))
+  }, [])
+
+  useEffect(() => {
+    setExpandedPanelId(null)
+    loadDetail(selectedId)
+  }, [selectedId, loadDetail])
+
+  useEffect(() => {
+    function onFocus() { if (selectedId) loadDetail(selectedId) }
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [selectedId, loadDetail])
+
+  function handleSelectTest(id) {
+    setSelectedId(id)
+    setAddingPanel(false)
+    setNewPanelTitle('')
   }
 
-  function updateQuestion(testId, qId, patch) {
-    setTests(prev => prev.map(t => {
-      if (t.id !== testId) return t
-      return { ...t, questions: t.questions.map(q => q.id === qId ? { ...q, ...patch } : q) }
-    }))
+  async function handleNewTest() {
+    setSaving(true)
+    try {
+      const res = await createTest({ title: 'Untitled Test', time_limit_minutes: 30 })
+      const t = res.data
+      setTests(prev => [t, ...prev])
+      setSelectedId(t.id)
+    } finally {
+      setSaving(false)
+    }
   }
 
-  function deleteQuestion(testId, qId) {
-    setTests(prev => prev.map(t => {
-      if (t.id !== testId) return t
-      return { ...t, questions: t.questions.filter(q => q.id !== qId) }
-    }))
+  async function handleTitleBlur(newTitle) {
+    if (!testDetail || newTitle === testDetail.title) return
+    setSaving(true)
+    try {
+      await updateTest(selectedId, { title: newTitle })
+      setTestDetail(prev => ({ ...prev, title: newTitle }))
+      setTests(prev => prev.map(t => t.id === selectedId ? { ...t, title: newTitle } : t))
+    } finally {
+      setSaving(false)
+    }
   }
 
-  function addQuestion(type) {
-    const q = emptyQuestion(type)
-    setTests(prev => prev.map(t =>
-      t.id === selectedId ? { ...t, questions: [...t.questions, q] } : t
-    ))
+  async function handleToggleStatus() {
+    setSaving(true)
+    try {
+      const res = await publishTest(selectedId)
+      const newStatus = res.data.status
+      setTestDetail(prev => ({ ...prev, status: newStatus }))
+      setTests(prev => prev.map(t => t.id === selectedId ? { ...t, status: newStatus } : t))
+    } finally {
+      setSaving(false)
+    }
   }
 
-  function toggleStatus(id) {
-    setTests(prev => prev.map(t =>
-      t.id === id ? { ...t, status: t.status === 'published' ? 'draft' : 'published' } : t
-    ))
+  async function handleMetaUpdate(patch) {
+    setTestDetail(prev => ({ ...prev, ...patch }))
+    setSaving(true)
+    try {
+      const res = await updateTest(selectedId, patch)
+      setTestDetail(prev => ({ ...prev, ...res.data }))
+    } catch {
+      loadDetail(selectedId)
+    } finally {
+      setSaving(false)
+    }
   }
 
-  function handleNew() {
-    const id = Date.now()
-    setTests(prev => [...prev, { id, title: 'Untitled Test', class: '', status: 'draft', timeLimit: 30, questions: [] }])
-    setSelected(id)
+  async function handleAddPanel() {
+    if (!newPanelTitle.trim()) return
+    setSaving(true)
+    try {
+      await createTestPanel(selectedId, {
+        type:  newPanelType,
+        title: newPanelTitle.trim(),
+        order: testDetail.panels?.length ?? 0,
+      })
+      setAddingPanel(false)
+      setNewPanelTitle('')
+      loadDetail(selectedId)
+    } finally {
+      setSaving(false)
+    }
   }
+
+  const panels   = testDetail?.panels ?? []
+  const hasClass = Boolean(testDetail?.classroom)
 
   return (
     <div className="tb-page">
@@ -60,47 +131,37 @@ export default function TestBuilder() {
           <TestSidebar
             tests={tests}
             selectedId={selectedId}
-            onSelect={setSelected}
-            onNew={handleNew}
+            onSelect={handleSelectTest}
+            onNew={handleNewTest}
+            loading={loading}
           />
 
-          {selected ? (
-            <main className="tb-main" key={selected.id}>
-              <TestEditorHeader
-                selected={selected}
-                onTitleChange={title => updateTest(selected.id, { title })}
-                onToggleStatus={() => toggleStatus(selected.id)}
-              />
-
-              <TestMetaRow
-                selected={selected}
-                onUpdate={patch => updateTest(selected.id, patch)}
-              />
-
-              <div className="tb-divider" />
-
-              <div className="tb-q-list">
-                {selected.questions.length === 0 && (
-                  <div className="tb-q-empty">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-3)' }}>
-                      <circle cx="12" cy="12" r="10"/>
-                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                    <span>No questions yet. Add one below.</span>
-                  </div>
-                )}
-                {selected.questions.map((q, i) => (
-                  <QuestionCard
-                    key={q.id}
-                    q={q}
-                    index={i}
-                    onUpdate={patch => updateQuestion(selected.id, q.id, patch)}
-                    onDelete={() => deleteQuestion(selected.id, q.id)}
-                  />
-                ))}
-              </div>
-
-              <AddQuestionPanel onAdd={addQuestion} />
+          {selectedId && testDetail ? (
+            <TestEditorMain
+              testDetail={testDetail}
+              selectedId={selectedId}
+              panels={panels}
+              hasClass={hasClass}
+              classes={classes}
+              expandedPanelId={expandedPanelId}
+              saving={saving}
+              addingPanel={addingPanel}
+              newPanelType={newPanelType}
+              newPanelTitle={newPanelTitle}
+              onTitleBlur={handleTitleBlur}
+              onToggleStatus={handleToggleStatus}
+              onMetaUpdate={handleMetaUpdate}
+              onExpand={id => setExpandedPanelId(prev => prev === id ? null : id)}
+              onReload={() => loadDetail(selectedId)}
+              onStartAdd={() => setAddingPanel(true)}
+              onCancelAdd={() => { setAddingPanel(false); setNewPanelTitle('') }}
+              onTypeChange={setNewPanelType}
+              onTitleChange={setNewPanelTitle}
+              onAddPanel={handleAddPanel}
+            />
+          ) : selectedId && !testDetail ? (
+            <main className="tb-main tb-main--empty">
+              <span>Loading…</span>
             </main>
           ) : (
             <main className="tb-main tb-main--empty">

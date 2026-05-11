@@ -18,6 +18,9 @@ export default function LessonPanelEditor() {
   const navigate  = useNavigate()
   const { state } = useLocation()
 
+  const backPath    = state?.backPath ?? '/teacher/builder'
+  const classroomId = state?.classroomId ?? null
+
   const {
     lesson, panels, panelIdx, setPanelIdx,
     loading, saving,
@@ -88,7 +91,7 @@ export default function LessonPanelEditor() {
       <div className="lpe-page">
         <div className="lpe-state">
           <span>{error}</span>
-          <button className="lpe-state-btn" onClick={() => navigate('/teacher/builder')}>Back to Builder</button>
+          <button className="lpe-state-btn" onClick={() => navigate(backPath)}>Back to Builder</button>
         </div>
       </div>
     )
@@ -128,7 +131,7 @@ export default function LessonPanelEditor() {
         panelCount={panels.length}
         panelIdx={panelIdx}
         onChangePanelIdx={setPanelIdx}
-        onBack={() => navigate('/teacher/builder')}
+        onBack={() => navigate(backPath)}
       />
 
       {panel && (
@@ -167,6 +170,8 @@ export default function LessonPanelEditor() {
           onClose={handleCloseDrawer}
           saving={saving}
           lessonId={id}
+          classroomId={classroomId}
+          panels={panels}
           onAnchorsChange={handleAnchorsChange}
           focusAnchor={focusAnchor}
           onEnterPlacement={handleEnterPlacement}

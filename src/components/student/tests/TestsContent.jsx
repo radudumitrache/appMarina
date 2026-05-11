@@ -7,7 +7,7 @@ function avgGrade(tests) {
   return Math.round(done.reduce((s, t) => s + t.grade, 0) / done.length)
 }
 
-export default function TestsContent({ sortedPending, completed, classLabels }) {
+export default function TestsContent({ sortedPending, completed }) {
   const completedAvg = avgGrade(completed)
 
   return (
@@ -18,16 +18,11 @@ export default function TestsContent({ sortedPending, completed, classLabels }) 
           <span className="tests-section-badge">{sortedPending.length}</span>
         </div>
         {sortedPending.length === 0 ? (
-          <p className="tests-empty">No upcoming tests.</p>
+          <p className="tests-empty">No upcoming tests assigned to you.</p>
         ) : (
           <div className="tests-list">
             {sortedPending.map((test, i) => (
-              <TestCard
-                key={test.id}
-                test={test}
-                index={i}
-                className={test.classId ? classLabels[test.classId] : null}
-              />
+              <TestCard key={test.id} test={test} index={i} />
             ))}
           </div>
         )}
@@ -48,12 +43,7 @@ export default function TestsContent({ sortedPending, completed, classLabels }) 
         ) : (
           <div className="tests-list">
             {completed.map((test, i) => (
-              <TestCard
-                key={test.id}
-                test={test}
-                index={i}
-                className={test.classId ? classLabels[test.classId] : null}
-              />
+              <TestCard key={test.id} test={test} index={i} />
             ))}
           </div>
         )}

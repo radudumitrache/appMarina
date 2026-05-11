@@ -1,0 +1,370 @@
+.ann-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeUp var(--duration-enter) var(--ease-default) 0.05s both;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────── */
+.ann-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ann-new-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--gold);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bg);
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+.ann-new-btn:hover { opacity: 0.88; }
+
+.ann-count {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* ── Compose form ────────────────────────────────────────────────────── */
+.ann-compose {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.ann-compose-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.ann-compose-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.ann-compose-cancel-x {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: color var(--duration-fast);
+}
+.ann-compose-cancel-x:hover { color: var(--text); }
+
+.ann-compose-input {
+  width: 100%;
+  height: 38px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--duration-fast);
+  box-sizing: border-box;
+}
+.ann-compose-input::placeholder { color: var(--text-3); }
+.ann-compose-input:focus { border-color: rgba(212, 160, 23, 0.45); }
+.ann-compose-input--err { border-color: var(--error); }
+
+.ann-compose-body {
+  width: 100%;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  min-height: 100px;
+  max-height: 480px;
+  overflow: auto;
+  line-height: 1.55;
+  transition: border-color var(--duration-fast);
+  box-sizing: border-box;
+}
+.ann-compose-body::placeholder { color: var(--text-3); }
+.ann-compose-body:focus { border-color: rgba(212, 160, 23, 0.45); }
+.ann-compose-body--err { border-color: var(--error); }
+.ann-compose-body::-webkit-resizer {
+  background:
+    linear-gradient(135deg,
+      transparent 40%,
+      var(--gold) 40%, var(--gold) 55%,
+      transparent 55%,
+      transparent 65%,
+      var(--gold) 65%, var(--gold) 80%,
+      transparent 80%
+    );
+  border-radius: 0 0 var(--radius-md) 0;
+  opacity: 0.55;
+}
+.ann-compose-body:hover::-webkit-resizer,
+.ann-compose-body:focus::-webkit-resizer { opacity: 1; }
+
+.ann-compose-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ann-pinned-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  user-select: none;
+}
+.ann-pinned-toggle input { accent-color: var(--gold); cursor: pointer; }
+.ann-pinned-toggle svg { flex-shrink: 0; }
+
+.ann-compose-err {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--error);
+  flex: 1;
+}
+
+.ann-compose-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.ann-btn-ghost {
+  height: 32px;
+  padding: 0 14px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color var(--duration-fast), color var(--duration-fast);
+}
+.ann-btn-ghost:hover { border-color: var(--text-3); color: var(--text-2); }
+
+.ann-btn-post {
+  height: 32px;
+  padding: 0 16px;
+  background: var(--gold);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bg);
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+.ann-btn-post:hover:not(:disabled) { opacity: 0.88; }
+.ann-btn-post:disabled { opacity: 0.45; cursor: default; }
+
+/* ── Empty state ─────────────────────────────────────────────────────── */
+.ann-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 60px 20px;
+  color: var(--text-3);
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+
+/* ── Announcement cards ──────────────────────────────────────────────── */
+.ann-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ann-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+  transition: border-color var(--duration-fast);
+}
+.ann-card:hover { border-color: var(--border); border-left-color: rgba(212, 160, 23, 0.3); }
+.ann-card--pinned { border-left-color: var(--gold); }
+
+.ann-card-body { flex: 1; min-width: 0; }
+
+.ann-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.ann-pin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(212, 160, 23, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+.ann-card-title {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ann-card-text {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin: 0 0 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ann-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ann-card-author {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.ann-card-dot {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.ann-card-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ── Inline edit form ────────────────────────────────────────────────── */
+.ann-card--editing {
+  border-color: rgba(212, 160, 23, 0.3);
+}
+
+.ann-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  width: 100%;
+}
+
+/* ── Delete / Edit / confirm ─────────────────────────────────────────── */
+.ann-card-actions { flex-shrink: 0; }
+
+.ann-card-btns {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+.ann-card:hover .ann-card-btns { opacity: 1; }
+
+.ann-edit-btn,
+.ann-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.ann-edit-btn:hover   { background: rgba(212, 160, 23, 0.1); color: var(--gold); }
+.ann-delete-btn:hover { background: rgba(224, 82, 82, 0.1);  color: var(--error); }
+
+.ann-confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ann-confirm-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.ann-confirm-yes {
+  padding: 3px 10px;
+  background: var(--error);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+.ann-confirm-yes:disabled { opacity: 0.5; }
+
+.ann-confirm-no {
+  padding: 3px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  cursor: pointer;
+}

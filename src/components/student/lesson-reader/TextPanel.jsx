@@ -26,9 +26,10 @@ export default function TextPanel({ panel, panels, panelIdx, onPanelChange }) {
 
       <main className="lr-text-main">
         <h1 className="lr-text-heading">{panel.title}</h1>
-        <div className="lr-text-body">
-          {panel.text_content?.body ?? ''}
-        </div>
+        <div
+          className="lr-text-body lr-prose"
+          dangerouslySetInnerHTML={{ __html: panel.text_content?.body ?? '' }}
+        />
       </main>
     </div>
   )

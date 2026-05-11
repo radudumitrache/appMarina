@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { VR_SCENES, buildSceneUrl } from '../../shared/VRSceneRenderer'
+import ScenePicker from './ScenePicker'
+import MediaInsertModal from './MediaInsertModal'
 import AnchorSection from './AnchorSection'
 import InlineStyleEditor from './InlineStyleEditor'
+import ImageStyleEditor from './ImageStyleEditor'
 import { IconClose } from './LPEIcons'
 
 const TAG_LABELS = {
@@ -9,7 +11,7 @@ const TAG_LABELS = {
   p: 'Paragraph', strong: 'Bold', b: 'Bold',
   em: 'Italic', i: 'Italic',
   ul: 'Bullet List', ol: 'Numbered List', li: 'List Item',
-  a: 'Link', img: 'Image', hr: 'Divider',
+  a: 'Link', img: 'Image', video: 'Video', hr: 'Divider',
   span: 'Span', div: 'Block',
 }
 
@@ -30,15 +32,16 @@ function removeFormattingTag(tagName, element, editorEl) {
 }
 
 const TAGS = [
-  { label: 'H1',  cmd: 'formatBlock', arg: 'h1',               desc: 'Large title — top-level heading' },
-  { label: 'H2',  cmd: 'formatBlock', arg: 'h2',               desc: 'Section heading' },
-  { label: 'H3',  cmd: 'formatBlock', arg: 'h3',               desc: 'Sub-section heading' },
-  { label: 'P',   cmd: 'formatBlock', arg: 'p',                desc: 'Normal paragraph text' },
-  { label: 'B',   cmd: 'bold',                                  desc: 'Bold — emphasise key words' },
-  { label: 'I',   cmd: 'italic',                                desc: 'Italic — titles, terms, stress' },
-  { label: 'UL',  cmd: 'insertUnorderedList',                   desc: 'Bullet list' },
-  { label: 'HR',  cmd: 'insertHorizontalRule',                  desc: 'Horizontal divider line' },
-  { label: 'IMG', img: true,                                    desc: 'Embed an image from a URL' },
+  { label: 'H1',    cmd: 'formatBlock', arg: 'h1', desc: 'Large title — top-level heading' },
+  { label: 'H2',    cmd: 'formatBlock', arg: 'h2', desc: 'Section heading' },
+  { label: 'H3',    cmd: 'formatBlock', arg: 'h3', desc: 'Sub-section heading' },
+  { label: 'P',     cmd: 'formatBlock', arg: 'p',  desc: 'Normal paragraph text' },
+  { label: 'B',     cmd: 'bold',                   desc: 'Bold — emphasise key words' },
+  { label: 'I',     cmd: 'italic',                 desc: 'Italic — titles, terms, stress' },
+  { label: 'UL',    cmd: 'insertUnorderedList',    desc: 'Bullet list' },
+  { label: 'HR',    cmd: 'insertHorizontalRule',   desc: 'Horizontal divider line' },
+  { label: 'IMG',   media: 'image',                desc: 'Insert an image' },
+  { label: 'VIDEO', media: 'video',                desc: 'Insert a video' },
 ]
 
 function fireInput(el) {
@@ -49,15 +52,6 @@ function applyTag(editorRef, tag) {
   const el = editorRef.current
   if (!el) return
   el.focus()
-
-  if (tag.img) {
-    const src = window.prompt('Image URL:')
-    if (!src) return
-    const alt = window.prompt('Alt text (optional):') ?? ''
-    document.execCommand('insertHTML', false, `<img src="${src}" alt="${alt}">`)
-    fireInput(el)
-    return
-  }
 
   const sel = window.getSelection()
   const hasSelection = sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed
@@ -80,27 +74,56 @@ function applyTag(editorRef, tag) {
 export default function EditDrawer({
   panel, editorRef, liveBody, showHtml, onToggleHtml,
   activeTags,
-  onSave, onClose, saving, lessonId,
+  onSave, onClose, saving, lessonId, classroomId, panels,
   onAnchorsChange, focusAnchor, onEnterPlacement,
   newAnchorPlacement, onNewAnchorSaved,
   newPolyPlacement, onNewPolySaved,
   newPolyPoint, onNewPolyPointSaved,
   onActivePolyPointsChange,
 }) {
-  const savedBody     = panel.text_content?.body ?? ''
-  const savedSceneUrl = (() => {
-    const raw = panel.vr_tour?.scene_url ?? ''
-    return decodeURIComponent(raw.split('/').pop()) || VR_SCENES[0].filename
-  })()
+  const savedBody        = panel.text_content?.body ?? ''
+  const savedMediaFileId = panel.vr_tour?.media_file ?? null
 
   const [title,          setTitle]          = useState(panel.title ?? '')
-  const [sceneUrl,       setSceneUrl]       = useState(savedSceneUrl)
+  const [mediaFileId,    setMediaFileId]    = useState(savedMediaFileId)
+  const [previewUrl,     setPreviewUrl]     = useState(
+    savedMediaFileId ? (panel.vr_tour?.scene_url ?? null) : null
+  )
   const [activeTagIdx,   setActiveTagIdx]   = useState(0)
   const [anchorEditing,  setAnchorEditing]  = useState(false)
   const [drawerWidth,    setDrawerWidth]    = useState(360)
   const [dragging,       setDragging]       = useState(false)
+  const [mediaMode,      setMediaMode]      = useState(null) // 'image' | 'video' | null
   const dragStartX      = useRef(0)
   const dragStartWidth  = useRef(0)
+  const savedRange      = useRef(null)
+
+  const openMediaPicker = mode => {
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      savedRange.current = sel.getRangeAt(0).cloneRange()
+    }
+    setMediaMode(mode)
+  }
+
+  const handleMediaInsert = (url, type) => {
+    const el = editorRef.current
+    if (el) {
+      el.focus()
+      const sel = window.getSelection()
+      if (savedRange.current) {
+        sel.removeAllRanges()
+        sel.addRange(savedRange.current)
+        savedRange.current = null
+      }
+      const html = type === 'image'
+        ? `<img src="${url}" alt="" style="max-width:100%;" />`
+        : `<video src="${url}" controls style="max-width:100%;"></video>`
+      document.execCommand('insertHTML', false, html)
+      fireInput(el)
+    }
+    setMediaMode(null)
+  }
 
   const onResizeMouseDown = useCallback(e => {
     e.preventDefault()
@@ -136,16 +159,17 @@ export default function EditDrawer({
   const dirty =
     title !== (panel.title ?? '') ||
     (panel.type === 'text'    && bodyDirty) ||
-    (panel.type === 'vr_tour' && sceneUrl !== savedSceneUrl)
+    (panel.type === 'vr_tour' && mediaFileId !== savedMediaFileId)
 
   const handleSave = () => {
     const data = { title }
-    if (panel.type === 'text')    data.body      = liveBody ?? savedBody
-    if (panel.type === 'vr_tour') data.scene_url = buildSceneUrl(sceneUrl)
+    if (panel.type === 'text') data.body = liveBody ?? savedBody
+    if (panel.type === 'vr_tour') {
+      data.media_file_id = mediaFileId
+      data.scene_url = ''
+    }
     onSave(panel.id, data)
   }
-
-  const selectedScene = VR_SCENES.find(s => s.filename.toLowerCase() === sceneUrl.toLowerCase())
 
   return (
     <aside className="lpe-drawer" style={{ width: drawerWidth }}>
@@ -198,7 +222,7 @@ export default function EditDrawer({
                   key={tag.label}
                   className="lpe-tag-item"
                   onMouseDown={e => e.preventDefault()}
-                  onClick={() => applyTag(editorRef, tag)}
+                  onClick={() => tag.media ? openMediaPicker(tag.media) : applyTag(editorRef, tag)}
                   disabled={showHtml}
                 >
                   <span className="lpe-tag-item-label">{tag.label}</span>
@@ -232,34 +256,44 @@ export default function EditDrawer({
                 </button>
               ))}
             </div>
-            {activeTags[activeTagIdx] && (
-              <InlineStyleEditor
-                key={`${activeTagIdx}-${activeTags[activeTagIdx]?.tagName}`}
-                element={activeTags[activeTagIdx].element}
-                editorEl={editorRef.current}
-              />
-            )}
+            {activeTags[activeTagIdx] && (() => {
+              const t = activeTags[activeTagIdx]
+              const tag = t.tagName.toLowerCase()
+              const key = `${activeTagIdx}-${tag}`
+              if (tag === 'img' || tag === 'video') {
+                return (
+                  <ImageStyleEditor
+                    key={key}
+                    element={t.element}
+                    editorEl={editorRef.current}
+                  />
+                )
+              }
+              return (
+                <InlineStyleEditor
+                  key={key}
+                  element={t.element}
+                  editorEl={editorRef.current}
+                />
+              )
+            })()}
           </div>
         )}
 
-        {/* VR scene selector — hidden while an anchor is being edited */}
+        {/* VR scene picker — hidden while an anchor is being edited */}
         {panel.type === 'vr_tour' && !anchorEditing && (
           <div className="lpe-field">
             <label className="lpe-label">Scene</label>
-            <select
-              className="lpe-select"
-              value={sceneUrl}
-              onChange={e => setSceneUrl(e.target.value)}
-            >
-              {VR_SCENES.map(s => (
-                <option key={s.filename} value={s.filename}>{s.label}</option>
-              ))}
-            </select>
-            {selectedScene && (
+            <ScenePicker
+              value={mediaFileId}
+              onChange={(id, url) => { setMediaFileId(id); setPreviewUrl(url) }}
+              classroomId={classroomId}
+            />
+            {previewUrl && (
               <div className="lpe-scene-preview-wrap">
                 <img
-                  key={selectedScene.src}
-                  src={selectedScene.src}
+                  key={previewUrl}
+                  src={previewUrl}
                   alt="Scene preview"
                   className="lpe-scene-preview"
                 />
@@ -274,6 +308,8 @@ export default function EditDrawer({
             key={panel.id}
             lessonId={lessonId}
             panelId={panel.id}
+            panels={panels}
+            classroomId={classroomId}
             initialTextAnchors={panel.vr_tour?.text_anchors ?? []}
             initialNavAnchors={panel.vr_tour?.navigator_anchors ?? []}
             initialPolyAnchors={panel.vr_tour?.polygon_anchors ?? []}
@@ -299,6 +335,15 @@ export default function EditDrawer({
         </button>
         {!dirty && <span className="lpe-saved-hint">Saved</span>}
       </div>
+      )}
+
+      {mediaMode && (
+        <MediaInsertModal
+          initialMode={mediaMode}
+          classroomId={classroomId}
+          onInsert={handleMediaInsert}
+          onClose={() => setMediaMode(null)}
+        />
       )}
     </aside>
   )

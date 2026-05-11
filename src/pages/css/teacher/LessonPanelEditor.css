@@ -498,6 +498,18 @@
 .lpe-text-body--editable:focus {
   outline: none;
 }
+
+/* Placeholder shown on an empty <p> inside the editable area */
+.lpe-text-body--editable p:only-child:empty::before,
+.lpe-text-body--editable:empty::before {
+  content: 'Select a tag from the menu above to begin writing…';
+  display: block;
+  color: var(--text-3, #555);
+  font-style: italic;
+  font-size: 0.95em;
+  pointer-events: none;
+  user-select: none;
+}
 .lpe-text-body--hidden {
   display: none;
 }
@@ -1110,6 +1122,14 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--text-3);
+}
+
+.lpe-label-opt {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-3);
+  opacity: 0.6;
 }
 
 .lpe-input {
@@ -2272,3 +2292,252 @@
   border-color: var(--border);
 }
 [data-theme="light"] .lpe-poly-point-row:hover { border-color: var(--border-hover); }
+
+/* ─── ImageStyleEditor (.ise-*) ──────────────────────────────────────────── */
+
+.ise-root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+
+.ise-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.ise-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ise-row--col {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.ise-row-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ise-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  flex-shrink: 0;
+  min-width: 68px;
+}
+
+.ise-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.ise-reset {
+  margin-left: auto;
+  border: none;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color var(--duration-fast);
+}
+.ise-reset:hover { color: var(--text); }
+
+/* dim input */
+.ise-dim {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ise-num {
+  width: 64px;
+  height: 26px;
+  padding: 0 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text, #e4edf6);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: right;
+  -moz-appearance: textfield;
+}
+.ise-num:focus { outline: none; border-color: var(--gold, #d4a017); }
+.ise-num::-webkit-inner-spin-button,
+.ise-num::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.ise-num::placeholder { color: var(--text-2, #9db0c5); }
+
+.ise-unit {
+  height: 26px;
+  padding: 0 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+}
+.ise-unit:focus { outline: none; border-color: var(--gold, #d4a017); }
+
+/* slider row */
+.ise-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ise-edge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+/* toggle buttons */
+.ise-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.ise-btn {
+  height: 24px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-3);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color var(--duration-fast), border-color var(--duration-fast), background var(--duration-fast);
+}
+.ise-btn:hover { color: var(--text-2); border-color: var(--border-hover); }
+.ise-btn--on {
+  background: rgba(212, 160, 23, 0.12);
+  border-color: rgba(212, 160, 23, 0.5);
+  color: var(--gold, #d4a017);
+}
+
+/* text input (margin) */
+.ise-text {
+  flex: 1;
+  height: 26px;
+  padding: 0 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.ise-text:focus { outline: none; border-color: var(--gold, #d4a017); }
+.ise-text::placeholder { color: var(--text-3); }
+
+/* smaller label variant */
+.ise-label--sm {
+  min-width: 44px;
+}
+
+/* fixed unit badge (no select) */
+.ise-unit-fixed {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  padding: 0 6px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+/* border sub-grid */
+.ise-border-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* color picker row */
+.ise-color-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.ise-color-picker {
+  width: 26px;
+  height: 26px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ise-color-text {
+  flex: 1;
+  height: 26px;
+  padding: 0 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-width: 0;
+}
+.ise-color-text:focus { outline: none; border-color: var(--gold, #d4a017); }
+.ise-color-text::placeholder { color: var(--text-3); }
+
+/* margin 4-input grid */
+.ise-margin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.ise-margin-cell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ise-margin-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  width: 10px;
+  flex-shrink: 0;
+}
+
+.ise-margin-input {
+  flex: 1;
+  height: 26px;
+  padding: 0 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  min-width: 0;
+}
+.ise-margin-input:focus { outline: none; border-color: var(--gold, #d4a017); }
+.ise-margin-input::placeholder { color: var(--text-3); }

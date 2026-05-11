@@ -1,0 +1,47 @@
+/* ── Page shell ── */
+.tt-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  font-family: var(--font-ui);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.tt-centered {
+  align-items: center;
+  justify-content: center;
+}
+
+.tt-status {
+  color: var(--text-3);
+  font-size: 14px;
+}
+
+.tt-status--error {
+  color: var(--error);
+}
+
+/* ── Taking phase body ── */
+.tt-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.tt-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Shared animation (used by intro + results cards) ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -14,7 +14,7 @@ function AnchorPopup({ anchor, onClose }) {
       </button>
       <h3 className="lr-anchor-title">{anchor.title}</h3>
       <div className="lr-anchor-divider" />
-      <div className="lr-anchor-body" dangerouslySetInnerHTML={{ __html: body }} />
+      <div className="lr-anchor-body lr-prose" dangerouslySetInnerHTML={{ __html: body }} />
     </aside>
   )
 }

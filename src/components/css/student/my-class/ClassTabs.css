@@ -1,0 +1,56 @@
+.myclass-tabs {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-1);
+  padding: 0 40px;
+}
+
+.myclass-tabs-inner {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.myclass-tabs-inner::-webkit-scrollbar { display: none; }
+
+.myclass-tab {
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 16px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+  margin-bottom: -1px;
+}
+.myclass-tab:hover { color: var(--text); }
+.myclass-tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.myclass-tab-join {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--duration-fast);
+  margin-left: 4px;
+}
+.myclass-tab-join:hover { color: var(--accent); }
+.myclass-tab-join--active { color: var(--accent); }

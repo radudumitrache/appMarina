@@ -1,5 +1,6 @@
 import '../../css/student/support/TicketList.css'
 import { useState } from 'react'
+import Sk from '../../shared/Skeleton'
 
 const STATUS_META = {
   open:     { label: 'Open',     cls: 'status--open'     },
@@ -25,7 +26,7 @@ function formatDateTime(iso) {
   })
 }
 
-export default function TicketList({ tickets }) {
+export default function TicketList({ tickets, loading }) {
   const [filter, setFilter]     = useState('all')
   const [expanded, setExpanded] = useState(null)
 
@@ -54,7 +55,24 @@ export default function TicketList({ tickets }) {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="tickets-list">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="ticket-row" style={{ opacity: 1 - i * 0.25, pointerEvents: 'none' }}>
+              <div className="ticket-row-summary" style={{ cursor: 'default' }}>
+                <div className="ticket-row-top">
+                  <Sk w={52} h={11} r={3} />
+                  <Sk w="45%" h={13} r={4} />
+                  <Sk w={64} h={20} r={4} style={{ marginLeft: 'auto' }} />
+                </div>
+                <div className="ticket-row-meta" style={{ marginTop: 6 }}>
+                  <Sk w={120} h={10} r={3} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
         <p className="support-empty">No tickets in this category.</p>
       ) : (
         <div className="tickets-list">

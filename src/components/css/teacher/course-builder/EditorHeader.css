@@ -1,32 +1,38 @@
+/* ── Unassigned course warning ───────────────────────────────────────────── */
+.cb-warn-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  background: rgba(212, 160, 23, 0.08);
+  border: 1px solid rgba(212, 160, 23, 0.25);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.cb-warn-banner svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
 .cb-editor-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px;
   flex-shrink: 0;
 }
 
-.cb-editor-header-left {
+.cb-course-meta {
   display: flex;
   flex-direction: column;
   gap: 6px;
   flex: 1;
   min-width: 0;
 }
-
-.cb-crumb-link {
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: var(--font-ui);
-  font-size: 12px;
-  color: var(--text-3);
-  cursor: pointer;
-  text-align: left;
-  transition: color var(--duration-fast);
-}
-
-.cb-crumb-link:hover { color: var(--text-2); }
 
 .cb-title-input {
   width: 100%;
@@ -42,8 +48,7 @@
   padding: 2px 0;
   transition: border-color var(--duration-fast);
 }
-
-.cb-title-input:focus { border-bottom-color: rgba(217, 160, 48, 0.4); }
+.cb-title-input:focus { border-bottom-color: rgba(217,160,48,0.4); }
 .cb-title-input::placeholder { color: var(--text-3); }
 
 .cb-desc-input {
@@ -52,43 +57,148 @@
   border: none;
   font-family: var(--font-ui);
   font-size: 13px;
-  color: var(--text-2);
+  color: var(--text-3);
   outline: none;
   padding: 0;
+  transition: color var(--duration-fast);
 }
+.cb-desc-input:focus { color: var(--text-2); }
+.cb-desc-input::placeholder { color: var(--text-3); opacity: 0.6; }
 
-.cb-desc-input::placeholder { color: var(--text-3); }
-
-.cb-editor-header-right {
+.cb-classroom-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cb-classroom-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.cb-classroom-select {
+  flex: 1;
+  height: 28px;
+  padding: 0 24px 0 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-2);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  transition: border-color var(--duration-fast);
+  max-width: 260px;
+}
+.cb-classroom-select:focus { border-color: rgba(217,160,48,0.4); }
+
+/* ── Action bar ─────────────────────────────────────────────────────────── */
+.cb-course-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
-  padding-top: 20px;
+  padding-top: 4px;
 }
 
 .cb-status-badge {
   font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
 }
+.cb-status--published { background: rgba(46,199,122,0.10); color: var(--success); border: 1px solid rgba(46,199,122,0.2); }
+.cb-status--draft     { background: rgba(255,255,255,0.05); color: var(--text-3);  border: 1px solid var(--border); }
 
 .cb-toggle-btn {
-  height: 32px;
-  padding: 0 16px;
+  height: 30px;
+  padding: 0 14px;
   background: var(--gold);
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 600;
-  color: var(--bg);
+  color: #0d1117;
   cursor: pointer;
   transition: background var(--duration-fast);
 }
+.cb-toggle-btn:hover { background: #f0b84a; }
 
-.cb-toggle-btn:hover { background: var(--color-gold-400, #f0b84a); }
+.cb-delete-course-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+}
+.cb-delete-course-btn:hover {
+  background: rgba(224,82,82,0.10);
+  border-color: rgba(224,82,82,0.3);
+  color: var(--error);
+}
+
+.cb-delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(224,82,82,0.08);
+  border: 1px solid rgba(224,82,82,0.25);
+  border-radius: var(--radius-md);
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.cb-delete-confirm-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--error);
+  white-space: nowrap;
+}
+
+.cb-delete-confirm-yes {
+  padding: 3px 10px;
+  background: var(--error);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+.cb-delete-confirm-yes:hover { opacity: 0.85; }
+
+.cb-delete-confirm-no {
+  padding: 3px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+.cb-delete-confirm-no:hover { color: var(--text); }

@@ -1,18 +1,24 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import NavBar from '../../components/admin/NavBar'
 import TicketsSidebar from '../../components/admin/support/TicketsSidebar'
 import TicketsTable from '../../components/admin/support/TicketsTable'
 import TicketModal from '../../components/admin/support/TicketModal'
-import { INITIAL_TICKETS, nextCommentId } from './supportMock'
+import { getTickets, updateTicket, addComment } from '../../api/support'
+import Sk from '../../components/shared/Skeleton'
 import '../css/admin/Support.css'
 
 export default function Support() {
-  const navigate = useNavigate()
-  const [tickets, setTickets]         = useState(INITIAL_TICKETS)
+  const [tickets, setTickets]           = useState([])
   const [statusFilter, setStatusFilter] = useState('all')
-  const [search, setSearch]           = useState('')
-  const [selected, setSelected]       = useState(null)
+  const [search, setSearch]             = useState('')
+  const [selected, setSelected]         = useState(null)
+  const [loading, setLoading]           = useState(true)
+
+  useEffect(() => {
+    getTickets()
+      .then(({ data }) => setTickets(data))
+      .finally(() => setLoading(false))
+  }, [])
 
   const counts = {
     all:      tickets.length,
@@ -31,26 +37,19 @@ export default function Support() {
 
   const openCount = counts.open + counts.pending
 
-  const handleStatusChange = (ticketId, newStatus) => {
-    const now = new Date().toISOString()
-    setTickets(prev => prev.map(t =>
-      t.id === ticketId ? { ...t, status: newStatus, updated_at: now } : t
-    ))
-    setSelected(prev => prev?.id === ticketId ? { ...prev, status: newStatus, updated_at: now } : prev)
+  const handleStatusChange = async (ticketId, newStatus) => {
+    const { data } = await updateTicket(ticketId, { status: newStatus })
+    setTickets(prev => prev.map(t => t.id === ticketId ? data : t))
+    setSelected(prev => prev?.id === ticketId ? data : prev)
   }
 
-  const handleAddComment = (ticketId, body) => {
-    const now = new Date().toISOString()
-    const comment = { id: nextCommentId(), author_name: 'Support Admin', body, created_at: now }
+  const handleAddComment = async (ticketId, body) => {
+    const { data: comment } = await addComment(ticketId, { body })
     setTickets(prev => prev.map(t =>
-      t.id === ticketId
-        ? { ...t, comments: [...t.comments, comment], updated_at: now }
-        : t
+      t.id === ticketId ? { ...t, comments: [...t.comments, comment] } : t
     ))
     setSelected(prev =>
-      prev?.id === ticketId
-        ? { ...prev, comments: [...prev.comments, comment], updated_at: now }
-        : prev
+      prev?.id === ticketId ? { ...prev, comments: [...prev.comments, comment] } : prev
     )
   }
 
@@ -69,9 +68,9 @@ export default function Support() {
             <div className="as-toolbar">
               <div className="as-toolbar-left">
                 <h2 className="as-toolbar-title">
-                  {statusFilter === 'all' ? 'All Tickets' :
-                   statusFilter === 'open' ? 'Open Tickets' :
-                   statusFilter === 'pending' ? 'Pending Tickets' : 'Resolved Tickets'}
+                  {statusFilter === 'all'      ? 'All Tickets'      :
+                   statusFilter === 'open'     ? 'Open Tickets'     :
+                   statusFilter === 'pending'  ? 'Pending Tickets'  : 'Resolved Tickets'}
                 </h2>
                 <span className="as-toolbar-count">{filtered.length}</span>
                 {openCount > 0 && statusFilter === 'all' && (
@@ -94,11 +93,26 @@ export default function Support() {
               </div>
             </div>
 
-            <TicketsTable
-              tickets={filtered}
-              selectedId={selected?.id}
-              onSelect={setSelected}
-            />
+            {loading
+              ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 0' }}>
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', opacity: 1 - i * 0.1 }}>
+                      <Sk w={72}  h={13} r={4} style={{ flexShrink: 0 }} />
+                      <Sk w={`${30 + (i % 4) * 8}%`} h={13} />
+                      <Sk w={70}  h={20} r={4} style={{ flexShrink: 0 }} />
+                      <Sk w={60}  h={13} r={4} style={{ flexShrink: 0, marginLeft: 'auto' }} />
+                      <Sk w={80}  h={13} style={{ flexShrink: 0 }} />
+                    </div>
+                  ))}
+                </div>
+              )
+              : <TicketsTable
+                  tickets={filtered}
+                  selectedId={selected?.id}
+                  onSelect={setSelected}
+                />
+            }
           </main>
         </div>
       </div>

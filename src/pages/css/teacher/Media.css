@@ -1,0 +1,80 @@
+.media-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.media-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.media-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.media-table-wrap {
+  flex: 1;
+  overflow: auto;
+  padding: 8px 0;
+}
+
+.media-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.media-table thead th {
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.media-table thead th:last-child { text-align: right; }
+
+.media-empty {
+  padding: 48px 40px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ── Folder groups (all-files view) ──────────────────────────────────── */
+
+.media-folder-group {
+  margin-bottom: 8px;
+}
+
+.media-folder-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 8px;
+  color: var(--text-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.media-folder-group-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.media-folder-group-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}

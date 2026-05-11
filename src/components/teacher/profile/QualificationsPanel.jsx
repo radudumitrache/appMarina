@@ -1,6 +1,24 @@
-import { QUALIFICATIONS } from '../../../pages/teacher/profileMock'
 import '../../css/teacher/profile/QualificationsPanel.css'
-import { formatDate, qualExpiresSoon } from '../../../pages/teacher/profileUtils'
+
+const QUALIFICATIONS = [
+  { id: 1, name: 'Chief Officer Certificate of Competency',  issued: '2015-06-01', expires: '2030-06-01', status: 'valid'    },
+  { id: 2, name: 'STCW Instructor Certification',            issued: '2024-01-15', expires: '2029-01-15', status: 'valid'    },
+  { id: 3, name: 'Advanced Fire Fighting Instructor',        issued: '2024-03-10', expires: '2029-03-10', status: 'valid'    },
+  { id: 4, name: 'VR Platform Trainer Certification',        issued: '2024-09-01', expires: '2027-09-01', status: 'valid'    },
+  { id: 5, name: 'ECDIS Type Approval Certificate',          issued: '2020-11-01', expires: '2025-11-01', status: 'expiring' },
+  { id: 6, name: 'Dynamic Positioning Operator',             issued: null,         expires: null,          status: 'pending'  },
+]
+
+function formatDate(iso) {
+  if (!iso) return '-'
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function qualExpiresSoon(iso) {
+  if (!iso) return false
+  const diff = (new Date(iso) - new Date()) / (1000 * 60 * 60 * 24)
+  return diff > 0 && diff <= 180
+}
 
 const InfoIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">

@@ -3,6 +3,7 @@
   inset: 0;
   z-index: 100;
   background: var(--bg);
+  cursor: pointer;
 }
 
 .page-transition-video {

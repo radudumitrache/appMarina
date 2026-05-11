@@ -1,24 +1,33 @@
 import '../../css/student/profile/SecurityTab.css'
 import { useState } from 'react'
 
-export default function SecurityTab() {
+export default function SecurityTab({ onChangePassword }) {
   const [pwCurrent, setPwCurrent] = useState('')
   const [pwNew,     setPwNew]     = useState('')
   const [pwConfirm, setPwConfirm] = useState('')
   const [pwErrors,  setPwErrors]  = useState({})
   const [pwSaved,   setPwSaved]   = useState(false)
+  const [saving,    setSaving]    = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const errs = {}
     if (!pwCurrent)          errs.current = 'Enter your current password.'
     if (pwNew.length < 8)    errs.next    = 'Password must be at least 8 characters.'
     if (pwNew !== pwConfirm) errs.confirm = 'Passwords do not match.'
     if (Object.keys(errs).length) { setPwErrors(errs); return }
-    setPwErrors({})
-    setPwSaved(true)
-    setPwCurrent(''); setPwNew(''); setPwConfirm('')
-    setTimeout(() => setPwSaved(false), 3000)
+    setSaving(true)
+    try {
+      await onChangePassword(pwCurrent, pwNew)
+      setPwErrors({})
+      setPwSaved(true)
+      setPwCurrent(''); setPwNew(''); setPwConfirm('')
+      setTimeout(() => setPwSaved(false), 3000)
+    } catch {
+      setPwErrors({ current: 'Current password is incorrect.' })
+    } finally {
+      setSaving(false)
+    }
   }
 
   const clearError = (key) => () => setPwErrors(v => ({ ...v, [key]: '' }))
@@ -58,8 +67,8 @@ export default function SecurityTab() {
               <input className="form-input" type="password" value={pwConfirm} onChange={e => { setPwConfirm(e.target.value); clearError('confirm')() }} />
               {pwErrors.confirm && <span className="form-error">{pwErrors.confirm}</span>}
             </div>
-            <button type="submit" className="btn-primary-sm" style={{ alignSelf: 'flex-start' }}>
-              Update password
+            <button type="submit" className="btn-primary-sm" style={{ alignSelf: 'flex-start' }} disabled={saving}>
+              {saving ? 'Saving…' : 'Update password'}
             </button>
           </form>
         )}

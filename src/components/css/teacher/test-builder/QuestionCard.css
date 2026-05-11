@@ -182,3 +182,56 @@
   font-style: italic;
   padding: 2px 0;
 }
+
+.tb-argument-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  line-height: 1.5;
+}
+
+.tb-argument-hint svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  opacity: 0.6;
+}
+
+.tb-arrange-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tb-arrange-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.tb-arrange-order {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  min-width: 18px;
+  flex-shrink: 0;
+}
+
+.tb-arrange-text {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  flex: 1;
+}

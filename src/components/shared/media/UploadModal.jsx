@@ -1,0 +1,151 @@
+import { useRef, useState } from 'react'
+import { getUploadUrl, uploadToGCS, confirmUpload } from '../../../api/media'
+import '../../css/shared/media/UploadModal.css'
+
+function formatBytes(bytes) {
+  if (!bytes) return '0 B'
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+export default function UploadModal({ uploadableFolders, onClose, onUploaded }) {
+  const fileRef              = useRef(null)
+  const [file, setFile]      = useState(null)
+  const [folderId, setFolderId] = useState(uploadableFolders[0]?.id ?? '')
+  const [progress, setProgress] = useState(null)
+  const [error, setError]    = useState('')
+
+  const selectedFolder = uploadableFolders.find(f => f.id === folderId)
+
+  const handleFile = (f) => {
+    if (!f) return
+    const isImage = f.type.startsWith('image/')
+    const isVideo = f.type.startsWith('video/')
+    if (!isImage && !isVideo) { setError('Only image and video files are supported.'); return }
+    setFile(f)
+    setError('')
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    handleFile(e.dataTransfer.files[0])
+  }
+
+  const handleUpload = async () => {
+    if (!file || !selectedFolder) return
+    setProgress('requesting')
+    setError('')
+    try {
+      const { data: urlData } = await getUploadUrl({
+        filename:     file.name,
+        content_type: file.type,
+        folder:       selectedFolder.folder,
+        classroom_id: selectedFolder.classroomId ?? null,
+      })
+
+      setProgress('uploading')
+      const res = await uploadToGCS(urlData.upload_url, file)
+      if (!res.ok) throw new Error('GCS upload failed')
+
+      setProgress('confirming')
+      const { data: mediaFile } = await confirmUpload({
+        gcs_path:     urlData.gcs_path,
+        filename:     file.name,
+        file_type:    file.type.startsWith('image/') ? 'image' : 'video',
+        mime_type:    file.type,
+        size_bytes:   file.size,
+        folder:       selectedFolder.folder,
+        classroom_id: selectedFolder.classroomId ?? null,
+      })
+
+      onUploaded(mediaFile)
+    } catch (err) {
+      setError(err.message || 'Upload failed. Please try again.')
+      setProgress(null)
+    }
+  }
+
+  const busy = progress !== null
+
+  return (
+    <div className="modal-backdrop" onClick={busy ? undefined : onClose}>
+      <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Upload File</h3>
+          {!busy && (
+            <button className="modal-close" onClick={onClose}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          )}
+        </div>
+
+        <div className="modal-body">
+          <div className="form-row">
+            <label className="form-label">Upload to</label>
+            <select
+              className="form-select"
+              value={folderId}
+              onChange={e => setFolderId(e.target.value)}
+              disabled={busy}
+            >
+              {uploadableFolders.map(f => (
+                <option key={f.id} value={f.id}>{f.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-row">
+            <label className="form-label">File</label>
+            <div
+              className={`upload-drop-zone ${file ? 'upload-drop-zone--loaded' : ''}`}
+              onClick={() => !busy && fileRef.current?.click()}
+              onDragOver={e => e.preventDefault()}
+              onDrop={handleDrop}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span className="upload-drop-label">
+                {file
+                  ? `${file.name} — ${formatBytes(file.size)}`
+                  : 'Click or drag an image / video file here'}
+              </span>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*,video/*"
+                style={{ display: 'none' }}
+                onChange={e => handleFile(e.target.files?.[0])}
+              />
+            </div>
+          </div>
+
+          {error && <p className="upload-error">{error}</p>}
+
+          {progress && (
+            <p className="upload-status">
+              {progress === 'requesting'  && 'Getting upload URL…'}
+              {progress === 'uploading'   && 'Uploading to storage…'}
+              {progress === 'confirming'  && 'Registering file…'}
+            </p>
+          )}
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn-ghost" onClick={onClose} disabled={busy}>Cancel</button>
+          <button
+            className="btn-primary"
+            onClick={handleUpload}
+            disabled={!file || busy}
+          >
+            {busy ? 'Uploading…' : 'Upload'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

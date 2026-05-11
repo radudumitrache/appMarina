@@ -1,48 +1,109 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import NavBar from '../../components/student/NavBar'
+import NavBar        from '../../components/student/NavBar'
 import ModuleProgress from '../../components/student/progress/ModuleProgress'
-import TestResults from '../../components/student/progress/TestResults'
-import ActivityFeed from '../../components/student/progress/ActivityFeed'
+import TestResults    from '../../components/student/progress/TestResults'
+import ActivityFeed   from '../../components/student/progress/ActivityFeed'
+import { getProgress, getTestResults, getActivity } from '../../api/progress'
 import '../css/student/Progress.css'
 
-const STAT_CARDS = [
-  { label: 'Lessons Complete', value: '5',   suffix: '/12', sub: '42% of curriculum'  },
-  { label: 'Avg Test Grade',   value: '72',  suffix: '%',   sub: '5 tests taken'       },
-  { label: 'Hours Trained',    value: '5.9', suffix: 'h',   sub: 'across all modules'  },
-  { label: 'Active Streak',    value: '3',   suffix: 'd',   sub: 'days in a row'       },
-]
-
-const MODULES = [
-  { id: 'nav',   label: 'Bridge Navigation',   total: 4, done: 2, hours: 2.5 },
-  { id: 'emg',   label: 'Emergency Protocols', total: 3, done: 1, hours: 0.8 },
-  { id: 'eng',   label: 'Engine Room',         total: 2, done: 2, hours: 2.4 },
-  { id: 'cargo', label: 'Cargo Management',    total: 2, done: 0, hours: 0   },
-  { id: 'comm',  label: 'Communications',      total: 1, done: 0, hours: 0.2 },
-]
-
-const TEST_RESULTS = [
-  { id: 1, title: 'Helm Control Basics Test',   author: 'Capt. Rodriguez', date: '2026-03-20', grade: 92 },
-  { id: 2, title: 'Chart Reading Fundamentals', author: 'Prof. Whitmore',  date: '2026-03-15', grade: 85 },
-  { id: 3, title: 'Fire Safety Assessment',     author: 'Instr. Chen',     date: '2026-03-10', grade: 78 },
-  { id: 4, title: 'Load Calculation Quiz',      author: 'Prof. Whitmore',  date: '2026-02-28', grade: 61 },
-  { id: 5, title: 'Man Overboard Drill Test',   author: 'Instr. Chen',     date: '2026-02-20', grade: 45 },
-]
-
-const ACTIVITY = [
-  { id: 1, type: 'lesson', text: 'Completed Fuel Management Systems',    sub: 'Engine Room · 65 min',          date: 'Mar 28' },
-  { id: 2, type: 'test',   text: 'Scored 92% on Helm Control Basics',   sub: 'By Capt. Rodriguez',             date: 'Mar 20' },
-  { id: 3, type: 'lesson', text: 'Completed Main Engine Operations',     sub: 'Engine Room · 80 min',          date: 'Mar 18' },
-  { id: 4, type: 'test',   text: 'Scored 85% on Chart Reading',          sub: 'By Prof. Whitmore',             date: 'Mar 15' },
-  { id: 5, type: 'lesson', text: 'Completed Fire Safety Protocols',      sub: 'Emergency Protocols · 50 min',  date: 'Mar 12' },
-  { id: 6, type: 'test',   text: 'Scored 78% on Fire Safety Assessment', sub: 'By Instr. Chen',                date: 'Mar 10' },
-]
+function fmtDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
 
 export default function Progress() {
   const navigate = useNavigate()
 
-  const totalDone  = MODULES.reduce((s, m) => s + m.done,  0)
-  const totalAll   = MODULES.reduce((s, m) => s + m.total, 0)
+  const [summary,     setSummary]     = useState(null)
+  const [testResults, setTestResults] = useState([])
+  const [activity,    setActivity]    = useState([])
+  const [loading,     setLoading]     = useState(true)
+
+  useEffect(() => {
+    Promise.all([getProgress(), getTestResults(), getActivity()])
+      .then(([progRes, testsRes, actRes]) => {
+        setSummary(progRes.data)
+        setTestResults(testsRes.data.map(s => ({
+          id:     s.id,
+          testId: s.test,
+          title:  s.test_title,
+          author: s.test_author_name,
+          date:   s.submitted_at,
+          grade:  Math.round(s.grade),
+        })))
+        setActivity(actRes.data.map(log => ({
+          id:    log.id,
+          type:  log.type,
+          text:  log.description,
+          sub:   log.sub_info,
+          refId: log.ref_id,
+          date:  fmtDate(log.created_at),
+        })))
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading || !summary) {
+    return (
+      <div className="progress-page">
+        <NavBar />
+        <header className="progress-header">
+          <div className="progress-breadcrumb">
+            <button className="breadcrumb-link" onClick={() => navigate('/student/dashboard')}>Dashboard</button>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+            <span className="breadcrumb-current">My Progress</span>
+          </div>
+          <h1 className="progress-page-title">My Progress</h1>
+        </header>
+        <div className="progress-content">
+          <div className="progress-stats">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="stat-card" style={{ opacity: 1 - i * 0.15 }}>
+                <span className="stat-label" style={{ background: 'var(--surface-3)', borderRadius: 4, color: 'transparent' }}>Loading</span>
+                <div className="stat-value-row">
+                  <span className="stat-value" style={{ background: 'var(--surface-3)', borderRadius: 4, color: 'transparent' }}>--</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const totalDone  = summary.modules.reduce((s, m) => s + m.done,  0)
+  const totalAll   = summary.modules.reduce((s, m) => s + m.total, 0)
   const overallPct = totalAll > 0 ? Math.round((totalDone / totalAll) * 100) : 0
+
+  const statCards = [
+    {
+      label:  'Lessons Complete',
+      value:  String(summary.lessons_complete),
+      suffix: `/${summary.lessons_total}`,
+      sub:    `${totalAll > 0 ? Math.round((summary.lessons_complete / summary.lessons_total) * 100) : 0}% of curriculum`,
+    },
+    {
+      label:  'Avg Test Grade',
+      value:  String(summary.avg_grade),
+      suffix: '%',
+      sub:    `${summary.tests_taken} test${summary.tests_taken !== 1 ? 's' : ''} taken`,
+    },
+    {
+      label:  'Hours Trained',
+      value:  String(summary.hours_trained),
+      suffix: 'h',
+      sub:    'across all modules',
+    },
+    {
+      label:  'Active Streak',
+      value:  String(summary.active_streak_days),
+      suffix: 'd',
+      sub:    'days in a row',
+    },
+  ]
 
   return (
     <div className="progress-page">
@@ -63,29 +124,39 @@ export default function Progress() {
 
       <div className="progress-content">
 
-        <div className="progress-stats">
-          {STAT_CARDS.map((card, i) => (
-            <div
-              className="stat-card"
-              key={card.label}
-              style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
-            >
-              <span className="stat-label">{card.label}</span>
-              <div className="stat-value-row">
-                <span className="stat-value">{card.value}</span>
-                <span className="stat-suffix">{card.suffix}</span>
+        <div className="progress-screen">
+          <div className="progress-stats">
+            {statCards.map((card, i) => (
+              <div
+                className="stat-card"
+                key={card.label}
+                style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
+              >
+                <span className="stat-label">{card.label}</span>
+                <div className="stat-value-row">
+                  <span className="stat-value">{card.value}</span>
+                  <span className="stat-suffix">{card.suffix}</span>
+                </div>
+                <span className="stat-sub">{card.sub}</span>
               </div>
-              <span className="stat-sub">{card.sub}</span>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="progress-grid">
+            <ModuleProgress modules={summary.modules} overallPct={overallPct} />
+            <TestResults results={testResults} onViewAll={() => navigate('/student/tests')} onSelect={t => navigate(`/student/tests/${t.testId}/review`)} />
+          </div>
         </div>
 
-        <div className="progress-grid">
-          <ModuleProgress modules={MODULES} overallPct={overallPct} />
-          <TestResults results={TEST_RESULTS} onViewAll={() => navigate('/student/tests')} />
+        <div className="progress-screen progress-screen--activity">
+          <ActivityFeed
+            items={activity}
+            onSelect={item => {
+              if (item.type === 'lesson') navigate('/student/lessons')
+              else if (item.type === 'test' && item.refId) navigate(`/student/tests/${item.refId}/review`)
+            }}
+          />
         </div>
-
-        <ActivityFeed items={ACTIVITY} />
 
       </div>
     </div>

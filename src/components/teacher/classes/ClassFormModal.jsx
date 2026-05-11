@@ -1,0 +1,148 @@
+import '../../css/admin/classes/ClassFormModal.css'
+import '../../css/teacher/classes/ClassFormModal.css'
+
+const PREFIXES = ['MN', 'BR', 'SF', 'NG', 'EG', 'CR', 'CM', 'DC', 'MC', 'NV']
+const SUFFIXES = ['A', 'B', 'C', 'D', 'E', 'X', 'Y', 'Z', '1', '2']
+
+function generateCode() {
+  const prefix = PREFIXES[Math.floor(Math.random() * PREFIXES.length)]
+  const year   = new Date().getFullYear()
+  const suffix = SUFFIXES[Math.floor(Math.random() * SUFFIXES.length)]
+  return `${prefix}-${year}-${suffix}`
+}
+
+function XIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  )
+}
+
+function Label({ children, required }) {
+  return (
+    <label className="form-label">
+      {children}{required && <span className="form-label-required">*</span>}
+    </label>
+  )
+}
+
+export default function ClassFormModal({ form, errors = {}, onChange, onClose, onSave }) {
+  const err = field => errors[field]
+    ? <span className="form-field-error">{errors[field]}</span>
+    : null
+
+  const hasErrors = Object.keys(errors).length > 0
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">New Class</h3>
+          <button className="modal-close" onClick={onClose}><XIcon /></button>
+        </div>
+        <div className="modal-body modal-body--scroll">
+
+          {errors.non_field_errors && (
+            <div className="form-error-banner">{errors.non_field_errors}</div>
+          )}
+
+          <div className="form-2col">
+            <div className="form-row">
+              <Label required>Class Name</Label>
+              <input
+                className={`form-input${errors.name ? ' form-input--error' : ''}`}
+                type="text"
+                placeholder="e.g. Maritime Navigation — Alpha"
+                value={form.name}
+                onChange={e => onChange('name', e.target.value)}
+              />
+              {err('name')}
+            </div>
+            <div className="form-row">
+              <Label required>Class Code</Label>
+              <div className="form-code-wrap">
+                <input
+                  className={`form-input form-input--code${errors.code ? ' form-input--error' : ''}`}
+                  type="text"
+                  placeholder="e.g. MN-2025-A"
+                  value={form.code}
+                  onChange={e => onChange('code', e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="form-gen-btn"
+                  onClick={() => onChange('code', generateCode())}
+                  title="Generate random code"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="16 3 21 3 21 8"/>
+                    <line x1="4" y1="20" x2="21" y2="3"/>
+                    <polyline points="21 16 21 21 16 21"/>
+                    <line x1="15" y1="15" x2="21" y2="21"/>
+                  </svg>
+                </button>
+              </div>
+              {err('code')}
+            </div>
+          </div>
+
+          <div className="form-2col">
+            <div className="form-row">
+              <Label required>Subject</Label>
+              <input
+                className={`form-input${errors.subject ? ' form-input--error' : ''}`}
+                type="text"
+                placeholder="e.g. Bridge Navigation"
+                value={form.subject}
+                onChange={e => onChange('subject', e.target.value)}
+              />
+              {err('subject')}
+            </div>
+            <div className="form-row">
+              <Label required>Semester</Label>
+              <input
+                className={`form-input${errors.semester ? ' form-input--error' : ''}`}
+                type="text"
+                placeholder="e.g. Spring 2025"
+                value={form.semester}
+                onChange={e => onChange('semester', e.target.value)}
+              />
+              {err('semester')}
+            </div>
+          </div>
+
+          <div className="form-2col">
+            <div className="form-row">
+              <Label required>Start Date</Label>
+              <input
+                className={`form-input${errors.start_date ? ' form-input--error' : ''}`}
+                type="date"
+                value={form.start_date}
+                onChange={e => onChange('start_date', e.target.value)}
+              />
+              {err('start_date')}
+            </div>
+            <div className="form-row">
+              <Label required>End Date</Label>
+              <input
+                className={`form-input${errors.end_date ? ' form-input--error' : ''}`}
+                type="date"
+                value={form.end_date}
+                onChange={e => onChange('end_date', e.target.value)}
+              />
+              {err('end_date')}
+            </div>
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button className="btn-ghost" onClick={onClose}>Cancel</button>
+          <button className="btn-primary" onClick={onSave}>
+            Create Class
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

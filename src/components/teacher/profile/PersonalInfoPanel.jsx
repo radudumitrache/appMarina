@@ -1,20 +1,41 @@
 import { useState } from 'react'
-import { formatDate } from '../../../pages/teacher/profileUtils'
 import '../../css/teacher/profile/PersonalInfoPanel.css'
-import { LANGUAGES, TIMEZONES } from '../../../pages/teacher/profileMock'
+
+const TIMEZONES = [
+  'Europe/Madrid', 'Europe/London', 'Europe/Paris',
+  'America/New_York', 'America/Vancouver', 'America/Chicago',
+  'Asia/Tokyo', 'Asia/Singapore', 'Australia/Sydney', 'UTC',
+]
+
+const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Japanese', 'Mandarin', 'Arabic']
+
+function formatDate(iso) {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
 
 export default function PersonalInfoPanel({ profile, onSave }) {
   const [editing, setEditing] = useState(false)
   const [draft,   setDraft]   = useState(profile)
   const [saved,   setSaved]   = useState(false)
+  const [saving,  setSaving]  = useState(false)
+  const [error,   setError]   = useState('')
 
-  function handleEdit()   { setDraft(profile); setEditing(true); setSaved(false) }
-  function handleCancel() { setEditing(false) }
-  function handleSave()   {
-    onSave(draft)
-    setEditing(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  function handleEdit()   { setDraft(profile); setEditing(true); setSaved(false); setError('') }
+  function handleCancel() { setEditing(false); setError('') }
+  async function handleSave() {
+    setSaving(true)
+    setError('')
+    try {
+      await onSave(draft)
+      setEditing(false)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch {
+      setError('Failed to save. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   function field(label, key, type = 'text', wide = false) {
@@ -36,8 +57,11 @@ export default function PersonalInfoPanel({ profile, onSave }) {
           {saved && <span className="tp-save-confirm">Saved</span>}
           {editing ? (
             <>
-              <button className="tp-btn-secondary" onClick={handleCancel}>Cancel</button>
-              <button className="tp-btn-primary"   onClick={handleSave}>Save changes</button>
+              {error && <span className="tp-form-error">{error}</span>}
+              <button className="tp-btn-secondary" onClick={handleCancel} disabled={saving}>Cancel</button>
+              <button className="tp-btn-primary"   onClick={handleSave}  disabled={saving}>
+                {saving ? 'Saving…' : 'Save changes'}
+              </button>
             </>
           ) : (
             <button className="tp-btn-secondary" onClick={handleEdit}>

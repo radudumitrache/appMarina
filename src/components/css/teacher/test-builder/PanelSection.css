@@ -1,0 +1,588 @@
+/* ─── Panel container ────────────────────────────────────────────────────── */
+.tb-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.tb-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.tb-panel-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.tb-panel-collapse-btn:hover {
+  color: var(--text-1);
+}
+
+.tb-panel-type-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.tb-panel-type-badge--ex {
+  background: var(--gold-dim, rgba(217, 160, 48, 0.12));
+  color: var(--gold);
+  border: 1px solid rgba(217, 160, 48, 0.25);
+}
+
+.tb-panel-type-badge--vr {
+  background: rgba(0, 188, 212, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(0, 188, 212, 0.25);
+}
+
+.tb-panel-title-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-1);
+  padding: 0;
+  min-width: 0;
+}
+
+.tb-panel-title-input:focus {
+  color: var(--text-1);
+}
+
+.tb-panel-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.tb-panel-delete-btn:hover {
+  color: var(--error);
+  background: rgba(224, 82, 82, 0.1);
+}
+
+/* ─── Panel body ─────────────────────────────────────────────────────────── */
+.tb-panel-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tb-panel-exercises {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ─── Inner add trigger ──────────────────────────────────────────────────── */
+.tb-add-q-trigger--inner {
+  font-size: 12px;
+  padding: 8px 14px;
+}
+
+.tb-add-q-panel--inner {
+  margin-top: 0;
+}
+
+/* ─── Empty state (inner) ────────────────────────────────────────────────── */
+.tb-q-empty--inner {
+  padding: 14px 0;
+  border: none;
+}
+
+/* ─── VR open button ─────────────────────────────────────────────────────── */
+.tb-vr-open-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 188, 212, 0.3);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 188, 212, 0.05);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent, #0bbda4);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.tb-vr-open-btn:hover {
+  background: rgba(0, 188, 212, 0.1);
+  border-color: var(--accent, #0bbda4);
+}
+
+.tb-vr-open-btn svg:last-child {
+  margin-left: auto;
+}
+
+/* ─── VR panel editor (visual) ───────────────────────────────────────────── */
+.tb-vr-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Scene selection bar */
+.tb-vr-scene-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.tb-vr-scene-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.tb-vr-scene-label--set {
+  color: var(--accent);
+}
+
+.tb-vr-scene-btn {
+  height: 26px;
+  padding: 0 12px;
+  border: 1px solid rgba(0, 188, 212, 0.35);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+}
+
+.tb-vr-scene-btn:hover {
+  background: rgba(0, 188, 212, 0.08);
+  border-color: var(--accent);
+}
+
+.tb-vr-scene-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* VR viewer container */
+.tb-vr-viewer-wrap {
+  position: relative;
+  height: 380px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* Overlay controls (bottom of viewer) */
+.tb-vr-viewer-controls {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
+
+.tb-vr-place-btn {
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid rgba(217, 160, 48, 0.5);
+  border-radius: var(--radius-sm);
+  background: rgba(10, 18, 32, 0.82);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+.tb-vr-place-btn:hover {
+  background: rgba(217, 160, 48, 0.15);
+  border-color: var(--gold);
+}
+
+.tb-vr-place-btn--on {
+  background: rgba(217, 160, 48, 0.18);
+  border-color: var(--gold);
+}
+
+.tb-vr-place-hint {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(10, 18, 32, 0.75);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+/* No scene placeholder */
+.tb-vr-no-scene {
+  padding: 28px 16px;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+/* Placement panel */
+.tb-vr-placement-panel {
+  border: 1px solid rgba(217, 160, 48, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(217, 160, 48, 0.04);
+}
+
+.tb-vr-placement-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tb-vr-placement-coords {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+}
+
+.tb-vr-type-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tb-vr-type-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.tb-anchor-loc-hint {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Anchors section */
+.tb-vr-anchors-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Anchor pin displayed in VRViewer */
+.tb-vr-anchor-pin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold, #d9a030);
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 0 8px rgba(217, 160, 48, 0.45), 0 2px 6px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.tb-vr-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tb-vr-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tb-vr-section-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.tb-add-anchor-btn {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--accent);
+  background: none;
+  border: 1px solid rgba(0, 188, 212, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tb-add-anchor-btn:hover {
+  background: rgba(0, 188, 212, 0.08);
+  border-color: var(--accent);
+}
+
+.tb-anchor-empty {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  padding: 8px 0;
+}
+
+/* ─── Anchor cards ───────────────────────────────────────────────────────── */
+.tb-anchor-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tb-anchor-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tb-anchor-type-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb, 0, 188, 212), 0.1);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+.tb-anchor-pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  flex: 1;
+}
+
+/* ─── Anchor form ────────────────────────────────────────────────────────── */
+.tb-anchor-form {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tb-anchor-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tb-anchor-field-row .tb-meta-label {
+  flex-shrink: 0;
+  min-width: 90px;
+}
+
+.tb-anchor-field-row .tb-meta-input {
+  flex: 1;
+}
+
+/* ─── MCQ footer / options ───────────────────────────────────────────────── */
+.tb-mcq-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.tb-add-option-btn {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.tb-add-option-btn:hover {
+  color: var(--text-1);
+}
+
+.tb-opt-del {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.tb-opt-del:hover {
+  color: var(--error);
+}
+
+/* ─── Arrange items ──────────────────────────────────────────────────────── */
+.tb-arrange-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.tb-arrange-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tb-arrange-order {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  min-width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.tb-arrange-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 8px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-1);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.tb-arrange-input:focus {
+  border-color: var(--gold);
+}
+
+/* ─── Localization polygon points ────────────────────────────────────────── */
+.tb-anchor-points {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tb-anchor-points-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+}
+
+.tb-anchor-points-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tb-anchor-point-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tb-anchor-point-coords {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-2);
+  flex: 1;
+}
+
+/* ─── Saving indicator ───────────────────────────────────────────────────── */
+.tb-saving-indicator {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  margin-left: 4px;
+}
+
+/* ─── Meta value (read-only) ─────────────────────────────────────────────── */
+.tb-meta-value {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+/* ─── Sidebar loading ────────────────────────────────────────────────────── */
+.tb-sidebar-loading {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  padding: 12px 8px;
+  text-align: center;
+}
+
+/* ─── Panels list ────────────────────────────────────────────────────────── */
+.tb-panels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

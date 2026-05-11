@@ -8,7 +8,7 @@ const InfoIcon = () => (
   </svg>
 )
 
-export default function TeachingPanel({ profile }) {
+export default function TeachingPanel({ profile, stats = {} }) {
   return (
     <div className="tp-panel">
       <div className="tp-panel-head">
@@ -38,22 +38,17 @@ export default function TeachingPanel({ profile }) {
 
       <div className="tp-snapshot">
         <div className="tp-snapshot-item">
-          <span className="tp-snapshot-value">47</span>
+          <span className="tp-snapshot-value">{stats.totalStudents ?? '—'}</span>
           <span className="tp-snapshot-label">Total students</span>
         </div>
         <div className="tp-snapshot-sep" />
         <div className="tp-snapshot-item">
-          <span className="tp-snapshot-value">78<span className="tp-snapshot-suffix">%</span></span>
-          <span className="tp-snapshot-label">Avg student score</span>
-        </div>
-        <div className="tp-snapshot-sep" />
-        <div className="tp-snapshot-item">
-          <span className="tp-snapshot-value">3</span>
+          <span className="tp-snapshot-value">{stats.publishedLessons ?? '—'}</span>
           <span className="tp-snapshot-label">Courses published</span>
         </div>
         <div className="tp-snapshot-sep" />
         <div className="tp-snapshot-item">
-          <span className="tp-snapshot-value">4</span>
+          <span className="tp-snapshot-value">{stats.activeClasses ?? '—'}</span>
           <span className="tp-snapshot-label">Active classes</span>
         </div>
       </div>

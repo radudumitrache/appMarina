@@ -79,3 +79,10 @@
 }
 
 .tb-toggle-btn:hover { background: var(--color-gold-400, #f0b84a); }
+
+.tb-saving-indicator {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  margin-left: 4px;
+}

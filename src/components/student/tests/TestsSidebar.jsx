@@ -1,19 +1,10 @@
 import '../../css/student/tests/TestsSidebar.css'
 
-const CLASSES = [
-  { id: 'all',    label: 'All Tests'          },
-  { id: 'nav',    label: 'Maritime Nav 101'   },
-  { id: 'safety', label: 'Safety & Emergency' },
-  { id: 'eng',    label: 'Engineering Ops'    },
-  { id: 'comms',  label: 'Communications'     },
-  { id: 'open',   label: 'Open Access'        },
-]
-
 function getClassStats(tests, classId) {
   const subset =
     classId === 'all'  ? tests :
-    classId === 'open' ? tests.filter(t => t.classId === null) :
-    tests.filter(t => t.classId === classId)
+    classId === 'open' ? tests.filter(t => !t.class_id) :
+    tests.filter(t => t.class_id === classId)
   return {
     total:   subset.length,
     pending: subset.filter(t => !t.completed).length,
@@ -21,11 +12,17 @@ function getClassStats(tests, classId) {
   }
 }
 
-export default function TestsSidebar({ tests, activeClass, onClassChange, overall, avg }) {
+export default function TestsSidebar({ tests, classes, activeClass, onClassChange, overall, avg }) {
+  const navItems = [
+    { id: 'all',  label: 'All Tests'   },
+    ...classes.map(c => ({ id: c.code, label: c.name })),
+    { id: 'open', label: 'Open Access' },
+  ]
+
   return (
     <aside className="tests-sidebar">
       <nav className="tests-sidebar-nav">
-        {CLASSES.map((cls) => {
+        {navItems.map((cls) => {
           const stats = getClassStats(tests, cls.id)
           return (
             <button

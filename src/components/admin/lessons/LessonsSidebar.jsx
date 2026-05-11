@@ -8,6 +8,7 @@ export default function LessonsSidebar({ categories, activeCategory, onCategoryC
   return (
     <aside className="sidebar">
       <nav className="sidebar-nav">
+        <span className="sidebar-section-label">Categories</span>
         {categories.map(cat => (
           <button
             key={cat.id}
@@ -17,7 +18,7 @@ export default function LessonsSidebar({ categories, activeCategory, onCategoryC
             <div className="sidebar-btn-row">
               <span className="sidebar-label">{cat.label}</span>
               <span className="sidebar-count">
-                {cat.id === 'all' ? total : lessons.filter(l => l.cat === cat.id).length}
+                {cat.id === 'all' ? total : lessons.filter(l => l.category === cat.id).length}
               </span>
             </div>
           </button>

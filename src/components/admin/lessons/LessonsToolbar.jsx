@@ -41,9 +41,9 @@ export default function LessonsToolbar({ title, filteredCount, search, onSearchC
         </div>
         <div className="status-filter">
           {[
-            { id: 'all',       label: 'All'       },
-            { id: 'published', label: 'Published' },
-            { id: 'draft',     label: 'Draft'     },
+            { id: 'all',    label: 'All'        },
+            { id: 'public', label: 'Public'     },
+            { id: 'class',  label: 'Class only' },
           ].map(s => (
             <button
               key={s.id}

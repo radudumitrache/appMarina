@@ -3,7 +3,8 @@ import api from '../api/axios'
 
 const AuthContext = createContext(null)
 
-const STORAGE_KEY = 'seafarer_user'
+const STORAGE_KEY         = 'seafarer_user'
+const REFRESH_STORAGE_KEY = 'seafarer_refresh'
 
 export function AuthProvider({ children }) {
   const storedUser = (() => {
@@ -11,14 +12,22 @@ export function AuthProvider({ children }) {
   })()
 
   const [user, setUser]       = useState(storedUser)
-  // Only show a loading spinner if there's no stored user to show immediately
-  const [loading, setLoading] = useState(!storedUser)
+  const [loading, setLoading] = useState(true)
 
-  // On app load: try to get a fresh access token via the httpOnly refresh-token cookie
+  // On app load: restore session from stored refresh token
   useEffect(() => {
-    api.post('/auth/token/refresh/', {}, { withCredentials: true })
+    const refreshToken = localStorage.getItem(REFRESH_STORAGE_KEY)
+    if (!refreshToken) {
+      localStorage.removeItem(STORAGE_KEY)
+      setUser(null)
+      setLoading(false)
+      return
+    }
+
+    api.post('/auth/token/refresh/', { refresh: refreshToken })
       .then(({ data }) => {
         sessionStorage.setItem('access_token', data.access)
+        if (data.refresh) localStorage.setItem(REFRESH_STORAGE_KEY, data.refresh)
         return api.get('/users/me/')
       })
       .then(({ data }) => {
@@ -27,32 +36,32 @@ export function AuthProvider({ children }) {
         setUser(u)
       })
       .catch(() => {
-        // Refresh failed — only force logout if we had no stored session
-        // (if we did have one, the axios interceptor will catch real 401s)
-        if (!storedUser) {
-          sessionStorage.removeItem('access_token')
-          setUser(null)
-        }
+        localStorage.removeItem(REFRESH_STORAGE_KEY)
+        localStorage.removeItem(STORAGE_KEY)
+        sessionStorage.removeItem('access_token')
+        setUser(null)
       })
       .finally(() => setLoading(false))
   }, [])
 
   const login = async (username, password) => {
     const { data } = await api.post('/auth/login/', { username, password })
-    // data = { access, refresh, role, user_id }
     sessionStorage.setItem('access_token', data.access)
+    localStorage.setItem(REFRESH_STORAGE_KEY, data.refresh)
     const u = { id: data.user_id, username, role: data.role }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(u))
     setUser(u)
-    return data.role  // caller uses this to redirect to the right dashboard
+    return data.role
   }
 
   const logout = async () => {
+    const refreshToken = localStorage.getItem(REFRESH_STORAGE_KEY)
     try {
-      await api.post('/auth/logout/', {})
+      await api.post('/auth/logout/', { refresh: refreshToken })
     } catch (_) { /* ignore */ }
     sessionStorage.removeItem('access_token')
     localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(REFRESH_STORAGE_KEY)
     setUser(null)
   }
 

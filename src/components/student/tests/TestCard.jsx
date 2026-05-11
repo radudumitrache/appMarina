@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import '../../css/student/tests/TestCard.css'
 
 function formatDate(dateStr) {
@@ -23,13 +24,23 @@ function gradeClass(grade) {
   return 'grade--fail'
 }
 
-export default function TestCard({ test, index, className: classLabel }) {
-  const delay        = `${Math.min(index, 6) * 0.04}s`
-  const dueDateStatus = getDueDateStatus(test.dueDate)
-  const formattedDate = formatDate(test.dueDate)
+export default function TestCard({ test, index }) {
+  const navigate      = useNavigate()
+  const delay         = `${Math.min(index, 6) * 0.04}s`
+  const dueDateStatus = getDueDateStatus(test.due_date)
+  const formattedDate = formatDate(test.due_date)
   const num           = String(test.id).padStart(2, '0')
+  const classLabel    = test.class_name ?? null
 
   if (test.completed) {
+    const attemptsUsed    = test.attempts_used ?? 1
+    const attemptsAllowed = test.number_of_attempts_allowed ?? null
+    const canRetake       = attemptsAllowed === null || attemptsUsed < attemptsAllowed
+
+    const attemptsLabel = attemptsAllowed === null
+      ? `${attemptsUsed} attempt${attemptsUsed !== 1 ? 's' : ''}`
+      : `${attemptsUsed} / ${attemptsAllowed} attempts`
+
     return (
       <div
         className="test-card test-card--completed"
@@ -40,7 +51,7 @@ export default function TestCard({ test, index, className: classLabel }) {
         <div className="test-card-body">
           <h3 className="test-card-title">{test.title}</h3>
           <div className="test-card-meta">
-            <span className="test-meta-author">By {test.author}</span>
+            <span className="test-meta-author">By {test.author_name}</span>
             {classLabel && (
               <>
                 <span className="test-meta-sep">·</span>
@@ -50,12 +61,32 @@ export default function TestCard({ test, index, className: classLabel }) {
           </div>
         </div>
 
-        <div className="test-card-grade-wrap">
-          <div className={`test-card-grade ${gradeClass(test.grade)}`}>
-            <span className="grade-value">{test.grade}</span>
-            <span className="grade-pct">%</span>
+        <div className="test-card-right">
+          <div className="test-card-grade-wrap">
+            {test.grade !== null ? (
+              <div className={`test-card-grade ${gradeClass(test.grade)}`}>
+                <span className="grade-value">{test.grade}</span>
+                <span className="grade-pct">%</span>
+              </div>
+            ) : (
+              <span className="test-grade-pending">Pending</span>
+            )}
+            <span className="test-grade-label">{attemptsLabel}</span>
           </div>
-          <span className="test-grade-label">Completed</span>
+
+          {canRetake && (
+            <button
+              className="test-retake-btn"
+              aria-label="Retake test"
+              onClick={() => navigate(`/student/tests/${test.id}`)}
+            >
+              Retake
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+              </svg>
+            </button>
+          )}
         </div>
       </div>
     )
@@ -71,7 +102,7 @@ export default function TestCard({ test, index, className: classLabel }) {
       <div className="test-card-body">
         <h3 className="test-card-title">{test.title}</h3>
         <div className="test-card-meta">
-          <span className="test-meta-author">By {test.author}</span>
+          <span className="test-meta-author">By {test.author_name}</span>
           {classLabel && (
             <>
               <span className="test-meta-sep">·</span>
@@ -99,7 +130,7 @@ export default function TestCard({ test, index, className: classLabel }) {
       </div>
 
       <div className="test-card-action">
-        <button className="test-start-btn" aria-label="Start test">
+        <button className="test-start-btn" aria-label="Start test" onClick={() => navigate(`/student/tests/${test.id}`)}>
           Start
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5"  y1="12" x2="19" y2="12"/>

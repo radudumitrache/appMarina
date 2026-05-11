@@ -9,7 +9,7 @@ function XIcon() {
   )
 }
 
-export default function LessonFormPanel({ mode, form, onChange, onClose, onSave, categories, difficulties, teachers }) {
+export default function LessonFormPanel({ mode, form, onChange, onClose, onSave, categories, difficulties }) {
   return (
     <>
       <div className="panel-backdrop" onClick={onClose} />
@@ -30,27 +30,30 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
               onChange={e => onChange('title', e.target.value)}
             />
           </div>
+
           <div className="form-row">
             <label className="form-label">Category</label>
             <select
               className="form-select"
-              value={form.cat}
-              onChange={e => onChange('cat', e.target.value)}
+              value={form.category}
+              onChange={e => onChange('category', e.target.value)}
             >
               {categories.map(c => (
                 <option key={c.id} value={c.id}>{c.label}</option>
               ))}
             </select>
           </div>
+
           <div className="form-row-2col">
             <div className="form-row">
-              <label className="form-label">Duration</label>
+              <label className="form-label">Duration (minutes)</label>
               <input
                 className="form-input"
-                type="text"
-                placeholder="e.g. 45 min"
-                value={form.duration}
-                onChange={e => onChange('duration', e.target.value)}
+                type="number"
+                min="1"
+                placeholder="e.g. 45"
+                value={form.duration_minutes}
+                onChange={e => onChange('duration_minutes', parseInt(e.target.value) || '')}
               />
             </div>
             <div className="form-row">
@@ -66,50 +69,17 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
               </select>
             </div>
           </div>
+
           <div className="form-row">
-            <label className="form-label">Author</label>
+            <label className="form-label">Visibility</label>
             <select
               className="form-select"
-              value={form.author}
-              onChange={e => onChange('author', e.target.value)}
+              value={form.visibility}
+              onChange={e => onChange('visibility', e.target.value)}
             >
-              <option value="">Select a teacher…</option>
-              {teachers.map(t => <option key={t} value={t}>{t}</option>)}
+              <option value="class">Class only</option>
+              <option value="public">Public</option>
             </select>
-          </div>
-          <div className="form-row">
-            <label className="form-label">Description</label>
-            <textarea
-              className="form-textarea"
-              placeholder="Brief description of this lesson…"
-              rows={3}
-              value={form.description}
-              onChange={e => onChange('description', e.target.value)}
-            />
-          </div>
-          <div className="form-row-2col">
-            <div className="form-row">
-              <label className="form-label">Status</label>
-              <select
-                className="form-select"
-                value={form.status}
-                onChange={e => onChange('status', e.target.value)}
-              >
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-              </select>
-            </div>
-            <div className="form-row">
-              <label className="form-label">Visibility</label>
-              <select
-                className="form-select"
-                value={form.visibility}
-                onChange={e => onChange('visibility', e.target.value)}
-              >
-                <option value="class">Class only</option>
-                <option value="public">Public</option>
-              </select>
-            </div>
           </div>
         </div>
 

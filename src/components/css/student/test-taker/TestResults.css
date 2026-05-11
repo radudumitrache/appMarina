@@ -1,0 +1,76 @@
+.tt-results {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.tt-results-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  text-align: center;
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+
+.tt-results-grade {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1;
+}
+
+.tt-results-grade-num {
+  font-family: var(--font-mono);
+  font-size: 72px;
+  font-weight: 700;
+}
+
+.tt-results-grade-pct {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  color: var(--text-3);
+}
+
+.tt-results-pending-icon { color: var(--text-3); }
+
+.tt-results-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.tt-results-sub {
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+.tt-results-back {
+  height: 44px;
+  padding: 0 32px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+  margin-top: 8px;
+}
+.tt-results-back:hover { opacity: 0.88; }
+
+.grade--pass { color: var(--success); }
+.grade--good { color: var(--accent); }
+.grade--warn { color: var(--gold); }
+.grade--fail { color: var(--error); }

@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import './css/Login.css'
 
@@ -12,7 +12,13 @@ export default function Login() {
   const [role, setRole]         = useState(null)
   const transitionVideoRef      = useRef(null)
   const navigate                = useNavigate()
-  const { login }               = useAuth()
+  const { login, user, loading } = useAuth()
+
+  useEffect(() => {
+    const prev = document.documentElement.getAttribute('data-theme')
+    document.documentElement.setAttribute('data-theme', 'dark')
+    return () => document.documentElement.setAttribute('data-theme', prev || 'dark')
+  }, [])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -35,6 +41,8 @@ export default function Login() {
 
   const handleTransitionEnd  = () => navigate(`/${role}/dashboard`)
   const handleTransitionError = () => navigate(`/${role}/dashboard`)
+
+  if (!loading && user && phase === 'idle') return <Navigate to={`/${user.role}/dashboard`} replace />
 
   return (
     <div className="login-page">

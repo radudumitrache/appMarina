@@ -1,6 +1,8 @@
 import { CAT_LABELS, CAT_COLORS, formatDuration } from './courseBuilderUtils'
 import '../../css/teacher/course-builder/LessonList.css'
 
+const TYPE_SHORT = { vr_tour: 'VR', text: 'Text' }
+
 export default function LessonList({ selectedLessons, loadingDetail, onRemove, onMove, onNavigatePanels }) {
   if (loadingDetail) {
     return (
@@ -34,9 +36,16 @@ export default function LessonList({ selectedLessons, loadingDetail, onRemove, o
           <div className="cb-lesson-body">
             <span className="cb-lesson-title">{lesson.title}</span>
             <div className="cb-lesson-meta">
-              <span className={`cb-cat-tag ${CAT_COLORS[lesson.category] || ''}`}>
-                {CAT_LABELS[lesson.category] ?? lesson.category}
-              </span>
+              {lesson.category && (
+                <span className={`cb-cat-tag ${CAT_COLORS[lesson.category] || ''}`}>
+                  {CAT_LABELS[lesson.category] ?? lesson.category}
+                </span>
+              )}
+              {lesson.type && (
+                <span className={`cb-type-badge cb-type--${lesson.type}`}>
+                  {TYPE_SHORT[lesson.type] ?? lesson.type}
+                </span>
+              )}
               <span className="cb-lesson-duration">{formatDuration(lesson.duration_minutes)}</span>
             </div>
           </div>
@@ -71,7 +80,7 @@ export default function LessonList({ selectedLessons, loadingDetail, onRemove, o
             <button
               className="cb-remove-btn"
               onClick={() => onRemove(lesson.id)}
-              title="Remove"
+              title="Remove from course"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"/>

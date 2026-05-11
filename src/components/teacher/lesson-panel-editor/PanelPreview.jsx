@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useCallback, useRef } from 'react'
 import VRViewer from '../../shared/VRViewer'
 import VRAnchorPanel from '../../shared/VRAnchorPanel'
 import { resolveSceneUrl } from '../../shared/VRSceneRenderer'
@@ -10,6 +10,31 @@ function posToLonLat(x, y, z) {
     lat: Math.asin(y / r) * (180 / Math.PI),
     lon: Math.atan2(z, x) * (180 / Math.PI),
   }
+}
+
+// ── HTML URL compression (GCS signed URLs are very long) ──────────────────────
+
+function compressHtml(html) {
+  if (!html) return html
+  return html.replace(/src="(https?:\/\/storage\.googleapis\.com[^"]+)"/g, (_, url) => {
+    const name = url.split('?')[0].split('/').pop()
+    return `src="${name}"`
+  })
+}
+
+function expandHtml(compressed, original) {
+  if (!compressed || !original) return compressed
+  const urlMap = {}
+  const re = /src="(https?:\/\/storage\.googleapis\.com[^"]+)"/g
+  let m
+  while ((m = re.exec(original)) !== null) {
+    const url = m[1]
+    const name = url.split('?')[0].split('/').pop()
+    urlMap[name] = url
+  }
+  return compressed.replace(/src="([^":/][^"]*?)"/g, (match, name) =>
+    urlMap[name] ? `src="${urlMap[name]}"` : match
+  )
 }
 
 // ── Tag detection ─────────────────────────────────────────────────────────────
@@ -62,7 +87,7 @@ export default function PanelPreview({
     const nav = (panel.vr_tour.navigator_anchors ?? []).map(a => {
       const { lon, lat } = posToLonLat(a.pos_x, a.pos_y, a.pos_z)
       return {
-        id: `nav-${a.id}`, lon, lat, label: `→ Tour #${a.target_vr_tour}`,
+        id: `nav-${a.id}`, lon, lat, label: a.title || `→ Panel #${a.target_panel}`,
         className: 'vr-hotspot--anchor',
         onClick: editMode ? (e) => onEditModeAnchorClick(a, 'nav', e.clientX, e.clientY) : null,
       }
@@ -81,22 +106,65 @@ export default function PanelPreview({
   // Reset editable content when the panel changes or edit mode opens
   useEffect(() => {
     if (editorRef?.current && editMode && panel?.type === 'text') {
-      editorRef.current.innerHTML = panel.text_content?.body ?? ''
+      const body = panel.text_content?.body ?? ''
+      editorRef.current.innerHTML = body || '<p></p>'
+
+      // Auto-focus and place cursor when content is effectively empty
+      const isEmpty = !body || body === '<p></p>' || body === '<p> </p>'
+      if (isEmpty) {
+        editorRef.current.focus()
+        const p = editorRef.current.querySelector('p')
+        const target = p ?? editorRef.current
+        const range = document.createRange()
+        const sel = window.getSelection()
+        range.setStart(target, 0)
+        range.collapse(true)
+        sel?.removeAllRanges()
+        sel?.addRange(range)
+      }
     }
   }, [panel?.id, editMode])
 
+  const imgSelectedRef = useRef(null)
+
   // Report active tags to parent (drawer displays them)
   useEffect(() => {
-    if (!editMode || showHtml) { onTagsChange?.([]); return }
+    if (!editMode || showHtml) {
+      imgSelectedRef.current = null
+      onTagsChange?.([])
+      return
+    }
 
     const handle = () => {
       if (!editorRef.current) return
-      onTagsChange?.(getActiveTags(editorRef.current))
+      const tags = getActiveTags(editorRef.current)
+      if (tags.length > 0) {
+        imgSelectedRef.current = null
+        onTagsChange?.(tags)
+      } else if (!imgSelectedRef.current) {
+        onTagsChange?.([])
+      }
+      // if imgSelectedRef is set and tags is empty: click was outside editor (e.g. drawer) — keep img selected
     }
 
     document.addEventListener('selectionchange', handle)
-    return () => { document.removeEventListener('selectionchange', handle); onTagsChange?.([]) }
+    return () => {
+      document.removeEventListener('selectionchange', handle)
+      imgSelectedRef.current = null
+      onTagsChange?.([])
+    }
   }, [editMode, showHtml])
+
+  const handleEditorClick = useCallback(e => {
+    const tag = e.target.tagName
+    if (tag === 'IMG' || tag === 'VIDEO') {
+      imgSelectedRef.current = e.target
+      onTagsChange?.([{ tagName: tag.toLowerCase(), element: e.target }])
+    } else {
+      imgSelectedRef.current = null
+      // selectionchange will handle updating text tags
+    }
+  }, [onTagsChange])
 
   if (!panel) return null
 
@@ -131,8 +199,8 @@ export default function PanelPreview({
           {showHtml && (
             <textarea
               className="lpe-html-code-view"
-              value={liveBody ?? savedBody}
-              onChange={e => onBodyChange?.(e.target.value)}
+              value={compressHtml(liveBody ?? savedBody)}
+              onChange={e => onBodyChange?.(expandHtml(e.target.value, liveBody ?? savedBody))}
               spellCheck={false}
             />
           )}
@@ -142,6 +210,7 @@ export default function PanelPreview({
             contentEditable={!showHtml}
             suppressContentEditableWarning
             onInput={e => onBodyChange?.(e.currentTarget.innerHTML)}
+            onClick={handleEditorClick}
           />
         </>) : (
           <div

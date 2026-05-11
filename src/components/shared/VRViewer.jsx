@@ -75,6 +75,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
   const hotspotsRef     = useRef(hotspots)
   const onReadyRef      = useRef(onSceneReady)
   const polyMeshesRef   = useRef({})        // id → THREE.Mesh
+  const videoRef        = useRef(null)      // active video element for VideoTexture
   const polyAnchorsRef  = useRef(polygonAnchors)
   const editModeRef     = useRef(editMode)
   const onSceneClickRef = useRef(onSceneClick)
@@ -408,16 +409,61 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
   useEffect(() => {
     if (!src || !stateRef.current.material) return
     setLoading(true)
-    const loader = new THREE.TextureLoader()
-    loader.load(src, (texture) => {
+
+    // Tear down any previous video element
+    if (videoRef.current) {
+      videoRef.current.pause()
+      videoRef.current.src = ''
+      videoRef.current = null
+    }
+
+    const { material } = stateRef.current
+
+    const swapTexture = (texture) => {
       texture.colorSpace = THREE.SRGBColorSpace
-      const { material } = stateRef.current
       const old = material.map
       material.map = texture
       material.needsUpdate = true
       if (old) old.dispose()
       setLoading(false)
-    })
+    }
+
+    const isVideo = /\.(mp4|webm|ogv)$/i.test(src)
+
+    if (isVideo) {
+      const video = document.createElement('video')
+      video.src = src
+      video.crossOrigin = 'anonymous'
+      video.loop = true
+      video.muted = true
+      video.playsInline = true
+      videoRef.current = video
+
+      const texture = new THREE.VideoTexture(video)
+      video.addEventListener('canplay', () => {
+        video.play().catch(() => {})
+        swapTexture(texture)
+      }, { once: true })
+      video.addEventListener('error', () => setLoading(false), { once: true })
+      video.load()
+    } else {
+      const loader = new THREE.TextureLoader()
+      loader.crossOrigin = 'anonymous'
+      loader.load(
+        src,
+        swapTexture,
+        undefined,
+        () => setLoading(false),
+      )
+    }
+
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.pause()
+        videoRef.current.src = ''
+        videoRef.current = null
+      }
+    }
   }, [src])
 
   /* ── Render ─────────────────────────────────────────────────────────────── */

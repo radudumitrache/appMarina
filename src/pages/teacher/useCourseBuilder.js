@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import {
-  getCourses, createCourse, updateCourse as apiUpdateCourse,
+  getCourses, createCourse, updateCourse as apiUpdateCourse, deleteCourse as apiDeleteCourse,
   getCourse, addCourseLesson, removeCourseLesson, reorderCourseLesson,
-  getLessons,
+  getLessons, createLesson as apiCreateLesson, updateLesson as apiUpdateLesson, deleteLesson as apiDeleteLesson,
 } from '../../api/lessons'
 import { CAT_LABELS } from '../../components/teacher/course-builder/courseBuilderUtils'
 
@@ -18,6 +18,7 @@ export function useCourseBuilder() {
   const [loadingDetail, setLoadingDetail]       = useState(false)
   const [error, setError]                       = useState(null)
   const [saving, setSaving]                     = useState(false)
+  const [activeTab, setActiveTab]               = useState('courses')
 
   const titleDebounceRef = useRef(null)
   const descDebounceRef  = useRef(null)
@@ -33,9 +34,22 @@ export function useCourseBuilder() {
     const q = bankSearch.toLowerCase().trim()
     return (
       l.title.toLowerCase().includes(q) ||
-      (CAT_LABELS[l.category] ?? l.category).toLowerCase().includes(q)
+      (CAT_LABELS[l.category] ?? l.category ?? '').toLowerCase().includes(q)
     )
   })
+
+  const lessonCourseMap = useMemo(() => {
+    const map = {}
+    for (const [courseId, lessons] of Object.entries(courseLessonsMap)) {
+      const course = courses.find(c => c.id === Number(courseId))
+      if (!course || !lessons) continue
+      for (const l of lessons) {
+        if (!map[l.id]) map[l.id] = []
+        map[l.id].push(course)
+      }
+    }
+    return map
+  }, [courseLessonsMap, courses])
 
   /* ── Load courses + lesson bank on mount ──────────────────────────────── */
   useEffect(() => {
@@ -64,7 +78,7 @@ export function useCourseBuilder() {
       })
       .catch(() => {})
       .finally(() => setLoadingDetail(false))
-  }, [selectedId]) // courseLessonsMap intentionally omitted
+  }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ── Helpers ──────────────────────────────────────────────────────────── */
   function setLessonsFor(courseId, updater) {
@@ -83,17 +97,27 @@ export function useCourseBuilder() {
       .catch(() => {})
   }
 
-  /* ── Course mutations ─────────────────────────────────────────────────── */
-  async function handleNewCourse() {
-    try {
-      const res = await createCourse({ title: 'Untitled Course', description: '', status: 'draft' })
-      const course = res.data
-      setCourses(prev => [course, ...prev])
-      setSelected(course.id)
-      setLessonsFor(course.id, [])
-    } catch {
-      setError('Could not create course.')
+  function ensureAllCoursesLoaded() {
+    const unloaded = courses.filter(c => courseLessonsMap[c.id] === undefined)
+    for (const c of unloaded) {
+      getCourse(c.id)
+        .then(res => {
+          const lessons = (res.data.lessons ?? []).map(cl => cl.lesson_detail ?? cl)
+          setCourseLessonsMap(prev => ({ ...prev, [c.id]: lessons }))
+        })
+        .catch(() => {})
     }
+  }
+
+  /* ── Course mutations ─────────────────────────────────────────────────── */
+  async function handleNewCourse({ title, description = '', status = 'draft', classroom_id = null } = {}) {
+    const res = await createCourse({ title: title?.trim() || 'Untitled Course', description, status, classroom_id })
+    const course = res.data
+    setCourses(prev => [course, ...prev])
+    setSelected(course.id)
+    setActiveTab('courses')
+    setLessonsFor(course.id, [])
+    return course
   }
 
   function handleTitleChange(id, newTitle) {
@@ -112,6 +136,17 @@ export function useCourseBuilder() {
     }, 700)
   }
 
+  async function handleClassroomChange(id, classroomId) {
+    const prev = courses.find(c => c.id === id)
+    const prevClassroomId = prev?.classroom_id ?? null
+    setCourses(list => list.map(c => c.id === id ? { ...c, classroom_id: classroomId ? Number(classroomId) : null } : c))
+    try {
+      await apiUpdateCourse(id, { classroom_id: classroomId ? Number(classroomId) : null })
+    } catch {
+      setCourses(list => list.map(c => c.id === id ? { ...c, classroom_id: prevClassroomId } : c))
+    }
+  }
+
   async function handleToggleStatus(id) {
     const course = courses.find(c => c.id === id)
     if (!course) return
@@ -124,6 +159,22 @@ export function useCourseBuilder() {
     }
   }
 
+  async function handleDeleteCourse(id) {
+    try {
+      await apiDeleteCourse(id)
+      const remaining = courses.filter(c => c.id !== id)
+      setCourses(remaining)
+      setCourseLessonsMap(prev => {
+        const next = { ...prev }
+        delete next[id]
+        return next
+      })
+      if (selectedId === id) setSelected(remaining[0]?.id ?? null)
+    } catch {
+      setError('Could not delete course.')
+    }
+  }
+
   /* ── Lesson mutations ─────────────────────────────────────────────────── */
   async function handleAddLesson(lessonId) {
     if (!selectedId) return
@@ -133,7 +184,7 @@ export function useCourseBuilder() {
     setLessonsFor(selectedId, prev => [...prev, lesson])
     setSaving(true)
     try {
-      await addCourseLesson(selectedId, { lesson_id: lessonId })
+      await addCourseLesson(selectedId, { lesson: lessonId })
       reloadDetail(selectedId)
     } catch {
       reloadDetail(selectedId)
@@ -168,6 +219,38 @@ export function useCourseBuilder() {
     }
   }
 
+  async function handleCreateLesson(data) {
+    const res = await apiCreateLesson(data)
+    const lesson = res.data
+    setLessonBank(prev => [lesson, ...prev])
+    return lesson
+  }
+
+  async function handleUpdateLesson(lessonId, data) {
+    await apiUpdateLesson(lessonId, data)
+    const updateFn = l => l.id === lessonId ? { ...l, ...data } : l
+    setLessonBank(prev => prev.map(updateFn))
+    setCourseLessonsMap(prev => {
+      const next = { ...prev }
+      for (const id of Object.keys(next)) {
+        if (next[id]) next[id] = next[id].map(updateFn)
+      }
+      return next
+    })
+  }
+
+  async function handleDeleteLesson(lessonId) {
+    await apiDeleteLesson(lessonId)
+    setLessonBank(prev => prev.filter(l => l.id !== lessonId))
+    setCourseLessonsMap(prev => {
+      const next = { ...prev }
+      for (const id of Object.keys(next)) {
+        if (next[id]) next[id] = next[id].filter(l => l.id !== lessonId)
+      }
+      return next
+    })
+  }
+
   return {
     courses, loading, error,
     selectedId, setSelected,
@@ -176,9 +259,12 @@ export function useCourseBuilder() {
     bankOpen, setBankOpen,
     saving, loadingDetail,
     selected, selectedLessons,
-    visible, bankFiltered, lessonBank, courseLessonsMap,
+    visible, bankFiltered, lessonBank, courseLessonsMap, lessonCourseMap,
+    activeTab, setActiveTab,
     handleNewCourse,
-    handleTitleChange, handleDescChange, handleToggleStatus,
+    handleTitleChange, handleDescChange, handleClassroomChange, handleToggleStatus, handleDeleteCourse,
     handleAddLesson, handleRemoveLesson, handleMoveLesson,
+    handleCreateLesson, handleUpdateLesson, handleDeleteLesson,
+    ensureAllCoursesLoaded,
   }
 }

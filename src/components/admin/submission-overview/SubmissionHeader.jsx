@@ -1,0 +1,61 @@
+import { fmt, gradeClass } from './helpers'
+
+export default function SubmissionHeader({ submission, pendingCount }) {
+  const grade  = submission.grade
+  const gClass = gradeClass(grade)
+
+  return (
+    <div className="so-header">
+      <div className="so-header-student">
+        <div className="so-avatar">{(submission.student_name ?? '?').charAt(0)}</div>
+        <div className="so-student-info">
+          <span className="so-student-name">{submission.student_name}</span>
+          <span className="so-student-email">{submission.student_email}</span>
+        </div>
+      </div>
+
+      <div className="so-header-test">
+        <span className="so-test-title">{submission.test_title}</span>
+        <span className="so-test-meta">
+          By {submission.test_author_name} · Submitted {fmt(submission.submitted_at)}
+          {pendingCount > 0 && ` · ${pendingCount} pending review`}
+        </span>
+      </div>
+
+      <div className="so-header-grade">
+        <div className={`so-grade-display ${gClass}`}>
+          {grade != null
+            ? <><span className="so-grade-num">{Math.round(grade)}</span><span className="so-grade-pct">%</span></>
+            : <span className="so-grade-num">—</span>
+          }
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function GradeBar({ gradeInput, onGradeChange, onGradeKeyDown, onGradeSave, gradeSaving }) {
+  return (
+    <div className="so-grade-bar">
+      <span className="so-grade-bar-label">Grade override</span>
+      <div className="so-grade-bar-controls">
+        <input
+          className="so-grade-input"
+          type="number"
+          min={0} max={100} step={0.1}
+          placeholder="0 – 100"
+          value={gradeInput}
+          onChange={onGradeChange}
+          onKeyDown={onGradeKeyDown}
+        />
+        <button
+          className="so-grade-save"
+          onClick={onGradeSave}
+          disabled={gradeSaving}
+        >
+          {gradeSaving ? 'Saving…' : 'Set grade'}
+        </button>
+      </div>
+    </div>
+  )
+}

@@ -1,191 +1,210 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import NavBar from '../../components/student/NavBar'
 import LessonCard from '../../components/student/lessons/LessonCard'
-import LessonsSidebar from '../../components/student/lessons/LessonsSidebar'
-import LessonsHead from '../../components/student/lessons/LessonsHead'
-import LessonsToolbar from '../../components/student/lessons/LessonsToolbar'
-import { getLessons, completeLesson, uncompleteLesson } from '../../api/lessons'
+import CourseCard from '../../components/student/lessons/CourseCard'
+import { getLessons, getCourses, completeLesson, uncompleteLesson } from '../../api/lessons'
+import { getClasses } from '../../api/classes'
+import Sk from '../../components/shared/Skeleton'
 import '../css/student/Lessons.css'
 
 export const CATEGORIES = [
-  { id: 'all',   label: 'All Modules'         },
-  { id: 'nav',   label: 'Bridge Navigation'   },
-  { id: 'emg',   label: 'Emergency Protocols' },
-  { id: 'eng',   label: 'Engine Room'         },
-  { id: 'cargo', label: 'Cargo Management'    },
-  { id: 'comm',  label: 'Communications'      },
+  { id: 'all',   label: 'All'               },
+  { id: 'nav',   label: 'Bridge Navigation' },
+  { id: 'emg',   label: 'Emergency'         },
+  { id: 'eng',   label: 'Engine Room'       },
+  { id: 'cargo', label: 'Cargo'             },
+  { id: 'comm',  label: 'Communications'    },
 ]
 
-export const DURATIONS = [
-  { id: 'under45', label: 'Under 45 min' },
-  { id: '45to60',  label: '45 – 60 min'  },
-  { id: '60to90',  label: '60 – 90 min'  },
-  { id: 'over90',  label: '90+ min'      },
-]
-
-export const DIFFICULTIES = [
-  { id: 'easy',         label: 'Easy'         },
-  { id: 'intermediate', label: 'Intermediate' },
-  { id: 'advanced',     label: 'Advanced'     },
-]
-
-export const DEFAULT_FILTERS = {
-  authors:    [],
-  status:     'all',   // 'all' | 'complete' | 'incomplete'
-  durations:  [],
-  difficulty: [],
-  access:     'all',   // 'all' | 'unlocked' | 'locked'
-}
-
-/** Map an API lesson object to the shape LessonCard expects. */
 function mapLesson(l) {
   return {
     id:         l.id,
-    cat:        l.category   ?? 'nav',
+    cat:        l.category        ?? 'nav',
     title:      l.title,
     duration:   l.duration_minutes ? `${l.duration_minutes} min` : '—',
-    locked:     l.is_locked   ?? false,
-    complete:   l.is_complete ?? false,
-    author:     l.author_name ?? l.author ?? '',
-    visibility: l.visibility  ?? 'public',
-    difficulty: l.difficulty  ?? 'intermediate',
+    locked:     l.locked          ?? false,
+    complete:   l.completed       ?? false,
+    author:     l.author_name     ?? '',
+    visibility: l.visibility      ?? 'public',
+    difficulty: l.difficulty      ?? 'intermediate',
   }
-}
-
-function durationBucket(str) {
-  const m = parseInt(str, 10)
-  if (m < 45)  return 'under45'
-  if (m <= 60) return '45to60'
-  if (m <= 90) return '60to90'
-  return 'over90'
-}
-
-function countActiveFilters(f) {
-  return (
-    f.authors.length +
-    (f.status !== 'all' ? 1 : 0) +
-    f.durations.length +
-    f.difficulty.length +
-    (f.access !== 'all' ? 1 : 0)
-  )
 }
 
 export default function Lessons() {
-  const [lessons, setLessons]               = useState([])
-  const [loading, setLoading]               = useState(true)
+  const navigate = useNavigate()
+  const [mode, setMode]                     = useState('courses')
+  const [classes, setClasses]               = useState([])
+  const [courses, setCourses]               = useState([])
+  const [publicLessons, setPublicLessons]   = useState([])
   const [activeCategory, setActiveCategory] = useState('all')
-  const [viewMode, setViewMode]             = useState('grid')
-  const [searchQuery, setSearchQuery]       = useState('')
-  const [visibilityFilter, setVisFilter]    = useState('all')
-  const [filters, setFilters]               = useState(DEFAULT_FILTERS)
-  const [filterOpen, setFilterOpen]         = useState(false)
+  const [loading, setLoading]               = useState(true)
 
-  const filterWrapRef = useRef(null)
-
-  /* ── Fetch lessons from the API ─────────────────────────────────────────── */
   useEffect(() => {
-    setLoading(true)
-    getLessons()
-      .then(res => setLessons((res.data ?? []).map(mapLesson)))
-      .catch(() => {}) // keep empty; individual card clicks will surface errors
-      .finally(() => setLoading(false))
+    Promise.all([
+      getClasses(),
+      getCourses(),
+      getLessons({ visibility: 'public' }),
+    ]).then(([clsRes, crsRes, lesRes]) => {
+      setClasses(clsRes.data ?? [])
+      setCourses(crsRes.data ?? [])
+      setPublicLessons((lesRes.data ?? []).map(mapLesson))
+    }).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
-  /* ── Close filter panel on outside click ────────────────────────────────── */
-  useEffect(() => {
-    if (!filterOpen) return
-    const handler = (e) => {
-      if (!filterWrapRef.current?.contains(e.target)) setFilterOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [filterOpen])
+  function handleLessonToggle(courseId, lessonId, newCompleted) {
+    setCourses(prev => prev.map(c => c.id !== courseId ? c : {
+      ...c,
+      lessons: c.lessons.map(cl => cl.lesson !== lessonId ? cl : {
+        ...cl,
+        lesson_detail: { ...cl.lesson_detail, completed: newCompleted },
+      }),
+    }))
+  }
 
-  /* ── Toggle completion (optimistic, synced to API) ──────────────────────── */
-  const toggleComplete = (id) => {
-    const lesson = lessons.find(l => l.id === id)
+  function handlePublicToggle(id) {
+    const lesson = publicLessons.find(l => l.id === id)
     if (!lesson || lesson.locked) return
     const wasComplete = lesson.complete
-    setLessons(prev => prev.map(l => l.id === id ? { ...l, complete: !l.complete } : l))
+    setPublicLessons(prev => prev.map(l => l.id === id ? { ...l, complete: !l.complete } : l))
     const apiCall = wasComplete ? uncompleteLesson : completeLesson
     apiCall(id).catch(() => {
-      // Revert if the API call fails
-      setLessons(prev => prev.map(l => l.id === id ? { ...l, complete: wasComplete } : l))
+      setPublicLessons(prev => prev.map(l => l.id === id ? { ...l, complete: wasComplete } : l))
     })
   }
 
-  /* ── Derived ────────────────────────────────────────────────────────────── */
-  const authors       = [...new Set(lessons.map(l => l.author).filter(Boolean))]
-  const activeFilters = countActiveFilters(filters)
+  const courseGroups = classes
+    .map(cls => ({ cls, items: courses.filter(c => c.classroom_id === cls.id) }))
+    .filter(g => g.items.length > 0)
 
-  const filtered = lessons
-    .filter(l => activeCategory === 'all' || l.cat === activeCategory)
-    .filter(l => visibilityFilter === 'all' || l.visibility === visibilityFilter)
-    .filter(l => l.title.toLowerCase().includes(searchQuery.toLowerCase().trim()))
-    .filter(l => filters.authors.length    === 0 || filters.authors.includes(l.author))
-    .filter(l => filters.status === 'all'  || (filters.status === 'complete' ? l.complete : !l.complete))
-    .filter(l => filters.durations.length  === 0 || filters.durations.includes(durationBucket(l.duration)))
-    .filter(l => filters.difficulty.length === 0 || filters.difficulty.includes(l.difficulty))
-    .filter(l => filters.access === 'all'  || (filters.access === 'locked' ? l.locked : !l.locked))
+  const filteredPublic = activeCategory === 'all'
+    ? publicLessons
+    : publicLessons.filter(l => l.cat === activeCategory)
 
   return (
     <div className="lessons-page">
       <div className="lessons-layout">
         <NavBar />
 
-        <div className="lessons-body">
-          <LessonsSidebar
-            lessons={lessons}
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
-          />
+        <main className="lessons-main">
+          {/* ── Mode switcher ─────────────────────────────────────────── */}
+          <div className="les-switcher">
+            <button
+              className={`les-switch-btn ${mode === 'courses' ? 'les-switch-btn--active' : ''}`}
+              onClick={() => setMode('courses')}
+            >
+              Class Courses
+            </button>
+            <button
+              className={`les-switch-btn ${mode === 'public' ? 'les-switch-btn--active' : ''}`}
+              onClick={() => setMode('public')}
+            >
+              Public Lessons
+            </button>
+          </div>
 
-          <main className="lessons-main">
-            <LessonsHead
-              title={CATEGORIES.find(c => c.id === activeCategory)?.label}
-              count={filtered.length}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-            />
-
-            <LessonsToolbar
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              visibilityFilter={visibilityFilter}
-              onVisFilter={setVisFilter}
-              filterOpen={filterOpen}
-              onFilterToggle={() => setFilterOpen(v => !v)}
-              filters={filters}
-              authors={authors}
-              onFiltersChange={setFilters}
-              onFiltersClear={() => setFilters(DEFAULT_FILTERS)}
-              filterWrapRef={filterWrapRef}
-              activeFilters={activeFilters}
-            />
-
-            <div className={`lessons-list lessons-list--${viewMode}`}>
-              {loading ? (
-                <div className="lessons-loading">
-                  <div className="lessons-spinner" />
+          {loading ? (
+            <div className="les-skeletons">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="les-sk-card">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <Sk w="55%" h={14} r={4} />
+                    <Sk w={80} h={4} r={2} style={{ marginLeft: 'auto' }} />
+                    <Sk w={34} h={11} r={3} />
+                  </div>
+                  <Sk w="30%" h={11} r={3} mt={6} />
                 </div>
-              ) : filtered.length === 0 ? (
-                <p className="lessons-empty">
-                  {lessons.length === 0 ? 'No lessons available.' : 'No lessons match your filters.'}
-                </p>
-              ) : (
-                filtered.map((lesson, i) => (
-                  <LessonCard
-                    key={lesson.id}
-                    lesson={lesson}
-                    index={i}
-                    viewMode={viewMode}
-                    onToggleComplete={toggleComplete}
-                  />
-                ))
-              )}
+              ))}
             </div>
-          </main>
-        </div>
+          ) : (
+            <>
+              {/* ── Class Courses ──────────────────────────────────────── */}
+              {mode === 'courses' && (
+                <div className="les-section">
+                  {classes.length === 0 ? (
+                    <div className="les-empty">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                      </svg>
+                      <span>You haven't joined a class yet.</span>
+                      <button className="les-join-link" onClick={() => navigate('/student/myclass')}>
+                        Go to My Class →
+                      </button>
+                    </div>
+                  ) : courseGroups.length === 0 ? (
+                    <div className="les-empty">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                      </svg>
+                      <span>No published courses in your classes yet.</span>
+                    </div>
+                  ) : (
+                    courseGroups.map(({ cls, items }) => (
+                      <div key={cls.id} className="les-class-group">
+                        <div className="les-class-group-header">
+                          <span className="les-class-group-name">{cls.name}</span>
+                          <span className="les-class-group-code">{cls.code}</span>
+                          <span className="les-class-group-count">{items.length} course{items.length !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div className="les-course-list">
+                          {items.map((course, i) => (
+                            <CourseCard
+                              key={course.id}
+                              course={course}
+                              index={i}
+                              onLessonToggle={handleLessonToggle}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* ── Public Lessons ─────────────────────────────────────── */}
+              {mode === 'public' && (
+                <div className="les-section">
+                  <div className="les-cat-pills">
+                    {CATEGORIES.map(cat => (
+                      <button
+                        key={cat.id}
+                        className={`les-cat-pill ${activeCategory === cat.id ? 'les-cat-pill--active' : ''}`}
+                        onClick={() => setActiveCategory(cat.id)}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {filteredPublic.length === 0 ? (
+                    <div className="les-empty">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                      </svg>
+                      <span>No public lessons in this category.</span>
+                    </div>
+                  ) : (
+                    <div className="lessons-list lessons-list--grid">
+                      {filteredPublic.map((lesson, i) => (
+                        <LessonCard
+                          key={lesson.id}
+                          lesson={lesson}
+                          index={i}
+                          viewMode="grid"
+                          onToggleComplete={handlePublicToggle}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </main>
       </div>
     </div>
   )

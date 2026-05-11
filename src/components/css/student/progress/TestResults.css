@@ -2,6 +2,24 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.test-results-list::-webkit-scrollbar {
+  width: 4px;
+}
+.test-results-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.test-results-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+.test-results-list::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
 }
 
 .test-result-row {
@@ -17,6 +35,23 @@
 }
 
 .test-result-row:hover { border-color: var(--border-hover); }
+
+.test-result-row--clickable {
+  cursor: pointer;
+}
+.test-result-row--clickable:hover {
+  background: var(--surface-3);
+}
+
+.test-result-chevron {
+  flex-shrink: 0;
+  color: var(--text-3);
+  transition: color var(--duration-fast), transform var(--duration-fast);
+}
+.test-result-row--clickable:hover .test-result-chevron {
+  color: var(--text-2);
+  transform: translateX(2px);
+}
 
 .test-result-grade {
   flex-shrink: 0;

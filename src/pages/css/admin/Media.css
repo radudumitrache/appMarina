@@ -1,0 +1,4 @@
+@import '../teacher/Media.css';
+
+/* Admin accent override — error/red for the upload button */
+.media-page .media-upload-btn { background: var(--error); }

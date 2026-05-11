@@ -1,12 +1,13 @@
+import { useNavigate } from 'react-router-dom'
 import '../../css/teacher/class-detail/StudentList.css'
 
 export default function StudentList({ students, lessonsTotal }) {
+  const navigate = useNavigate()
   return (
     <div className="cd-list">
       <div className="cd-list-header">
         <span className="cd-col cd-col--student">Student</span>
         <span className="cd-col cd-col--progress">Progress</span>
-        <span className="cd-col cd-col--lessons">Lessons</span>
         <span className="cd-col cd-col--last">Last Active</span>
         <span className="cd-col cd-col--status">Status</span>
         <span className="cd-col cd-col--action" />
@@ -20,8 +21,9 @@ export default function StudentList({ students, lessonsTotal }) {
           return (
             <div
               key={s.id}
-              className="cd-row cd-row--student"
+              className="cd-row cd-row--student cd-row--clickable"
               style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
+              onClick={() => navigate(`/teacher/students/${s.id}/progress`)}
             >
               <div className="cd-col cd-col--student cd-student-cell">
                 <div className="cd-avatar">{s.initials}</div>
@@ -31,13 +33,10 @@ export default function StudentList({ students, lessonsTotal }) {
                 </div>
               </div>
               <div className="cd-col cd-col--progress cd-progress-cell">
+                <span className="cd-pct">{pct}%</span>
                 <div className="cd-mini-bar">
                   <div className="cd-mini-fill" style={{ width: `${pct}%` }} />
                 </div>
-                <span className="cd-pct">{pct}%</span>
-              </div>
-              <div className="cd-col cd-col--lessons">
-                <span className="cd-mono">{s.done}/{lessonsTotal}</span>
               </div>
               <div className="cd-col cd-col--last">
                 <span className="cd-mono cd-muted">{s.lastActive}</span>

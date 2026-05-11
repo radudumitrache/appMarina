@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { STATUS_META } from '../../../pages/teacher/testBuilderMock'
 import '../../css/teacher/test-builder/TestSidebar.css'
 
-export default function TestSidebar({ tests, selectedId, onSelect, onNew }) {
+export default function TestSidebar({ tests, selectedId, onSelect, onNew, loading }) {
   const [search, setSearch] = useState('')
 
   const visible = tests.filter(t =>
@@ -33,24 +33,28 @@ export default function TestSidebar({ tests, selectedId, onSelect, onNew }) {
       </div>
 
       <nav className="tb-test-nav">
-        {visible.map(t => (
-          <button
-            key={t.id}
-            className={`tb-test-item ${selectedId === t.id ? 'tb-test-item--active' : ''}`}
-            onClick={() => onSelect(t.id)}
-          >
-            <div className="tb-test-item-row">
-              <span className="tb-test-item-title">{t.title}</span>
-              <span className={`tb-test-item-status ${STATUS_META[t.status].cls}`}>
-                {STATUS_META[t.status].label}
-              </span>
-            </div>
-            <div className="tb-test-item-meta">
-              <span>{t.class || 'No class'}</span>
-              <span>{t.questions.length} questions</span>
-            </div>
-          </button>
-        ))}
+        {loading && <div className="tb-sidebar-loading">Loading…</div>}
+        {!loading && visible.map(t => {
+          const meta = STATUS_META[t.status] ?? STATUS_META.draft
+          return (
+            <button
+              key={t.id}
+              className={`tb-test-item ${selectedId === t.id ? 'tb-test-item--active' : ''}`}
+              onClick={() => onSelect(t.id)}
+            >
+              <div className="tb-test-item-row">
+                <span className="tb-test-item-title">{t.title}</span>
+                <span className={`tb-test-item-status ${meta.cls}`}>
+                  {meta.label}
+                </span>
+              </div>
+              <div className="tb-test-item-meta">
+                <span>{t.class_name || 'No class'}</span>
+                <span>{t.time_limit_minutes} min</span>
+              </div>
+            </button>
+          )
+        })}
       </nav>
 
       <div className="tb-sidebar-footer">
