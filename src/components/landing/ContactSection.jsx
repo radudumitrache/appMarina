@@ -46,7 +46,7 @@ export default function ContactSection() {
       </div>
 
       <footer className="landing-footer">
-        <span className="footer-wordmark">SEAFARER</span>
+        <span className="footer-wordmark">HANSA360</span>
         <span className="footer-copy">
           © {new Date().getFullYear()} GXC Maritime. All rights reserved.
         </span>

@@ -20,7 +20,7 @@ export default function NavBar() {
   return (
     <nav className="navbar navbar--teacher">
       <span className="nav-logo" onClick={() => navigate('/teacher/dashboard')}>
-        SEAFARER
+        HANSA360
       </span>
 
       <div className="nav-links">

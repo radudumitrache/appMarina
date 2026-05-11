@@ -1,4 +1,12 @@
+import DatePicker from './DatePicker'
 import '../../css/admin/classes/ClassFormModal.css'
+
+function generateCode() {
+  const year = new Date().getFullYear()
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  const rand = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+  return `CLS-${year}-${rand}`
+}
 
 function XIcon() {
   return (
@@ -41,13 +49,18 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
             </div>
             <div className="form-row">
               <label className="form-label">Class Code</label>
-              <input
-                className={`form-input${err('code') ? ' form-input--error' : ''}`}
-                type="text"
-                placeholder="e.g. MN-2025-A"
-                value={form.code}
-                onChange={e => onChange('code', e.target.value)}
-              />
+              <div className="form-input-with-btn">
+                <input
+                  className={`form-input${err('code') ? ' form-input--error' : ''}`}
+                  type="text"
+                  placeholder="e.g. MN-2025-A"
+                  value={form.code}
+                  onChange={e => onChange('code', e.target.value)}
+                />
+                <button type="button" className="btn-generate" onClick={() => onChange('code', generateCode())}>
+                  Generate
+                </button>
+              </div>
               {err('code')}
             </div>
           </div>
@@ -110,21 +123,21 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
           <div className="form-2col">
             <div className="form-row">
               <label className="form-label">Start Date</label>
-              <input
-                className={`form-input${err('start_date') ? ' form-input--error' : ''}`}
-                type="date"
+              <DatePicker
                 value={form.start_date}
-                onChange={e => onChange('start_date', e.target.value)}
+                onChange={v => onChange('start_date', v)}
+                placeholder="e.g. Jan 1, 2025"
+                hasError={!!errors.start_date}
               />
               {err('start_date')}
             </div>
             <div className="form-row">
               <label className="form-label">End Date</label>
-              <input
-                className={`form-input${err('end_date') ? ' form-input--error' : ''}`}
-                type="date"
+              <DatePicker
                 value={form.end_date}
-                onChange={e => onChange('end_date', e.target.value)}
+                onChange={v => onChange('end_date', v)}
+                placeholder="e.g. Jun 30, 2025"
+                hasError={!!errors.end_date}
               />
               {err('end_date')}
             </div>

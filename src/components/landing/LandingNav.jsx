@@ -8,7 +8,7 @@ export default function LandingNav() {
 
   return (
     <header className="landing-nav">
-      <span className="landing-wordmark">SEAFARER</span>
+      <span className="landing-wordmark">HANSA360</span>
       <nav className="landing-nav-links">
         <a href="#features">Platform</a>
         <a href="#timeline">Journey</a>

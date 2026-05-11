@@ -1,52 +1,104 @@
-.tp-class-tabs {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 3px;
+.tp-class-sidebar {
+  width: 220px;
   flex-shrink: 0;
-  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   animation: fadeUp var(--duration-enter) var(--ease-default) 0.06s both;
 }
 
-.tp-class-tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: none;
+.tp-class-sidebar-title {
   font-family: var(--font-ui);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: var(--text-3);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  padding: 0 10px 8px;
 }
 
-.tp-class-tab:hover { color: var(--text); }
+.tp-class-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
 
-.tp-class-tab--active {
+.tp-class-card:hover {
+  background: var(--surface-2);
+  border-color: var(--gold-dim);
+}
+
+.tp-class-card--active {
   background: var(--gold-dim);
+  border-color: var(--gold);
+}
+
+.tp-class-card--all {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tp-class-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tp-class-card-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+
+.tp-class-card--active .tp-class-card-code {
   color: var(--gold);
 }
 
-.tp-class-count {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--text-3);
-  padding: 1px 5px;
-  border-radius: 99px;
-  line-height: 1.6;
+.tp-class-card-name {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  line-height: 1.3;
 }
 
-.tp-class-tab--active .tp-class-count {
-  background: rgba(217, 160, 48, 0.2);
+.tp-class-card--all .tp-class-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tp-class-card--active .tp-class-card-name {
+  color: var(--gold);
+}
+
+.tp-class-card--all.tp-class-card--active .tp-class-card-name {
+  color: var(--gold);
+}
+
+.tp-class-card-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-3);
+  padding: 2px 6px;
+  border-radius: 99px;
+  line-height: 1.5;
+}
+
+.tp-class-card--active .tp-class-card-count {
+  background: rgba(217, 160, 48, 0.18);
   color: var(--gold);
 }

@@ -68,3 +68,19 @@
   flex-direction: column;
   gap: 20px;
 }
+
+/* ─── Two-column body (sidebar + main) ───────────────────────────────────── */
+.tp-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  min-width: 0;
+}
+
+.tp-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

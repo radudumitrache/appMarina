@@ -107,20 +107,24 @@ export default function Progress() {
               </div>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: 8, margin: '16px 0' }}>
-            {Array.from({ length: 4 }).map((_, i) => <Sk key={i} w={130} h={34} r={6} />)}
-          </div>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px 16px', borderBottom: '1px solid var(--border)', opacity: 1 - i * 0.1 }}>
-              <Sk w={32} h={32} r={16} style={{ flexShrink: 0 }} />
-              <Sk w={`${120 + (i % 3) * 30}px`} h={13} r={4} />
-              <Sk w={100} h={13} r={4} style={{ marginLeft: 'auto' }} />
-              <Sk w={120} h={8} r={4} />
-              <Sk w={40} h={13} r={4} />
-              <Sk w={60} h={13} r={4} />
-              <Sk w={64} h={20} r={4} />
+          <div className="tp-body">
+            <div style={{ width: 220, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {Array.from({ length: 4 }).map((_, i) => <Sk key={i} w="100%" h={56} r={8} />)}
             </div>
-          ))}
+            <div className="tp-main">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px 16px', borderBottom: '1px solid var(--border)', opacity: 1 - i * 0.1 }}>
+                  <Sk w={32} h={32} r={16} style={{ flexShrink: 0 }} />
+                  <Sk w={`${120 + (i % 3) * 30}px`} h={13} r={4} />
+                  <Sk w={100} h={13} r={4} style={{ marginLeft: 'auto' }} />
+                  <Sk w={120} h={8} r={4} />
+                  <Sk w={40} h={13} r={4} />
+                  <Sk w={60} h={13} r={4} />
+                  <Sk w={64} h={20} r={4} />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -147,32 +151,36 @@ export default function Progress() {
           avgPct={avgPct}
         />
 
-        <ProgressClassTabs
-          classes={classes}
-          students={students}
-          classFilter={classFilter}
-          onClassChange={setClassFilter}
-        />
+        <div className="tp-body">
+          <ProgressClassTabs
+            classes={classes}
+            students={students}
+            classFilter={classFilter}
+            onClassChange={setClassFilter}
+          />
 
-        <ProgressToolbar
-          search={search}
-          onSearchChange={setSearch}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-        />
+          <div className="tp-main">
+            <ProgressToolbar
+              search={search}
+              onSearchChange={setSearch}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+            />
 
-        <ProgressTable
-          students={paginated}
-          filteredCount={visible.length}
-          totalCount={students.length}
-          selectedId={null}
-          onSelect={s => navigate(`/teacher/students/${s.id}/progress`)}
-          page={page}
-          pageSize={pageSize}
-          totalPages={totalPages}
-          onPageChange={setPage}
-          onPageSizeChange={n => { setPageSize(n); setPage(1) }}
-        />
+            <ProgressTable
+              students={paginated}
+              filteredCount={visible.length}
+              totalCount={students.length}
+              selectedId={null}
+              onSelect={s => navigate(`/teacher/students/${s.id}/progress`)}
+              page={page}
+              pageSize={pageSize}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              onPageSizeChange={n => { setPageSize(n); setPage(1) }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   )

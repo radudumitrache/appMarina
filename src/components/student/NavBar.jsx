@@ -19,7 +19,7 @@ export default function NavBar() {
   return (
     <nav className="navbar navbar--student">
       <span className="nav-logo" onClick={() => navigate('/student/dashboard')}>
-        SEAFARER
+        HANSA360
       </span>
 
       <div className="nav-links">
