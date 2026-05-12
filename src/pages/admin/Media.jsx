@@ -75,10 +75,10 @@ export default function AdminMedia() {
     if (activeFolder !== 'all') return null
     const publicFiles = filtered.filter(f => f.folder === 'public' || f.folder === 'vr_scenes')
     const classGroups = classes
-      .map(c => ({ label: c.name, files: filtered.filter(f => f.classroom === c.id) }))
+      .map(c => ({ id: `class-${c.id}`, label: c.name, files: filtered.filter(f => f.classroom === c.id) }))
       .filter(g => g.files.length > 0)
     return [
-      ...(publicFiles.length ? [{ label: 'Public', files: publicFiles }] : []),
+      ...(publicFiles.length ? [{ id: 'public', label: 'Public', files: publicFiles }] : []),
       ...classGroups,
     ]
   }, [filtered, activeFolder, classes])
@@ -121,7 +121,7 @@ export default function AdminMedia() {
               <p className="media-empty">No files found.</p>
             ) : groups?.length ? (
               groups.map(group => (
-                <div key={group.label} className="media-folder-group">
+                <div key={group.id} className="media-folder-group">
                   <div className="media-folder-group-header">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
@@ -188,6 +188,7 @@ export default function AdminMedia() {
       {renameTarget && (
         <RenameModal
           file={renameTarget}
+          files={files}
           onClose={() => setRenameTarget(null)}
           onSave={handleRename}
         />

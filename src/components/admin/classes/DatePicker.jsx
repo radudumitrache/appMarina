@@ -35,9 +35,11 @@ function buildCells(year, month) {
   return cells
 }
 
-export default function DatePicker({ value, onChange, placeholder = 'Select date', hasError }) {
-  const today = new Date()
-  const sel   = parseYMD(value)
+export default function DatePicker({ value, onChange, placeholder = 'Select date', hasError, min, max }) {
+  const today  = new Date()
+  const sel    = parseYMD(value)
+  const minDt  = parseYMD(min)
+  const maxDt  = parseYMD(max)
 
   const [open,       setOpen]       = useState(false)
   const [viewYear,   setViewYear]   = useState((sel ?? today).getFullYear())
@@ -81,8 +83,16 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
     else setViewMonth(m => m + 1)
   }
 
+  const isDisabled = c => {
+    if (!c.cur) return false
+    const dt = new Date(viewYear, viewMonth, c.day)
+    if (minDt && dt < minDt) return true
+    if (maxDt && dt > maxDt) return true
+    return false
+  }
+
   const select = cell => {
-    if (!cell.cur) return
+    if (!cell.cur || isDisabled(cell)) return
     onChange(toYMD(new Date(viewYear, viewMonth, cell.day)))
     setOpen(false)
   }
@@ -143,9 +153,11 @@ export default function DatePicker({ value, onChange, placeholder = 'Select date
                   !cell.cur        ? 'dp-day--other'    : '',
                   isSelected(cell) ? 'dp-day--selected' : '',
                   isToday(cell)    ? 'dp-day--today'    : '',
+                  isDisabled(cell) ? 'dp-day--disabled' : '',
                 ].filter(Boolean).join(' ')}
                 onClick={() => select(cell)}
-                tabIndex={cell.cur ? 0 : -1}
+                tabIndex={cell.cur && !isDisabled(cell) ? 0 : -1}
+                aria-disabled={isDisabled(cell)}
               >
                 {cell.day}
               </button>

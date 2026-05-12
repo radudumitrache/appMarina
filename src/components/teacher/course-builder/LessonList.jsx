@@ -3,7 +3,7 @@ import '../../css/teacher/course-builder/LessonList.css'
 
 const TYPE_SHORT = { vr_tour: 'VR', text: 'Text' }
 
-export default function LessonList({ selectedLessons, loadingDetail, onRemove, onMove, onNavigatePanels }) {
+export default function LessonList({ selectedLessons, loadingDetail, onRemove, onMove, onNavigatePanels, onViewLesson }) {
   if (loadingDetail) {
     return (
       <div className="cb-loading">
@@ -51,11 +51,15 @@ export default function LessonList({ selectedLessons, loadingDetail, onRemove, o
           </div>
           <div className="cb-lesson-actions">
             <button
-              className="cb-edit-panels-btn"
-              onClick={() => onNavigatePanels(lesson.id)}
-              title="Edit panels"
+              className="cb-view-lesson-btn"
+              onClick={() => onViewLesson?.(lesson)}
+              title="View lesson"
             >
-              Panels
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              View
             </button>
             <button
               className="cb-reorder-btn"

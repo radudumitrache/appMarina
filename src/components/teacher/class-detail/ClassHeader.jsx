@@ -4,16 +4,34 @@ import '../../css/teacher/class-detail/ClassHeader.css'
 
 const STATUS_LABELS = { active: 'Active', complete: 'Complete', archived: 'Archived' }
 
+function fallbackCopy(text, onDone) {
+  const ta = document.createElement('textarea')
+  ta.value = text
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0'
+  document.body.appendChild(ta)
+  ta.focus()
+  ta.select()
+  try { document.execCommand('copy'); onDone() } catch {}
+  document.body.removeChild(ta)
+}
+
 export default function ClassHeader({ name, code, status, onEdit, onDelete }) {
   const navigate = useNavigate()
   const [copied,   setCopied]   = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(code).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
+    const done = () => { setCopied(true); setTimeout(() => setCopied(false), 2000) }
+
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopy(code, done))
+      } else {
+        fallbackCopy(code, done)
+      }
+    } catch {
+      fallbackCopy(code, done)
+    }
   }
 
   return (

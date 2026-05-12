@@ -27,12 +27,13 @@ export default function Progress() {
       .then(([progRes, testsRes, actRes]) => {
         setSummary(progRes.data)
         setTestResults(testsRes.data.map(s => ({
-          id:     s.id,
-          testId: s.test,
-          title:  s.test_title,
-          author: s.test_author_name,
-          date:   s.submitted_at,
-          grade:  Math.round(s.grade),
+          id:      s.id,
+          testId:  s.test,
+          title:   s.test_title,
+          author:  s.test_author_name,
+          date:    s.submitted_at,
+          grade:   s.grade != null ? Math.round(s.grade) : null,
+          pending: s.grade == null,
         })))
         setActivity(actRes.data.map(log => ({
           id:    log.id,

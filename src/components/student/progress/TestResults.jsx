@@ -40,17 +40,27 @@ export default function TestResults({ results, onViewAll, onSelect }) {
             style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
             onClick={() => onSelect?.(t)}
           >
-            <div className={`test-result-grade ${gradeClass(t.grade)}`}>
-              <span className="test-result-grade-num">{t.grade}</span>
-              <span className="test-result-grade-pct">%</span>
-            </div>
+            {t.pending ? (
+              <div className="test-result-grade grade--pending">
+                <span className="test-result-grade-num">—</span>
+              </div>
+            ) : (
+              <div className={`test-result-grade ${gradeClass(t.grade)}`}>
+                <span className="test-result-grade-num">{t.grade}</span>
+                <span className="test-result-grade-pct">%</span>
+              </div>
+            )}
             <div className="test-result-body">
               <span className="test-result-title">{t.title}</span>
               <span className="test-result-meta">By {t.author} · {formatDate(t.date)}</span>
             </div>
-            <span className={`test-result-badge ${gradeClass(t.grade)}`}>
-              {gradeLabel(t.grade)}
-            </span>
+            {t.pending ? (
+              <span className="test-result-badge grade--pending">Pending</span>
+            ) : (
+              <span className={`test-result-badge ${gradeClass(t.grade)}`}>
+                {gradeLabel(t.grade)}
+              </span>
+            )}
             {onSelect && (
               <svg className="test-result-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6"/>

@@ -50,3 +50,114 @@
   color: var(--text);
   border-color: var(--border-strong);
 }
+
+/* ─── Navigator anchor warning dialog ───────────────────────────────────── */
+.lr-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lr-fade-in 0.15s ease both;
+}
+
+@keyframes lr-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lr-nav-dialog {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 28px 24px;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: lr-dialog-in 0.18s ease both;
+}
+
+@keyframes lr-dialog-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lr-nav-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-rim);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lr-nav-title {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  text-align: center;
+}
+
+.lr-nav-body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.55;
+  text-align: center;
+  margin: 0;
+}
+
+.lr-nav-body strong {
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.lr-nav-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.lr-nav-btn {
+  flex: 1;
+  height: 36px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+}
+
+.lr-nav-btn--cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+.lr-nav-btn--cancel:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.lr-nav-btn--confirm {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-rim);
+  color: var(--accent);
+}
+.lr-nav-btn--confirm:hover {
+  background: rgba(26, 184, 166, 0.18);
+  border-color: var(--accent);
+}

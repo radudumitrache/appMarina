@@ -2,78 +2,159 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import ScenePicker from './ScenePicker'
 import MediaInsertModal from './MediaInsertModal'
 import AnchorSection from './AnchorSection'
-import InlineStyleEditor from './InlineStyleEditor'
-import ImageStyleEditor from './ImageStyleEditor'
 import { IconClose } from './LPEIcons'
 
-const TAG_LABELS = {
-  h1: 'Heading 1', h2: 'Heading 2', h3: 'Heading 3',
-  p: 'Paragraph', strong: 'Bold', b: 'Bold',
-  em: 'Italic', i: 'Italic',
-  ul: 'Bullet List', ol: 'Numbered List', li: 'List Item',
-  a: 'Link', img: 'Image', video: 'Video', hr: 'Divider',
-  span: 'Span', div: 'Block',
-}
-
-function tagLabel(tagName) {
-  return TAG_LABELS[tagName?.toLowerCase()] ?? tagName
-}
-
-function unwrapElement(el) {
-  const parent = el.parentNode
-  if (!parent) return
-  while (el.firstChild) parent.insertBefore(el.firstChild, el)
-  parent.removeChild(el)
-}
-
-function removeFormattingTag(tagName, element, editorEl) {
-  unwrapElement(element)
-  editorEl?.dispatchEvent(new Event('input', { bubbles: true }))
-}
-
-const TAGS = [
-  { label: 'H1',    cmd: 'formatBlock', arg: 'h1', desc: 'Large title — top-level heading' },
-  { label: 'H2',    cmd: 'formatBlock', arg: 'h2', desc: 'Section heading' },
-  { label: 'H3',    cmd: 'formatBlock', arg: 'h3', desc: 'Sub-section heading' },
-  { label: 'P',     cmd: 'formatBlock', arg: 'p',  desc: 'Normal paragraph text' },
-  { label: 'B',     cmd: 'bold',                   desc: 'Bold — emphasise key words' },
-  { label: 'I',     cmd: 'italic',                 desc: 'Italic — titles, terms, stress' },
-  { label: 'UL',    cmd: 'insertUnorderedList',    desc: 'Bullet list' },
-  { label: 'HR',    cmd: 'insertHorizontalRule',   desc: 'Horizontal divider line' },
-  { label: 'IMG',   media: 'image',                desc: 'Insert an image' },
-  { label: 'VIDEO', media: 'video',                desc: 'Insert a video' },
+const TOOLBAR_GROUPS = [
+  {
+    label: 'Headings',
+    items: [
+      { key: 'h1', title: 'Heading 1',  glyph: 'H1', shortLabel: 'Large',  act: e => e.chain().focus().toggleHeading({ level: 1 }).run(), on: e => e.isActive('heading', { level: 1 }) },
+      { key: 'h2', title: 'Heading 2',  glyph: 'H2', shortLabel: 'Medium', act: e => e.chain().focus().toggleHeading({ level: 2 }).run(), on: e => e.isActive('heading', { level: 2 }) },
+      { key: 'h3', title: 'Heading 3',  glyph: 'H3', shortLabel: 'Small',  act: e => e.chain().focus().toggleHeading({ level: 3 }).run(), on: e => e.isActive('heading', { level: 3 }) },
+      { key: 'p',  title: 'Normal text — clears all formatting',  glyph: '¶',  shortLabel: 'Normal',
+        act: e => {
+          const { empty } = e.state.selection
+          const chain = e.chain().focus()
+          if (empty) chain.selectParentNode()
+          return chain.unsetAllMarks().clearNodes().run()
+        },
+        on: e => e.isActive('paragraph') && !e.isActive('bold') && !e.isActive('italic') },
+    ],
+  },
+  {
+    label: 'Format',
+    items: [
+      {
+        key: 'bold', title: 'Bold',
+        icon: (
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 8h5a3 3 0 0 0 0-6H4v6zM4 8h5.5a3.5 3.5 0 0 1 0 7H4V8z"/>
+          </svg>
+        ),
+        shortLabel: 'Bold',
+        act: e => e.chain().focus().toggleBold().run(),
+        on:  e => e.isActive('bold'),
+      },
+      {
+        key: 'italic', title: 'Italic',
+        icon: (
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="10" y1="2" x2="6" y2="14"/>
+            <line x1="6"  y1="2" x2="12" y2="2"/>
+            <line x1="4"  y1="14" x2="10" y2="14"/>
+          </svg>
+        ),
+        shortLabel: 'Italic',
+        act: e => e.chain().focus().toggleItalic().run(),
+        on:  e => e.isActive('italic'),
+      },
+      {
+        key: 'clear', title: 'Remove bold / italic from selection',
+        icon: (
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h5a3 3 0 0 1 2.83 4M9.5 9.5 8 12H4"/>
+            <line x1="2" y1="2" x2="14" y2="14"/>
+          </svg>
+        ),
+        shortLabel: 'Clear',
+        act: e => {
+          const { empty } = e.state.selection
+          if (empty) {
+            // No selection — expand to the whole current node first
+            return e.chain().focus().selectParentNode().unsetAllMarks().run()
+          }
+          return e.chain().focus().unsetAllMarks().run()
+        },
+        on:  () => false,
+      },
+    ],
+  },
+  {
+    label: 'Lists',
+    items: [
+      {
+        key: 'ul', title: 'Bullet list',
+        icon: (
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+            <circle cx="2.5" cy="4"  r="1" fill="currentColor" stroke="none"/>
+            <circle cx="2.5" cy="8"  r="1" fill="currentColor" stroke="none"/>
+            <circle cx="2.5" cy="12" r="1" fill="currentColor" stroke="none"/>
+            <line x1="6" y1="4"  x2="14" y2="4"/>
+            <line x1="6" y1="8"  x2="14" y2="8"/>
+            <line x1="6" y1="12" x2="14" y2="12"/>
+          </svg>
+        ),
+        shortLabel: 'Bullets',
+        act: e => e.chain().focus().toggleBulletList().run(),
+        on:  e => e.isActive('bulletList'),
+      },
+      {
+        key: 'ol', title: 'Ordered list',
+        icon: (
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+            <text x="1" y="5.5" fontFamily="sans-serif" fontSize="5" fontWeight="700" fill="currentColor" stroke="none">1.</text>
+            <text x="1" y="9.5" fontFamily="sans-serif" fontSize="5" fontWeight="700" fill="currentColor" stroke="none">2.</text>
+            <text x="1" y="13.5" fontFamily="sans-serif" fontSize="5" fontWeight="700" fill="currentColor" stroke="none">3.</text>
+            <line x1="7" y1="4"  x2="15" y2="4"/>
+            <line x1="7" y1="8"  x2="15" y2="8"/>
+            <line x1="7" y1="12" x2="15" y2="12"/>
+          </svg>
+        ),
+        shortLabel: 'Numbered',
+        act: e => e.chain().focus().toggleOrderedList().run(),
+        on:  e => e.isActive('orderedList'),
+      },
+      {
+        key: 'hr', title: 'Divider line',
+        icon: (
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+            <line x1="2" y1="8" x2="14" y2="8"/>
+            <line x1="2" y1="4" x2="6"  y2="4" strokeWidth="1"/>
+            <line x1="2" y1="12" x2="6" y2="12" strokeWidth="1"/>
+          </svg>
+        ),
+        shortLabel: 'Divider',
+        act: e => e.chain().focus().setHorizontalRule().run(),
+        on:  () => false,
+      },
+    ],
+  },
+  {
+    label: 'Insert',
+    items: [
+      {
+        key: 'img', title: 'Insert image',
+        icon: (
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="3" width="14" height="10" rx="1.5"/>
+            <circle cx="5.5" cy="6.5" r="1.2"/>
+            <path d="M1 11l3.5-3.5 2.5 2.5 2-2 4 4"/>
+          </svg>
+        ),
+        shortLabel: 'Image',
+        act: null,
+        on:  () => false,
+      },
+      {
+        key: 'vid', title: 'Insert video',
+        icon: (
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="4" width="10" height="8" rx="1.5"/>
+            <path d="M11 6.5l4-2v7l-4-2V6.5z"/>
+          </svg>
+        ),
+        shortLabel: 'Video',
+        act: null,
+        on:  () => false,
+      },
+    ],
+  },
 ]
 
-function fireInput(el) {
-  el.dispatchEvent(new Event('input', { bubbles: true }))
-}
-
-function applyTag(editorRef, tag) {
-  const el = editorRef.current
-  if (!el) return
-  el.focus()
-
-  const sel = window.getSelection()
-  const hasSelection = sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed
-
-  if (hasSelection && tag.cmd === 'formatBlock') {
-    // Wrap only the selected fragment in the block tag, preserving inner markup
-    const range = sel.getRangeAt(0)
-    const fragment = range.extractContents()
-    const wrapper = document.createElement(tag.arg)
-    wrapper.appendChild(fragment)
-    range.insertNode(wrapper)
-    sel.collapse(wrapper, wrapper.childNodes.length)
-  } else {
-    document.execCommand(tag.cmd, false, tag.arg ?? null)
-  }
-
-  fireInput(el)
-}
-
 export default function EditDrawer({
-  panel, editorRef, liveBody, showHtml, onToggleHtml,
-  activeTags,
+  panel, editor,
+  showHtml, rawHtml, onRawHtmlChange, onToggleHtml,
+  onDrawerWidthChange,
   onSave, onClose, saving, lessonId, classroomId, panels,
   onAnchorsChange, focusAnchor, onEnterPlacement,
   newAnchorPlacement, onNewAnchorSaved,
@@ -84,47 +165,52 @@ export default function EditDrawer({
   const savedBody        = panel.text_content?.body ?? ''
   const savedMediaFileId = panel.vr_tour?.media_file ?? null
 
-  const [title,          setTitle]          = useState(panel.title ?? '')
-  const [mediaFileId,    setMediaFileId]    = useState(savedMediaFileId)
-  const [previewUrl,     setPreviewUrl]     = useState(
-    savedMediaFileId ? (panel.vr_tour?.scene_url ?? null) : null
-  )
-  const [activeTagIdx,   setActiveTagIdx]   = useState(0)
-  const [anchorEditing,  setAnchorEditing]  = useState(false)
-  const [drawerWidth,    setDrawerWidth]    = useState(360)
-  const [dragging,       setDragging]       = useState(false)
-  const [mediaMode,      setMediaMode]      = useState(null) // 'image' | 'video' | null
-  const dragStartX      = useRef(0)
-  const dragStartWidth  = useRef(0)
-  const savedRange      = useRef(null)
+  const [title,         setTitle]         = useState(panel.title ?? '')
+  const [mediaFileId,   setMediaFileId]   = useState(savedMediaFileId)
+  const [previewUrl,    setPreviewUrl]    = useState(savedMediaFileId ? (panel.vr_tour?.scene_url ?? null) : null)
+  const [anchorEditing, setAnchorEditing] = useState(false)
+  const [drawerWidth,   setDrawerWidth]   = useState(380)
+  const [dragging,      setDragging]      = useState(false)
+  const [mediaMode,     setMediaMode]     = useState(null)
+  const dragStartX     = useRef(0)
+  const dragStartWidth = useRef(0)
 
-  const openMediaPicker = mode => {
-    const sel = window.getSelection()
-    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.getRangeAt(0).commonAncestorContainer)) {
-      savedRange.current = sel.getRangeAt(0).cloneRange()
-    }
-    setMediaMode(mode)
-  }
+  // ── Dirty detection ───────────────────────────────────────────────────────
+  const [editorDirty, setEditorDirty] = useState(false)
+  useEffect(() => {
+    if (!editor || panel.type !== 'text') return
+    const handler = () => setEditorDirty(editor.getHTML() !== savedBody)
+    editor.on('update', handler)
+    return () => editor.off('update', handler)
+  }, [editor, savedBody, panel.type])
 
+  const dirty =
+    title !== (panel.title ?? '') ||
+    (panel.type === 'text'    && (showHtml ? rawHtml !== savedBody : editorDirty)) ||
+    (panel.type === 'vr_tour' && mediaFileId !== savedMediaFileId)
+
+  // ── Media insert ──────────────────────────────────────────────────────────
   const handleMediaInsert = (url, type) => {
-    const el = editorRef.current
-    if (el) {
-      el.focus()
-      const sel = window.getSelection()
-      if (savedRange.current) {
-        sel.removeAllRanges()
-        sel.addRange(savedRange.current)
-        savedRange.current = null
-      }
+    if (editor) {
       const html = type === 'image'
         ? `<img src="${url}" alt="" style="max-width:100%;" />`
         : `<video src="${url}" controls style="max-width:100%;"></video>`
-      document.execCommand('insertHTML', false, html)
-      fireInput(el)
+      editor.chain().focus().insertContent(html).run()
     }
     setMediaMode(null)
   }
 
+  // ── Save ──────────────────────────────────────────────────────────────────
+  const handleSave = () => {
+    const data = { title }
+    if (panel.type === 'text')    data.body = showHtml ? rawHtml : (editor?.getHTML() ?? savedBody)
+    if (panel.type === 'vr_tour') { data.media_file_id = mediaFileId; data.scene_url = '' }
+    onSave(panel.id, data)
+    setEditorDirty(false)
+  }
+
+
+  // ── Resize handle ─────────────────────────────────────────────────────────
   const onResizeMouseDown = useCallback(e => {
     e.preventDefault()
     dragStartX.current     = e.clientX
@@ -136,14 +222,11 @@ export default function EditDrawer({
     if (!dragging) return
     document.body.style.userSelect = 'none'
     const onMouseMove = e => {
-      const delta = dragStartX.current - e.clientX
-      const next  = Math.min(700, Math.max(280, dragStartWidth.current + delta))
-      setDrawerWidth(next)
+      const w = Math.min(760, Math.max(320, dragStartWidth.current + (dragStartX.current - e.clientX)))
+      setDrawerWidth(w)
+      onDrawerWidthChange?.(w)
     }
-    const onMouseUp = () => {
-      setDragging(false)
-      document.body.style.userSelect = ''
-    }
+    const onMouseUp = () => { setDragging(false); document.body.style.userSelect = '' }
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup',   onMouseUp)
     return () => {
@@ -153,30 +236,14 @@ export default function EditDrawer({
     }
   }, [dragging])
 
-  useEffect(() => { setActiveTagIdx(0) }, [activeTags])
-
-  const bodyDirty = liveBody !== null && liveBody !== savedBody
-  const dirty =
-    title !== (panel.title ?? '') ||
-    (panel.type === 'text'    && bodyDirty) ||
-    (panel.type === 'vr_tour' && mediaFileId !== savedMediaFileId)
-
-  const handleSave = () => {
-    const data = { title }
-    if (panel.type === 'text') data.body = liveBody ?? savedBody
-    if (panel.type === 'vr_tour') {
-      data.media_file_id = mediaFileId
-      data.scene_url = ''
-    }
-    onSave(panel.id, data)
-  }
-
   return (
     <aside className="lpe-drawer" style={{ width: drawerWidth }}>
       <div
         className={`lpe-drawer-resize-handle${dragging ? ' lpe-drawer-resize-handle--dragging' : ''}`}
         onMouseDown={onResizeMouseDown}
       />
+
+      {/* Header */}
       <div className="lpe-drawer-header">
         <div className="lpe-drawer-title-row">
           <span className={`lpe-type-badge lpe-type-badge--${panel.type}`}>
@@ -188,99 +255,74 @@ export default function EditDrawer({
         </div>
       </div>
 
+      {/* Body */}
       <div className="lpe-drawer-body">
-        {/* Title — hidden while an anchor is being edited */}
+
+        {/* Panel title */}
         {!anchorEditing && (
-        <div className="lpe-field">
-          <label className="lpe-label">Title</label>
-          <input
-            className="lpe-input"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder="Panel title…"
-          />
-        </div>
+          <div className="lpe-field">
+            <label className="lpe-label">Title</label>
+            <input
+              className="lpe-input"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Panel title…"
+            />
+          </div>
         )}
 
-        {/* Tag list + HTML toggle — text panels only */}
+        {/* Text panel: toolbar + editor */}
         {panel.type === 'text' && (
-          <div className="lpe-field">
+          <div className="lpe-field lpe-field--editor">
             <div className="lpe-format-header">
-              <label className="lpe-label">Format</label>
+              <label className="lpe-label">Content</label>
               <button
                 className={`lpe-html-toggle${showHtml ? ' lpe-html-toggle--active' : ''}`}
                 onClick={onToggleHtml}
-                title={showHtml ? 'Back to visual editing' : 'View raw HTML'}
+                title={showHtml ? 'Back to visual editing' : 'Edit raw HTML in main view'}
               >
                 {'</>'}
               </button>
             </div>
 
-            <div className="lpe-tag-list">
-              {TAGS.map(tag => (
-                <button
-                  key={tag.label}
-                  className="lpe-tag-item"
-                  onMouseDown={e => e.preventDefault()}
-                  onClick={() => tag.media ? openMediaPicker(tag.media) : applyTag(editorRef, tag)}
-                  disabled={showHtml}
-                >
-                  <span className="lpe-tag-item-label">{tag.label}</span>
-                  <span className="lpe-tag-item-desc">{tag.desc}</span>
-                </button>
-              ))}
-            </div>
+            {!showHtml && (
+              <div className="lpe-toolbar-groups">
+                {TOOLBAR_GROUPS.map((group, gi) => (
+                  <div key={group.label} className="lpe-toolbar-group">
+                    <span className="lpe-toolbar-group-label">{group.label}</span>
+                    <div className="lpe-toolbar-row">
+                      {group.items.map(item => (
+                        <button
+                          key={item.key}
+                          className={`lpe-tbtn${editor && item.on(editor) ? ' lpe-tbtn--active' : ''}`}
+                          title={item.title}
+                          onMouseDown={e => e.preventDefault()}
+                          onClick={() => {
+                            if (item.key === 'img') { setMediaMode('image'); return }
+                            if (item.key === 'vid') { setMediaMode('video'); return }
+                            editor && item.act(editor)
+                          }}
+                        >
+                          {item.icon
+                            ? <span className="lpe-tbtn-icon">{item.icon}</span>
+                            : <span className="lpe-tbtn-glyph">{item.glyph ?? item.shortLabel}</span>
+                          }
+                          <span className="lpe-tbtn-label">{item.shortLabel}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {showHtml && (
+              <p className="lpe-html-hint">HTML source is shown in the main view.</p>
+            )}
           </div>
         )}
 
-        {/* Active element inspector — shown when cursor is inside a tag */}
-        {panel.type === 'text' && activeTags?.length > 0 && !showHtml && (
-          <div className="lpe-field">
-            <label className="lpe-label">Active Element</label>
-            <div className="lpe-active-tag-chips">
-              {activeTags.map((t, i) => (
-                <button
-                  key={i}
-                  className={`lpe-active-tag-chip${activeTagIdx === i ? ' lpe-active-tag-chip--on' : ''}`}
-                  onClick={() => setActiveTagIdx(i)}
-                  onMouseDown={e => e.preventDefault()}
-                >
-                  <span className="lpe-active-tag-chip-name">{tagLabel(t.tagName)}</span>
-                  <span
-                    className="lpe-active-tag-chip-remove"
-                    role="button"
-                    tabIndex={-1}
-                    onMouseDown={e => { e.stopPropagation(); e.preventDefault() }}
-                    onClick={e => { e.stopPropagation(); removeFormattingTag(t.tagName, t.element, editorRef.current) }}
-                  >×</span>
-                </button>
-              ))}
-            </div>
-            {activeTags[activeTagIdx] && (() => {
-              const t = activeTags[activeTagIdx]
-              const tag = t.tagName.toLowerCase()
-              const key = `${activeTagIdx}-${tag}`
-              if (tag === 'img' || tag === 'video') {
-                return (
-                  <ImageStyleEditor
-                    key={key}
-                    element={t.element}
-                    editorEl={editorRef.current}
-                  />
-                )
-              }
-              return (
-                <InlineStyleEditor
-                  key={key}
-                  element={t.element}
-                  editorEl={editorRef.current}
-                />
-              )
-            })()}
-          </div>
-        )}
-
-        {/* VR scene picker — hidden while an anchor is being edited */}
+        {/* VR scene picker */}
         {panel.type === 'vr_tour' && !anchorEditing && (
           <div className="lpe-field">
             <label className="lpe-label">Scene</label>
@@ -291,18 +333,13 @@ export default function EditDrawer({
             />
             {previewUrl && (
               <div className="lpe-scene-preview-wrap">
-                <img
-                  key={previewUrl}
-                  src={previewUrl}
-                  alt="Scene preview"
-                  className="lpe-scene-preview"
-                />
+                <img key={previewUrl} src={previewUrl} alt="Scene preview" className="lpe-scene-preview" />
               </div>
             )}
           </div>
         )}
 
-        {/* Anchor management — VR panels only */}
+        {/* VR anchor management */}
         {panel.type === 'vr_tour' && (
           <AnchorSection
             key={panel.id}
@@ -329,13 +366,14 @@ export default function EditDrawer({
         )}
       </div>
 
+      {/* Footer */}
       {!anchorEditing && (
-      <div className="lpe-drawer-footer">
-        <button className="lpe-save-btn" onClick={handleSave} disabled={!dirty || saving}>
-          {saving ? 'Saving…' : 'Save Changes'}
-        </button>
-        {!dirty && <span className="lpe-saved-hint">Saved</span>}
-      </div>
+        <div className="lpe-drawer-footer">
+          <button className="lpe-btn-ghost" onClick={onClose}>Discard</button>
+          <button className="lpe-save-btn" onClick={handleSave} disabled={!dirty || saving}>
+            {saving ? 'Saving…' : 'Save'}
+          </button>
+        </div>
       )}
 
       {mediaMode && (

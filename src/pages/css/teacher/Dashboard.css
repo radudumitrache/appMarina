@@ -47,11 +47,10 @@
   display: flex;
   gap: 8px;
   padding: 6px;
-  background: rgba(8, 9, 15, 0.55);
+  background: rgba(8, 9, 15, 0.82);
   border: 1px solid var(--border);
   border-radius: 10px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  width: fit-content;
   animation: fadeIn 0.5s var(--ease) both;
   animation-delay: 0.35s;
 }
@@ -87,16 +86,16 @@
   right: 28px;
   z-index: 20;
   padding: 6px 14px;
-  background: rgba(8, 9, 15, 0.55);
+  background: rgba(8, 9, 15, 0.72);
   border: 1px solid var(--border);
   border-radius: 8px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   font-family: var(--font-ui);
   font-size: 12px;
   color: var(--accent);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  white-space: nowrap;
+  width: fit-content;
   animation: fadeIn 0.5s var(--ease) both;
   animation-delay: 0.4s;
 }

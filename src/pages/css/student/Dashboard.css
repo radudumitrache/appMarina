@@ -44,17 +44,17 @@
   align-items: center;
   gap: 7px;
   padding: 6px 12px;
-  background: rgba(11, 18, 32, 0.72);
+  background: rgba(11, 18, 32, 0.88);
   border: 1px solid var(--accent-rim);
   border-radius: var(--radius-sm);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 600;
   color: var(--accent);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
+  width: fit-content;
 }
 
 /* ─── Control pill — absolute top right ─────────────────────────────────── */
@@ -67,11 +67,10 @@
   align-items: center;
   gap: 4px;
   padding: 6px;
-  background: rgba(11, 18, 32, 0.72);
+  background: rgba(11, 18, 32, 0.88);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  width: fit-content;
 }
 
 .ctrl-btn {

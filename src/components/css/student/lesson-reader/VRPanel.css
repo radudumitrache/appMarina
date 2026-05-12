@@ -4,9 +4,18 @@
   overflow: hidden;
   min-height: 0;
   background: #000;
+  display: flex;
 }
 
-.lr-vr-wrap .vr-viewer {
+/* Viewer fills all available space in the flex row */
+.lr-vr-scene {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.lr-vr-scene .vr-viewer {
   position: absolute;
   inset: 0;
 }
@@ -50,42 +59,41 @@
   animation: lr-fade 0.6s ease 0.3s both;
 }
 
-/* Glass permitted — floats over a photographic background */
+/* Side panel — sits beside the viewer, not on top of it */
 .lr-anchor-popup {
-  position: absolute;
-  top: 50%;
-  right: 28px;
-  transform: translateY(-50%);
-  width: 272px;
-  background: rgba(10, 14, 26, 0.82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+  border-left: 1px solid var(--border);
   padding: 20px 20px 22px;
-  animation: lr-popup-in 0.2s ease both;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+  animation: lr-panel-in 0.2s ease both;
 }
 
-@keyframes lr-popup-in {
-  from {
-    opacity: 0;
-    transform: translateY(-50%) translateX(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
-  }
+@keyframes lr-panel-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.lr-anchor-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .lr-anchor-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
   border: none;
   background: transparent;
   color: var(--text-3);
@@ -100,7 +108,7 @@
   font-size: 15px;
   font-weight: 600;
   color: var(--text);
-  margin: 0 28px 0 0;
+  margin: 0;
   line-height: 1.35;
 }
 
@@ -116,10 +124,26 @@
   line-height: 1.65;
   color: var(--text-2);
   margin: 0;
-  max-height: 340px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-strong) transparent;
+  overflow-x: hidden;
+}
+
+.lr-anchor-body video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  background: #000;
+  margin: 6px 0;
+}
+
+.lr-anchor-body img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  margin: 6px 0;
 }
 
 .lr-vr-strip {

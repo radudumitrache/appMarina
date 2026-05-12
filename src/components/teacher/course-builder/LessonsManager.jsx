@@ -185,6 +185,17 @@ export default function LessonsManager({
                           Edit
                         </button>
                         <button
+                          className="lm-action-btn lm-action-btn--preview"
+                          onClick={() => navigate(`${panelsBasePath}/${lesson.id}`, { state: { lesson } })}
+                          title="Preview lesson"
+                        >
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                          </svg>
+                          Preview
+                        </button>
+                        <button
                           className="lm-action-btn lm-action-btn--panels"
                           onClick={() => navigate(`${panelsBasePath}/${lesson.id}/panels`, { state: { backPath: builderPath } })}
                           title="Edit panels"

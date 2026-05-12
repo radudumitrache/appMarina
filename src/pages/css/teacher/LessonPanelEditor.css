@@ -575,6 +575,17 @@
   opacity: 0.3;
   cursor: default;
 }
+.lpe-tag-item--active {
+  background: rgba(212,160,23,0.1);
+  border-color: rgba(212,160,23,0.35);
+}
+.lpe-tag-item--active .lpe-tag-item-label { color: var(--gold, #d4a017); }
+
+.lpe-tag-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 3px 0;
+}
 
 .lpe-tag-item-label {
   font-family: var(--font-mono);
@@ -657,6 +668,246 @@
   scrollbar-color: var(--border-strong) transparent;
 }
 .lpe-html-code-view:focus { border-color: rgba(212,160,23,0.5); }
+
+/* Textarea variant when shown inside the drawer (shorter, scrollable) */
+.lpe-html-code-view--in-drawer {
+  min-height: 200px;
+  max-height: 340px;
+  resize: vertical;
+}
+
+/* ─── Drawer editor toolbar ───────────────────────────────────────────────── */
+.lpe-field--editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Grouped toolbar */
+.lpe-toolbar-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lpe-toolbar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lpe-toolbar-group-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding-left: 2px;
+}
+
+.lpe-toolbar-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Individual toolbar button */
+.lpe-tbtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 52px;
+  height: 48px;
+  padding: 6px 4px 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  flex: 1;
+  max-width: 72px;
+}
+.lpe-tbtn:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.lpe-tbtn--active {
+  background: rgba(212,160,23,0.12);
+  border-color: rgba(212,160,23,0.4);
+  color: var(--gold, #d4a017);
+}
+
+/* Icon inside the button */
+.lpe-tbtn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.lpe-tbtn-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Text glyph (H1, H2, etc.) instead of SVG */
+.lpe-tbtn-glyph {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  color: currentColor;
+}
+
+/* Text label below icon */
+.lpe-tbtn-label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  color: currentColor;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Hint shown in drawer when HTML source mode is active */
+.lpe-html-hint {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+  margin: 4px 0 0;
+  padding: 10px 12px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(212, 160, 23, 0.04);
+}
+
+/* Keep old sep class for any remaining use */
+.lpe-toolbar-sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+.lpe-editor-wrap {
+  min-height: 320px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(0,0,0,0.15);
+  padding: 16px;
+  cursor: text;
+  box-sizing: border-box;
+}
+.lpe-editor-wrap:focus-within {
+  border-color: rgba(212,160,23,0.4);
+}
+
+/* The Tiptap ProseMirror element inside the drawer */
+.lpe-drawer-editor {
+  outline: none;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 120px;
+}
+.lpe-drawer-editor h1 { font-size: 24px; font-weight: 700; margin: 0 0 12px; color: var(--text); }
+.lpe-drawer-editor h2 { font-size: 19px; font-weight: 600; margin: 0 0 10px; color: var(--text); }
+.lpe-drawer-editor h3 { font-size: 15px; font-weight: 600; margin: 0 0 8px;  color: var(--text); }
+.lpe-drawer-editor p  { margin: 0 0 10px; }
+.lpe-drawer-editor p:last-child { margin-bottom: 0; }
+.lpe-drawer-editor strong { font-weight: 700; color: var(--text); }
+.lpe-drawer-editor em { font-style: italic; }
+.lpe-drawer-editor ul,
+.lpe-drawer-editor ol { padding-left: 20px; margin: 0 0 10px; }
+.lpe-drawer-editor li { margin-bottom: 4px; }
+.lpe-drawer-editor hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+.lpe-drawer-editor img,
+.lpe-drawer-editor video { max-width: 100%; border-radius: var(--radius-sm); margin: 8px 0; display: block; }
+
+/* Empty state placeholder */
+.lpe-drawer-editor p.is-editor-empty:first-child::before {
+  content: 'Start writing…';
+  color: var(--text-3);
+  font-style: italic;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* Discard button */
+.lpe-btn-ghost {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+.lpe-btn-ghost:hover { border-color: var(--border-hover); color: var(--text-2); }
+
+/* Tiptap EditorContent wrapper */
+.tiptap { display: block; width: 100%; }
+.tiptap > .ProseMirror { outline: none; }
+
+/* HTML source full-panel view */
+.lpe-text-wrap--html {
+  padding: 0;
+  overflow: hidden;
+}
+.lpe-text-wrap--html .lpe-html-code-view {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  border: none;
+  border-left: 3px solid rgba(212, 160, 23, 0.4);
+  resize: none;
+  font-size: 14px;
+  line-height: 1.65;
+  padding: 80px 40px 100px;
+  box-sizing: border-box;
+}
+
+/* Edit mode highlight on the text preview */
+.lpe-text-wrap--editing {
+  background: rgba(212, 160, 23, 0.03);
+}
+.lpe-text-wrap--editing .lpe-text-main {
+  outline: none;
+}
+/* ProseMirror in the preview inherits text-body styles; just ensure cursor */
+.lpe-text-body--editable {
+  cursor: text;
+  caret-color: var(--gold, #d4a017);
+}
+.lpe-text-body--editable:focus-within {
+  outline: none;
+}
+/* Placeholder in preview editor */
+.lpe-text-body--editable .is-editor-empty:first-child::before {
+  content: 'Click here and start writing…';
+  color: var(--text-3);
+  font-style: italic;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
 
 /* ─── Panel-open state: collapse chrome so VRAnchorPanel has full space ─────
  * Topbar slides up, bottom strip slides down, side buttons fade out.
@@ -1084,10 +1335,10 @@
 .lpe-drawer-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 20px 0;
+  padding: 16px 16px 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
   min-height: 0;

@@ -6,7 +6,7 @@ import LessonsToolbar from '../../components/admin/lessons/LessonsToolbar'
 import LessonRow from '../../components/admin/lessons/LessonRow'
 import LessonFormPanel from '../../components/admin/lessons/LessonFormPanel'
 import LessonDeleteModal from '../../components/admin/lessons/LessonDeleteModal'
-import { getLessons, createLesson, deleteLesson } from '../../api/lessons'
+import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons'
 import Sk from '../../components/shared/Skeleton'
 import '../css/admin/Lessons.css'
 
@@ -50,6 +50,7 @@ export default function Lessons() {
   const [visFilter, setVisFilter]           = useState('all')
   const [panel, setPanel]                   = useState(null)
   const [form, setForm]                     = useState(EMPTY_FORM)
+  const [editTarget, setEditTarget]         = useState(null)
   const [deleteTarget, setDeleteTarget]     = useState(null)
 
   useEffect(() => {
@@ -65,6 +66,18 @@ export default function Lessons() {
 
   const openCreate = () => { setForm(EMPTY_FORM); setPanel('create') }
 
+  const openEdit = (lesson) => {
+    setEditTarget(lesson)
+    setForm({
+      title:            lesson.title,
+      category:         lesson.category,
+      duration_minutes: lesson.duration_minutes,
+      difficulty:       lesson.difficulty,
+      visibility:       lesson.visibility,
+    })
+    setPanel('edit')
+  }
+
   const handleFormChange = (field, value) => setForm(f => ({ ...f, [field]: value }))
 
   const handleSave = async () => {
@@ -73,6 +86,16 @@ export default function Lessons() {
       const { data } = await createLesson(form)
       setLessons(prev => [mapLesson(data), ...prev])
       setPanel(null)
+    } catch {}
+  }
+
+  const handleUpdate = async () => {
+    if (!form.title.trim() || !editTarget) return
+    try {
+      const { data } = await updateLesson(editTarget.id, form)
+      setLessons(prev => prev.map(l => l.id === editTarget.id ? mapLesson(data) : l))
+      setPanel(null)
+      setEditTarget(null)
     } catch {}
   }
 
@@ -138,6 +161,7 @@ export default function Lessons() {
                     categories={CATEGORIES}
                     index={i}
                     onView={() => navigate(`/admin/lessons/${lesson.id}/panels`, { state: { backPath: '/admin/lessons' } })}
+                    onEdit={() => openEdit(lesson)}
                     onDelete={() => setDeleteTarget(lesson)}
                   />
                 ))
@@ -152,8 +176,8 @@ export default function Lessons() {
           mode={panel === 'create' ? 'create' : 'edit'}
           form={form}
           onChange={handleFormChange}
-          onClose={() => setPanel(null)}
-          onSave={handleSave}
+          onClose={() => { setPanel(null); setEditTarget(null) }}
+          onSave={panel === 'create' ? handleSave : handleUpdate}
           categories={CATEGORIES.filter(c => c.id !== 'all')}
           difficulties={DIFFICULTIES}
         />

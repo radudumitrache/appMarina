@@ -59,6 +59,7 @@ export default function CourseEditor({
         onRemove={onRemoveLesson}
         onMove={onMoveLesson}
         onNavigatePanels={id => navigate(`${panelsBasePath}/${id}/panels`, { state: { backPath: builderPath, classroomId: selected.classroom_id ?? null } })}
+        onViewLesson={lesson => navigate(`${panelsBasePath}/${lesson.id}`, { state: { lesson } })}
       />
 
       {bankOpen && (

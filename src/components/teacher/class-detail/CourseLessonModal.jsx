@@ -1,28 +1,45 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { getCourse, addCourseLesson, removeCourseLesson } from '../../../api/lessons'
+import { getCourse, getLessons, addCourseLesson, removeCourseLesson } from '../../../api/lessons'
 import '../../css/teacher/class-detail/CourseLessonModal.css'
 
 const CAT_LABELS = { nav: 'NAV', emg: 'EMG', eng: 'ENG', cargo: 'CARGO', comm: 'COMM' }
 
 export default function CourseLessonModal({ course, classLessons, onClose }) {
-  const [inCourse, setInCourse]   = useState([])
-  const [loading, setLoading]     = useState(true)
-  const [dragSrc, setDragSrc]     = useState(null)   // { lesson, from: 'bank'|'course' }
-  const [overTarget, setOverTarget] = useState(null) // 'bank' | 'course'
+  const [inCourse,  setInCourse]  = useState([])
+  const [allLessons, setAllLessons] = useState([])
+  const [loading,   setLoading]   = useState(true)
+  const [dragSrc,   setDragSrc]   = useState(null)
+  const [overTarget, setOverTarget] = useState(null)
 
   useEffect(() => {
-    getCourse(course.id).then(res => {
+    const classIds = new Set(classLessons.map(l => l.id))
+
+    Promise.all([
+      getCourse(course.id),
+      getLessons({ visibility: 'public' }),
+    ]).then(([courseRes, publicRes]) => {
+      // Build inCourse list
       const clMap = new Map(classLessons.map(l => [l.id, l]))
-      const loaded = (res.data.lessons ?? []).map(cl => {
+      const loaded = (courseRes.data.lessons ?? []).map(cl => {
         const id = cl.lesson_detail?.id ?? cl.id
         return clMap.get(id) ?? { id, title: cl.lesson_detail?.title ?? '—', cat: cl.lesson_detail?.category, duration: cl.lesson_detail?.duration_minutes ? `${cl.lesson_detail.duration_minutes} min` : '—' }
       }).filter(Boolean)
       setInCourse(loaded)
+
+      // Merge class lessons + public lessons, deduped
+      const publicLessons = (publicRes.data ?? [])
+        .filter(l => !classIds.has(l.id))
+        .map(l => ({ id: l.id, title: l.title, cat: l.category, duration: l.duration_minutes ? `${l.duration_minutes} min` : '—', source: 'public' }))
+
+      setAllLessons([
+        ...classLessons.map(l => ({ ...l, source: 'class' })),
+        ...publicLessons,
+      ])
     }).finally(() => setLoading(false))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const available = classLessons.filter(l => !inCourse.some(c => c.id === l.id))
+  const available = allLessons.filter(l => !inCourse.some(c => c.id === l.id))
 
   const addLesson = async (lesson) => {
     if (inCourse.some(l => l.id === lesson.id)) return
@@ -98,7 +115,7 @@ export default function CourseLessonModal({ course, classLessons, onClose }) {
               onDrop={onDrop('bank')}
             >
               <div className="clm-col-hd">
-                <span className="clm-col-title">Class Lessons</span>
+                <span className="clm-col-title">Available Lessons</span>
                 <span className="clm-col-count">{available.length}</span>
               </div>
               <div className="clm-col-body">
@@ -118,6 +135,7 @@ export default function CourseLessonModal({ course, classLessons, onClose }) {
                         <div className="clm-item-meta">
                           {cat(l) && <span className="clm-tag">{cat(l)}</span>}
                           {dur(l) && <span className="clm-dur">{dur(l)}</span>}
+                          {l.source === 'public' && <span className="clm-tag clm-tag--public">PUBLIC</span>}
                         </div>
                       </div>
                       <button className="clm-action clm-action--add" onClick={() => addLesson(l)} title="Add to course">

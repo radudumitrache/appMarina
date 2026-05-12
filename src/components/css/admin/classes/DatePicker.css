@@ -120,6 +120,14 @@
   pointer-events: none;
 }
 
+.dp-day--disabled {
+  opacity: 0.22;
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: line-through;
+  color: var(--text-3);
+}
+
 .dp-day--today:not(.dp-day--selected) {
   color: var(--error);
   font-weight: 700;

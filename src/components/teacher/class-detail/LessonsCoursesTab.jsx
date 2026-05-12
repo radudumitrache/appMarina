@@ -1,16 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { getCourses, getCourse, createCourse, deleteCourse, updateCourse, updateLesson, removeCourseLesson } from '../../../api/lessons'
+import { getCourses, getCourse, createCourse, deleteCourse, updateCourse, removeCourseLesson } from '../../../api/lessons'
 import { unassignLesson, getClasses } from '../../../api/classes'
 import CourseLessonModal from './CourseLessonModal'
-import LessonEditModal from '../course-builder/LessonEditModal'
 import '../../css/teacher/class-detail/LessonsCoursesTab.css'
 
 const CAT_LABELS = { nav: 'NAV', emg: 'EMG', eng: 'ENG', cargo: 'CARGO', comm: 'COMM' }
 
 export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, onClassLessonUpdate }) {
-  const navigate = useNavigate()
-
   const [courses, setCourses]             = useState([])
   const [courseLessons, setCourseLessons] = useState({}) // courseId → lesson[]
   const [loadingCourses, setLoadingCourses] = useState(true)
@@ -18,12 +14,11 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
   const [newTitle, setNewTitle]           = useState('')
   const [savingCourse, setSavingCourse]   = useState(false)
   const [confirmCourse, setConfirmCourse] = useState(null)
-  const [managingCourse, setManagingCourse] = useState(null) // course object → opens modal
-  const [editLesson, setEditLesson]       = useState(null)
+  const [managingCourse, setManagingCourse] = useState(null)
   const [confirmClassLesson, setConfirmClassLesson] = useState(null)
   const [removingLesson, setRemovingLesson] = useState(null)
   const [expandedCourses, setExpandedCourses] = useState(new Set())
-  const [confirmCourseLesson, setConfirmCourseLesson] = useState(null) // { courseId, lessonId }
+  const [confirmCourseLesson, setConfirmCourseLesson] = useState(null)
   const [allClasses, setAllClasses] = useState([])
   const newTitleRef = useRef(null)
 
@@ -103,23 +98,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
     setCourses(prev => prev.map(c => c.id === course.id ? { ...c, classroom_id: next } : c))
     try { await updateCourse(course.id, { classroom_id: next }) }
     catch { setCourses(prev => prev.map(c => c.id === course.id ? { ...c, classroom_id: prevClassroomId } : c)) }
-  }
-
-  const handleEditSave = async (data) => {
-    await updateLesson(editLesson.id, data)
-    // update class lesson list in parent
-    onClassLessonUpdate?.(editLesson.id, data)
-    // update any course lesson lists that contain this lesson
-    setCourseLessons(prev => {
-      const next = { ...prev }
-      for (const [cid, lessons] of Object.entries(next)) {
-        if (lessons?.some(l => l.id === editLesson.id)) {
-          next[cid] = lessons.map(l => l.id === editLesson.id ? { ...l, ...data, title: data.title ?? l.title } : l)
-        }
-      }
-      return next
-    })
-    setEditLesson(null)
   }
 
   const lessonCat = l => CAT_LABELS[l.cat ?? l.category] ?? l.cat ?? l.category ?? '—'
@@ -266,18 +244,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
                               </div>
                             ) : (
                               <>
-                                <button className="lct-icon-btn lct-icon-btn--gold" onClick={() => navigate(`/teacher/lessons/${l.id}/panels`, { state: { classroomId: classId } })} title="View panels">
-                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                                  </svg>
-                                </button>
-                                <button className="lct-icon-btn lct-icon-btn--gold" onClick={() => setEditLesson(l)} title="Edit lesson">
-                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                  </svg>
-                                </button>
                                 <button className="lct-icon-btn" onClick={() => setConfirmCourseLesson({ courseId: course.id, lessonId: l.id })} title="Remove from course">
                                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="3 6 5 6 21 6"/>
@@ -351,18 +317,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
                   </div>
                 ) : (
                   <>
-                    <button className="lct-icon-btn lct-icon-btn--gold" onClick={() => navigate(`/teacher/lessons/${l.id}/panels`, { state: { classroomId: classId } })} title="Edit panels">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                      </svg>
-                    </button>
-                    <button className="lct-icon-btn lct-icon-btn--gold" onClick={() => setEditLesson(l)} title="Edit lesson">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                    </button>
                     <button className="lct-icon-btn" onClick={() => setConfirmClassLesson(l.id)} title="Remove from class">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6"/>
@@ -395,20 +349,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
       />
     )}
 
-    {editLesson && (
-      <LessonEditModal
-        lesson={{
-          id:               editLesson.id,
-          title:            editLesson.title,
-          category:         editLesson.cat ?? editLesson.category ?? '',
-          duration_minutes: editLesson.duration_minutes ?? parseInt(editLesson.duration) ?? '',
-          visibility:       editLesson.visibility ?? 'class',
-          difficulty:       editLesson.difficulty ?? 'easy',
-        }}
-        onSave={handleEditSave}
-        onClose={() => setEditLesson(null)}
-      />
-    )}
-    </>
+</>
   )
 }

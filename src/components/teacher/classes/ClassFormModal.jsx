@@ -119,9 +119,13 @@ export default function ClassFormModal({ mode = 'create', form, errors = {}, onC
               <Label required>Start Date</Label>
               <DatePicker
                 value={form.start_date}
-                onChange={val => onChange('start_date', val)}
+                onChange={val => {
+                  onChange('start_date', val)
+                  if (form.end_date && val > form.end_date) onChange('end_date', '')
+                }}
                 placeholder="Start date"
                 hasError={!!errors.start_date}
+                max={form.end_date || undefined}
               />
               {err('start_date')}
             </div>
@@ -129,9 +133,13 @@ export default function ClassFormModal({ mode = 'create', form, errors = {}, onC
               <Label required>End Date</Label>
               <DatePicker
                 value={form.end_date}
-                onChange={val => onChange('end_date', val)}
+                onChange={val => {
+                  onChange('end_date', val)
+                  if (form.start_date && val < form.start_date) onChange('start_date', '')
+                }}
                 placeholder="End date"
                 hasError={!!errors.end_date}
+                min={form.start_date || undefined}
               />
               {err('end_date')}
             </div>

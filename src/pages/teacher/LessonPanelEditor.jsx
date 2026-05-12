@@ -1,16 +1,18 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { usePanelEditor }  from '../../components/teacher/lesson-panel-editor/usePanelEditor'
-import { usePlacement }    from '../../components/teacher/lesson-panel-editor/usePlacement'
-import PanelPreview        from '../../components/teacher/lesson-panel-editor/PanelPreview'
-import AnchorContextMenu   from '../../components/teacher/lesson-panel-editor/AnchorContextMenu'
-import TopBar              from '../../components/teacher/lesson-panel-editor/TopBar'
-import FloatActions        from '../../components/teacher/lesson-panel-editor/FloatActions'
-import AddPanelMenu        from '../../components/teacher/lesson-panel-editor/AddPanelMenu'
-import PanelStrip          from '../../components/teacher/lesson-panel-editor/PanelStrip'
-import DeleteDialog        from '../../components/teacher/lesson-panel-editor/DeleteDialog'
-import EditDrawer          from '../../components/teacher/lesson-panel-editor/EditDrawer'
-import PlacementHint       from '../../components/teacher/lesson-panel-editor/PlacementHint'
+import { useEditor }          from '@tiptap/react'
+import StarterKit              from '@tiptap/starter-kit'
+import { usePanelEditor }     from '../../components/teacher/lesson-panel-editor/usePanelEditor'
+import { usePlacement }       from '../../components/teacher/lesson-panel-editor/usePlacement'
+import PanelPreview           from '../../components/teacher/lesson-panel-editor/PanelPreview'
+import AnchorContextMenu      from '../../components/teacher/lesson-panel-editor/AnchorContextMenu'
+import TopBar                 from '../../components/teacher/lesson-panel-editor/TopBar'
+import FloatActions           from '../../components/teacher/lesson-panel-editor/FloatActions'
+import AddPanelMenu           from '../../components/teacher/lesson-panel-editor/AddPanelMenu'
+import PanelStrip             from '../../components/teacher/lesson-panel-editor/PanelStrip'
+import DeleteDialog           from '../../components/teacher/lesson-panel-editor/DeleteDialog'
+import EditDrawer             from '../../components/teacher/lesson-panel-editor/EditDrawer'
+import PlacementHint          from '../../components/teacher/lesson-panel-editor/PlacementHint'
 import '../css/teacher/LessonPanelEditor.css'
 
 export default function LessonPanelEditor() {
@@ -38,32 +40,54 @@ export default function LessonPanelEditor() {
     handleQuickDeleteAnchor,
   } = usePanelEditor(id, state?.lesson)
 
-  const editorRef                     = useRef(null)
-  const [liveBody,    setLiveBody]    = useState(null)
-  const [showHtml,    setShowHtml]    = useState(false)
-  const [activeTags,  setActiveTags]  = useState([])
   const [draggedAnchorPos, setDraggedAnchorPos] = useState(null)
+  const [showHtml,         setShowHtml]         = useState(false)
+  const [rawHtml,          setRawHtml]          = useState('')
+  const [drawerWidth,      setDrawerWidth]      = useState(380)
+
+  // Editor lives here so it persists across drawer open/close
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: '',
+    editable: false,
+    editorProps: {
+      attributes: { class: 'lpe-text-body lpe-text-body--editable' },
+    },
+  })
+
+  // Load content when the active panel changes; also exit HTML mode
+  useEffect(() => {
+    if (!editor || !panel) return
+    setShowHtml(false)
+    editor.commands.setContent(
+      panel.type === 'text' ? (panel.text_content?.body ?? '<p></p>') : '',
+      false
+    )
+  }, [panel?.id, editor])
+
+  // Enable editing only while the drawer is open on a text panel and not in HTML mode
+  useEffect(() => {
+    if (!editor || !panel) return
+    editor.setEditable(drawerOpen && panel.type === 'text' && !showHtml)
+  }, [drawerOpen, panel?.type, editor, showHtml])
 
   const handleToggleHtml = () => {
-    const el = editorRef.current
     if (!showHtml) {
-      if (el) el.contentEditable = 'false'
+      setRawHtml(editor?.getHTML() ?? '')
       setShowHtml(true)
     } else {
-      if (el) {
-        el.innerHTML       = liveBody ?? panel?.text_content?.body ?? ''
-        el.contentEditable = 'true'
-      }
+      editor?.commands.setContent(rawHtml, false)
       setShowHtml(false)
     }
   }
 
   const handleCloseDrawer = () => {
+    // Exit HTML mode and discard changes
+    if (showHtml) setShowHtml(false)
     setDrawerOpen(false)
-    setLiveBody(null)
-    setShowHtml(false)
-    setActiveTags([])
-    if (editorRef.current) editorRef.current.contentEditable = 'true'
+    if (editor && panel?.type === 'text') {
+      editor.commands.setContent(panel.text_content?.body ?? '<p></p>', false)
+    }
   }
 
   const {
@@ -108,12 +132,12 @@ export default function LessonPanelEditor() {
       ) : (
         <PanelPreview
           panel={panel}
+          editor={editor}
           editMode={drawerOpen}
           showHtml={showHtml}
-          liveBody={liveBody}
-          editorRef={editorRef}
-          onBodyChange={setLiveBody}
-          onTagsChange={setActiveTags}
+          rawHtml={rawHtml}
+          onRawHtmlChange={setRawHtml}
+          drawerWidth={drawerOpen ? drawerWidth : 0}
           placementMode={placementMode}
           onSceneClick={handleSceneClick}
           pendingPlacement={newAnchorPlacement}
@@ -163,11 +187,12 @@ export default function LessonPanelEditor() {
         <EditDrawer
           key={panel.id}
           panel={panel}
-          editorRef={editorRef}
-          liveBody={liveBody}
+          editor={editor}
           showHtml={showHtml}
+          rawHtml={rawHtml}
+          onRawHtmlChange={setRawHtml}
           onToggleHtml={handleToggleHtml}
-          activeTags={activeTags}
+          onDrawerWidthChange={setDrawerWidth}
           onSave={handleSavePanel}
           onClose={handleCloseDrawer}
           saving={saving}

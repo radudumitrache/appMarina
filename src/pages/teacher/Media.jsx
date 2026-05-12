@@ -134,6 +134,7 @@ export default function TeacherMedia() {
       {renameTarget && (
         <RenameModal
           file={renameTarget}
+          files={files}
           onClose={() => setRenameTarget(null)}
           onSave={handleRename}
         />

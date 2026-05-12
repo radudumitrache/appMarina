@@ -74,10 +74,11 @@
   opacity: 0.6;
 }
 
-.grade--pass { color: var(--success); }
-.grade--good { color: var(--accent); }
-.grade--warn { color: var(--gold); }
-.grade--fail { color: var(--error); }
+.grade--pass    { color: var(--success); }
+.grade--good    { color: var(--accent); }
+.grade--warn    { color: var(--gold); }
+.grade--fail    { color: var(--error); }
+.grade--pending { color: var(--text-3); }
 
 .test-result-body {
   flex: 1;
@@ -114,7 +115,8 @@
   text-transform: uppercase;
 }
 
-.test-result-badge.grade--pass { background: rgba(46, 199, 122, 0.10);  border: 1px solid rgba(46, 199, 122, 0.22); }
-.test-result-badge.grade--good { background: var(--accent-dim);          border: 1px solid var(--accent-rim); }
-.test-result-badge.grade--warn { background: var(--gold-dim);            border: 1px solid rgba(217, 160, 48, 0.25); }
-.test-result-badge.grade--fail { background: rgba(224, 82, 82, 0.10);   border: 1px solid rgba(224, 82, 82, 0.25); }
+.test-result-badge.grade--pass    { background: rgba(46, 199, 122, 0.10);  border: 1px solid rgba(46, 199, 122, 0.22); }
+.test-result-badge.grade--good    { background: var(--accent-dim);          border: 1px solid var(--accent-rim); }
+.test-result-badge.grade--warn    { background: var(--gold-dim);            border: 1px solid rgba(217, 160, 48, 0.25); }
+.test-result-badge.grade--fail    { background: rgba(224, 82, 82, 0.10);   border: 1px solid rgba(224, 82, 82, 0.25); }
+.test-result-badge.grade--pending { background: var(--surface-2);          border: 1px solid var(--border); }

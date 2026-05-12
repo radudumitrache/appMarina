@@ -6,18 +6,6 @@ import VRPanel from '../../components/student/lesson-reader/VRPanel'
 import TextPanel from '../../components/student/lesson-reader/TextPanel'
 import '../css/student/LessonReader.css'
 
-/**
- * Convert backend anchor world-space coordinates (pos_x, pos_y, pos_z)
- * to panorama spherical coordinates (lon, lat degrees) for VRViewer.
- *
- * The VRViewer sphere convention (from VRViewer.jsx):
- *   x = r · sin(phi) · cos(theta)
- *   y = r · cos(phi)              ← y is the up axis
- *   z = r · sin(phi) · sin(theta)
- * where phi = 90° − lat, theta = lon
- *
- * Inverting: lat = 90° − acos(ny), lon = atan2(nz, nx)
- */
 function vec3ToLonLat(px, py, pz) {
   const r  = Math.sqrt(px * px + py * py + pz * pz) || 1
   const ny = py / r
@@ -28,7 +16,7 @@ function vec3ToLonLat(px, py, pz) {
   return { lon, lat }
 }
 
-export default function LessonReader() {
+export default function TeacherLessonReader() {
   const { id }    = useParams()
   const navigate  = useNavigate()
   const { state } = useLocation()
@@ -36,11 +24,10 @@ export default function LessonReader() {
   const [lesson,   setLesson]   = useState(state?.lesson ?? null)
   const [panels,   setPanels]   = useState([])
   const [panelIdx, setPanelIdx] = useState(0)
-  const [anchor,     setAnchor]     = useState(null)
-  const [tourId,     setTourId]     = useState(null)
-  const [loading,    setLoading]    = useState(true)
-  const [error,      setError]      = useState(null)
-  const [navConfirm, setNavConfirm] = useState(null) // { idx, label }
+  const [anchor,   setAnchor]   = useState(null)
+  const [tourId,   setTourId]   = useState(null)
+  const [loading,  setLoading]  = useState(true)
+  const [error,    setError]    = useState(null)
 
   useEffect(() => {
     setLoading(true)
@@ -50,13 +37,7 @@ export default function LessonReader() {
         const sorted = [...panelsRes.data].sort((a, b) => a.order - b.order)
         setPanels(sorted)
       })
-      .catch(err => {
-        if (err?.response?.status === 403) {
-          setError('You are not enrolled in a class that includes this lesson.')
-        } else {
-          setError('Could not load lesson content.')
-        }
-      })
+      .catch(() => setError('Could not load lesson content.'))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -70,7 +51,6 @@ export default function LessonReader() {
   const activeTour = useMemo(() => {
     if (!panel?.vr_tour) return null
     if (tourId === panel.vr_tour.id || tourId == null) return panel.vr_tour
-    // Navigator anchor switched to a different tour — find it in any panel
     for (const p of panels) {
       if (p.vr_tour?.id === tourId) return p.vr_tour
     }
@@ -86,16 +66,13 @@ export default function LessonReader() {
     }
     for (const na of activeTour.navigator_anchors ?? []) {
       const { lon, lat } = vec3ToLonLat(na.pos_x, na.pos_y, na.pos_z)
+      const idx = panels.findIndex(p => p.id === na.target_panel)
       out.push({ id: `na-${na.id}`, lon, lat, label: na.title || 'Go →', className: 'vr-hotspot--anchor vr-hotspot--nav', onClick: () => {
-        const idx = panels.findIndex(p => p.id === na.target_panel)
-        if (idx !== -1) {
-          const targetPanel = panels[idx]
-          setNavConfirm({ idx, label: targetPanel?.title || na.title || 'next panel' })
-        }
+        if (idx !== -1) { setAnchor(null); setPanelIdx(idx) }
       } })
     }
     return out
-  }, [activeTour])
+  }, [activeTour, panels])
 
   const polygonAnchors = useMemo(() => {
     if (!activeTour) return []
@@ -115,45 +92,19 @@ export default function LessonReader() {
       <div className="lr-page">
         <div className="lr-state">
           <span>{error}</span>
-          <button className="lr-state-btn" onClick={() => navigate('/student/lessons')}>Back to Lessons</button>
+          <button className="lr-state-btn" onClick={() => navigate(-1)}>Go Back</button>
         </div>
       </div>
     )
   }
 
-  const confirmNav = () => {
-    if (!navConfirm) return
-    setAnchor(null)
-    setPanelIdx(navConfirm.idx)
-    setNavConfirm(null)
-  }
-
   return (
     <div className="lr-page">
-      {navConfirm && (
-        <div className="lr-nav-backdrop">
-          <div className="lr-nav-dialog">
-            <div className="lr-nav-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </div>
-            <h4 className="lr-nav-title">Navigate to next panel?</h4>
-            <p className="lr-nav-body">
-              You are about to leave the current scene and go to <strong>{navConfirm.label}</strong>. Make sure you have reviewed everything before continuing.
-            </p>
-            <div className="lr-nav-actions">
-              <button className="lr-nav-btn lr-nav-btn--cancel" onClick={() => setNavConfirm(null)}>Stay here</button>
-              <button className="lr-nav-btn lr-nav-btn--confirm" onClick={confirmNav}>Continue</button>
-            </div>
-          </div>
-        </div>
-      )}
       <LessonTopBar
         lessonTitle={lesson?.title ?? `Lesson ${id}`}
         panelIdx={panelIdx}
         panelCount={panels.length}
-        onBack={() => navigate('/student/lessons')}
+        onBack={() => navigate(-1)}
         onPrev={() => setPanelIdx(i => i - 1)}
         onNext={() => setPanelIdx(i => i + 1)}
       />
@@ -162,7 +113,6 @@ export default function LessonReader() {
         <div className="lr-state">
           <span>This lesson has no content yet.</span>
         </div>
-
       ) : panel?.type === 'vr_tour' ? (
         <VRPanel
           activeTour={activeTour}
