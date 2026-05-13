@@ -58,12 +58,14 @@ export default function VRPanelEditor() {
 
   const classroomId = state?.classroomId ?? null
 
-  const [vr,           setVR]           = useState(state?.vr ?? null)
-  const [panelTitle,   setPanelTitle]   = useState(state?.panelTitle ?? '')
-  const [loading,      setLoading]      = useState(!state?.vr)
-  const [editMode,     setEditMode]     = useState(false)
-  const [sceneModal,   setSceneModal]   = useState(false)
-  const [anchorDrawer, setAnchorDrawer] = useState(false)
+  const [vr,            setVR]            = useState(state?.vr ?? null)
+  const [panelTitle,    setPanelTitle]    = useState(state?.panelTitle ?? '')
+  const [loading,       setLoading]       = useState(!state?.vr)
+  const [sceneApplying, setSceneApplying] = useState(false)
+  const [sceneError,    setSceneError]    = useState(null)
+  const [editMode,      setEditMode]      = useState(false)
+  const [sceneModal,    setSceneModal]    = useState(false)
+  const [anchorDrawer,  setAnchorDrawer]  = useState(false)
   const [pendingCoords,    setPendingCoords]    = useState(null)
   const [pendingLocPoints, setPendingLocPoints] = useState([])
   const [placing,          setPlacing]          = useState(null)
@@ -73,7 +75,7 @@ export default function VRPanelEditor() {
   const [moving,         setMoving]         = useState(false)
 
   const loadPanel = useCallback(() => {
-    getTest(testId).then(res => {
+    return getTest(testId).then(res => {
       const panel = res.data.panels?.find(p => p.id === Number(panelId))
       if (panel) { setVR(panel.vr_exercise); setPanelTitle(panel.title) }
     }).finally(() => setLoading(false))
@@ -185,12 +187,15 @@ export default function VRPanelEditor() {
 
   async function handleSceneSelect(url) {
     setSceneModal(false)
-    setSaving(true)
+    setSceneApplying(true)
+    setSceneError(null)
     try {
       await updateTestPanel(testId, panelId, { scene_url: url })
-      loadPanel()
+      await loadPanel()
+    } catch {
+      setSceneError('Failed to apply the scene. Please try again.')
     } finally {
-      setSaving(false)
+      setSceneApplying(false)
     }
   }
 
@@ -282,9 +287,12 @@ export default function VRPanelEditor() {
     <div className="vrpe-page">
 
       <div className="vrpe-viewer">
-        {loading ? (
+        {loading || sceneApplying ? (
           <div className="vrpe-loading">
             <div className="vrpe-spinner" />
+            <span className="vrpe-loading-label">
+              {sceneApplying ? 'Applying scene…' : ''}
+            </span>
           </div>
         ) : sceneUrl ? (
           <VRViewer
@@ -302,8 +310,14 @@ export default function VRPanelEditor() {
                 <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
               </svg>
               <span className="vrpe-no-scene-title">No 360° scene selected</span>
-              <span className="vrpe-no-scene-hint">Choose an equirectangular image to start building this panel.</span>
-              <button className="vrpe-no-scene-btn" onClick={() => setSceneModal(true)}>Select Scene</button>
+              {sceneError ? (
+                <span className="vrpe-no-scene-error">{sceneError}</span>
+              ) : (
+                <span className="vrpe-no-scene-hint">Choose an equirectangular image to start building this panel.</span>
+              )}
+              <button className="vrpe-no-scene-btn" onClick={() => { setSceneError(null); setSceneModal(true) }}>
+                {sceneError ? 'Try Again' : 'Select Scene'}
+              </button>
             </div>
           </div>
         )}

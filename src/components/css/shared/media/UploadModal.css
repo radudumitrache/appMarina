@@ -1,3 +1,45 @@
+/* ── Wide modal override ─────────────────────────────────────────────── */
+.modal--wide {
+  width: min(520px, calc(100vw - 32px));
+}
+
+/* ── Select ──────────────────────────────────────────────────────────── */
+.form-select {
+  width: 100%;
+  box-sizing: border-box;
+  height: 36px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 32px 0 12px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color var(--duration-fast);
+}
+
+.form-select:focus {
+  border-color: rgba(0, 188, 212, 0.4);
+}
+
+.form-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-select option {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* ── Drop zone ───────────────────────────────────────────────────────── */
 .upload-drop-zone {
   display: flex;
   flex-direction: column;
@@ -5,33 +47,98 @@
   justify-content: center;
   gap: 10px;
   border: 1.5px dashed var(--border);
-  border-radius: var(--radius-md, 8px);
+  border-radius: var(--radius-md);
   padding: 32px 20px;
   cursor: pointer;
-  color: var(--text-muted);
-  transition: border-color var(--duration-fast), background var(--duration-fast);
+  color: var(--text-3);
+  transition: border-color var(--duration-fast), background var(--duration-fast), color var(--duration-fast);
   text-align: center;
 }
 
-.upload-drop-zone:hover,
-.upload-drop-zone--loaded { border-color: var(--accent); background: var(--accent-subtle); color: var(--accent); }
+.upload-drop-zone:hover {
+  border-color: rgba(0, 188, 212, 0.5);
+  background: rgba(0, 188, 212, 0.04);
+  color: var(--accent, #0bbda4);
+}
 
-.upload-drop-label { font-size: 13px; }
+.upload-drop-zone--loaded {
+  border-color: rgba(0, 188, 212, 0.5);
+  background: rgba(0, 188, 212, 0.05);
+  color: var(--accent, #0bbda4);
+}
 
-.upload-error {
+.upload-drop-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ── Name conflict confirmation ──────────────────────────────────────── */
+.upload-conflict {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(212, 160, 23, 0.35);
+  border-radius: var(--radius-md);
+  background: rgba(212, 160, 23, 0.06);
+}
+
+.upload-conflict-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.upload-conflict-icon {
+  color: var(--gold, #d4a017);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.upload-conflict-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.upload-conflict-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+
+.upload-conflict-sub {
+  font-family: var(--font-ui);
   font-size: 12px;
-  color: var(--error);
+  color: var(--text-3);
+  line-height: 1.45;
+}
+
+.upload-conflict-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ── Status / error ──────────────────────────────────────────────────── */
+.upload-error {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--error, #e05252);
   margin: 0;
 }
 
 .upload-status {
+  font-family: var(--font-ui);
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-3);
   margin: 0;
-  animation: pulse 1.2s ease infinite;
+  animation: upload-pulse 1.2s ease infinite;
 }
 
-@keyframes pulse {
+@keyframes upload-pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
+  50%       { opacity: 0.45; }
 }

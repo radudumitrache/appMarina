@@ -88,6 +88,7 @@
   cursor: pointer;
   text-align: left;
   width: 100%;
+  user-select: none;
   transition: background var(--duration-fast), border-color var(--duration-fast);
 }
 
@@ -107,6 +108,81 @@
   justify-content: space-between;
   gap: 8px;
 }
+
+.tb-test-item-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+  margin-left: auto;
+  padding: 0;
+}
+
+.tb-test-item:hover .tb-test-item-delete { opacity: 1; }
+.tb-test-item-delete:hover { color: var(--error, #e05252); background: rgba(224, 82, 82, 0.1); }
+
+.tb-test-item-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.tb-test-item-confirm-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--error, #e05252);
+}
+
+.tb-test-item-confirm-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.tb-test-item-confirm-yes,
+.tb-test-item-confirm-no {
+  flex: 1;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid;
+  transition: background var(--duration-fast);
+}
+
+.tb-test-item-confirm-yes {
+  background: rgba(224, 82, 82, 0.12);
+  border-color: rgba(224, 82, 82, 0.35);
+  color: var(--error, #e05252);
+}
+
+.tb-test-item-confirm-yes:hover:not(:disabled) {
+  background: rgba(224, 82, 82, 0.22);
+}
+
+.tb-test-item-confirm-no {
+  background: var(--surface-3);
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+.tb-test-item-confirm-no:hover:not(:disabled) {
+  background: rgba(255,255,255,0.07);
+}
+
+.tb-test-item-confirm-yes:disabled,
+.tb-test-item-confirm-no:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .tb-test-item-title {
   font-family: var(--font-ui);

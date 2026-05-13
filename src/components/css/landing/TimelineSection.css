@@ -119,8 +119,42 @@
   transform: scale(1.35);
 }
 
+.drag-hint {
+  position: absolute;
+  z-index: 4;
+  top: 48px;
+  right: 64px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.drag-hint-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+
+.drag-hint-arrow {
+  color: var(--text-3);
+  font-size: 16px;
+  animation: nudgeRight 2s ease-in-out infinite;
+}
+
+@keyframes nudgeRight {
+  0%, 100% { transform: translateX(0); }
+  50%       { transform: translateX(5px); }
+}
+
 @media (max-width: 900px) {
   .panel-info {
     padding: 0 32px 64px;
+  }
+
+  .drag-hint {
+    display: none;
   }
 }

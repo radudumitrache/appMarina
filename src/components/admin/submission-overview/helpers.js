@@ -73,6 +73,9 @@ export function resolveQuestion(item) {
     if (t === 'argument')
       return { type: 'argument', typeLabel: 'Argument', text: source.text, isCorrect,
         studentText: answer?.text_answer || null }
+    if (t === 'gap_fill')
+      return { type: 'gap_fill', typeLabel: 'Gap Fill', text: source.text, isCorrect,
+        studentText: answer?.text_answer || null, correctWord: source.correct_word ?? '' }
     if (t === 'arrange') {
       const itms        = source.arrange_items ?? []
       const correctItems = [...itms].sort((a, b) => a.correct_order - b.correct_order)

@@ -9,6 +9,7 @@
 }
 
 .mim-modal {
+  position: relative;
   width: 680px;
   max-width: calc(100vw - 48px);
   max-height: 80vh;
@@ -237,4 +238,121 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   display: block;
+}
+
+/* ── Name conflict confirmation ──────────────────────────────────────── */
+
+.mim-name-conflict {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(212, 160, 23, 0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(212, 160, 23, 0.06);
+}
+
+.mim-name-conflict-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.mim-name-conflict-icon {
+  color: var(--gold, #d4a017);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.mim-name-conflict-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mim-name-conflict-title {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+
+.mim-name-conflict-sub {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.45;
+}
+
+.mim-name-conflict-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.mim-name-conflict-cancel,
+.mim-name-conflict-confirm {
+  height: 28px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid;
+  transition: background var(--duration-fast);
+}
+
+.mim-name-conflict-cancel {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+.mim-name-conflict-cancel:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mim-name-conflict-confirm {
+  background: rgba(212, 160, 23, 0.12);
+  border-color: rgba(212, 160, 23, 0.4);
+  color: var(--gold, #d4a017);
+}
+
+.mim-name-conflict-confirm:hover {
+  background: rgba(212, 160, 23, 0.22);
+  border-color: rgba(212, 160, 23, 0.65);
+}
+
+/* ── Upload overlay ──────────────────────────────────────────────────── */
+
+.mim-upload-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(10, 12, 18, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-radius: var(--radius-md);
+}
+
+.mim-upload-overlay-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(212, 160, 23, 0.2);
+  border-top-color: var(--gold, #d4a017);
+  border-radius: 50%;
+  animation: mim-spin 0.75s linear infinite;
+}
+
+.mim-upload-overlay-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
 }

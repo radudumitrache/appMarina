@@ -10,7 +10,7 @@ export default function FeatureCard({ title, body, icon }) {
     const rect = card.getBoundingClientRect()
     const dx   = (e.clientX - (rect.left + rect.width  / 2)) / (rect.width  / 2)
     const dy   = (e.clientY - (rect.top  + rect.height / 2)) / (rect.height / 2)
-    card.style.transform  = `perspective(900px) rotateX(${-dy * 15}deg) rotateY(${dx * 15}deg)`
+    card.style.transform  = `perspective(900px) rotateX(${-dy * 8}deg) rotateY(${dx * 8}deg)`
     card.style.transition = 'transform 0.05s linear'
 
     const spec = card.querySelector('.card-specular')

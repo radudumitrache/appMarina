@@ -8,12 +8,22 @@ function formatBytes(bytes) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
-export default function UploadModal({ uploadableFolders, onClose, onUploaded }) {
-  const fileRef              = useRef(null)
-  const [file, setFile]      = useState(null)
+function computeNewName(existingNames, originalName) {
+  const dot  = originalName.lastIndexOf('.')
+  const base = dot >= 0 ? originalName.slice(0, dot) : originalName
+  const ext  = dot >= 0 ? originalName.slice(dot)   : ''
+  let i = 2
+  while (existingNames.has(`${base}(${i})${ext}`)) i++
+  return `${base}(${i})${ext}`
+}
+
+export default function UploadModal({ uploadableFolders, existingFiles = [], onClose, onUploaded }) {
+  const fileRef                = useRef(null)
+  const [file, setFile]        = useState(null)
   const [folderId, setFolderId] = useState(uploadableFolders[0]?.id ?? '')
   const [progress, setProgress] = useState(null)
-  const [error, setError]    = useState('')
+  const [error, setError]      = useState('')
+  const [conflict, setConflict] = useState(null) // { proposedName }
 
   const selectedFolder = uploadableFolders.find(f => f.id === folderId)
 
@@ -24,6 +34,7 @@ export default function UploadModal({ uploadableFolders, onClose, onUploaded }) 
     if (!isImage && !isVideo) { setError('Only image and video files are supported.'); return }
     setFile(f)
     setError('')
+    setConflict(null)
   }
 
   const handleDrop = (e) => {
@@ -31,13 +42,13 @@ export default function UploadModal({ uploadableFolders, onClose, onUploaded }) 
     handleFile(e.dataTransfer.files[0])
   }
 
-  const handleUpload = async () => {
-    if (!file || !selectedFolder) return
+  const doUpload = async (filename) => {
+    setConflict(null)
     setProgress('requesting')
     setError('')
     try {
       const { data: urlData } = await getUploadUrl({
-        filename:     file.name,
+        filename,
         content_type: file.type,
         folder:       selectedFolder.folder,
         classroom_id: selectedFolder.classroomId ?? null,
@@ -50,7 +61,7 @@ export default function UploadModal({ uploadableFolders, onClose, onUploaded }) 
       setProgress('confirming')
       const { data: mediaFile } = await confirmUpload({
         gcs_path:     urlData.gcs_path,
-        filename:     file.name,
+        filename,
         file_type:    file.type.startsWith('image/') ? 'image' : 'video',
         mime_type:    file.type,
         size_bytes:   file.size,
@@ -65,10 +76,29 @@ export default function UploadModal({ uploadableFolders, onClose, onUploaded }) 
     }
   }
 
+  const handleUploadClick = () => {
+    if (!file || !selectedFolder) return
+
+    const folderFiles = existingFiles.filter(f =>
+      selectedFolder.classroomId
+        ? f.classroom === selectedFolder.classroomId
+        : f.folder === selectedFolder.folder
+    )
+    const existingNames = new Set(folderFiles.map(f => f.name))
+
+    if (existingNames.has(file.name)) {
+      const proposedName = computeNewName(existingNames, file.name)
+      setConflict({ proposedName })
+      return
+    }
+
+    doUpload(file.name)
+  }
+
   const busy = progress !== null
 
   return (
-    <div className="modal-backdrop" onClick={busy ? undefined : onClose}>
+    <div className="modal-backdrop" onClick={busy || conflict ? undefined : onClose}>
       <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3 className="modal-title">Upload File</h3>
@@ -87,7 +117,7 @@ export default function UploadModal({ uploadableFolders, onClose, onUploaded }) 
             <select
               className="form-select"
               value={folderId}
-              onChange={e => setFolderId(e.target.value)}
+              onChange={e => { setFolderId(e.target.value); setConflict(null) }}
               disabled={busy}
             >
               {uploadableFolders.map(f => (
@@ -124,6 +154,31 @@ export default function UploadModal({ uploadableFolders, onClose, onUploaded }) 
             </div>
           </div>
 
+          {conflict && (
+            <div className="upload-conflict">
+              <div className="upload-conflict-body">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="upload-conflict-icon">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <div className="upload-conflict-text">
+                  <span className="upload-conflict-title">
+                    A file named <strong>{file.name}</strong> already exists in this folder.
+                  </span>
+                  <span className="upload-conflict-sub">
+                    It will be uploaded as <strong>{conflict.proposedName}</strong>.
+                  </span>
+                </div>
+              </div>
+              <div className="upload-conflict-actions">
+                <button className="btn-ghost" onClick={() => setConflict(null)}>Cancel</button>
+                <button className="btn-primary" onClick={() => doUpload(conflict.proposedName)}>
+                  Upload as {conflict.proposedName}
+                </button>
+              </div>
+            </div>
+          )}
+
           {error && <p className="upload-error">{error}</p>}
 
           {progress && (
@@ -135,16 +190,18 @@ export default function UploadModal({ uploadableFolders, onClose, onUploaded }) 
           )}
         </div>
 
-        <div className="modal-footer">
-          <button className="btn-ghost" onClick={onClose} disabled={busy}>Cancel</button>
-          <button
-            className="btn-primary"
-            onClick={handleUpload}
-            disabled={!file || busy}
-          >
-            {busy ? 'Uploading…' : 'Upload'}
-          </button>
-        </div>
+        {!conflict && (
+          <div className="modal-footer">
+            <button className="btn-ghost" onClick={onClose} disabled={busy}>Cancel</button>
+            <button
+              className="btn-primary"
+              onClick={handleUploadClick}
+              disabled={!file || busy}
+            >
+              {busy ? 'Uploading…' : 'Upload'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

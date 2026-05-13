@@ -116,6 +116,7 @@ export default function TeacherSubmissionOverview() {
 
         <GradeBar
           gradeInput={gradeInput}
+          currentGrade={submission.grade}
           onGradeChange={e => setGradeInput(e.target.value)}
           onGradeKeyDown={e => e.key === 'Enter' && handleGradeSave()}
           onGradeSave={handleGradeSave}

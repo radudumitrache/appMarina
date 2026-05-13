@@ -45,6 +45,15 @@
   line-height: 1.5;
 }
 
+.vrpe-no-scene-error {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--error, #e05252);
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
 .vrpe-no-scene-btn {
   height: 36px;
   padding: 0 20px;

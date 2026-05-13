@@ -148,7 +148,8 @@ export function AnswerBody({ resolved, unanswered }) {
   if (type === 'mcq')    return <MCQOptions options={resolved.options} studentOptId={resolved.studentOptId} correctOptId={resolved.correctOptId} />
   if (type === 'tf')     return <TFOptions studentTf={resolved.studentTf} correctTf={resolved.correctTf} />
   if (type === 'arrange') return <ArrangeAnswer correctItems={resolved.correctItems} studentItems={resolved.studentItems} />
-  if (type === 'word')   return <WordAnswer studentText={resolved.studentText} correctWord={resolved.correctWord} />
+  if (type === 'word' || type === 'gap_fill')
+    return <WordAnswer studentText={resolved.studentText} correctWord={resolved.correctWord} />
   if (type === 'localization') return (
     <div className="so-text-answer">
       {resolved.placed

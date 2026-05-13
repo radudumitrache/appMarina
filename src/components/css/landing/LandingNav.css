@@ -9,8 +9,16 @@
   align-items: center;
   padding: 0 48px;
   gap: 40px;
-  background: rgba(6, 11, 20, 0.72);
-  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: background 300ms var(--ease), border-color 300ms var(--ease), backdrop-filter 300ms var(--ease);
+}
+
+.landing-nav.scrolled {
+  background: rgba(6, 11, 20, 0.88);
+  border-bottom-color: var(--border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }

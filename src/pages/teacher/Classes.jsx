@@ -25,6 +25,7 @@ export default function Classes() {
   const [form, setForm]               = useState(EMPTY_FORM)
   const [formErrors, setFormErrors]   = useState({})
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [saving, setSaving]             = useState(false)
 
   useEffect(() => {
     getClasses()
@@ -45,7 +46,7 @@ export default function Classes() {
     )
 
   const openCreate = () => { setForm(EMPTY_FORM); setFormErrors({}); setShowModal(true) }
-  const closeModal = () => { setShowModal(false); setFormErrors({}) }
+  const closeModal = () => { if (saving) return; setShowModal(false); setFormErrors({}) }
 
   const executeDelete = async () => {
     try {
@@ -68,9 +69,16 @@ export default function Classes() {
     if (!form.semester.trim()) clientErrors.semester   = 'Semester is required.'
     if (!form.start_date)      clientErrors.start_date = 'Start date is required.'
     if (!form.end_date)        clientErrors.end_date   = 'End date is required.'
+
+    const nameTaken = classes.some(c => c.name.trim().toLowerCase() === form.name.trim().toLowerCase())
+    const codeTaken = classes.some(c => c.code.trim().toLowerCase() === form.code.trim().toLowerCase())
+    if (nameTaken) clientErrors.name = 'A class with this name already exists.'
+    if (codeTaken) clientErrors.code = 'A class with this code already exists.'
+
     if (Object.keys(clientErrors).length) { setFormErrors(clientErrors); return }
 
     setFormErrors({})
+    setSaving(true)
     try {
       const { data } = await createClass(form)
       setClasses(prev => [{ ...data, students: data.student_count, lessonsTotal: data.lesson_count, lessonsDone: 0 }, ...prev])
@@ -82,6 +90,8 @@ export default function Classes() {
       } else {
         setFormErrors({ non_field_errors: 'Something went wrong. Please try again.' })
       }
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -130,6 +140,7 @@ export default function Classes() {
         onChange={handleFormChange}
         onClose={closeModal}
         onSave={handleSave}
+        saving={saving}
       />
     )}
     {deleteTarget && (

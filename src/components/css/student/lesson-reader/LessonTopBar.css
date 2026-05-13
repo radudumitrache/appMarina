@@ -85,3 +85,39 @@
   opacity: 0.3;
   cursor: default;
 }
+
+.lr-complete-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.lr-complete-btn:hover:not(:disabled) {
+  color: var(--accent, #0bbda4);
+  border-color: rgba(11, 189, 164, 0.4);
+  background: rgba(11, 189, 164, 0.06);
+}
+.lr-complete-btn--done {
+  color: var(--accent, #0bbda4);
+  border-color: rgba(11, 189, 164, 0.35);
+  background: rgba(11, 189, 164, 0.07);
+}
+.lr-complete-btn--done:hover:not(:disabled) {
+  color: var(--error, #e05252);
+  border-color: rgba(224, 82, 82, 0.35);
+  background: rgba(224, 82, 82, 0.06);
+}
+.lr-complete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

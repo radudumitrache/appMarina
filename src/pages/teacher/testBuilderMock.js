@@ -63,6 +63,7 @@ export const Q_TYPES = [
   { id: 'short',    label: 'Short Answer'    },
   { id: 'arrange',  label: 'Arrange Items'   },
   { id: 'argument', label: 'Argument'        },
+  { id: 'gap_fill', label: 'Gap Fill'        },
 ]
 
 export const PANEL_TYPES = [

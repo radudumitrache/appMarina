@@ -496,6 +496,18 @@ function AnswerInput({ exercise, value, onChange }) {
     )
   }
 
+  if (exercise.type === 'gap_fill') {
+    return (
+      <input
+        className="tt-word-input"
+        placeholder="Fill in the blank…"
+        value={value ?? ''}
+        onChange={e => onChange(e.target.value)}
+        autoComplete="off"
+      />
+    )
+  }
+
   if (exercise.type === 'arrange') {
     return <ArrangeInput exercise={exercise} value={value} onChange={onChange} />
   }

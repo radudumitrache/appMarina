@@ -197,6 +197,7 @@ export default function AdminMedia() {
       {showUpload && (
         <UploadModal
           uploadableFolders={uploadableFolders}
+          existingFiles={files}
           onClose={() => setShowUpload(false)}
           onUploaded={(file) => { setFiles(prev => [file, ...prev]); setShowUpload(false) }}
         />

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useEditor }          from '@tiptap/react'
 import StarterKit              from '@tiptap/starter-kit'
+import Image                   from '@tiptap/extension-image'
 import { usePanelEditor }     from '../../components/teacher/lesson-panel-editor/usePanelEditor'
 import { usePlacement }       from '../../components/teacher/lesson-panel-editor/usePlacement'
 import PanelPreview           from '../../components/teacher/lesson-panel-editor/PanelPreview'
@@ -47,7 +48,7 @@ export default function LessonPanelEditor() {
 
   // Editor lives here so it persists across drawer open/close
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, Image.configure({ inline: false, allowBase64: false })],
     content: '',
     editable: false,
     editorProps: {

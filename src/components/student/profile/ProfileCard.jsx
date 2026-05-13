@@ -1,12 +1,19 @@
 import '../../css/student/profile/ProfileCard.css'
 
 export default function ProfileCard({ profile, onLogout }) {
-  const initials = `${profile.firstName[0]}${profile.lastName[0]}`
+  const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase()
 
   return (
     <aside className="profile-aside">
       <div className="profile-card" style={{ animationDelay: '0s' }}>
-        <div className="profile-avatar">{initials}</div>
+        <div className="profile-avatar">
+          {initials || (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          )}
+        </div>
         <div className="profile-id-block">
           <span className="profile-full-name">{profile.firstName} {profile.lastName}</span>
           <span className="profile-student-id">{profile.studentId}</span>

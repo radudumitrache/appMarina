@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import '../../css/teacher/class-detail/StudentList.css'
 
 const STATUS_MAP = {
@@ -8,6 +8,7 @@ const STATUS_MAP = {
 
 export default function TestList({ tests }) {
   const navigate = useNavigate()
+  const { id: classId } = useParams()
 
   return (
     <div className="cd-list">
@@ -16,6 +17,7 @@ export default function TestList({ tests }) {
         <span className="cd-col cd-col--test-status">Status</span>
         <span className="cd-col cd-col--test-time">Time Limit</span>
         <span className="cd-col cd-col--test-q">Questions</span>
+        <span className="cd-col cd-col--action" />
       </div>
 
       {tests.length === 0 ? (
@@ -27,7 +29,7 @@ export default function TestList({ tests }) {
             <div
               key={t.id}
               className="cd-row cd-row--clickable"
-              style={{ animationDelay: `${Math.min(i, 6) * 0.04}s`, cursor: 'pointer' }}
+              style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
               onClick={() => navigate(`/teacher/assignments?test=${t.id}`)}
             >
               <div className="cd-col cd-col--test-title">
@@ -41,6 +43,25 @@ export default function TestList({ tests }) {
               </div>
               <div className="cd-col cd-col--test-q">
                 <span className="cd-mono cd-muted">{t.question_count ?? 0}</span>
+              </div>
+              <div className="cd-col cd-col--action">
+                <button
+                  className="cd-row-action cd-row-action--view"
+                  title="View submissions"
+                  onClick={e => {
+                    e.stopPropagation()
+                    navigate(`/teacher/tests/${t.id}/submissions`, {
+                      state: { backPath: `/teacher/classes/${classId}`, testTitle: t.title },
+                    })
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </button>
               </div>
             </div>
           )

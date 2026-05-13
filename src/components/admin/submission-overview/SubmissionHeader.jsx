@@ -34,10 +34,10 @@ export default function SubmissionHeader({ submission, pendingCount }) {
   )
 }
 
-export function GradeBar({ gradeInput, onGradeChange, onGradeKeyDown, onGradeSave, gradeSaving }) {
+export function GradeBar({ gradeInput, currentGrade, onGradeChange, onGradeKeyDown, onGradeSave, gradeSaving }) {
   return (
     <div className="so-grade-bar">
-      <span className="so-grade-bar-label">Grade override</span>
+      <span className="so-grade-bar-label">{currentGrade == null ? 'Set grade' : 'Override grade'}</span>
       <div className="so-grade-bar-controls">
         <input
           className="so-grade-input"

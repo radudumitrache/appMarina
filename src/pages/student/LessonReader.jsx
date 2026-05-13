@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { getLesson, getPanels } from '../../api/lessons'
+import { getLesson, getPanels, completeLesson, uncompleteLesson } from '../../api/lessons'
 import LessonTopBar from '../../components/student/lesson-reader/LessonTopBar'
 import VRPanel from '../../components/student/lesson-reader/VRPanel'
 import TextPanel from '../../components/student/lesson-reader/TextPanel'
@@ -40,13 +40,16 @@ export default function LessonReader() {
   const [tourId,     setTourId]     = useState(null)
   const [loading,    setLoading]    = useState(true)
   const [error,      setError]      = useState(null)
-  const [navConfirm, setNavConfirm] = useState(null) // { idx, label }
+  const [navConfirm,  setNavConfirm]  = useState(null) // { idx, label }
+  const [completed,   setCompleted]   = useState(false)
+  const [completing,  setCompleting]  = useState(false)
 
   useEffect(() => {
     setLoading(true)
     Promise.all([getLesson(id), getPanels(id)])
       .then(([lessonRes, panelsRes]) => {
         setLesson(lessonRes.data)
+        setCompleted(lessonRes.data.completed ?? false)
         const sorted = [...panelsRes.data].sort((a, b) => a.order - b.order)
         setPanels(sorted)
       })
@@ -121,6 +124,20 @@ export default function LessonReader() {
     )
   }
 
+  const handleToggleComplete = async () => {
+    const wasComplete = completed
+    setCompleted(!wasComplete)
+    setCompleting(true)
+    try {
+      if (wasComplete) await uncompleteLesson(id)
+      else await completeLesson(id)
+    } catch {
+      setCompleted(wasComplete)
+    } finally {
+      setCompleting(false)
+    }
+  }
+
   const confirmNav = () => {
     if (!navConfirm) return
     setAnchor(null)
@@ -153,9 +170,12 @@ export default function LessonReader() {
         lessonTitle={lesson?.title ?? `Lesson ${id}`}
         panelIdx={panelIdx}
         panelCount={panels.length}
+        completed={completed}
+        completing={completing}
         onBack={() => navigate('/student/lessons')}
         onPrev={() => setPanelIdx(i => i - 1)}
         onNext={() => setPanelIdx(i => i + 1)}
+        onToggleComplete={handleToggleComplete}
       />
 
       {panels.length === 0 ? (

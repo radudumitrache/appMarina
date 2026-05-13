@@ -1,6 +1,6 @@
 import '../../css/student/lesson-reader/LessonTopBar.css'
 
-export default function LessonTopBar({ lessonTitle, panelIdx, panelCount, onBack, onPrev, onNext }) {
+export default function LessonTopBar({ lessonTitle, panelIdx, panelCount, completed, completing, onBack, onPrev, onNext, onToggleComplete }) {
   return (
     <header className="lr-topbar">
       <button className="lr-back-btn" onClick={onBack}>
@@ -43,6 +43,19 @@ export default function LessonTopBar({ lessonTitle, panelIdx, panelCount, onBack
             <polyline points="9 18 15 12 9 6"/>
           </svg>
         </button>
+        {onToggleComplete && (
+          <button
+            className={`lr-complete-btn${completed ? ' lr-complete-btn--done' : ''}`}
+            onClick={onToggleComplete}
+            disabled={completing}
+            title={completed ? 'Mark as incomplete' : 'Mark as complete'}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            {completing ? '…' : completed ? 'Completed' : 'Mark Complete'}
+          </button>
+        )}
       </div>
     </header>
   )

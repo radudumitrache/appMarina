@@ -47,8 +47,6 @@ export default function TestTaker() {
     const answerList = []
     for (const panel of (test?.panels ?? []).filter(p => p.type === 'exercise')) {
       for (const ex of panel.exercise_content?.exercises ?? []) {
-        if (ex.type === 'argument') continue  // argument questions are exempt
-
         const val = answers[ex.id]
         const ans = { exercise: ex.id }
 
@@ -58,7 +56,7 @@ export default function TestTaker() {
         } else if (ex.type === 'tf') {
           if (val === undefined || val === null) continue
           ans.selected_tf = val
-        } else if (ex.type === 'short') {
+        } else if (ex.type === 'short' || ex.type === 'argument' || ex.type === 'gap_fill') {
           ans.text_answer = val ?? ''
         } else if (ex.type === 'arrange') {
           const arrVal = Array.isArray(val) ? val : []
@@ -101,9 +99,15 @@ export default function TestTaker() {
       }
     }
 
+    const hasManualQuestions = (test?.panels ?? []).some(p =>
+      p.type === 'exercise' &&
+      (p.exercise_content?.exercises ?? []).some(ex => ex.type === 'short' || ex.type === 'argument')
+    )
+    // gap_fill is auto-graded by the backend (exact/case-insensitive match), so no manual flag needed
+
     try {
       const res = await submitTest(id, answerList)
-      setResult({ grade: res.data.grade })
+      setResult({ grade: hasManualQuestions ? null : res.data.grade })
     } catch {
       setResult({ grade: null })
     } finally {

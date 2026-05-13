@@ -5,7 +5,7 @@ import TestSidebar     from '../../components/teacher/test-builder/TestSidebar'
 import TestEditorMain  from '../../components/teacher/test-builder/TestEditorMain'
 import {
   getTests, createTest, updateTest, publishTest, getTest,
-  createTestPanel,
+  createTestPanel, deleteTest,
 } from '../../api/tests'
 import { getClasses } from '../../api/classes'
 import '../css/teacher/TestBuilder.css'
@@ -107,6 +107,15 @@ export default function TestBuilder() {
     }
   }
 
+  async function handleDeleteTest(id) {
+    await deleteTest(id)
+    setTests(prev => prev.filter(t => t.id !== id))
+    if (selectedId === id) {
+      setSelectedId(null)
+      setTestDetail(null)
+    }
+  }
+
   async function handleAddPanel() {
     if (!newPanelTitle.trim()) return
     setSaving(true)
@@ -138,6 +147,7 @@ export default function TestBuilder() {
             selectedId={selectedId}
             onSelect={handleSelectTest}
             onNew={handleNewTest}
+            onDelete={handleDeleteTest}
             loading={loading}
           />
 

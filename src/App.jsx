@@ -28,6 +28,7 @@ const TeacherCourseBuilder    = lazy(() => import('./pages/teacher/CourseBuilder
 const TeacherLessonPanelEditor= lazy(() => import('./pages/teacher/LessonPanelEditor'))
 const TeacherStudentProgress    = lazy(() => import('./pages/teacher/StudentProgress'))
 const TeacherSubmissionOverview = lazy(() => import('./pages/teacher/SubmissionOverview'))
+const TeacherTestSubmissions    = lazy(() => import('./pages/teacher/TestSubmissions'))
 const TeacherLessonReader = lazy(() => import('./pages/teacher/LessonReader'))
 const TeacherMedia        = lazy(() => import('./pages/teacher/Media'))
 const TeacherSupport      = lazy(() => import('./pages/teacher/Support'))
@@ -79,6 +80,7 @@ function PageShell() {
           <Route path="/teacher/lessons/:id"        element={<PrivateRoute allowedRoles={['teacher']}><TeacherLessonReader /></PrivateRoute>} />
           <Route path="/teacher/lessons/:id/panels" element={<PrivateRoute allowedRoles={['teacher']}><TeacherLessonPanelEditor /></PrivateRoute>} />
           <Route path="/teacher/students/:studentId/progress" element={<PrivateRoute allowedRoles={['teacher']}><TeacherStudentProgress /></PrivateRoute>} />
+          <Route path="/teacher/tests/:testId/submissions"    element={<PrivateRoute allowedRoles={['teacher']}><TeacherTestSubmissions /></PrivateRoute>} />
           <Route path="/teacher/submissions/:submissionId"   element={<PrivateRoute allowedRoles={['teacher']}><TeacherSubmissionOverview /></PrivateRoute>} />
           <Route path="/teacher/media"        element={<PrivateRoute allowedRoles={['teacher']}><TeacherMedia /></PrivateRoute>} />
           <Route path="/teacher/support"      element={<PrivateRoute allowedRoles={['teacher']}><TeacherSupport /></PrivateRoute>} />

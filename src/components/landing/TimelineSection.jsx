@@ -4,11 +4,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import '../css/landing/TimelineSection.css'
 
 const PANELS = [
-  { num: '01', title: 'Open Ocean Navigation', desc: 'Master celestial and electronic navigation across open sea conditions, including ECDIS, chart work, and meteorology.',         image: '/shipInTheSea.png',      video: null },
-  { num: '02', title: 'Vessel Identification',  desc: 'Close-quarters recognition of vessel types, running lights, day shapes, and sound signals under the COLREGs.',              image: '/shipFromTheFront.png',    video: '/shipInTheSeaToshipFromTheFront.mp4' },
-  { num: '03', title: 'Bridge Operations',      desc: 'Full bridge resource management — radar, ECDIS, VDR, and AIS systems operated under realistic traffic scenarios.',          image: '/shipInterior.png', video: '/shipFromTheFrontToshipInterior.mp4' },
+  { num: '01', title: 'Open Ocean Navigation', desc: 'Master celestial and electronic navigation across open sea conditions, including ECDIS, chart work, and meteorology.',         image: '/shipInTheSea.png',      video: '/vid-open-ocean.mp4' },
+  { num: '02', title: 'Vessel Identification',  desc: 'Close-quarters recognition of vessel types, running lights, day shapes, and sound signals under the COLREGs.',              image: '/shipFromTheFront.png',    video: '/vid-vessel-id.mp4' },
+  { num: '03', title: 'Bridge Operations',      desc: 'Full bridge resource management — radar, ECDIS, VDR, and AIS systems operated under realistic traffic scenarios.',          image: '/shipInterior.png', video: '/vid-bridge-ops.mp4' },
   { num: '04', title: 'Port Maneuvering',       desc: 'Controlled berthing, cargo handling, port communication protocols, and emergency mooring procedures.',                      image: '/shipInThePort.png',     video: '/shipInTheSeaToshipInThePort.mp4' },
-  { num: '05', title: 'VR Certification',       desc: 'Standardised assessments recognised by maritime authorities worldwide — from cadet to officer qualification.',              image: '/vrHeadset.png',       video: null },
+  { num: '05', title: 'VR Certification',       desc: 'Standardised assessments recognised by maritime authorities worldwide — from cadet to officer qualification.',              image: '/vrHeadset.png',       video: '/vid-vr-cert.mp4' },
 ]
 
 export default function TimelineSection() {
@@ -60,6 +60,7 @@ export default function TimelineSection() {
                   loop
                   muted
                   playsInline
+                  preload="none"
                   className="panel-video"
                 />
               )}
@@ -72,6 +73,13 @@ export default function TimelineSection() {
               <h3 className="panel-title">{panel.title}</h3>
               <p className="panel-desc">{panel.desc}</p>
             </div>
+
+            {i === 0 && (
+              <div className="drag-hint">
+                <span className="drag-hint-arrow">→</span>
+                <span className="drag-hint-text">DRAG TO EXPLORE</span>
+              </div>
+            )}
 
             <div className="panel-progress">
               {PANELS.map((_, j) => (

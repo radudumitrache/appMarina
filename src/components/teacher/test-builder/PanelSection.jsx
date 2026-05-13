@@ -5,9 +5,9 @@ import {
   deleteTestPanel, updateTestPanel,
   createExercise, updateExercise, deleteExercise,
   createArrangeItem, updateArrangeItem, deleteArrangeItem,
-  createMCQAnchor, updateMCQAnchor, deleteMCQAnchor,
-  createWordCompletionAnchor, updateWordCompletionAnchor, deleteWordCompletionAnchor,
-  createLocalizationAnchor, updateLocalizationAnchor, deleteLocalizationAnchor,
+  updateMCQAnchor, deleteMCQAnchor,
+  updateWordCompletionAnchor, deleteWordCompletionAnchor,
+  updateLocalizationAnchor, deleteLocalizationAnchor,
   createLocalizationPoint, deleteLocalizationPoint,
 } from '../../../api/tests'
 import { Q_TYPES } from '../../../pages/teacher/testBuilderMock'
@@ -146,6 +146,38 @@ function ArrangeItems({ exercise, panelId, testId, onExerciseUpdate }) {
   )
 }
 
+// ── Gap Fill Editor ───────────────────────────────────────────────────────────
+
+function GapFillEditor({ exercise, panelId, testId, onExerciseUpdate }) {
+  const [wordLocal, setWordLocal] = useState(exercise.correct_word ?? '')
+
+  useEffect(() => { setWordLocal(exercise.correct_word ?? '') }, [exercise.correct_word])
+
+  async function handleWordBlur() {
+    if (wordLocal === (exercise.correct_word ?? '')) return
+    const res = await updateExercise(testId, panelId, exercise.id, { correct_word: wordLocal })
+    onExerciseUpdate(exercise.id, res.data)
+  }
+
+  return (
+    <div className="tb-gap-fill-editor">
+      <div className="tb-short-hint">
+        Write the question text above. Use <code>___</code> to mark where the blank should appear.
+      </div>
+      <div className="tb-anchor-field-row">
+        <label className="tb-meta-label">Correct answer</label>
+        <input
+          className="tb-meta-input"
+          value={wordLocal}
+          onChange={e => setWordLocal(e.target.value)}
+          onBlur={handleWordBlur}
+          placeholder="Expected word or phrase…"
+        />
+      </div>
+    </div>
+  )
+}
+
 // ── Exercise Card ─────────────────────────────────────────────────────────────
 
 function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate, onDelete }) {
@@ -216,6 +248,10 @@ function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate,
 
       {exercise.type === 'arrange' && (
         <ArrangeItems exercise={exercise} panelId={panelId} testId={testId} onExerciseUpdate={onUpdate} />
+      )}
+
+      {exercise.type === 'gap_fill' && (
+        <GapFillEditor exercise={exercise} panelId={panelId} testId={testId} onExerciseUpdate={onUpdate} />
       )}
     </div>
   )
@@ -448,25 +484,12 @@ function LocalizationCard({ anchor, panelId, testId, classroomId, onReload }) {
 
 // ── VR Panel Section (inline in test builder) ─────────────────────────────────
 
-const ANCHOR_TYPES = [
-  { id: 'mcq', label: 'Multiple Choice' },
-  { id: 'wc',  label: 'Word Completion' },
-  { id: 'loc', label: 'Localization' },
-]
-
-const DEFAULT_POS = { pos_x: 0, pos_y: 0, pos_z: -1, size: 1, color_r: 255, color_g: 255, color_b: 255 }
-
 function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePath, onReload }) {
   const navigate   = useNavigate()
   const mcqAnchors = vr?.mcq_anchors ?? []
   const wcAnchors  = vr?.word_completion_anchors ?? []
   const locAnchors = vr?.localization_anchors ?? []
   const allCount   = mcqAnchors.length + wcAnchors.length + locAnchors.length
-
-  const [addingAnchor, setAddingAnchor] = useState(false)
-  const [anchorType,   setAnchorType]   = useState('mcq')
-  const [anchorForm,   setAnchorForm]   = useState({ title: '', text: '', correct_mcq_index: 0, options: ['', ''], correct_word: '' })
-  const [saving,       setSaving]       = useState(false)
 
   function openVREditor() {
     const base = vrBasePath ?? '/teacher/assignments'
@@ -475,50 +498,8 @@ function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePa
     })
   }
 
-  function resetAdd() {
-    setAnchorForm({ title: '', text: '', correct_mcq_index: 0, options: ['', ''], correct_word: '' })
-    setAnchorType('mcq')
-    setAddingAnchor(false)
-  }
-
-  async function handleAddAnchor() {
-    setSaving(true)
-    try {
-      if (anchorType === 'mcq') {
-        await createMCQAnchor(testId, panelId, {
-          ...DEFAULT_POS,
-          title: anchorForm.title,
-          text: anchorForm.text,
-          correct_mcq_index: anchorForm.correct_mcq_index,
-          options: anchorForm.options.map((text, i) => ({ text, order: i })),
-        })
-      } else if (anchorType === 'wc') {
-        await createWordCompletionAnchor(testId, panelId, {
-          ...DEFAULT_POS,
-          title: anchorForm.title,
-          text: anchorForm.text,
-          correct_word: anchorForm.correct_word,
-        })
-      } else if (anchorType === 'loc') {
-        await createLocalizationAnchor(testId, panelId, {
-          ...DEFAULT_POS,
-          title: anchorForm.title,
-          text: anchorForm.text,
-        })
-      }
-      resetAdd()
-      onReload()
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const canSubmit = anchorForm.text.trim() &&
-    (anchorType !== 'wc' || anchorForm.correct_word.trim())
-
   return (
     <div className="tb-vr-editor">
-      {/* Launch button */}
       <button className="tb-vr-open-btn" onClick={openVREditor}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10"/>
@@ -530,125 +511,24 @@ function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePa
         </svg>
       </button>
 
-      {/* Anchor cards for text editing */}
-      {allCount > 0 && (
+      {allCount > 0 ? (
         <div className="tb-vr-anchors-section">
           <div className="tb-vr-section-header">
             <span className="tb-vr-section-title">Placed Anchors ({allCount})</span>
+            <span className="tb-vr-section-hint">Edit content below — use the VR Scene Editor to add, move or delete anchors.</span>
           </div>
           {mcqAnchors.map(a => <MCQAnchorCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} />)}
           {wcAnchors.map(a => <WordCompletionCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} />)}
           {locAnchors.map(a => <LocalizationCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} />)}
         </div>
-      )}
-
-      {allCount === 0 && !addingAnchor && (
-        <div className="tb-anchor-empty">
-          No anchors yet. Add one below or use the VR editor to place it visually.
-        </div>
-      )}
-
-      {/* Add anchor form */}
-      {addingAnchor ? (
-        <div className="tb-add-q-panel tb-add-q-panel--inner">
-          <span className="tb-add-q-label">Anchor type</span>
-          <div className="tb-q-type-picker">
-            {ANCHOR_TYPES.map(t => (
-              <button
-                key={t.id}
-                className={`tb-q-type-btn ${anchorType === t.id ? 'tb-q-type-btn--active' : ''}`}
-                onClick={() => setAnchorType(t.id)}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          <input
-            className="tb-meta-input"
-            value={anchorForm.title}
-            onChange={e => setAnchorForm(f => ({ ...f, title: e.target.value }))}
-            placeholder="Anchor title (hotspot label)…"
-            style={{ width: '100%', marginTop: 10 }}
-          />
-
-          <div style={{ marginTop: 8 }}>
-            <QuestionHtmlEditor
-              value={anchorForm.text}
-              classroomId={classroomId}
-              onBlur={html => setAnchorForm(f => ({ ...f, text: html }))}
-              placeholder={anchorType === 'wc' ? 'Sentence with ___ for the blank…' : 'Question / prompt text…'}
-            />
-          </div>
-
-          {anchorType === 'mcq' && (
-            <div className="tb-mcq-options" style={{ marginTop: 8 }}>
-              {anchorForm.options.map((opt, oi) => (
-                <label key={oi} className={`tb-mcq-option ${anchorForm.correct_mcq_index === oi ? 'tb-mcq-option--correct' : ''}`}>
-                  <input
-                    type="radio"
-                    name="new-anchor-correct"
-                    checked={anchorForm.correct_mcq_index === oi}
-                    onChange={() => setAnchorForm(f => ({ ...f, correct_mcq_index: oi }))}
-                  />
-                  <input
-                    className="tb-option-input"
-                    type="text"
-                    value={opt}
-                    onChange={e => {
-                      const opts = [...anchorForm.options]
-                      opts[oi] = e.target.value
-                      setAnchorForm(f => ({ ...f, options: opts }))
-                    }}
-                    placeholder={`Option ${oi + 1}…`}
-                  />
-                  {anchorForm.options.length > 2 && (
-                    <button type="button" className="tb-opt-del" onClick={() => setAnchorForm(f => ({ ...f, options: f.options.filter((_, i) => i !== oi) }))}>×</button>
-                  )}
-                </label>
-              ))}
-              <button className="tb-add-option-btn" onClick={() => setAnchorForm(f => ({ ...f, options: [...f.options, ''] }))}>
-                + Add option
-              </button>
-            </div>
-          )}
-
-          {anchorType === 'wc' && (
-            <div className="tb-anchor-field-row" style={{ marginTop: 8 }}>
-              <label className="tb-meta-label">Correct word</label>
-              <input
-                className="tb-meta-input"
-                value={anchorForm.correct_word}
-                onChange={e => setAnchorForm(f => ({ ...f, correct_word: e.target.value }))}
-                placeholder="Expected answer…"
-              />
-            </div>
-          )}
-
-          {anchorType === 'loc' && (
-            <p className="tb-anchor-loc-hint">
-              Polygon vertices can be set in the VR Scene Editor after creating the anchor.
-            </p>
-          )}
-
-          <div className="tb-add-q-actions" style={{ marginTop: 10 }}>
-            <button className="tb-add-q-cancel" onClick={resetAdd}>Cancel</button>
-            <button
-              className="tb-add-q-confirm"
-              onClick={handleAddAnchor}
-              disabled={!canSubmit || saving}
-            >
-              {saving ? 'Adding…' : 'Add Anchor'}
-            </button>
-          </div>
-        </div>
       ) : (
-        <button className="tb-add-q-trigger tb-add-q-trigger--inner" onClick={() => setAddingAnchor(true)}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        <div className="tb-anchor-empty">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8l-4 8h8z" fill="currentColor" stroke="none"/>
           </svg>
-          Add Anchor
-        </button>
+          No anchors placed yet. Open the VR Scene Editor to add anchors directly onto the 360° scene.
+        </div>
       )}
     </div>
   )

@@ -92,7 +92,7 @@ export default function HeroSection() {
       {/* z:1 — video */}
       <video
         className="hero-video"
-        src="/shipInTheSeaToshipInTheSea.mp4"
+        src="/lp-hero.mp4"
         autoPlay
         loop
         muted

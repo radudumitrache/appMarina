@@ -2,12 +2,25 @@ import { useState } from 'react'
 import { STATUS_META } from '../../../pages/teacher/testBuilderMock'
 import '../../css/teacher/test-builder/TestSidebar.css'
 
-export default function TestSidebar({ tests, selectedId, onSelect, onNew, loading }) {
-  const [search, setSearch] = useState('')
+export default function TestSidebar({ tests, selectedId, onSelect, onNew, onDelete, loading }) {
+  const [search,        setSearch]        = useState('')
+  const [confirmingId,  setConfirmingId]  = useState(null)
+  const [deleting,      setDeleting]      = useState(false)
 
   const visible = tests.filter(t =>
     t.title.toLowerCase().includes(search.toLowerCase().trim())
   )
+
+  async function handleConfirmDelete(e, id) {
+    e.stopPropagation()
+    setDeleting(true)
+    try {
+      await onDelete(id)
+    } finally {
+      setDeleting(false)
+      setConfirmingId(null)
+    }
+  }
 
   return (
     <aside className="tb-sidebar">
@@ -35,24 +48,64 @@ export default function TestSidebar({ tests, selectedId, onSelect, onNew, loadin
       <nav className="tb-test-nav">
         {loading && <div className="tb-sidebar-loading">Loading…</div>}
         {!loading && visible.map(t => {
-          const meta = STATUS_META[t.status] ?? STATUS_META.draft
+          const meta        = STATUS_META[t.status] ?? STATUS_META.draft
+          const confirming  = confirmingId === t.id
           return (
-            <button
+            <div
               key={t.id}
               className={`tb-test-item ${selectedId === t.id ? 'tb-test-item--active' : ''}`}
-              onClick={() => onSelect(t.id)}
+              onClick={() => { if (!confirming) onSelect(t.id) }}
             >
               <div className="tb-test-item-row">
                 <span className="tb-test-item-title">{t.title}</span>
                 <span className={`tb-test-item-status ${meta.cls}`}>
                   {meta.label}
                 </span>
+                {onDelete && !confirming && (
+                  <button
+                    className="tb-test-item-delete"
+                    onClick={e => { e.stopPropagation(); setConfirmingId(t.id) }}
+                    title="Delete test"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                      <path d="M10 11v6M14 11v6"/>
+                      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                  </button>
+                )}
               </div>
-              <div className="tb-test-item-meta">
-                <span>{t.class_name || 'No class'}</span>
-                <span>{t.time_limit_minutes} min</span>
-              </div>
-            </button>
+
+              {confirming && (
+                <div className="tb-test-item-confirm" onClick={e => e.stopPropagation()}>
+                  <span className="tb-test-item-confirm-label">Delete this test?</span>
+                  <div className="tb-test-item-confirm-actions">
+                    <button
+                      className="tb-test-item-confirm-yes"
+                      disabled={deleting}
+                      onClick={e => handleConfirmDelete(e, t.id)}
+                    >
+                      {deleting ? '…' : 'Delete'}
+                    </button>
+                    <button
+                      className="tb-test-item-confirm-no"
+                      disabled={deleting}
+                      onClick={e => { e.stopPropagation(); setConfirmingId(null) }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {!confirming && (
+                <div className="tb-test-item-meta">
+                  <span>{t.class_name || 'No class'}</span>
+                  <span>{t.time_limit_minutes} min</span>
+                </div>
+              )}
+            </div>
           )
         })}
       </nav>

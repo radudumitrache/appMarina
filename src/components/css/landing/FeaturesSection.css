@@ -4,6 +4,10 @@
   margin: 0 auto;
 }
 
+.features-section .section-title {
+  font-size: 38px;
+}
+
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

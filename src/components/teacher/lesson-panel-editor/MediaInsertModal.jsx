@@ -2,12 +2,22 @@ import { useState, useEffect, useRef } from 'react'
 import { getMediaFiles, getUploadUrl, uploadToGCS, confirmUpload } from '../../../api/media'
 import '../../css/teacher/lesson-panel-editor/MediaInsertModal.css'
 
+function computeNewName(existingNames, originalName) {
+  const dot  = originalName.lastIndexOf('.')
+  const base = dot >= 0 ? originalName.slice(0, dot) : originalName
+  const ext  = dot >= 0 ? originalName.slice(dot)   : ''
+  let i = 2
+  while (existingNames.has(`${base}(${i})${ext}`)) i++
+  return `${base}(${i})${ext}`
+}
+
 export default function MediaInsertModal({ initialMode = 'image', imageOnly = false, classroomId, folderLabel, onInsert, onClose }) {
-  const [mode,      setMode]      = useState(imageOnly ? 'image' : initialMode)
-  const [files,     setFiles]     = useState([])
-  const [loading,   setLoading]   = useState(true)
-  const [uploading, setUploading] = useState(false)
-  const [uploadErr, setUploadErr] = useState(null)
+  const [mode,          setMode]          = useState(imageOnly ? 'image' : initialMode)
+  const [files,         setFiles]         = useState([])
+  const [loading,       setLoading]       = useState(true)
+  const [uploading,     setUploading]     = useState(false)
+  const [uploadErr,     setUploadErr]     = useState(null)
+  const [pendingUpload, setPendingUpload] = useState(null)
   const fileRef = useRef()
 
   const folderParams = classroomId
@@ -25,21 +35,19 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
 
   const displayed = files.filter(f => f.file_type === mode)
 
-  const handleUpload = async e => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const doUpload = async (file, filename) => {
     setUploadErr(null)
     setUploading(true)
     try {
       const { data: urlData } = await getUploadUrl({
-        filename:     file.name,
+        filename:     filename,
         content_type: file.type,
         ...folderParams,
       })
       await uploadToGCS(urlData.upload_url, file)
       const { data: mediaFile } = await confirmUpload({
         gcs_path:   urlData.gcs_path,
-        filename:   file.name,
+        filename:   filename,
         file_type:  file.type.startsWith('video/') ? 'video' : 'image',
         mime_type:  file.type,
         size_bytes: file.size,
@@ -55,8 +63,31 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
     }
   }
 
+  const handleUpload = e => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const existingNames = new Set(files.map(f => f.name))
+    if (existingNames.has(file.name)) {
+      const proposedName = computeNewName(existingNames, file.name)
+      setPendingUpload({ file, proposedName })
+    } else {
+      doUpload(file, file.name)
+    }
+  }
+
+  const confirmPendingUpload = () => {
+    const { file, proposedName } = pendingUpload
+    setPendingUpload(null)
+    doUpload(file, proposedName)
+  }
+
+  const cancelPendingUpload = () => {
+    setPendingUpload(null)
+    fileRef.current.value = ''
+  }
+
   return (
-    <div className="mim-overlay" onMouseDown={e => { if (e.target === e.currentTarget) onClose() }}>
+    <div className="mim-overlay" onMouseDown={e => { if (e.target === e.currentTarget && !uploading) onClose() }}>
       <div className="mim-modal">
 
         <div className="mim-header">
@@ -108,6 +139,31 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
             {uploadErr && <span className="mim-upload-err">{uploadErr}</span>}
           </div>
 
+          {pendingUpload && (
+            <div className="mim-name-conflict">
+              <div className="mim-name-conflict-body">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mim-name-conflict-icon">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <div className="mim-name-conflict-text">
+                  <span className="mim-name-conflict-title">
+                    A file named <strong>{pendingUpload.file.name}</strong> already exists.
+                  </span>
+                  <span className="mim-name-conflict-sub">
+                    It will be uploaded as <strong>{pendingUpload.proposedName}</strong>.
+                  </span>
+                </div>
+              </div>
+              <div className="mim-name-conflict-actions">
+                <button className="mim-name-conflict-cancel" onClick={cancelPendingUpload}>Cancel</button>
+                <button className="mim-name-conflict-confirm" onClick={confirmPendingUpload}>
+                  Upload as {pendingUpload.proposedName}
+                </button>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <p className="mim-hint">Loading…</p>
           ) : displayed.length === 0 ? (
@@ -134,6 +190,12 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
           )}
         </div>
 
+        {uploading && (
+          <div className="mim-upload-overlay">
+            <div className="mim-upload-overlay-spinner" />
+            <span className="mim-upload-overlay-label">Uploading image…</span>
+          </div>
+        )}
       </div>
     </div>
   )

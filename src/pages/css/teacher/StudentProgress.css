@@ -13,11 +13,3 @@
   color: var(--gold);
 }
 
-.sp-page--teacher .sp-grade--good {
-  color: var(--gold);
-}
-
-.sp-page--teacher .sp-badge.sp-grade--good {
-  background: var(--gold-dim);
-  border-color: rgba(217, 160, 48, 0.25);
-}

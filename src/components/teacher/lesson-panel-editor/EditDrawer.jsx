@@ -192,10 +192,11 @@ export default function EditDrawer({
   // ── Media insert ──────────────────────────────────────────────────────────
   const handleMediaInsert = (url, type) => {
     if (editor) {
-      const html = type === 'image'
-        ? `<img src="${url}" alt="" style="max-width:100%;" />`
-        : `<video src="${url}" controls style="max-width:100%;"></video>`
-      editor.chain().focus().insertContent(html).run()
+      if (type === 'image') {
+        editor.chain().focus().setImage({ src: url, alt: '' }).run()
+      } else {
+        editor.chain().focus().insertContent(`<video src="${url}" controls style="max-width:100%;"></video>`).run()
+      }
     }
     setMediaMode(null)
   }

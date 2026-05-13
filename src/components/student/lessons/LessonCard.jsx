@@ -57,7 +57,7 @@ export default function LessonCard({ lesson, index, viewMode = 'grid', onToggleC
         ) : (
           <button
             className={`lesson-toggle ${lesson.complete ? 'lesson-toggle--done' : ''}`}
-            onClick={() => onToggleComplete(lesson.id)}
+            onClick={e => { e.stopPropagation(); onToggleComplete(lesson.id) }}
             title={lesson.complete ? 'Mark incomplete' : 'Mark complete'}
           >
             <CheckIcon />

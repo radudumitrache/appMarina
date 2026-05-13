@@ -1,13 +1,20 @@
 import '../../css/teacher/profile/ProfileCard.css'
 
 export default function ProfileCard({ profile, stats = {}, onSignOut }) {
-  const initials = `${profile.firstName[0]}${profile.lastName[0]}`
+  const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase()
 
   return (
     <aside className="tp-aside">
       <div className="tp-card" style={{ animationDelay: '0s' }}>
 
-        <div className="tp-avatar">{initials}</div>
+        <div className="tp-avatar">
+          {initials || (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          )}
+        </div>
 
         <div className="tp-id-block">
           <span className="tp-full-name">{profile.firstName} {profile.lastName}</span>

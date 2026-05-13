@@ -7,8 +7,26 @@
   overflow: hidden;
   cursor: default;
   transform-style: preserve-3d;
-  transition: border-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 220ms cubic-bezier(0.16, 1, 0.3, 1), transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
   height: 100%;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  border-radius: 14px 14px 0 0;
+  transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 3;
+}
+
+.feature-card:hover::before {
+  opacity: 0.5;
 }
 
 .feature-card:hover {
@@ -73,5 +91,5 @@
 }
 
 .feature-card:hover .feature-card-line {
-  opacity: 0.35;
+  opacity: 0.55;
 }

@@ -1,13 +1,20 @@
 import '../../css/admin/settings/ProfileCard.css'
 
 export default function ProfileCard({ profile, stats, onSignOut }) {
-  const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase() || '?'
+  const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase()
 
   return (
     <aside className="as-aside">
       <div className="as-card">
 
-        <div className="as-avatar">{initials}</div>
+        <div className="as-avatar">
+          {initials || (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          )}
+        </div>
 
         <div className="as-id-block">
           <span className="as-full-name">
