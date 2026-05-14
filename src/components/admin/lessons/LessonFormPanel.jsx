@@ -9,7 +9,7 @@ function XIcon() {
   )
 }
 
-export default function LessonFormPanel({ mode, form, onChange, onClose, onSave, categories, difficulties }) {
+export default function LessonFormPanel({ mode, form, onChange, onClose, onSave, categories, difficulties, classes = [] }) {
   return (
     <>
       <div className="panel-backdrop" onClick={onClose} />
@@ -75,17 +75,36 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
             <select
               className="form-select"
               value={form.visibility}
-              onChange={e => onChange('visibility', e.target.value)}
+              onChange={e => {
+                onChange('visibility', e.target.value)
+                if (e.target.value !== 'class') onChange('classroom', null)
+              }}
             >
               <option value="class">Class only</option>
               <option value="public">Public</option>
             </select>
           </div>
+
+          {form.visibility === 'class' && (
+            <div className="form-row">
+              <label className="form-label">Class</label>
+              <select
+                className="form-select"
+                value={form.classroom ?? ''}
+                onChange={e => onChange('classroom', e.target.value ? Number(e.target.value) : null)}
+              >
+                <option value="">— Select a class —</option>
+                {classes.map(c => (
+                  <option key={c.id} value={c.id}>{c.name} {c.code ? `(${c.code})` : ''}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="panel-footer">
           <button className="btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="btn-primary" onClick={onSave} disabled={!form.title.trim()}>
+          <button className="btn-primary" onClick={onSave} disabled={!form.title.trim() || (form.visibility === 'class' && !form.classroom)}>
             {mode === 'create' ? 'Create Lesson' : 'Save Changes'}
           </button>
         </div>

@@ -7,6 +7,7 @@ import LessonRow from '../../components/admin/lessons/LessonRow'
 import LessonFormPanel from '../../components/admin/lessons/LessonFormPanel'
 import LessonDeleteModal from '../../components/admin/lessons/LessonDeleteModal'
 import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons'
+import { getClasses } from '../../api/classes'
 import Sk from '../../components/shared/Skeleton'
 import '../css/admin/Lessons.css'
 
@@ -23,7 +24,7 @@ const DIFFICULTIES = ['easy', 'intermediate', 'advanced']
 
 const EMPTY_FORM = {
   title: '', category: 'nav', duration_minutes: 60,
-  difficulty: 'intermediate', visibility: 'class',
+  difficulty: 'intermediate', visibility: 'class', classroom: null,
 }
 
 function mapLesson(l) {
@@ -37,6 +38,7 @@ function mapLesson(l) {
     visibility:       l.visibility,
     author:           l.author_name ?? '',
     locked:           l.locked,
+    classroom_id:     l.classroom_id ?? null,
   }
 }
 
@@ -52,11 +54,15 @@ export default function Lessons() {
   const [form, setForm]                     = useState(EMPTY_FORM)
   const [editTarget, setEditTarget]         = useState(null)
   const [deleteTarget, setDeleteTarget]     = useState(null)
+  const [classes, setClasses]               = useState([])
 
   useEffect(() => {
     getLessons()
       .then(({ data }) => setLessons(data.map(mapLesson)))
       .finally(() => setLoading(false))
+    getClasses()
+      .then(({ data }) => setClasses(data))
+      .catch(() => {})
   }, [])
 
   const filtered = lessons
@@ -74,6 +80,7 @@ export default function Lessons() {
       duration_minutes: lesson.duration_minutes,
       difficulty:       lesson.difficulty,
       visibility:       lesson.visibility,
+      classroom:        lesson.classroom_id ?? null,
     })
     setPanel('edit')
   }
@@ -180,6 +187,7 @@ export default function Lessons() {
           onSave={panel === 'create' ? handleSave : handleUpdate}
           categories={CATEGORIES.filter(c => c.id !== 'all')}
           difficulties={DIFFICULTIES}
+          classes={classes}
         />
       )}
 
