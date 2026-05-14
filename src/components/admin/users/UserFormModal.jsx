@@ -29,11 +29,21 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
             />
           </div>
           <div className="form-row">
+            <label className="form-label">Username</label>
+            <input
+              className="form-input"
+              type="text"
+              placeholder="e.g. janesmith"
+              value={form.username}
+              onChange={e => onChange('username', e.target.value)}
+            />
+          </div>
+          <div className="form-row">
             <label className="form-label">Email</label>
             <input
               className="form-input"
               type="email"
-              placeholder="e.g. jane@seafarer.edu"
+              placeholder="e.g. jane@hansa360.com"
               value={form.email}
               onChange={e => onChange('email', e.target.value)}
             />
@@ -78,7 +88,7 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
           <button
             className="btn-primary"
             onClick={onSave}
-            disabled={saving || !form.name.trim() || !form.email.trim()}
+            disabled={saving || !form.name.trim() || !form.username.trim() || !form.email.trim()}
           >
             {saving ? 'Saving…' : mode === 'create' ? 'Create User' : 'Save Changes'}
           </button>

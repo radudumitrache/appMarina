@@ -49,7 +49,7 @@ export default function Login() {
       <video
         className="login-bg"
         autoPlay muted loop playsInline
-        src="/shipInTheSeaToshipInTheSea.mp4"
+        src="/login-bg.mp4"
       />
       <div className="login-overlay" />
 

@@ -42,7 +42,7 @@ export default function CsvImportModal({ csvRows, importing, onClose, onImport, 
 
         <div className="modal-body">
           <p className="csv-hint">
-            Columns: <code className="csv-code">name, email, role</code>.
+            Columns: <code className="csv-code">name, username, email, role</code>.
             {' '}Role must be <code className="csv-code">student</code> or <code className="csv-code">teacher</code>.{' '}
             <button className="link-btn" onClick={onDownloadTemplate}>Download template</button>
           </p>
@@ -114,6 +114,7 @@ export default function CsvImportModal({ csvRows, importing, onClose, onImport, 
                   <thead>
                     <tr>
                       <th>Name</th>
+                      <th>Username</th>
                       <th>Email</th>
                       <th>Role</th>
                     </tr>
@@ -122,6 +123,7 @@ export default function CsvImportModal({ csvRows, importing, onClose, onImport, 
                     {csvRows.map((r, i) => (
                       <tr key={i}>
                         <td className="user-name">{r.name}</td>
+                        <td className="user-email">{r.username}</td>
                         <td className="user-email">{r.email}</td>
                         <td><span className={`role-badge role-badge--${r.role}`}>{r.role}</span></td>
                       </tr>

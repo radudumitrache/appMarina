@@ -8,7 +8,7 @@ import UsersTable from '../../components/admin/users/UsersTable'
 import { getUsers, createUser, bulkCreateUsers, updateUser, deleteUser } from '../../api/admin'
 import '../css/admin/Users.css'
 
-const EMPTY_FORM = { name: '', email: '', role: 'student', password: '' }
+const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '' }
 
 function mapUser(u) {
   const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username
@@ -28,14 +28,15 @@ function parseCSV(raw) {
   const header = lines[0].toLowerCase()
   const start = header.includes('name') || header.includes('email') ? 1 : 0
   return lines.slice(start).map(line => {
-    const [name = '', email = '', role = ''] =
+    const [name = '', username = '', email = '', role = ''] =
       line.split(',').map(c => c.trim().replace(/^["']|["']$/g, ''))
     return {
       name,
+      username,
       email,
       role: role.toLowerCase() === 'teacher' ? 'teacher' : 'student',
     }
-  }).filter(r => r.name && r.email)
+  }).filter(r => r.name && r.username && r.email)
 }
 
 export default function Users() {
@@ -79,7 +80,7 @@ export default function Users() {
 
   const openEdit = (user) => {
     setEditTarget(user)
-    setForm({ name: user.name, email: user.email, role: user.role, password: '' })
+    setForm({ name: user.name, username: user.username, email: user.email, role: user.role, password: '' })
     setModal('edit')
   }
 
@@ -88,7 +89,7 @@ export default function Users() {
   const handleFormChange = (field, value) => { setForm(f => ({ ...f, [field]: value })); setFormError('') }
 
   const handleSave = async () => {
-    if (!form.name.trim() || !form.email.trim()) return
+    if (!form.name.trim() || !form.username.trim() || !form.email.trim()) return
     if (modal === 'create' && !form.password) { setFormError('Password is required.'); return }
     if (form.password && form.password.length < 8) { setFormError('Password must be at least 8 characters.'); return }
 
@@ -96,6 +97,7 @@ export default function Users() {
     const payload = {
       first_name: firstName,
       last_name: rest.join(' '),
+      username: form.username.trim(),
       email: form.email,
       role: form.role,
       ...(form.password && { password: form.password }),
@@ -104,7 +106,7 @@ export default function Users() {
     setFormError('')
     try {
       if (modal === 'create') {
-        const { data } = await createUser({ ...payload, username: form.email.split('@')[0] })
+        const { data } = await createUser(payload)
         setUsers(prev => [...prev, mapUser(data)])
       } else if (modal === 'edit' && editTarget) {
         const { data } = await updateUser(editTarget.id, payload)
@@ -153,7 +155,7 @@ export default function Users() {
       password,
       users: csvRows.map(r => {
         const [firstName, ...rest] = r.name.trim().split(' ')
-        return { first_name: firstName, last_name: rest.join(' '), email: r.email, role: r.role }
+        return { first_name: firstName, last_name: rest.join(' '), username: r.username, email: r.email, role: r.role }
       }),
     }
     setImporting(true)
@@ -171,7 +173,7 @@ export default function Users() {
   }
 
   const downloadTemplate = () => {
-    const csv = 'name,email,role\nJohn Doe,john@seafarer.edu,student\nJane Smith,jane@seafarer.edu,teacher\n'
+    const csv = 'name,username,email,role\nJohn Doe,johndoe,john@hansa360.com,student\nJane Smith,janesmith,jane@hansa360.com,teacher\n'
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
     a.download = 'users_template.csv'
