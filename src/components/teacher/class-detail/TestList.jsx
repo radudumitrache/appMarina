@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '../../../auth/AuthContext'
 import '../../css/teacher/class-detail/StudentList.css'
 
 const STATUS_MAP = {
@@ -9,6 +10,7 @@ const STATUS_MAP = {
 export default function TestList({ tests }) {
   const navigate = useNavigate()
   const { id: classId } = useParams()
+  const { user } = useAuth()
 
   return (
     <div className="cd-list">
@@ -25,15 +27,25 @@ export default function TestList({ tests }) {
       ) : (
         tests.map((t, i) => {
           const sm = STATUS_MAP[t.status] ?? STATUS_MAP.draft
+          const isOwner = user && t.author === user.id
           return (
             <div
               key={t.id}
-              className="cd-row cd-row--clickable"
+              className={`cd-row${isOwner ? ' cd-row--clickable' : ''}`}
               style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
-              onClick={() => navigate(`/teacher/assignments?test=${t.id}`)}
+              onClick={isOwner ? () => navigate(`/teacher/assignments?test=${t.id}`) : undefined}
             >
               <div className="cd-col cd-col--test-title">
                 <span className="cd-lesson-title">{t.title}</span>
+                {!isOwner && (
+                  <span className="cd-readonly-badge" title={`Created by ${t.author_name}`}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    View only
+                  </span>
+                )}
               </div>
               <div className="cd-col cd-col--test-status">
                 <span className={`cd-badge ${sm.cls}`}>{sm.label}</span>
