@@ -1,3 +1,66 @@
+/* ── Modal overlay ───────────────────────────────────────────────────── */
+
+.sp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sp-modal {
+  background: var(--surface-1, #0b1220);
+  border: 1px solid var(--border, #253550);
+  border-radius: 12px;
+  width: min(560px, 92vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sp-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border, #253550);
+  flex-shrink: 0;
+}
+
+.sp-modal-title {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sp-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sp-modal-close:hover { background: var(--surface-2); color: var(--text); }
+
+.sp-modal-body {
+  overflow-y: auto;
+  padding: 16px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/* ── Root ────────────────────────────────────────────────────────────── */
+
 .sp-root {
   display: flex;
   flex-direction: column;

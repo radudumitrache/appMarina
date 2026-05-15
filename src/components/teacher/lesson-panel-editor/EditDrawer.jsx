@@ -168,10 +168,11 @@ export default function EditDrawer({
   const [title,         setTitle]         = useState(panel.title ?? '')
   const [mediaFileId,   setMediaFileId]   = useState(savedMediaFileId)
   const [previewUrl,    setPreviewUrl]    = useState(savedMediaFileId ? (panel.vr_tour?.scene_url ?? null) : null)
-  const [anchorEditing, setAnchorEditing] = useState(false)
-  const [drawerWidth,   setDrawerWidth]   = useState(380)
-  const [dragging,      setDragging]      = useState(false)
-  const [mediaMode,     setMediaMode]     = useState(null)
+  const [anchorEditing,  setAnchorEditing]  = useState(false)
+  const [drawerWidth,    setDrawerWidth]    = useState(380)
+  const [dragging,       setDragging]       = useState(false)
+  const [mediaMode,      setMediaMode]      = useState(null)
+  const [scenePickerOpen, setScenePickerOpen] = useState(false)
   const dragStartX     = useRef(0)
   const dragStartWidth = useRef(0)
 
@@ -327,16 +328,19 @@ export default function EditDrawer({
         {panel.type === 'vr_tour' && !anchorEditing && (
           <div className="lpe-field">
             <label className="lpe-label">Scene</label>
-            <ScenePicker
-              value={mediaFileId}
-              onChange={(id, url) => { setMediaFileId(id); setPreviewUrl(url) }}
-              classroomId={classroomId}
-            />
-            {previewUrl && (
-              <div className="lpe-scene-preview-wrap">
-                <img key={previewUrl} src={previewUrl} alt="Scene preview" className="lpe-scene-preview" />
-              </div>
-            )}
+            <div className="lpe-scene-trigger-row">
+              {previewUrl && (
+                <img key={previewUrl} src={previewUrl} alt="Scene preview" className="lpe-scene-thumb" />
+              )}
+              <button className="lpe-scene-trigger-btn" onClick={() => setScenePickerOpen(true)}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+                {previewUrl ? 'Change scene' : 'Select scene'}
+              </button>
+            </div>
           </div>
         )}
 
@@ -374,6 +378,28 @@ export default function EditDrawer({
           <button className="lpe-save-btn" onClick={handleSave} disabled={!dirty || saving}>
             {saving ? 'Saving…' : 'Save'}
           </button>
+        </div>
+      )}
+
+      {scenePickerOpen && (
+        <div className="sp-modal-backdrop" onClick={() => setScenePickerOpen(false)}>
+          <div className="sp-modal" onClick={e => e.stopPropagation()}>
+            <div className="sp-modal-header">
+              <span className="sp-modal-title">Select Scene</span>
+              <button className="sp-modal-close" onClick={() => setScenePickerOpen(false)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="sp-modal-body">
+              <ScenePicker
+                value={mediaFileId}
+                onChange={(id, url) => { setMediaFileId(id); setPreviewUrl(url); setScenePickerOpen(false) }}
+                classroomId={classroomId}
+              />
+            </div>
+          </div>
         </div>
       )}
 
