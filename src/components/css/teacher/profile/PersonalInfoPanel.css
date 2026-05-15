@@ -37,6 +37,11 @@
 
 .tp-form-input:focus { border-color: rgba(217, 160, 48, 0.3); }
 
+.tp-form-input--date {
+  color-scheme: dark;
+  cursor: pointer;
+}
+
 .tp-form-select {
   cursor: pointer;
   appearance: none;
