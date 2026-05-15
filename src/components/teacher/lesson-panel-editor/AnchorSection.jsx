@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import {
   listTextAnchors,
   createTextAnchor,
@@ -15,9 +15,7 @@ import {
   deletePolygonPoint,
 } from '../../../api/lessons'
 import { IconEdit, IconTrash, IconPlus, IconPin, IconCompass, IconPolygon, IconCrosshair, IconChevronUp, IconChevronDown } from './LPEIcons'
-import InlineStyleEditor from './InlineStyleEditor'
-import ImageStyleEditor  from './ImageStyleEditor'
-import MediaInsertModal  from './MediaInsertModal'
+import RichTextEditor from '../../shared/RichTextEditor'
 
 function IconChevronRight() {
   return (
@@ -37,299 +35,6 @@ function IconArrowLeft() {
   )
 }
 
-/* ── URL helpers for HTML view ──────────────────────────────────────────── */
-function compressHtml(html) {
-  if (!html) return html
-  return html.replace(/src="(https?:\/\/storage\.googleapis\.com[^"]+)"/g, (_, url) => {
-    const name = url.split('?')[0].split('/').pop()
-    return `src="${name}"`
-  })
-}
-function expandHtml(compressed, original) {
-  if (!compressed || !original) return compressed
-  const urlMap = {}
-  const re = /src="(https?:\/\/storage\.googleapis\.com[^"]+)"/g
-  let m
-  while ((m = re.exec(original)) !== null) {
-    const url = m[1], name = url.split('?')[0].split('/').pop()
-    urlMap[name] = url
-  }
-  return compressed.replace(/src="([^":/][^"]*?)"/g, (match, name) =>
-    urlMap[name] ? `src="${urlMap[name]}"` : match
-  )
-}
-
-/* ── Anchor description rich-text editor ───────────────────────────────── */
-const DESC_TAG_LABELS = {
-  h1: 'Heading 1', h2: 'Heading 2', h3: 'Heading 3',
-  p: 'Paragraph', strong: 'Bold', b: 'Bold',
-  em: 'Italic', i: 'Italic',
-  ul: 'Bullet List', ol: 'Numbered List', li: 'List Item',
-  a: 'Link', img: 'Image', video: 'Video', hr: 'Divider',
-  span: 'Span', div: 'Block',
-}
-
-const DESC_TAGS = [
-  { label: 'H1',    cmd: 'formatBlock', arg: 'h1',              desc: 'Large heading' },
-  { label: 'H2',    cmd: 'formatBlock', arg: 'h2',              desc: 'Section heading' },
-  { label: 'H3',    cmd: 'formatBlock', arg: 'h3',              desc: 'Sub-heading' },
-  { label: 'P',     cmd: 'formatBlock', arg: 'p',               desc: 'Paragraph' },
-  { label: 'B',     cmd: 'bold',                                 desc: 'Bold' },
-  { label: 'I',     cmd: 'italic',                               desc: 'Italic' },
-  { label: 'UL',    cmd: 'insertUnorderedList',                  desc: 'Bullet list' },
-  { label: 'HR',    cmd: 'insertHorizontalRule',                 desc: 'Divider' },
-  { label: 'IMG',   media: 'image',                              desc: 'Image' },
-  { label: 'VIDEO', media: 'video',                              desc: 'Video' },
-]
-
-function AnchorDescEditor({ initialHtml, onChange, editorKey, classroomId }) {
-  const editorRef      = useRef(null)
-  const imgSelectedRef = useRef(null)
-  const savedRangeRef  = useRef(null)
-  const [showHtml,     setShowHtml]     = useState(false)
-  const [rawHtml,      setRawHtml]      = useState('')
-  const [activeTags,   setActiveTags]   = useState([])
-  const [activeTagIdx, setActiveTagIdx] = useState(0)
-  const [mediaMode,    setMediaMode]    = useState(null)
-
-  const prevShowHtmlRef = useRef(false)
-
-  // Reset when anchor changes
-  useEffect(() => {
-    prevShowHtmlRef.current = false
-    imgSelectedRef.current  = null
-    if (editorRef.current) editorRef.current.innerHTML = initialHtml || ''
-    setShowHtml(false)
-    setActiveTags([])
-    setActiveTagIdx(0)
-    setMediaMode(null)
-  // editorKey is the reset signal; intentionally not including initialHtml
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorKey])
-
-  // Track cursor position → active element stack (img/video stays pinned)
-  useEffect(() => {
-    function onSelectionChange() {
-      if (!editorRef.current) return
-      const sel = window.getSelection()
-      if (!sel || sel.rangeCount === 0) {
-        if (!imgSelectedRef.current) setActiveTags([])
-        return
-      }
-      if (!editorRef.current.contains(sel.getRangeAt(0).startContainer)) {
-        // outside editor — keep img selection if pinned
-        if (!imgSelectedRef.current) setActiveTags([])
-        return
-      }
-      let node = sel.getRangeAt(0).startContainer
-      if (node.nodeType === 3) node = node.parentNode
-      const tags = []
-      while (node && node !== editorRef.current) {
-        if (node.nodeType === 1) tags.unshift({ tagName: node.tagName, element: node })
-        node = node.parentNode
-      }
-      if (tags.length > 0) {
-        imgSelectedRef.current = null
-        setActiveTags(tags)
-      } else if (!imgSelectedRef.current) {
-        setActiveTags([])
-      }
-      setActiveTagIdx(0)
-    }
-    document.addEventListener('selectionchange', onSelectionChange)
-    return () => {
-      document.removeEventListener('selectionchange', onSelectionChange)
-      imgSelectedRef.current = null
-    }
-  }, [])
-
-  function fireInput() {
-    editorRef.current?.dispatchEvent(new Event('input', { bubbles: true }))
-  }
-
-  const handleEditorClick = useCallback(e => {
-    const tag = e.target.tagName
-    if (tag === 'IMG' || tag === 'VIDEO') {
-      imgSelectedRef.current = e.target
-      setActiveTags([{ tagName: tag.toLowerCase(), element: e.target }])
-      setActiveTagIdx(0)
-    } else {
-      imgSelectedRef.current = null
-    }
-  }, [])
-
-  const openMediaPicker = mode => {
-    const sel = window.getSelection()
-    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.getRangeAt(0).commonAncestorContainer)) {
-      savedRangeRef.current = sel.getRangeAt(0).cloneRange()
-    }
-    setMediaMode(mode)
-  }
-
-  const handleMediaInsert = (url, type) => {
-    const el = editorRef.current
-    if (el) {
-      el.focus()
-      const sel = window.getSelection()
-      if (savedRangeRef.current) {
-        sel.removeAllRanges()
-        sel.addRange(savedRangeRef.current)
-        savedRangeRef.current = null
-      }
-      const html = type === 'image'
-        ? `<img src="${url}" alt="" style="max-width:100%;" />`
-        : `<video src="${url}" controls style="max-width:100%;"></video>`
-      document.execCommand('insertHTML', false, html)
-      fireInput()
-    }
-    setMediaMode(null)
-  }
-
-  function applyTag(tag) {
-    const el = editorRef.current
-    if (!el) return
-    el.focus()
-    if (tag.media) { openMediaPicker(tag.media); return }
-    const sel = window.getSelection()
-    const hasSelection = sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed
-    if (hasSelection && tag.cmd === 'formatBlock') {
-      const range = sel.getRangeAt(0)
-      const fragment = range.extractContents()
-      const wrapper = document.createElement(tag.arg)
-      wrapper.appendChild(fragment)
-      range.insertNode(wrapper)
-      sel.collapse(wrapper, wrapper.childNodes.length)
-    } else {
-      document.execCommand(tag.cmd, false, tag.arg ?? null)
-    }
-    fireInput()
-  }
-
-  function handleToggleHtml() {
-    if (!showHtml) {
-      setRawHtml(editorRef.current?.innerHTML ?? '')
-      setShowHtml(true)
-    } else {
-      setShowHtml(false)
-    }
-  }
-
-  const rawHtmlRef = useRef(rawHtml)
-  rawHtmlRef.current = rawHtml
-  useEffect(() => {
-    if (prevShowHtmlRef.current && !showHtml && editorRef.current) {
-      editorRef.current.innerHTML = rawHtmlRef.current
-      onChange(rawHtmlRef.current)
-    }
-    prevShowHtmlRef.current = showHtml
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showHtml])
-
-  function removeTag(element) {
-    const parent = element.parentNode
-    if (!parent) return
-    while (element.firstChild) parent.insertBefore(element.firstChild, element)
-    parent.removeChild(element)
-    fireInput()
-    setActiveTags([])
-  }
-
-  return (
-    <div className="lpe-anchor-desc-editor">
-      {/* Tag toolbar + HTML toggle */}
-      <div className="lpe-anchor-desc-toolbar">
-        <div className="lpe-tag-list lpe-tag-list--compact">
-          {DESC_TAGS.map(tag => (
-            <button
-              key={tag.label}
-              className="lpe-tag-item"
-              onMouseDown={e => e.preventDefault()}
-              onClick={() => applyTag(tag)}
-              disabled={showHtml}
-              title={tag.desc}
-            >
-              <span className="lpe-tag-item-label">{tag.label}</span>
-              <span className="lpe-tag-item-desc">{tag.desc}</span>
-            </button>
-          ))}
-        </div>
-        <button
-          className={`lpe-html-toggle${showHtml ? ' lpe-html-toggle--active' : ''}`}
-          onClick={handleToggleHtml}
-          title={showHtml ? 'Back to visual' : 'Edit raw HTML'}
-        >{'</>'}</button>
-      </div>
-
-      {/* Active element inspector */}
-      {activeTags.length > 0 && !showHtml && (
-        <div className="lpe-anchor-desc-inspector">
-          <div className="lpe-active-tag-chips">
-            {activeTags.map((t, i) => (
-              <button
-                key={i}
-                className={`lpe-active-tag-chip${activeTagIdx === i ? ' lpe-active-tag-chip--on' : ''}`}
-                onClick={() => setActiveTagIdx(i)}
-                onMouseDown={e => e.preventDefault()}
-              >
-                <span className="lpe-active-tag-chip-name">
-                  {DESC_TAG_LABELS[t.tagName.toLowerCase()] ?? t.tagName}
-                </span>
-                <span
-                  className="lpe-active-tag-chip-remove"
-                  role="button"
-                  tabIndex={-1}
-                  onMouseDown={e => { e.stopPropagation(); e.preventDefault() }}
-                  onClick={e => { e.stopPropagation(); removeTag(t.element) }}
-                >×</span>
-              </button>
-            ))}
-          </div>
-          {activeTags[activeTagIdx] && (() => {
-            const t   = activeTags[activeTagIdx]
-            const tag = t.tagName.toLowerCase()
-            const key = `${activeTagIdx}-${tag}`
-            if (tag === 'img' || tag === 'video') {
-              return <ImageStyleEditor key={key} element={t.element} editorEl={editorRef.current} />
-            }
-            return <InlineStyleEditor key={key} element={t.element} editorEl={editorRef.current} />
-          })()}
-        </div>
-      )}
-
-      {/* Content area */}
-      {showHtml ? (
-        <textarea
-          className="lpe-textarea lpe-anchor-desc-html"
-          value={compressHtml(rawHtml)}
-          onChange={e => {
-            const expanded = expandHtml(e.target.value, rawHtml)
-            setRawHtml(expanded)
-            onChange(expanded)
-          }}
-        />
-      ) : (
-        <div
-          ref={editorRef}
-          className="lpe-anchor-desc-content"
-          contentEditable
-          suppressContentEditableWarning
-          onInput={e => onChange(e.currentTarget.innerHTML)}
-          onClick={handleEditorClick}
-          data-placeholder="Description…"
-        />
-      )}
-
-      {mediaMode && (
-        <MediaInsertModal
-          initialMode={mediaMode}
-          classroomId={classroomId}
-          onInsert={handleMediaInsert}
-          onClose={() => setMediaMode(null)}
-        />
-      )}
-    </div>
-  )
-}
 
 function posToLonLat(x, y, z) {
   const r = Math.sqrt(x * x + y * y + z * z)
@@ -928,11 +633,12 @@ export default function AnchorSection({
                   </div>
                   <div className="lpe-field">
                     <label className="lpe-label">Description</label>
-                    <AnchorDescEditor
-                      editorKey={form.anchor?.id ?? 'new'}
-                      initialHtml={aDesc}
+                    <RichTextEditor
+                      key={form.anchor?.id ?? 'new'}
+                      value={aDesc}
                       onChange={setADesc}
                       classroomId={classroomId}
+                      placeholder="Description…"
                     />
                   </div>
                 </>
@@ -965,11 +671,12 @@ export default function AnchorSection({
                   </div>
                   <div className="lpe-field">
                     <label className="lpe-label">Description <span className="lpe-label-opt">(optional)</span></label>
-                    <AnchorDescEditor
-                      editorKey={`nav-${form.anchor?.id ?? 'new'}`}
-                      initialHtml={aDesc}
+                    <RichTextEditor
+                      key={`nav-${form.anchor?.id ?? 'new'}`}
+                      value={aDesc}
                       onChange={setADesc}
                       classroomId={classroomId}
+                      placeholder="Description…"
                     />
                   </div>
                 </>
@@ -1004,11 +711,12 @@ export default function AnchorSection({
 
               <div className="lpe-field">
                 <label className="lpe-label">Content</label>
-                <AnchorDescEditor
-                  editorKey={polyForm.anchor?.id ?? 'new-poly'}
-                  initialHtml={polyContent}
+                <RichTextEditor
+                  key={polyForm.anchor?.id ?? 'new-poly'}
+                  value={polyContent}
                   onChange={setPolyContent}
                   classroomId={classroomId}
+                  placeholder="Polygon region content…"
                 />
               </div>
 
