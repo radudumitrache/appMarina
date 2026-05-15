@@ -108,11 +108,14 @@
 /* ─── Text panel (fills whole screen, scrollable) ────────────────────────── */
 .lpe-text-wrap {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 60px; /* matches .lpe-strip height — content never scrolls under the footer */
   overflow-y: auto;
   display: flex;
   justify-content: center;
-  padding: 80px 40px 100px;
+  padding: 80px 40px 60px;
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
 }
