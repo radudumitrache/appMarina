@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
@@ -266,13 +267,14 @@ export default function RichTextEditor({ value = '', onChange, onBlur, classroom
         </div>
       )}
 
-      {mediaMode && (
+      {mediaMode && createPortal(
         <MediaInsertModal
           initialMode={mediaMode}
           classroomId={classroomId}
           onInsert={handleMediaInsert}
           onClose={() => setMediaMode(null)}
-        />
+        />,
+        document.body
       )}
     </div>
   )
