@@ -195,7 +195,7 @@ export default function EditDrawer({
       if (type === 'image') {
         editor.chain().focus().setImage({ src: url, alt: '' }).run()
       } else {
-        editor.chain().focus().insertContent(`<video src="${url}" controls style="max-width:100%;"></video>`).run()
+        editor.chain().focus().setVideo({ src: url, controls: true, style: 'max-width:100%;' }).run()
       }
     }
     setMediaMode(null)
