@@ -136,17 +136,74 @@
 }
 
 .ann-pinned-toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
   font-family: var(--font-ui);
   font-size: 12px;
+  font-weight: 500;
   color: var(--text-3);
   cursor: pointer;
   user-select: none;
+  transition: color 0.15s;
 }
-.ann-pinned-toggle input { accent-color: var(--gold); cursor: pointer; }
-.ann-pinned-toggle svg { flex-shrink: 0; }
+
+.ann-pinned-toggle:hover { color: var(--text-2); }
+
+/* Hide native checkbox */
+.ann-pinned-toggle input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--border-strong, #3a5070);
+  border-radius: 4px;
+  background: var(--surface-3);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+/* Checkmark via pseudo-element */
+.ann-pinned-toggle input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.12s;
+  /* Gold tick drawn as border */
+  left: 3px;
+  top: 1px;
+  width: 5px;
+  height: 8px;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
+  transform: rotate(45deg);
+}
+
+.ann-pinned-toggle input[type="checkbox"]:checked {
+  background: var(--gold, #d4a017);
+  border-color: var(--gold, #d4a017);
+}
+
+.ann-pinned-toggle input[type="checkbox"]:checked::after {
+  opacity: 1;
+}
+
+.ann-pinned-toggle svg {
+  flex-shrink: 0;
+  color: inherit;
+  transition: color 0.15s;
+}
+
+/* Gold tint when checked */
+.ann-pinned-toggle:has(input:checked) {
+  color: var(--gold, #d4a017);
+}
 
 .ann-compose-err {
   font-family: var(--font-ui);
