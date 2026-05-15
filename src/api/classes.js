@@ -16,7 +16,8 @@ export const assignLesson        = (id, data)       => api.post(`/classes/${id}/
 export const updateClassLesson   = (id, lid, data)  => api.patch(`/classes/${id}/lessons/${lid}/`, data)
 export const unassignLesson      = (id, lid)        => api.delete(`/classes/${id}/lessons/${lid}/`)
 
-export const getClassAssignments = (id)             => api.get(`/classes/${id}/assignments/`)
+export const getClassTests       = (id)             => api.get(`/classes/${id}/assignments/`)
+export const getClassAssignments = getClassTests
 
 export const getAnnouncements    = (id)             => api.get(`/classes/${id}/announcements/`)
 export const createAnnouncement  = (id, data)       => api.post(`/classes/${id}/announcements/`, data)

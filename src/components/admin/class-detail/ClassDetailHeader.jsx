@@ -16,7 +16,7 @@ function MetaChip({ icon, label, value }) {
   )
 }
 
-export default function ClassDetailHeader({ cls, studentCount = 0, lessonCount = 0 }) {
+export default function ClassDetailHeader({ cls, studentCount = 0, lessonCount = 0, testCount = 0 }) {
   const startFmt = formatDate(cls.start_date)
   const endFmt   = formatDate(cls.end_date)
   const dateRange = startFmt && endFmt ? `${startFmt} — ${endFmt}` : startFmt || endFmt || null
@@ -70,6 +70,11 @@ export default function ClassDetailHeader({ cls, studentCount = 0, lessonCount =
         <div className="cd-stat">
           <span className="cd-stat-value">{lessonCount}</span>
           <span className="cd-stat-label">Lessons</span>
+        </div>
+        <div className="cd-stat-sep" />
+        <div className="cd-stat">
+          <span className="cd-stat-value">{testCount}</span>
+          <span className="cd-stat-label">Tests</span>
         </div>
       </div>
     </div>

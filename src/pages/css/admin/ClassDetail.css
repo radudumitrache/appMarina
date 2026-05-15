@@ -8,12 +8,12 @@
   flex-direction: column;
 }
 
-/* ─── Two-panel area ─────────────────────────────────────────────────────── */
+/* ─── Panels area ────────────────────────────────────────────────────────── */
 .cd-panels {
   flex: 1;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   padding: 28px 40px;
   gap: 20px;
   animation: fadeUp var(--duration-enter) var(--ease-default) 0.08s both;

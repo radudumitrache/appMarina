@@ -33,6 +33,17 @@ function LessonIcon() {
   )
 }
 
+function TestIcon() {
+  return (
+    <div className="cd-lesson-icon cd-lesson-icon--test">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+    </div>
+  )
+}
+
 export default function ManagementPanel({
   title,
   type,
@@ -82,13 +93,14 @@ export default function ManagementPanel({
                 <PlusIcon />
                 {type === 'student' ? item.name : item.title}
               </button>
+
             ))}
           </div>
         )}
         {isFocused && searchValue.trim() && suggestions.length === 0 && (
           <div className="cd-dropdown">
             <span className="cd-dropdown-empty">
-              No matching {type === 'student' ? 'students' : 'lessons'} available
+              No matching {type === 'student' ? 'students' : type === 'test' ? 'tests' : 'lessons'} available
             </span>
           </div>
         )}
@@ -97,7 +109,7 @@ export default function ManagementPanel({
       <div className="cd-member-list">
         {items.length === 0 ? (
           <p className="cd-empty-hint">
-            No {type === 'student' ? 'students enrolled' : 'lessons assigned'} yet.
+            No {type === 'student' ? 'students enrolled' : type === 'test' ? 'tests assigned' : 'lessons assigned'} yet.
           </p>
         ) : (
           items.map((item, i) => {
@@ -111,7 +123,9 @@ export default function ManagementPanel({
               >
                 {type === 'student'
                   ? <StudentAvatar name={item.name} />
-                  : <LessonIcon />
+                  : type === 'test'
+                    ? <TestIcon />
+                    : <LessonIcon />
                 }
                 <span className="cd-member-name">
                   {type === 'student' ? item.name : item.title}
@@ -123,7 +137,7 @@ export default function ManagementPanel({
                 )}
                 <button
                   className="cd-remove-btn"
-                  title={type === 'student' ? 'Remove student' : 'Unassign lesson'}
+                  title={type === 'student' ? 'Remove student' : type === 'test' ? 'Unassign test' : 'Unassign lesson'}
                   onClick={e => { e.stopPropagation(); onRemove(item.id) }}
                 >
                   <XIcon />

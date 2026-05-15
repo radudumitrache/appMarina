@@ -9,9 +9,11 @@ import {
   getClass, updateClass,
   getClassStudents, enrollStudent, removeStudent,
   getClassLessons, assignLesson, unassignLesson,
+  getClassTests,
 } from '../../api/classes'
 import { getUsers, getTeachers } from '../../api/admin'
 import { getLessons } from '../../api/lessons'
+import { getTests, updateTest } from '../../api/tests'
 import Sk from '../../components/shared/Skeleton'
 import '../css/admin/ClassDetail.css'
 
@@ -22,31 +24,39 @@ export default function AdminClassDetail() {
   const [cls, setCls]                   = useState(null)
   const [students, setStudents]         = useState([])
   const [lessons, setLessons]           = useState([])
+  const [tests, setTests]               = useState([])
   const [allStudents, setAllStudents]   = useState([])
   const [allLessons, setAllLessons]     = useState([])
+  const [allTests, setAllTests]         = useState([])
   const [teachers, setTeachers]         = useState([])
   const [loading, setLoading]           = useState(true)
   const [editMode, setEditMode]         = useState(false)
   const [editForm, setEditForm]         = useState(null)
   const [studentSearch, setStudentSearch] = useState('')
   const [lessonSearch,  setLessonSearch]  = useState('')
+  const [testSearch,    setTestSearch]    = useState('')
   const [studentFocus,  setStudentFocus]  = useState(false)
   const [lessonFocus,   setLessonFocus]   = useState(false)
+  const [testFocus,     setTestFocus]     = useState(false)
 
   useEffect(() => {
     Promise.all([
       getClass(id),
       getClassStudents(id),
       getClassLessons(id),
+      getClassTests(id),
       getUsers({ 'userprofile__role': 'student' }),
       getLessons(),
+      getTests(),
       getTeachers(),
-    ]).then(([clsRes, stuRes, lesRes, allStuRes, allLesRes, tchRes]) => {
+    ]).then(([clsRes, stuRes, lesRes, tstRes, allStuRes, allLesRes, allTstRes, tchRes]) => {
       setCls(clsRes.data)
       setStudents(stuRes.data.map(e => ({ id: e.student, name: e.student_name, email: e.student_email })))
       setLessons(lesRes.data.map(cl => ({ id: cl.lesson, title: cl.lesson_detail.title })))
+      setTests(tstRes.data.map(t => ({ id: t.id, title: t.title })))
       setAllStudents(allStuRes.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })))
       setAllLessons(allLesRes.data.map(l => ({ id: l.id, title: l.title })))
+      setAllTests(allTstRes.data.map(t => ({ id: t.id, title: t.title })))
       setTeachers(tchRes.data)
     }).finally(() => setLoading(false))
   }, [id])
@@ -76,8 +86,9 @@ export default function AdminClassDetail() {
 
   const handleEditChange = (field, value) => setEditForm(f => ({ ...f, [field]: value }))
 
-  const enrolledIds = useMemo(() => new Set(students.map(s => s.id)), [students])
-  const assignedIds = useMemo(() => new Set(lessons.map(l => l.id)),  [lessons])
+  const enrolledIds     = useMemo(() => new Set(students.map(s => s.id)), [students])
+  const assignedIds     = useMemo(() => new Set(lessons.map(l => l.id)),  [lessons])
+  const assignedTestIds = useMemo(() => new Set(tests.map(t => t.id)),    [tests])
 
   const studentSuggestions = useMemo(() => {
     const q = studentSearch.trim().toLowerCase()
@@ -90,6 +101,12 @@ export default function AdminClassDetail() {
     if (!q) return []
     return allLessons.filter(l => !assignedIds.has(l.id) && l.title.toLowerCase().includes(q))
   }, [lessonSearch, allLessons, assignedIds])
+
+  const testSuggestions = useMemo(() => {
+    const q = testSearch.trim().toLowerCase()
+    if (!q) return []
+    return allTests.filter(t => !assignedTestIds.has(t.id) && t.title.toLowerCase().includes(q))
+  }, [testSearch, allTests, assignedTestIds])
 
   const addStudent = async s => {
     setStudentSearch('')
@@ -122,6 +139,23 @@ export default function AdminClassDetail() {
       await unassignLesson(id, lid)
     } catch {
       setLessons(prev => [...prev])
+    }
+  }
+
+  const addTest = async t => {
+    setTestSearch('')
+    try {
+      await updateTest(t.id, { classroom: parseInt(id, 10) })
+      setTests(prev => [...prev, t])
+    } catch {}
+  }
+
+  const handleRemoveTest = async tid => {
+    setTests(prev => prev.filter(t => t.id !== tid))
+    try {
+      await updateTest(tid, { classroom: null })
+    } catch {
+      setTests(prev => [...prev])
     }
   }
 
@@ -189,7 +223,7 @@ export default function AdminClassDetail() {
         onEdit={openEdit}
       />
 
-      <ClassDetailHeader cls={cls} studentCount={students.length} lessonCount={lessons.length} />
+      <ClassDetailHeader cls={cls} studentCount={students.length} lessonCount={lessons.length} testCount={tests.length} />
 
       <div className="cd-panels">
         <ManagementPanel
@@ -220,6 +254,20 @@ export default function AdminClassDetail() {
           onBlur={() => setTimeout(() => setLessonFocus(false), 150)}
           onAdd={addLesson}
           onRemove={handleRemoveLesson}
+        />
+        <ManagementPanel
+          title="Tests"
+          type="test"
+          items={tests}
+          searchValue={testSearch}
+          onSearchChange={setTestSearch}
+          searchPlaceholder="Search tests to assign…"
+          suggestions={testSuggestions}
+          isFocused={testFocus}
+          onFocus={() => setTestFocus(true)}
+          onBlur={() => setTimeout(() => setTestFocus(false), 150)}
+          onAdd={addTest}
+          onRemove={handleRemoveTest}
         />
       </div>
 

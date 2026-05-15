@@ -181,6 +181,12 @@
   flex-shrink: 0;
 }
 
+.cd-lesson-icon--test {
+  background: rgba(212, 160, 23, 0.07);
+  border-color: rgba(212, 160, 23, 0.2);
+  color: var(--gold, #d4a017);
+}
+
 .cd-member-name {
   flex: 1;
   font-family: var(--font-ui);
