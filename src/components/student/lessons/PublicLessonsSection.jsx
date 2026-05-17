@@ -1,29 +1,26 @@
 import LessonCard from './LessonCard'
 
-export const CATEGORIES = [
-  { id: 'all',   label: 'All'               },
-  { id: 'nav',   label: 'Bridge Navigation' },
-  { id: 'emg',   label: 'Emergency'         },
-  { id: 'eng',   label: 'Engine Room'       },
-  { id: 'cargo', label: 'Cargo'             },
-  { id: 'comm',  label: 'Communications'    },
-]
-
-export default function PublicLessonsSection({ lessons, activeCategory, onCategoryChange, onToggleComplete }) {
-  const filtered = activeCategory === 'all'
+export default function PublicLessonsSection({ lessons, departments = [], activeDept, onDeptChange, onToggleComplete }) {
+  const filtered = activeDept === 'all'
     ? lessons
-    : lessons.filter(l => l.cat === activeCategory)
+    : lessons.filter(l => (l.department_ids ?? []).includes(Number(activeDept)))
 
   return (
     <div className="les-section">
       <div className="les-cat-pills">
-        {CATEGORIES.map(cat => (
+        <button
+          className={`les-cat-pill ${activeDept === 'all' ? 'les-cat-pill--active' : ''}`}
+          onClick={() => onDeptChange('all')}
+        >
+          All
+        </button>
+        {departments.map(dept => (
           <button
-            key={cat.id}
-            className={`les-cat-pill ${activeCategory === cat.id ? 'les-cat-pill--active' : ''}`}
-            onClick={() => onCategoryChange(cat.id)}
+            key={dept.id}
+            className={`les-cat-pill ${activeDept === String(dept.id) ? 'les-cat-pill--active' : ''}`}
+            onClick={() => onDeptChange(String(dept.id))}
           >
-            {cat.label}
+            {dept.name}
           </button>
         ))}
       </div>
@@ -34,7 +31,7 @@ export default function PublicLessonsSection({ lessons, activeCategory, onCatego
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <span>No public lessons in this category.</span>
+          <span>No public lessons in this department.</span>
         </div>
       ) : (
         <div className="lessons-list lessons-list--grid">

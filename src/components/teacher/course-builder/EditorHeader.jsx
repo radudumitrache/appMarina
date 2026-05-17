@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import '../../css/teacher/course-builder/EditorHeader.css'
+import Dropdown from '../../shared/Dropdown'
 
 export default function EditorHeader({
   selected,
@@ -30,16 +31,12 @@ export default function EditorHeader({
         {classes.length > 0 && (
           <div className="cb-classroom-row">
             <span className="cb-classroom-label">Class</span>
-            <select
-              className="cb-classroom-select"
-              value={selected.classroom_id ?? ''}
-              onChange={e => onClassroomChange?.(selected.id, e.target.value)}
-            >
-              <option value="">— unassigned —</option>
-              {classes.map(c => (
-                <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
-              ))}
-            </select>
+            <Dropdown
+              value={selected.classroom_id ?? null}
+              onChange={v => onClassroomChange?.(selected.id, v)}
+              placeholder="— unassigned —"
+              options={classes.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}
+            />
           </div>
         )}
       </div>

@@ -7,15 +7,19 @@ import {
   createTestPanel, deleteTest,
 } from '../../api/tests'
 import { getClasses } from '../../api/classes'
+import { getOrganisations } from '../../api/organisations'
+import { useAuth } from '../../auth/AuthContext'
 import '../css/teacher/TestBuilder.css'
 
 export default function AdminTestBuilder() {
-  const [tests,      setTests]      = useState([])
-  const [classes,    setClasses]    = useState([])
-  const [selectedId, setSelectedId] = useState(null)
-  const [testDetail, setTestDetail] = useState(null)
-  const [loading,    setLoading]    = useState(true)
-  const [saving,     setSaving]     = useState(false)
+  const { user } = useAuth()
+  const [tests,         setTests]         = useState([])
+  const [classes,       setClasses]       = useState([])
+  const [organisations, setOrganisations] = useState([])
+  const [selectedId,    setSelectedId]    = useState(null)
+  const [testDetail,    setTestDetail]    = useState(null)
+  const [loading,       setLoading]       = useState(true)
+  const [saving,        setSaving]        = useState(false)
 
   const [expandedPanelId, setExpandedPanelId] = useState(null)
   const [addingPanel,     setAddingPanel]     = useState(false)
@@ -23,12 +27,16 @@ export default function AdminTestBuilder() {
   const [newPanelTitle,   setNewPanelTitle]   = useState('')
 
   useEffect(() => {
-    Promise.all([getTests({}), getClasses()])
+    const fetches = [getTests({}), getClasses()]
+    Promise.all(fetches)
       .then(([testsRes, classesRes]) => {
         setTests(testsRes.data)
         setClasses(classesRes.data)
       })
       .finally(() => setLoading(false))
+    if (user?.is_staff) {
+      getOrganisations().then(({ data }) => setOrganisations(data)).catch(() => {})
+    }
   }, [])
 
   const loadDetail = useCallback((id) => {
@@ -153,6 +161,7 @@ export default function AdminTestBuilder() {
               panels={panels}
               hasClass={hasClass}
               classes={classes}
+              organisations={organisations}
               expandedPanelId={expandedPanelId}
               saving={saving}
               addingPanel={addingPanel}

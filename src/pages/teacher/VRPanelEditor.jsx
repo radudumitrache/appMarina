@@ -387,6 +387,7 @@ export default function VRPanelEditor() {
         <MediaInsertModal
           initialMode="image"
           imageOnly
+          vrScene
           classroomId={classroomId}
           onInsert={handleSceneSelect}
           onClose={() => setSceneModal(false)}

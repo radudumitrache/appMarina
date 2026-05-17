@@ -33,13 +33,6 @@ export default function ProfileCard({ profile, onLogout }) {
             </svg>
             <span>{profile.phone}</span>
           </div>
-          <div className="profile-meta-row">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            <span>{profile.timezone}</span>
-          </div>
         </div>
 
         <div className="profile-card-divider" />

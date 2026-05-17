@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import ScenePicker from './ScenePicker'
 import MediaInsertModal from './MediaInsertModal'
 import AnchorSection from './AnchorSection'
@@ -155,7 +156,7 @@ export default function EditDrawer({
   panel, editor,
   showHtml, rawHtml, onRawHtmlChange, onToggleHtml,
   onDrawerWidthChange,
-  onSave, onClose, saving, lessonId, classroomId, panels,
+  onSave, onClose, saving, lessonId, classroomId, classroomLabel, panels,
   onAnchorsChange, focusAnchor, onEnterPlacement,
   newAnchorPlacement, onNewAnchorSaved,
   newPolyPlacement, onNewPolySaved,
@@ -381,7 +382,7 @@ export default function EditDrawer({
         </div>
       )}
 
-      {scenePickerOpen && (
+      {scenePickerOpen && createPortal(
         <div className="sp-modal-backdrop" onClick={() => setScenePickerOpen(false)}>
           <div className="sp-modal" onClick={e => e.stopPropagation()}>
             <div className="sp-modal-header">
@@ -400,13 +401,15 @@ export default function EditDrawer({
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {mediaMode && (
         <MediaInsertModal
           initialMode={mediaMode}
           classroomId={classroomId}
+          folderLabel={classroomLabel}
           onInsert={handleMediaInsert}
           onClose={() => setMediaMode(null)}
         />

@@ -249,6 +249,12 @@
   text-overflow: ellipsis;
 }
 
+.lm-dept-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 .lm-no-value {
   font-family: var(--font-mono);
   font-size: 11px;

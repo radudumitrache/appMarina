@@ -16,6 +16,7 @@ import {
 } from '../../../api/lessons'
 import { IconEdit, IconTrash, IconPlus, IconPin, IconCompass, IconPolygon, IconCrosshair, IconChevronUp, IconChevronDown } from './LPEIcons'
 import RichTextEditor from '../../shared/RichTextEditor'
+import ColorPicker from '../../shared/ColorPicker'
 
 function IconChevronRight() {
   return (
@@ -35,6 +36,60 @@ function IconArrowLeft() {
   )
 }
 
+
+function TitleDisplayControls({ showTitle, setShowTitle, titleSize, setTitleSize, titleTextColor, setTitleTextColor }) {
+  return (
+    <div className="lpe-title-display">
+      <div className="lpe-title-display-header">Title Display</div>
+
+      <div className="lpe-title-toggle-row">
+        <span className="lpe-label">Show Title</span>
+        <button
+          type="button"
+          className={`lpe-toggle ${showTitle ? 'lpe-toggle--on' : ''}`}
+          onClick={() => setShowTitle(v => !v)}
+          aria-pressed={showTitle}
+        >
+          <span className="lpe-toggle-thumb" />
+        </button>
+      </div>
+
+      {showTitle && (
+        <>
+          <div className="lpe-field">
+            <label className="lpe-label">Title Size</label>
+            <div className="lpe-size-tabs">
+              {['small', 'medium', 'big'].map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  className={`lpe-size-tab ${titleSize === s ? 'lpe-size-tab--active' : ''}`}
+                  onClick={() => setTitleSize(s)}
+                >
+                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="lpe-field">
+            <label className="lpe-label">Title Color</label>
+            <div className="lpe-color-row">
+              <ColorPicker value={titleTextColor} onChange={setTitleTextColor} />
+              <input
+                className="lpe-input lpe-input--mono"
+                value={titleTextColor}
+                onChange={e => setTitleTextColor(e.target.value)}
+                placeholder="#000000"
+                maxLength={7}
+              />
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 function posToLonLat(x, y, z) {
   const r = Math.sqrt(x * x + y * y + z * z)
@@ -140,6 +195,9 @@ export default function AnchorSection({
     setATitle('')
     setADesc('')
     setTargetTour('')
+    setShowTitle(true)
+    setTitleSize('medium')
+    setTitleTextColor('#000000')
     setAnchorError(null)
     setFormFocused(true)
     setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 40)
@@ -152,6 +210,9 @@ export default function AnchorSection({
     const pts = newPolyPlacement.points
     setPolyTitle('')
     setPolyContent('')
+    setShowTitle(true)
+    setTitleSize('medium')
+    setTitleTextColor('#000000')
     setPolyError(null)
     pendingPolyPointsRef.current = pts.map((p, i) => ({ x: p.x, y: p.y, z: p.z, order: i }))
     setPolyForm({ anchor: null })
@@ -173,6 +234,10 @@ export default function AnchorSection({
   const [aDesc,      setADesc]      = useState('')
   const [targetTour, setTargetTour] = useState('')
 
+  const [showTitle,      setShowTitle]      = useState(true)
+  const [titleSize,      setTitleSize]      = useState('medium')
+  const [titleTextColor, setTitleTextColor] = useState('#000000')
+
   function openForm(type, anchor = null) {
     setPolyForm(null)
     setForm({ type, anchor })
@@ -182,6 +247,9 @@ export default function AnchorSection({
     setATitle(anchor?.title ?? '')
     setADesc(anchor?.description ?? '')
     setTargetTour(anchor?.target_panel ?? '')
+    setShowTitle(anchor?.show_title ?? true)
+    setTitleSize(anchor?.title_size ?? 'medium')
+    setTitleTextColor(anchor?.title_text_color ?? '#000000')
     setAnchorError(null)
   }
 
@@ -209,18 +277,19 @@ export default function AnchorSection({
       pos_z: parseFloat(posZ)  || 0,
     }
     try {
+      const titleDisplay = { show_title: showTitle, title_size: titleSize, title_text_color: titleTextColor }
       if (form.type === 'text') {
-        const data = { ...pos, title: aTitle, description: aDesc }
+        const data = { ...pos, title: aTitle, description: aDesc, ...titleDisplay }
         if (form.anchor) {
           const res = await updateTextAnchor(lessonId, panelId, form.anchor.id, data)
           setTextAnchors(prev => prev.map(a =>
-            a.id === form.anchor.id ? { ...a, ...res.data, title: aTitle, description: aDesc, ...pos } : a
+            a.id === form.anchor.id ? { ...a, ...res.data, title: aTitle, description: aDesc, ...pos, ...titleDisplay } : a
           ))
         } else {
           const res = await createTextAnchor(lessonId, panelId, data)
           setTextAnchors(prev => [
             ...prev.filter(a => a.id !== '__preview__'),
-            { ...res.data, title: aTitle, description: aDesc, ...pos },
+            { ...res.data, title: aTitle, description: aDesc, ...pos, ...titleDisplay },
           ])
           onNewAnchorSaved?.()
         }
@@ -231,7 +300,7 @@ export default function AnchorSection({
           setAnchorSaving(false)
           return
         }
-        const data = { ...pos, target_panel: tvt, title: aTitle.trim(), description: aDesc.trim() }
+        const data = { ...pos, target_panel: tvt, title: aTitle.trim(), description: aDesc.trim(), ...titleDisplay }
         if (form.anchor) {
           const res = await updateNavigatorAnchor(lessonId, panelId, form.anchor.id, data)
           setNavAnchors(prev => prev.map(a => a.id === form.anchor.id ? res.data : a))
@@ -382,6 +451,9 @@ export default function AnchorSection({
     setPolyForm({ anchor })
     setPolyTitle(anchor?.title ?? '')
     setPolyContent(anchor?.content ?? '')
+    setShowTitle(anchor?.show_title ?? true)
+    setTitleSize(anchor?.title_size ?? 'medium')
+    setTitleTextColor(anchor?.title_text_color ?? '#000000')
     setPolyError(null)
     setEditingPoint(null)
     setForm(null)
@@ -461,7 +533,7 @@ export default function AnchorSection({
     setPolySaving(true)
     setPolyError(null)
     try {
-      const data = { pos_x: 0, pos_y: 0, pos_z: 0, title: polyTitle, content: polyContent }
+      const data = { pos_x: 0, pos_y: 0, pos_z: 0, title: polyTitle, content: polyContent, show_title: showTitle, title_size: titleSize, title_text_color: titleTextColor }
       if (polyForm.anchor) {
         const res = await updatePolygonAnchor(lessonId, panelId, polyForm.anchor.id, data)
         const merged = { ...res.data, title: polyTitle, content: polyContent }
@@ -681,6 +753,12 @@ export default function AnchorSection({
                   </div>
                 </>
               )}
+
+              <TitleDisplayControls
+                showTitle={showTitle} setShowTitle={setShowTitle}
+                titleSize={titleSize} setTitleSize={setTitleSize}
+                titleTextColor={titleTextColor} setTitleTextColor={setTitleTextColor}
+              />
 
               {error && <p className="lpe-anchor-form-error">{error}</p>}
 

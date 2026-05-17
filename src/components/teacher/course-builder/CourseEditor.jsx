@@ -8,6 +8,7 @@ export default function CourseEditor({
   bankOpen, setBankOpen,
   bankFiltered, bankSearch, setBankSearch, lessonBankCount,
   classes = [],
+  departments = [],
   onTitleChange, onDescChange, onClassroomChange, onToggleStatus, onDeleteCourse,
   onRemoveLesson, onMoveLesson, onAddLesson, onCreateLesson,
   panelsBasePath = '/teacher/lessons',
@@ -55,6 +56,7 @@ export default function CourseEditor({
 
       <LessonList
         selectedLessons={selectedLessons}
+        departments={departments}
         loadingDetail={loadingDetail}
         onRemove={onRemoveLesson}
         onMove={onMoveLesson}
@@ -71,6 +73,7 @@ export default function CourseEditor({
           bankSearch={bankSearch}
           setBankSearch={setBankSearch}
           selectedLessons={selectedLessons}
+          departments={departments}
           saving={saving}
           onAdd={onAddLesson}
           onCreateLesson={onCreateLesson}

@@ -79,9 +79,9 @@
   font-family: var(--font-ui, sans-serif);
   font-size: 12px;
   font-weight: 600;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #1a1a1a;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 6px;
   padding: 4px 10px;
   white-space: nowrap;
@@ -90,12 +90,15 @@
   pointer-events: none;
   opacity: 0.55;
   transition: opacity 0.18s ease;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
 
 .vr-hotspot:hover .vr-hotspot-label {
   opacity: 1;
 }
+
+.vr-hotspot-label--small  { font-size: 10px; }
+.vr-hotspot-label--medium { font-size: 12px; }
+.vr-hotspot-label--big    { font-size: 15px; }
 
 /* ── Type 2: Image pin ────────────────────────────────────────────────────
  * Circle crop keeps the in-scene marker compact; detail goes in the panel.

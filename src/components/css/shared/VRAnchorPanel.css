@@ -148,6 +148,26 @@
   animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.12s both;
 }
 
+.vr-ap-body h1, .vr-ap-body h2, .vr-ap-body h3 {
+  font-family: var(--font-ui);
+  color: var(--text);
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+.vr-ap-body h1 { font-size: 18px; }
+.vr-ap-body h2 { font-size: 16px; }
+.vr-ap-body h3 { font-size: 14px; font-weight: 600; }
+
+.vr-ap-body p { margin: 0 0 10px; }
+.vr-ap-body p:last-child { margin-bottom: 0; }
+
+.vr-ap-body img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  display: block;
+  margin: 8px 0;
+}
+
 /* Meta rows (Category, Bearing …) */
 .vr-ap-meta-row {
   display: flex;

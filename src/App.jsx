@@ -34,6 +34,7 @@ const TeacherMedia        = lazy(() => import('./pages/teacher/Media'))
 const TeacherSupport      = lazy(() => import('./pages/teacher/Support'))
 const TeacherProfile      = lazy(() => import('./pages/teacher/Profile'))
 const AdminDashboard      = lazy(() => import('./pages/admin/Dashboard'))
+const AdminOrganisations  = lazy(() => import('./pages/admin/Organisations'))
 const AdminUsers          = lazy(() => import('./pages/admin/Users'))
 const AdminLessons        = lazy(() => import('./pages/admin/Lessons'))
 const AdminClasses        = lazy(() => import('./pages/admin/Classes'))
@@ -87,7 +88,8 @@ function PageShell() {
           <Route path="/teacher/profile"      element={<PrivateRoute allowedRoles={['teacher']}><TeacherProfile /></PrivateRoute>} />
 
           {/* Admin */}
-          <Route path="/admin/dashboard"      element={<PrivateRoute allowedRoles={['admin']}><AdminDashboard /></PrivateRoute>} />
+          <Route path="/admin/dashboard"       element={<PrivateRoute allowedRoles={['admin']}><AdminDashboard /></PrivateRoute>} />
+          <Route path="/admin/organisations"  element={<PrivateRoute allowedRoles={['admin']}><AdminOrganisations /></PrivateRoute>} />
           <Route path="/admin/users"          element={<PrivateRoute allowedRoles={['admin']}><AdminUsers /></PrivateRoute>} />
           <Route path="/admin/lessons"            element={<PrivateRoute allowedRoles={['admin']}><AdminLessons /></PrivateRoute>} />
           <Route path="/admin/lessons/:id/panels" element={<PrivateRoute allowedRoles={['admin']}><AdminLessonPanelEditor /></PrivateRoute>} />

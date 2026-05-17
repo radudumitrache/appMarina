@@ -1,16 +1,21 @@
 import '../../css/admin/users/UsersSidebar.css'
+import { useAuth } from '../../../auth/AuthContext'
 
-const ROLES = [
+const BASE_ROLES = [
   { id: 'all',     label: 'All Users' },
   { id: 'student', label: 'Students'  },
   { id: 'teacher', label: 'Teachers'  },
 ]
+const ADMIN_ROLE = { id: 'admin', label: 'Admins' }
 
 export default function UsersSidebar({ roleFilter, onRoleFilterChange, counts }) {
+  const { user } = useAuth()
+  const roles = user?.is_staff ? [...BASE_ROLES, ADMIN_ROLE] : BASE_ROLES
+
   return (
     <aside className="users-sidebar">
       <nav className="users-sidebar-nav">
-        {ROLES.map(r => (
+        {roles.map(r => (
           <button
             key={r.id}
             className={`users-sidebar-btn ${roleFilter === r.id ? 'users-sidebar-btn--active' : ''}`}
@@ -18,7 +23,7 @@ export default function UsersSidebar({ roleFilter, onRoleFilterChange, counts })
           >
             <div className="users-sidebar-btn-row">
               <span className="users-sidebar-label">{r.label}</span>
-              <span className="users-sidebar-count">{counts[r.id]}</span>
+              <span className="users-sidebar-count">{counts[r.id] ?? 0}</span>
             </div>
           </button>
         ))}

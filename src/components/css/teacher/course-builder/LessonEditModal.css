@@ -172,6 +172,52 @@
   font-weight: 600;
 }
 
+/* ─── Department checklist ────────────────────────────────────────────────── */
+.lem-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 140px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.lem-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.lem-check-item:hover { background: var(--surface-3); }
+.lem-check-item--active { background: rgba(217,160,48,0.06); }
+
+.lem-check-box {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+.lem-check-box--checked {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--bg);
+}
+
+.lem-check-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+}
+.lem-check-item--active .lem-check-label { color: var(--text); }
+
 /* ─── Error ───────────────────────────────────────────────────────────────── */
 .lem-error {
   font-family: var(--font-ui);

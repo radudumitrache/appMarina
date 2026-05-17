@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth }     from '../../auth/AuthContext'
+import { useTheme }    from '../../context/ThemeContext'
 import NavBar          from '../../components/admin/NavBar'
 import ProfileCard     from '../../components/admin/settings/ProfileCard'
 import { getMe, updateMe } from '../../api/users'
@@ -9,7 +10,6 @@ import { getAnalytics }    from '../../api/admin'
 import '../css/admin/Settings.css'
 
 const LANGUAGES = ['English', 'Greek', 'Norwegian', 'Filipino', 'Romanian', 'Turkish', 'Ukrainian', 'Russian', 'Chinese']
-const TIMEZONES = ['UTC', 'UTC-5', 'UTC-4', 'UTC+1', 'UTC+2', 'UTC+3', 'UTC+8']
 const TABS = [
   { id: 'account',  label: 'Account'  },
   { id: 'profile',  label: 'Profile'  },
@@ -25,7 +25,6 @@ function mapProfile(data) {
     phone:       data.profile?.phone       ?? '',
     nationality: data.profile?.nationality ?? '',
     language:    data.profile?.language    ?? 'English',
-    timezone:    data.profile?.timezone    ?? 'UTC',
   }
 }
 
@@ -42,8 +41,9 @@ function SaveRow({ status, onSave, saving }) {
 }
 
 export default function Settings() {
-  const navigate      = useNavigate()
-  const { logout }    = useAuth()
+  const navigate            = useNavigate()
+  const { logout }          = useAuth()
+  const { theme, setTheme } = useTheme()
 
   const [profile, setProfile]   = useState(null)
   const [stats,   setStats]     = useState(null)
@@ -51,7 +51,7 @@ export default function Settings() {
   const [activeTab, setTab]     = useState('account')
 
   const [account, setAccount]   = useState({ firstName: '', lastName: '', username: '', email: '' })
-  const [prefs,   setPrefs]     = useState({ phone: '', nationality: '', language: 'English', timezone: 'UTC' })
+  const [prefs,   setPrefs]     = useState({ phone: '', nationality: '', language: 'English' })
   const [pwd,     setPwd]       = useState({ current: '', next: '', confirm: '' })
   const [pwdError, setPwdError] = useState('')
 
@@ -73,7 +73,7 @@ export default function Settings() {
         const p = mapProfile(meRes.data)
         setProfile(p)
         setAccount({ firstName: p.firstName, lastName: p.lastName, username: p.username, email: p.email })
-        setPrefs({ phone: p.phone, nationality: p.nationality, language: p.language, timezone: p.timezone })
+        setPrefs({ phone: p.phone, nationality: p.nationality, language: p.language })
         setStats(analyticsRes.data)
       })
       .catch(() => {})
@@ -92,7 +92,7 @@ export default function Settings() {
   const handlePrefsSave = async () => {
     setPrefsStatus('saving')
     try {
-      const { data } = await updateMe({ profile: { phone: prefs.phone, nationality: prefs.nationality, language: prefs.language, timezone: prefs.timezone } })
+      const { data } = await updateMe({ profile: { phone: prefs.phone, nationality: prefs.nationality, language: prefs.language } })
       setProfile(mapProfile(data))
       flash(setPrefsStatus, 'saved')
     } catch { flash(setPrefsStatus, 'error') }
@@ -116,6 +116,11 @@ export default function Settings() {
   }
 
   const handleSignOut = () => { logout(); navigate('/login') }
+
+  const handleThemeChange = async (val) => {
+    setTheme(val)
+    try { await updateMe({ profile: { theme_preference: val } }) } catch (_) {}
+  }
 
   if (loading) return (
     <div className="settings-page">
@@ -141,7 +146,7 @@ export default function Settings() {
 
         <div className="settings-body">
           <ProfileCard
-            profile={{ ...profile, phone: prefs.phone, timezone: prefs.timezone }}
+            profile={{ ...profile, phone: prefs.phone }}
             stats={stats}
             onSignOut={handleSignOut}
           />
@@ -188,6 +193,32 @@ export default function Settings() {
                       onChange={e => setAccount(a => ({ ...a, email: e.target.value }))} />
                   </div>
                 </div>
+                <div className="s-appearance-row">
+                  <span className="s-label">Appearance</span>
+                  <div className="s-theme-toggle">
+                    <button
+                      className={`s-theme-btn${theme === 'dark' ? ' s-theme-btn--active' : ''}`}
+                      onClick={() => handleThemeChange('dark')}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                      </svg>
+                      Dark
+                    </button>
+                    <button
+                      className={`s-theme-btn${theme === 'light' ? ' s-theme-btn--active' : ''}`}
+                      onClick={() => handleThemeChange('light')}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                      </svg>
+                      Light
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -214,13 +245,6 @@ export default function Settings() {
                     <select className="s-select" value={prefs.language}
                       onChange={e => setPrefs(p => ({ ...p, language: e.target.value }))}>
                       {LANGUAGES.map(l => <option key={l}>{l}</option>)}
-                    </select>
-                  </div>
-                  <div className="s-form-row">
-                    <label className="s-label">Timezone</label>
-                    <select className="s-select" value={prefs.timezone}
-                      onChange={e => setPrefs(p => ({ ...p, timezone: e.target.value }))}>
-                      {TIMEZONES.map(t => <option key={t}>{t}</option>)}
                     </select>
                   </div>
                 </div>

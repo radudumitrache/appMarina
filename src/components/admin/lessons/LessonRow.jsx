@@ -1,7 +1,8 @@
 import '../../css/admin/lessons/LessonRow.css'
 
-export default function LessonRow({ lesson, categories, index, onView, onEdit, onDelete }) {
-  const catLabel = categories.find(c => c.id === lesson.category)?.label
+export default function LessonRow({ lesson, departments, classes = [], index, onView, onEdit, onDelete }) {
+  const deptName       = id => departments.find(d => d.id === id)?.name ?? id
+  const className      = classes.find(c => c.id === lesson.classroom_id)?.name ?? null
 
   return (
     <div
@@ -11,7 +12,12 @@ export default function LessonRow({ lesson, categories, index, onView, onEdit, o
       <div className="lesson-row-main">
         <div className="lesson-row-title">{lesson.title}</div>
         <div className="lesson-row-meta">
-          <span className="lesson-cat-badge">{catLabel}</span>
+          {lesson.department_ids.length > 0
+            ? lesson.department_ids.map(id => (
+                <span key={id} className="lesson-dept-badge">{deptName(id)}</span>
+              ))
+            : <span className="lesson-no-dept">No department</span>
+          }
           <span className="lesson-meta-sep">·</span>
           <span className="lesson-duration">{lesson.duration}</span>
           <span className="lesson-meta-sep">·</span>
@@ -25,7 +31,10 @@ export default function LessonRow({ lesson, categories, index, onView, onEdit, o
 
       <div className="lesson-row-right">
         <span className={`lesson-status-badge lesson-status-badge--${lesson.visibility}`}>
-          {lesson.visibility}
+          {lesson.visibility === 'class' && className
+            ? <>{lesson.visibility}<span className="lesson-status-class-name"> · {className}</span></>
+            : lesson.visibility
+          }
         </span>
         <div className="lesson-row-actions">
           <button className="row-btn" onClick={onView} title="View lesson">

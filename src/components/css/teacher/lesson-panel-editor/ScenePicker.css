@@ -72,7 +72,19 @@
 .sp-toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sp-upload-dest {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.sp-upload-dest strong {
+  color: var(--text-2);
+  font-weight: 600;
 }
 
 .sp-upload-btn {
@@ -134,85 +146,207 @@
   margin: 0;
 }
 
-/* ── Grid ────────────────────────────────────────────────────────────── */
+/* ── List ────────────────────────────────────────────────────────────── */
 
-.sp-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-/* ── Scene item ──────────────────────────────────────────────────────── */
-
-.sp-item {
+.sp-list {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
+}
+
+/* ── List row (item + preview button) ────────────────────────────────── */
+
+.sp-list-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── List item ───────────────────────────────────────────────────────── */
+
+.sp-list-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 12px;
   background: none;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 5px;
   cursor: pointer;
   text-align: left;
   transition: border-color var(--duration-fast), background var(--duration-fast);
 }
 
-.sp-item:hover {
+.sp-list-item:hover {
   border-color: var(--border-hover);
   background: rgba(255, 255, 255, 0.03);
 }
 
-.sp-item--active {
+.sp-list-item--active {
   border-color: var(--gold, #d4a017);
   background: rgba(212, 160, 23, 0.07);
 }
 
-/* ── Thumbnail ───────────────────────────────────────────────────────── */
-
-.sp-thumb-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 2 / 1;
-  border-radius: 4px;
-  overflow: hidden;
-  background: var(--surface-2);
+.sp-list-icon {
+  color: var(--text-3);
+  flex-shrink: 0;
 }
 
-.sp-thumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.sp-list-item--active .sp-list-icon {
+  color: var(--gold, #d4a017);
 }
 
-.sp-thumb-placeholder {
-  width: 100%;
-  height: 100%;
-  background: var(--surface-3);
-}
-
-.sp-check {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--gold, #d4a017);
-  color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ── Scene name ──────────────────────────────────────────────────────── */
-
-.sp-name {
+.sp-list-name {
+  flex: 1;
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-2);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: block;
 }
+
+.sp-list-item--active .sp-list-name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.sp-list-check {
+  color: var(--gold, #d4a017);
+  flex-shrink: 0;
+}
+
+/* ── Folder badge ────────────────────────────────────────────────────── */
+
+.sp-folder-badge {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Preview button ──────────────────────────────────────────────────── */
+
+.sp-preview-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 38px;
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.sp-preview-btn:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+/* ── Preview overlay / lightbox ──────────────────────────────────────── */
+
+.sp-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s var(--ease-default, ease) both;
+}
+
+.sp-preview-box {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1, #0b1220);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: min(780px, 94vw);
+  max-height: 88vh;
+  overflow: hidden;
+  animation: fadeUp 0.2s var(--ease-default, ease) both;
+}
+
+.sp-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sp-preview-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-preview-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.sp-preview-close:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+.sp-preview-img {
+  width: 100%;
+  max-height: calc(88vh - 110px);
+  object-fit: contain;
+  display: block;
+  background: #000;
+}
+
+.sp-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sp-preview-select-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 16px;
+  background: var(--gold, #d4a017);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.sp-preview-select-btn:hover { opacity: 0.88; }

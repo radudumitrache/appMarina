@@ -1,9 +1,10 @@
-import { CAT_LABELS, CAT_COLORS, formatDuration } from './courseBuilderUtils'
+import { formatDuration } from './courseBuilderUtils'
 import '../../css/teacher/course-builder/LessonList.css'
 
 const TYPE_SHORT = { vr_tour: 'VR', text: 'Text' }
 
-export default function LessonList({ selectedLessons, loadingDetail, onRemove, onMove, onNavigatePanels, onViewLesson }) {
+export default function LessonList({ selectedLessons, departments = [], loadingDetail, onRemove, onMove, onNavigatePanels, onViewLesson }) {
+  const deptName = id => departments.find(d => d.id === id)?.name ?? id
   if (loadingDetail) {
     return (
       <div className="cb-loading">
@@ -36,11 +37,9 @@ export default function LessonList({ selectedLessons, loadingDetail, onRemove, o
           <div className="cb-lesson-body">
             <span className="cb-lesson-title">{lesson.title}</span>
             <div className="cb-lesson-meta">
-              {lesson.category && (
-                <span className={`cb-cat-tag ${CAT_COLORS[lesson.category] || ''}`}>
-                  {CAT_LABELS[lesson.category] ?? lesson.category}
-                </span>
-              )}
+              {(lesson.department_ids ?? []).map(id => (
+                <span key={id} className="cb-dept-tag">{deptName(id)}</span>
+              ))}
               {lesson.type && (
                 <span className={`cb-type-badge cb-type--${lesson.type}`}>
                   {TYPE_SHORT[lesson.type] ?? lesson.type}

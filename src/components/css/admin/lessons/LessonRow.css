@@ -39,15 +39,22 @@
   flex-wrap: wrap;
 }
 
-.lesson-cat-badge {
+.lesson-dept-badge {
   font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 500;
-  color: var(--text-3);
-  background: var(--surface-3);
-  border: 1px solid var(--border);
+  color: var(--error);
+  background: rgba(224,82,82,0.08);
+  border: 1px solid rgba(224,82,82,0.2);
   border-radius: 4px;
   padding: 2px 7px;
+}
+
+.lesson-no-dept {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  opacity: 0.5;
 }
 
 .lesson-meta-sep { color: var(--text-3); font-size: 11px; }
@@ -93,6 +100,13 @@
 }
 .lesson-status-badge--public { color: var(--success); background: rgba(46, 199, 122, 0.12); }
 .lesson-status-badge--class  { color: var(--text-3);  background: rgba(255,255,255,0.06);   }
+
+.lesson-status-class-name {
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.75;
+}
 
 .lesson-row-actions {
   display: flex;

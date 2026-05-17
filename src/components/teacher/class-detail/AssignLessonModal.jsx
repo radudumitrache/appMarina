@@ -3,8 +3,6 @@ import { getLessons } from '../../../api/lessons'
 import { assignLesson } from '../../../api/classes'
 import '../../css/teacher/class-detail/AssignLessonModal.css'
 
-const CAT_LABELS = { nav: 'Navigation', emg: 'Emergency', eng: 'Engineering', cargo: 'Cargo', comm: 'Communication' }
-
 export default function AssignLessonModal({ classId, assignedIds = [], onClose, onAssigned }) {
   const [lessons, setLessons]   = useState([])
   const [search, setSearch]     = useState('')
@@ -21,7 +19,7 @@ export default function AssignLessonModal({ classId, assignedIds = [], onClose, 
 
   const filtered = lessons.filter(l => {
     const q = search.toLowerCase().trim()
-    return l.title.toLowerCase().includes(q) || (l.category || '').toLowerCase().includes(q)
+    return l.title.toLowerCase().includes(q)
   })
 
   const handleAssign = async () => {
@@ -84,7 +82,6 @@ export default function AssignLessonModal({ classId, assignedIds = [], onClose, 
                   <div className="alm-row-main">
                     <span className="alm-row-title">{l.title}</span>
                     <div className="alm-row-meta">
-                      {l.category && <span className="alm-tag">{CAT_LABELS[l.category] ?? l.category}</span>}
                       {l.duration_minutes && <span className="alm-dur">{l.duration_minutes} min</span>}
                     </div>
                   </div>

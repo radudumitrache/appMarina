@@ -1,11 +1,6 @@
 import '../../css/student/profile/PersonalInfoTab.css'
 import { useState } from 'react'
 
-const TIMEZONES = [
-  'America/Vancouver', 'America/New_York', 'America/Chicago',
-  'Europe/London', 'Europe/Paris', 'Asia/Tokyo', 'Asia/Singapore',
-  'Australia/Sydney', 'UTC',
-]
 
 const LANGUAGES = ['English', 'French', 'Spanish', 'Portuguese', 'Japanese', 'Mandarin', 'Arabic']
 
@@ -92,20 +87,16 @@ export default function PersonalInfoTab({ profile, onSave }) {
           {editing ? <input className="form-input" value={draft.nationality} onChange={set('nationality')} /> : <span className="form-value">{profile.nationality}</span>}
         </div>
         <div className="form-field">
+          <label className="form-label">Organisation</label>
+          {editing ? <input className="form-input" value={draft.organisation ?? ''} onChange={set('organisation')} placeholder="e.g. University, Company…" /> : <span className="form-value">{profile.organisation || '—'}</span>}
+        </div>
+        <div className="form-field">
           <label className="form-label">Language</label>
           {editing ? (
             <select className="form-input form-select" value={draft.language} onChange={set('language')}>
               {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
             </select>
           ) : <span className="form-value">{profile.language}</span>}
-        </div>
-        <div className="form-field">
-          <label className="form-label">Timezone</label>
-          {editing ? (
-            <select className="form-input form-select" value={draft.timezone} onChange={set('timezone')}>
-              {TIMEZONES.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-          ) : <span className="form-value">{profile.timezone}</span>}
         </div>
       </div>
     </div>

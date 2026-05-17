@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { getMediaFiles, getUploadUrl, uploadToGCS, confirmUpload } from '../../../api/media'
 import '../../css/teacher/lesson-panel-editor/MediaInsertModal.css'
 
@@ -11,13 +12,19 @@ function computeNewName(existingNames, originalName) {
   return `${base}(${i})${ext}`
 }
 
-export default function MediaInsertModal({ initialMode = 'image', imageOnly = false, classroomId, folderLabel, onInsert, onClose }) {
+function fileFolderLabel(file) {
+  if (file.folder === 'public' || file.folder === 'vr_scenes') return 'Public'
+  return file.class_name || 'Class'
+}
+
+export default function MediaInsertModal({ initialMode = 'image', imageOnly = false, vrScene = false, classroomId, folderLabel, onInsert, onClose }) {
   const [mode,          setMode]          = useState(imageOnly ? 'image' : initialMode)
   const [files,         setFiles]         = useState([])
   const [loading,       setLoading]       = useState(true)
   const [uploading,     setUploading]     = useState(false)
   const [uploadErr,     setUploadErr]     = useState(null)
   const [pendingUpload, setPendingUpload] = useState(null)
+  const [previewFile,   setPreviewFile]   = useState(null)
   const fileRef = useRef()
 
   const folderParams = classroomId
@@ -33,7 +40,7 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
       .finally(() => setLoading(false))
   }, [classroomId])
 
-  const displayed = files.filter(f => f.file_type === mode)
+  const displayed = files.filter(f => f.file_type === mode && !f.is_vr_scene)
 
   const doUpload = async (file, filename) => {
     setUploadErr(null)
@@ -46,11 +53,12 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
       })
       await uploadToGCS(urlData.upload_url, file)
       const { data: mediaFile } = await confirmUpload({
-        gcs_path:   urlData.gcs_path,
-        filename:   filename,
-        file_type:  file.type.startsWith('video/') ? 'video' : 'image',
-        mime_type:  file.type,
-        size_bytes: file.size,
+        gcs_path:    urlData.gcs_path,
+        filename:    filename,
+        file_type:   file.type.startsWith('video/') ? 'video' : 'image',
+        mime_type:   file.type,
+        size_bytes:  file.size,
+        is_vr_scene: vrScene,
         ...folderParams,
       })
       setFiles(prev => [mediaFile, ...prev])
@@ -87,6 +95,7 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
   }
 
   return (
+    <>
     <div className="mim-overlay" onMouseDown={e => { if (e.target === e.currentTarget && !uploading) onClose() }}>
       <div className="mim-modal">
 
@@ -169,22 +178,47 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
           ) : displayed.length === 0 ? (
             <p className="mim-hint">No {mode === 'image' ? 'images' : 'videos'} yet — upload one above.</p>
           ) : (
-            <div className={`mim-grid mim-grid--${mode}`}>
+            <div className="mim-file-list">
               {displayed.map(f => (
-                <button
-                  key={f.id}
-                  className="mim-item"
-                  onClick={() => onInsert(f.download_url, f.file_type)}
-                  title={f.name}
-                >
-                  <div className="mim-thumb-wrap">
-                    {f.file_type === 'image'
-                      ? <img src={f.download_url} alt={f.name} className="mim-thumb" />
-                      : <video src={f.download_url} className="mim-thumb" muted />
-                    }
-                  </div>
-                  <span className="mim-name">{f.name}</span>
-                </button>
+                <div key={f.id} className="mim-file-row-wrap">
+                  <button
+                    className="mim-file-row"
+                    onClick={() => onInsert(f.download_url, f.file_type)}
+                    title={f.name}
+                  >
+                    <span className="mim-file-icon">
+                      {f.file_type === 'image' ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="3" width="18" height="18" rx="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                          <polygon points="23 7 16 12 23 17 23 7"/>
+                          <rect x="1" y="5" width="15" height="14" rx="2"/>
+                        </svg>
+                      )}
+                    </span>
+                    <span className="mim-file-name">{f.name}</span>
+                    <span className="mim-file-folder">{fileFolderLabel(f)}</span>
+                    <span className="mim-file-select-icon">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+                    </span>
+                  </button>
+                  <button
+                    className="mim-preview-btn"
+                    onClick={() => setPreviewFile(previewFile?.id === f.id ? null : f)}
+                    title="Preview"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
               ))}
             </div>
           )}
@@ -198,5 +232,35 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
         )}
       </div>
     </div>
+
+    {previewFile && createPortal(
+      <div className="mim-lightbox-overlay" onClick={() => setPreviewFile(null)}>
+        <div className="mim-lightbox-box" onClick={e => e.stopPropagation()}>
+          <div className="mim-lightbox-header">
+            <span className="mim-lightbox-title">{previewFile.name}</span>
+            <button className="mim-lightbox-close" onClick={() => setPreviewFile(null)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          {previewFile.file_type === 'image' ? (
+            <img src={previewFile.download_url} alt={previewFile.name} className="mim-lightbox-img" />
+          ) : (
+            <video src={previewFile.download_url} className="mim-lightbox-video" controls />
+          )}
+          <div className="mim-lightbox-footer">
+            <button
+              className="mim-lightbox-insert-btn"
+              onClick={() => { onInsert(previewFile.download_url, previewFile.file_type); setPreviewFile(null) }}
+            >
+              Insert
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
+    </>
   )
 }

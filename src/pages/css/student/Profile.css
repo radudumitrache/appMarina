@@ -63,14 +63,77 @@
   gap: 0;
 }
 
+/* ── RIGHT column wrapper ─────────────────────────────── */
+.profile-right {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ── RIGHT main ───────────────────────────────────────── */
 .profile-main {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   padding: 28px 40px;
   gap: 20px;
+}
+
+/* ── Appearance panel ─────────────────────────────────── */
+.profile-appearance-panel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 40px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--surface-1);
+}
+
+.profile-appearance-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.profile-theme-toggle {
+  display: flex;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.profile-theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  white-space: nowrap;
+}
+
+.profile-theme-btn:hover { color: var(--text); background: var(--surface-3); }
+
+.profile-theme-btn--active {
+  background: rgba(11, 189, 164, 0.1);
+  color: var(--accent);
 }
 
 /* ── Tabs ─────────────────────────────────────────────── */

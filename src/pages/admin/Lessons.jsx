@@ -8,30 +8,24 @@ import LessonFormPanel from '../../components/admin/lessons/LessonFormPanel'
 import LessonDeleteModal from '../../components/admin/lessons/LessonDeleteModal'
 import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons'
 import { getClasses } from '../../api/classes'
+import { getDepartments } from '../../api/departments'
+import { getOrganisations } from '../../api/organisations'
+import { useAuth } from '../../auth/AuthContext'
 import Sk from '../../components/shared/Skeleton'
 import '../css/admin/Lessons.css'
-
-const CATEGORIES = [
-  { id: 'all',   label: 'All Lessons'         },
-  { id: 'nav',   label: 'Bridge Navigation'   },
-  { id: 'emg',   label: 'Emergency Protocols' },
-  { id: 'eng',   label: 'Engine Room'         },
-  { id: 'cargo', label: 'Cargo Management'    },
-  { id: 'comm',  label: 'Communications'      },
-]
 
 const DIFFICULTIES = ['easy', 'intermediate', 'advanced']
 
 const EMPTY_FORM = {
-  title: '', category: 'nav', duration_minutes: 60,
-  difficulty: 'intermediate', visibility: 'class', classroom: null,
+  title: '', department_ids: [], duration_minutes: 60,
+  difficulty: 'intermediate', visibility: 'class', classroom: null, organisation_id: null,
 }
 
 function mapLesson(l) {
   return {
     id:               l.id,
     title:            l.title,
-    category:         l.category,
+    department_ids:   l.department_ids ?? [],
     duration:         `${l.duration_minutes} min`,
     duration_minutes: l.duration_minutes,
     difficulty:       l.difficulty,
@@ -39,16 +33,20 @@ function mapLesson(l) {
     author:           l.author_name ?? '',
     locked:           l.locked,
     classroom_id:     l.classroom_id ?? null,
+    organisation_id:  l.organisation_id ?? null,
   }
 }
 
 export default function Lessons() {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [lessons, setLessons]               = useState([])
+  const [departments, setDepartments]       = useState([])
+  const [organisations, setOrganisations]   = useState([])
   const [loading, setLoading]               = useState(true)
   const [search, setSearch]                 = useState('')
-  const [activeCategory, setActiveCategory] = useState('all')
+  const [activeDept, setActiveDept]         = useState('all')
   const [visFilter, setVisFilter]           = useState('all')
   const [panel, setPanel]                   = useState(null)
   const [form, setForm]                     = useState(EMPTY_FORM)
@@ -60,13 +58,15 @@ export default function Lessons() {
     getLessons()
       .then(({ data }) => setLessons(data.map(mapLesson)))
       .finally(() => setLoading(false))
-    getClasses()
-      .then(({ data }) => setClasses(data))
-      .catch(() => {})
+    getClasses().then(({ data }) => setClasses(data)).catch(() => {})
+    getDepartments().then(({ data }) => setDepartments(data)).catch(() => {})
+    if (user?.is_staff) {
+      getOrganisations().then(({ data }) => setOrganisations(data)).catch(() => {})
+    }
   }, [])
 
   const filtered = lessons
-    .filter(l => activeCategory === 'all' || l.category === activeCategory)
+    .filter(l => activeDept === 'all' || l.department_ids.includes(Number(activeDept)))
     .filter(l => visFilter === 'all' || l.visibility === visFilter)
     .filter(l => l.title.toLowerCase().includes(search.toLowerCase().trim()))
 
@@ -76,11 +76,12 @@ export default function Lessons() {
     setEditTarget(lesson)
     setForm({
       title:            lesson.title,
-      category:         lesson.category,
+      department_ids:   lesson.department_ids,
       duration_minutes: lesson.duration_minutes,
       difficulty:       lesson.difficulty,
       visibility:       lesson.visibility,
       classroom:        lesson.classroom_id ?? null,
+      organisation_id:  lesson.organisation_id ?? null,
     })
     setPanel('edit')
   }
@@ -114,7 +115,9 @@ export default function Lessons() {
     setDeleteTarget(null)
   }
 
-  const activeLabel = CATEGORIES.find(c => c.id === activeCategory)?.label
+  const activeDeptLabel = activeDept === 'all'
+    ? 'All Lessons'
+    : departments.find(d => String(d.id) === activeDept)?.name ?? 'Lessons'
 
   return (
     <div className="lessons-adm-page">
@@ -123,15 +126,15 @@ export default function Lessons() {
         <div className="lessons-adm-body">
 
           <LessonsSidebar
-            categories={CATEGORIES}
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
+            departments={departments}
+            activeDept={activeDept}
+            onDeptChange={setActiveDept}
             lessons={lessons}
           />
 
           <main className="lessons-adm-main">
             <LessonsToolbar
-              title={activeLabel}
+              title={activeDeptLabel}
               filteredCount={filtered.length}
               search={search}
               onSearchChange={setSearch}
@@ -165,7 +168,8 @@ export default function Lessons() {
                   <LessonRow
                     key={lesson.id}
                     lesson={lesson}
-                    categories={CATEGORIES}
+                    departments={departments}
+                    classes={classes}
                     index={i}
                     onView={() => navigate(`/admin/lessons/${lesson.id}/panels`, { state: { backPath: '/admin/lessons' } })}
                     onEdit={() => openEdit(lesson)}
@@ -185,9 +189,10 @@ export default function Lessons() {
           onChange={handleFormChange}
           onClose={() => { setPanel(null); setEditTarget(null) }}
           onSave={panel === 'create' ? handleSave : handleUpdate}
-          categories={CATEGORIES.filter(c => c.id !== 'all')}
+          departments={departments}
           difficulties={DIFFICULTIES}
           classes={classes}
+          organisations={organisations}
         />
       )}
 

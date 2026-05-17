@@ -1,11 +1,16 @@
 import { useRef, useState } from 'react'
 import '../../css/admin/users/UserFormModal.css'
 import '../../css/admin/users/CsvImportModal.css'
+import Dropdown from '../../shared/Dropdown'
+import { useAuth } from '../../../auth/AuthContext'
 
-export default function CsvImportModal({ csvRows, importing, onClose, onImport, onFileParsed, onDownloadTemplate }) {
-  const fileRef              = useRef(null)
-  const [password, setPassword] = useState('')
-  const [showPwd, setShowPwd]   = useState(false)
+export default function CsvImportModal({ csvRows, importing, organisations = [], onClose, onImport, onFileParsed, onDownloadTemplate }) {
+  const { user } = useAuth()
+  const isSuperAdmin = user?.is_staff
+  const fileRef                     = useRef(null)
+  const [password, setPassword]     = useState('')
+  const [showPwd, setShowPwd]       = useState(false)
+  const [orgId, setOrgId]           = useState(null)
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0]
@@ -81,6 +86,23 @@ export default function CsvImportModal({ csvRows, importing, onClose, onImport, 
             </div>
           </div>
 
+          {isSuperAdmin && (
+            <div className="form-row">
+              <label className="form-label">
+                Organisation <span className="form-hint">— optional, applied to all imported users</span>
+              </label>
+              <Dropdown
+                value={orgId}
+                onChange={setOrgId}
+                placeholder="— No organisation —"
+                options={[
+                  { value: null, label: '— No organisation —' },
+                  ...organisations.map(o => ({ value: o.id, label: o.name })),
+                ]}
+              />
+            </div>
+          )}
+
           <div
             className={`csv-drop-zone ${csvRows.length > 0 ? 'csv-drop-zone--loaded' : ''}`}
             onClick={() => fileRef.current?.click()}
@@ -139,7 +161,7 @@ export default function CsvImportModal({ csvRows, importing, onClose, onImport, 
           <button className="btn-ghost" onClick={onClose} disabled={importing}>Cancel</button>
           <button
             className="btn-primary"
-            onClick={() => onImport(password)}
+            onClick={() => onImport(password, orgId)}
             disabled={!canImport || importing}
           >
             {importing ? (

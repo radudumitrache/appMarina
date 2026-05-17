@@ -9,6 +9,7 @@ export default function TestEditorMain({
   panels,
   hasClass,
   classes,
+  organisations = [],
   expandedPanelId,
   saving,
   addingPanel,
@@ -42,6 +43,7 @@ export default function TestEditorMain({
         selected={testDetail}
         panelCount={panels.length}
         classes={classes}
+        organisations={organisations}
         onUpdate={onMetaUpdate}
         allowPublic={allowPublic}
       />

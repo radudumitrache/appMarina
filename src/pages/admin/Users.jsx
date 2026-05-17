@@ -6,9 +6,11 @@ import UserFormModal from '../../components/admin/users/UserFormModal'
 import CsvImportModal from '../../components/admin/users/CsvImportModal'
 import UsersTable from '../../components/admin/users/UsersTable'
 import { getUsers, createUser, bulkCreateUsers, updateUser, deleteUser } from '../../api/admin'
+import { getOrganisations } from '../../api/organisations'
+import { getDepartments } from '../../api/departments'
 import '../css/admin/Users.css'
 
-const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '' }
+const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '', organisation_id: null, department_ids: [] }
 
 function mapUser(u) {
   const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username
@@ -20,6 +22,9 @@ function mapUser(u) {
     role: u.profile?.role ?? 'student',
     className: '—',
     status: u.profile?.account_status === 'suspended' ? 'inactive' : 'active',
+    organisation_id: u.profile?.organisation_id ?? null,
+    organisation_name: u.profile?.organisation_name ?? null,
+    department_ids: u.profile?.department_ids ?? [],
   }
 }
 
@@ -52,6 +57,10 @@ export default function Users() {
   const [formError, setFormError]   = useState('')
   const [loadError, setLoadError]   = useState('')
   const [importing, setImporting]   = useState(false)
+  const [organisations, setOrganisations] = useState([])
+  const [departments, setDepartments]     = useState([])
+  const [sortKey, setSortKey]             = useState('id')
+  const [sortDir, setSortDir]             = useState('desc')
 
   useEffect(() => {
     getUsers()
@@ -61,12 +70,24 @@ export default function Users() {
         setLoadError(status === 403 ? 'Permission denied. Make sure your account has admin access.' : 'Failed to load users.')
       })
       .finally(() => setLoading(false))
+    getOrganisations().then(r => setOrganisations(r.data)).catch(() => {})
+    getDepartments().then(r => setDepartments(r.data)).catch(() => {})
   }, [])
 
   const counts = {
     all:     users.length,
     student: users.filter(u => u.role === 'student').length,
     teacher: users.filter(u => u.role === 'teacher').length,
+    admin:   users.filter(u => u.role === 'admin').length,
+  }
+
+  const handleSort = (key) => {
+    if (key === sortKey) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
   }
 
   const filtered = users
@@ -75,12 +96,28 @@ export default function Users() {
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase())
     )
+    .sort((a, b) => {
+      const aVal = a[sortKey] ?? ''
+      const bVal = b[sortKey] ?? ''
+      const cmp = typeof aVal === 'number'
+        ? aVal - bVal
+        : String(aVal).localeCompare(String(bVal))
+      return sortDir === 'asc' ? cmp : -cmp
+    })
 
   const openCreate = () => { setForm(EMPTY_FORM); setModal('create') }
 
   const openEdit = (user) => {
     setEditTarget(user)
-    setForm({ name: user.name, username: user.username, email: user.email, role: user.role, password: '' })
+    setForm({
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      password: '',
+      organisation_id: user.organisation_id ?? null,
+      department_ids: user.department_ids ?? [],
+    })
     setModal('edit')
   }
 
@@ -101,6 +138,8 @@ export default function Users() {
       email: form.email,
       role: form.role,
       ...(form.password && { password: form.password }),
+      organisation_id: form.organisation_id,
+      department_ids: form.department_ids,
     }
     setSaving(true)
     setFormError('')
@@ -150,13 +189,14 @@ export default function Users() {
     }
   }
 
-  const handleCSVImport = async (password) => {
+  const handleCSVImport = async (password, organisationId) => {
     const payload = {
       password,
       users: csvRows.map(r => {
         const [firstName, ...rest] = r.name.trim().split(' ')
         return { first_name: firstName, last_name: rest.join(' '), username: r.username, email: r.email, role: r.role }
       }),
+      ...(organisationId != null && { organisation_id: organisationId }),
     }
     setImporting(true)
     try {
@@ -211,6 +251,9 @@ export default function Users() {
               <UsersTable
                 loading={loading}
                 users={filtered}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSort={handleSort}
                 onEdit={openEdit}
                 onToggleStatus={toggleStatus}
                 onDelete={handleDelete}
@@ -229,7 +272,8 @@ export default function Users() {
           onSave={handleSave}
           saving={saving}
           error={formError}
-          classes={[]}
+          organisations={organisations}
+          departments={departments}
         />
       )}
 
@@ -237,6 +281,7 @@ export default function Users() {
         <CsvImportModal
           csvRows={csvRows}
           importing={importing}
+          organisations={organisations}
           onClose={closeModal}
           onImport={handleCSVImport}
           onFileParsed={(raw) => setCsvRows(parseCSV(raw))}

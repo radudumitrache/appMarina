@@ -3,8 +3,6 @@ import { createPortal } from 'react-dom'
 import { getCourse, getLessons, addCourseLesson, removeCourseLesson } from '../../../api/lessons'
 import '../../css/teacher/class-detail/CourseLessonModal.css'
 
-const CAT_LABELS = { nav: 'NAV', emg: 'EMG', eng: 'ENG', cargo: 'CARGO', comm: 'COMM' }
-
 export default function CourseLessonModal({ course, classLessons, onClose }) {
   const [inCourse,  setInCourse]  = useState([])
   const [allLessons, setAllLessons] = useState([])
@@ -23,14 +21,14 @@ export default function CourseLessonModal({ course, classLessons, onClose }) {
       const clMap = new Map(classLessons.map(l => [l.id, l]))
       const loaded = (courseRes.data.lessons ?? []).map(cl => {
         const id = cl.lesson_detail?.id ?? cl.id
-        return clMap.get(id) ?? { id, title: cl.lesson_detail?.title ?? '—', cat: cl.lesson_detail?.category, duration: cl.lesson_detail?.duration_minutes ? `${cl.lesson_detail.duration_minutes} min` : '—' }
+        return clMap.get(id) ?? { id, title: cl.lesson_detail?.title ?? '—', duration: cl.lesson_detail?.duration_minutes ? `${cl.lesson_detail.duration_minutes} min` : '—' }
       }).filter(Boolean)
       setInCourse(loaded)
 
       // Merge class lessons + public lessons, deduped
       const publicLessons = (publicRes.data ?? [])
         .filter(l => !classIds.has(l.id))
-        .map(l => ({ id: l.id, title: l.title, cat: l.category, duration: l.duration_minutes ? `${l.duration_minutes} min` : '—', source: 'public' }))
+        .map(l => ({ id: l.id, title: l.title, duration: l.duration_minutes ? `${l.duration_minutes} min` : '—', source: 'public' }))
 
       setAllLessons([
         ...classLessons.map(l => ({ ...l, source: 'class' })),
@@ -79,7 +77,6 @@ export default function CourseLessonModal({ course, classLessons, onClose }) {
     setDragSrc(null)
   }
 
-  const cat = l => CAT_LABELS[l.cat ?? l.category] ?? l.cat ?? l.category ?? ''
   const dur = l => l.duration ?? (l.duration_minutes ? `${l.duration_minutes} min` : '')
 
   return createPortal(
@@ -133,7 +130,6 @@ export default function CourseLessonModal({ course, classLessons, onClose }) {
                       <div className="clm-item-info">
                         <span className="clm-item-title">{l.title}</span>
                         <div className="clm-item-meta">
-                          {cat(l) && <span className="clm-tag">{cat(l)}</span>}
                           {dur(l) && <span className="clm-dur">{dur(l)}</span>}
                           {l.source === 'public' && <span className="clm-tag clm-tag--public">PUBLIC</span>}
                         </div>
@@ -187,7 +183,6 @@ export default function CourseLessonModal({ course, classLessons, onClose }) {
                       <div className="clm-item-info">
                         <span className="clm-item-title">{l.title}</span>
                         <div className="clm-item-meta">
-                          {cat(l) && <span className="clm-tag">{cat(l)}</span>}
                           {dur(l) && <span className="clm-dur">{dur(l)}</span>}
                         </div>
                       </div>

@@ -11,7 +11,7 @@ export default function UserRow({ user, index, onEdit, onToggleStatus, onDelete 
         <span className={`role-badge role-badge--${user.role}`}>{user.role}</span>
       </td>
       <td className="user-email">{user.email}</td>
-      <td className="user-class">{user.className}</td>
+      <td className="user-org">{user.organisation_name ?? '—'}</td>
       <td>
         <span className={`status-dot status-dot--${user.status}`} />
         <span className="status-label">{user.status}</span>

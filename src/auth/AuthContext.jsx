@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import api from '../api/axios'
+import { useTheme } from '../context/ThemeContext'
 
 const AuthContext = createContext(null)
 
@@ -7,6 +8,8 @@ const STORAGE_KEY         = 'seafarer_user'
 const REFRESH_STORAGE_KEY = 'seafarer_refresh'
 
 export function AuthProvider({ children }) {
+  const { setTheme } = useTheme()
+
   const storedUser = (() => {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) } catch { return null }
   })()
@@ -31,9 +34,10 @@ export function AuthProvider({ children }) {
         return api.get('/users/me/')
       })
       .then(({ data }) => {
-        const u = { id: data.id, username: data.username, role: data.profile.role }
+        const u = { id: data.id, username: data.username, role: data.profile.role, is_staff: data.is_staff }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(u))
         setUser(u)
+        if (data.profile?.theme_preference) setTheme(data.profile.theme_preference)
       })
       .catch(() => {
         localStorage.removeItem(REFRESH_STORAGE_KEY)
@@ -48,9 +52,13 @@ export function AuthProvider({ children }) {
     const { data } = await api.post('/auth/login/', { username, password })
     sessionStorage.setItem('access_token', data.access)
     localStorage.setItem(REFRESH_STORAGE_KEY, data.refresh)
-    const u = { id: data.user_id, username, role: data.role }
+    const u = { id: data.user_id, username, role: data.role, is_staff: data.is_staff }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(u))
     setUser(u)
+    try {
+      const { data: me } = await api.get('/users/me/')
+      if (me.profile?.theme_preference) setTheme(me.profile.theme_preference)
+    } catch (_) {}
     return data.role
   }
 

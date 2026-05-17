@@ -1,33 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createLesson } from '../../../api/lessons'
 import { assignLesson } from '../../../api/classes'
+import { getDepartments } from '../../../api/departments'
 import '../../css/teacher/class-detail/AssignLessonModal.css'
-
-const CATEGORIES = [
-  { value: 'nav',   label: 'Navigation'    },
-  { value: 'emg',   label: 'Emergency'     },
-  { value: 'eng',   label: 'Engineering'   },
-  { value: 'cargo', label: 'Cargo'         },
-  { value: 'comm',  label: 'Communication' },
-]
 
 const EMPTY = {
   title: '',
-  category: 'nav',
   duration_minutes: '',
   visibility: 'class',
   difficulty: 'easy',
 }
 
 export default function CreateLessonModal({ classId, onClose, onCreated }) {
-  const [form, setForm]     = useState(EMPTY)
-  const [errors, setErrors] = useState({})
-  const [saving, setSaving] = useState(false)
+  const [form, setForm]           = useState(EMPTY)
+  const [departments, setDepts]   = useState([])
+  const [deptIds, setDeptIds]     = useState([])
+  const [errors, setErrors]       = useState({})
+  const [saving, setSaving]       = useState(false)
+
+  useEffect(() => {
+    getDepartments().then(r => setDepts(r.data)).catch(() => {})
+  }, [])
 
   const set = (field, value) => {
     setForm(f => ({ ...f, [field]: value }))
     setErrors(e => { const n = { ...e }; delete n[field]; return n })
   }
+
+  const toggleDept = (id) => setDeptIds(prev => prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id])
 
   const handleSave = async () => {
     const errs = {}
@@ -39,7 +39,7 @@ export default function CreateLessonModal({ classId, onClose, onCreated }) {
     try {
       const { data: lesson } = await createLesson({
         title:            form.title.trim(),
-        category:         form.category,
+        department_ids:   deptIds,
         duration_minutes: Number(form.duration_minutes),
         visibility:       form.visibility,
         difficulty:       form.difficulty,
@@ -89,32 +89,39 @@ export default function CreateLessonModal({ classId, onClose, onCreated }) {
             {err('title')}
           </div>
 
-          <div className="alm-form-2col">
-            <div className="alm-form-row">
-              <label className="alm-label">Category</label>
-              <select
-                className="alm-select"
-                value={form.category}
-                onChange={e => set('category', e.target.value)}
-              >
-                {CATEGORIES.map(c => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="alm-form-row">
-              <label className="alm-label">Duration (minutes) <span className="alm-required">*</span></label>
-              <input
-                className={`alm-input${errors.duration_minutes ? ' alm-input--error' : ''}`}
-                type="number"
-                min="1"
-                placeholder="e.g. 45"
-                value={form.duration_minutes}
-                onChange={e => set('duration_minutes', e.target.value)}
-              />
-              {err('duration_minutes')}
-            </div>
+          <div className="alm-form-row">
+            <label className="alm-label">Duration (minutes) <span className="alm-required">*</span></label>
+            <input
+              className={`alm-input${errors.duration_minutes ? ' alm-input--error' : ''}`}
+              type="number"
+              min="1"
+              placeholder="e.g. 45"
+              value={form.duration_minutes}
+              onChange={e => set('duration_minutes', e.target.value)}
+            />
+            {err('duration_minutes')}
           </div>
+
+          {departments.length > 0 && (
+            <div className="alm-form-row">
+              <label className="alm-label">Departments</label>
+              <div className="alm-check-list">
+                {departments.map(d => (
+                  <label key={d.id} className={`alm-check-item ${deptIds.includes(d.id) ? 'alm-check-item--active' : ''}`}>
+                    <span className={`alm-check-box ${deptIds.includes(d.id) ? 'alm-check-box--checked' : ''}`}>
+                      {deptIds.includes(d.id) && (
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      )}
+                    </span>
+                    <input type="checkbox" checked={deptIds.includes(d.id)} onChange={() => toggleDept(d.id)} style={{ display: 'none' }} />
+                    <span className="alm-check-label">{d.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="alm-form-2col">
             <div className="alm-form-row">

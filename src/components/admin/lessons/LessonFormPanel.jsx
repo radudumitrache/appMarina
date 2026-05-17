@@ -1,4 +1,6 @@
 import '../../css/admin/lessons/LessonFormPanel.css'
+import { useAuth } from '../../../auth/AuthContext'
+import Dropdown from '../../shared/Dropdown'
 
 function XIcon() {
   return (
@@ -9,7 +11,14 @@ function XIcon() {
   )
 }
 
-export default function LessonFormPanel({ mode, form, onChange, onClose, onSave, categories, difficulties, classes = [] }) {
+export default function LessonFormPanel({ mode, form, onChange, onClose, onSave, departments = [], difficulties, classes = [], organisations = [] }) {
+  const { user } = useAuth()
+  const isSuperAdmin = user?.is_staff
+  const toggleDept = (id) => {
+    const prev = form.department_ids ?? []
+    onChange('department_ids', prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id])
+  }
+
   return (
     <>
       <div className="panel-backdrop" onClick={onClose} />
@@ -31,18 +40,28 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
             />
           </div>
 
-          <div className="form-row">
-            <label className="form-label">Category</label>
-            <select
-              className="form-select"
-              value={form.category}
-              onChange={e => onChange('category', e.target.value)}
-            >
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.label}</option>
-              ))}
-            </select>
-          </div>
+          {departments.length > 0 && (
+            <div className="form-row">
+              <label className="form-label">Departments</label>
+              <div className="form-check-list">
+                {departments.map(d => {
+                  const checked = (form.department_ids ?? []).includes(d.id)
+                  return (
+                    <label key={d.id} className={`form-check-item ${checked ? 'form-check-item--active' : ''}`} onClick={() => toggleDept(d.id)}>
+                      <span className={`form-check-box ${checked ? 'form-check-box--checked' : ''}`}>
+                        {checked && (
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        )}
+                      </span>
+                      <span className="form-check-label">{d.name}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="form-row-2col">
             <div className="form-row">
@@ -58,46 +77,50 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
             </div>
             <div className="form-row">
               <label className="form-label">Difficulty</label>
-              <select
-                className="form-select"
+              <Dropdown
                 value={form.difficulty}
-                onChange={e => onChange('difficulty', e.target.value)}
-              >
-                {difficulties.map(d => (
-                  <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>
-                ))}
-              </select>
+                onChange={v => onChange('difficulty', v)}
+                options={difficulties.map(d => ({ value: d, label: d.charAt(0).toUpperCase() + d.slice(1) }))}
+              />
             </div>
           </div>
 
           <div className="form-row">
             <label className="form-label">Visibility</label>
-            <select
-              className="form-select"
+            <Dropdown
               value={form.visibility}
-              onChange={e => {
-                onChange('visibility', e.target.value)
-                if (e.target.value !== 'class') onChange('classroom', null)
+              onChange={v => {
+                onChange('visibility', v)
+                if (v !== 'class') onChange('classroom', null)
               }}
-            >
-              <option value="class">Class only</option>
-              <option value="public">Public</option>
-            </select>
+              options={[
+                { value: 'class', label: 'Class only' },
+                { value: 'public', label: 'Public' },
+              ]}
+            />
           </div>
 
           {form.visibility === 'class' && (
             <div className="form-row">
               <label className="form-label">Class</label>
-              <select
-                className="form-select"
-                value={form.classroom ?? ''}
-                onChange={e => onChange('classroom', e.target.value ? Number(e.target.value) : null)}
-              >
-                <option value="">— Select a class —</option>
-                {classes.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} {c.code ? `(${c.code})` : ''}</option>
-                ))}
-              </select>
+              <Dropdown
+                value={form.classroom ?? null}
+                onChange={v => onChange('classroom', v)}
+                placeholder="— Select a class —"
+                options={classes.map(c => ({ value: c.id, label: `${c.name}${c.code ? ` (${c.code})` : ''}` }))}
+              />
+            </div>
+          )}
+
+          {isSuperAdmin && organisations.length > 0 && (
+            <div className="form-row">
+              <label className="form-label">Organisation</label>
+              <Dropdown
+                value={form.organisation_id ?? null}
+                onChange={v => onChange('organisation_id', v)}
+                placeholder="— None —"
+                options={organisations.map(o => ({ value: o.id, label: o.name }))}
+              />
             </div>
           )}
         </div>

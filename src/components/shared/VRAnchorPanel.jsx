@@ -147,7 +147,7 @@ function WaypointPanel({ anchor, onClose }) {
 
       <div className="vr-ap-divider" />
 
-      <p className="vr-ap-body">{anchor.description}</p>
+      <div className="vr-ap-body" dangerouslySetInnerHTML={{ __html: anchor.description || '' }} />
 
       {anchor.category && (
         <div className="vr-ap-meta-row">
@@ -163,11 +163,13 @@ function WaypointPanel({ anchor, onClose }) {
         </div>
       )}
 
-      <button className="vr-ap-cta vr-ap-cta--accent">
-        <IconCompass />
-        Navigate Here
-        <span className="vr-ap-cta-arrow"><IconArrow /></span>
-      </button>
+      {anchor.navigate !== false && (
+        <button className="vr-ap-cta vr-ap-cta--accent">
+          <IconCompass />
+          Navigate Here
+          <span className="vr-ap-cta-arrow"><IconArrow /></span>
+        </button>
+      )}
     </PanelShell>
   )
 }

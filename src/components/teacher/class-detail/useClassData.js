@@ -32,13 +32,13 @@ export function useClassData(id) {
       })))
 
       setLessons(lesRes.data.map((cl, i) => ({
-        id:        cl.lesson,
-        num:       String(i + 1).padStart(2, '0'),
-        title:     cl.lesson_detail?.title     ?? '—',
-        cat:       cl.lesson_detail?.category  ?? '—',
-        duration:  cl.lesson_detail?.duration_minutes ? `${cl.lesson_detail.duration_minutes} min` : '—',
-        completed: Math.round((cl.completion_pct / 100) * (clsRes.data.student_count || 0)),
-        total:     clsRes.data.student_count || 0,
+        id:             cl.lesson,
+        num:            String(i + 1).padStart(2, '0'),
+        title:          cl.lesson_detail?.title     ?? '—',
+        department_ids: cl.lesson_detail?.department_ids ?? [],
+        duration:       cl.lesson_detail?.duration_minutes ? `${cl.lesson_detail.duration_minutes} min` : '—',
+        completed:      Math.round((cl.completion_pct / 100) * (clsRes.data.student_count || 0)),
+        total:          clsRes.data.student_count || 0,
       })))
 
       setTests(testRes.data)
@@ -48,9 +48,9 @@ export function useClassData(id) {
   function handleClassLessonUpdate(lessonId, data) {
     setLessons(prev => prev.map(l => l.id !== lessonId ? l : {
       ...l,
-      title:    data.title    ?? l.title,
-      cat:      data.category ?? l.cat,
-      duration: data.duration_minutes != null ? `${data.duration_minutes} min` : l.duration,
+      title:          data.title          ?? l.title,
+      department_ids: data.department_ids ?? l.department_ids,
+      duration:       data.duration_minutes != null ? `${data.duration_minutes} min` : l.duration,
     }))
   }
 

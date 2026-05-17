@@ -1,21 +1,26 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTheme } from '../../context/ThemeContext'
+import { useAuth } from '../../auth/AuthContext'
 import '../css/admin/NavBar.css'
 
-const LINKS = [
-  { label: 'Dashboard', slug: 'dashboard' },
-  { label: 'Users',     slug: 'users'     },
-  { label: 'Lessons',   slug: 'lessons'   },
-  { label: 'Tests',     slug: 'tests'     },
-  { label: 'Classes',   slug: 'classes'   },
-  { label: 'Media',     slug: 'media'     },
-  { label: 'Support',   slug: 'support'   },
+const ALL_LINKS = [
+  { label: 'Dashboard',     slug: 'dashboard',     superadminOnly: false },
+  { label: 'Users',         slug: 'users',         superadminOnly: false },
+  { label: 'Organisations', slug: 'organisations', superadminOnly: true  },
+  { label: 'Lessons',       slug: 'lessons',       superadminOnly: false },
+  { label: 'Tests',         slug: 'tests',         superadminOnly: false },
+  { label: 'Classes',       slug: 'classes',       superadminOnly: false },
+  { label: 'Media',         slug: 'media',         superadminOnly: false },
+  { label: 'Support',       slug: 'support',       superadminOnly: false },
 ]
 
 export default function NavBar() {
   const navigate     = useNavigate()
   const { pathname } = useLocation()
   const { theme, toggleTheme } = useTheme()
+  const { user } = useAuth()
+
+  const links = ALL_LINKS.filter(l => !l.superadminOnly || user?.is_staff)
 
   return (
     <nav className="navbar navbar--admin">
@@ -24,7 +29,7 @@ export default function NavBar() {
       </span>
 
       <div className="nav-links">
-        {LINKS.map((l) => {
+        {links.map((l) => {
           const path = `/admin/${l.slug}`
           const isActive = pathname === path || pathname.startsWith(`${path}/`)
           return (

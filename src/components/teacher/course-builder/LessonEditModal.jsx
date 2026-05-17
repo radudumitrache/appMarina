@@ -1,28 +1,23 @@
 import { useState } from 'react'
 import '../../css/teacher/course-builder/LessonEditModal.css'
 
-const CAT_OPTIONS = [
-  { value: '',      label: 'No category' },
-  { value: 'nav',   label: 'Navigation' },
-  { value: 'emg',   label: 'Emergency' },
-  { value: 'eng',   label: 'Engineering' },
-  { value: 'cargo', label: 'Cargo' },
-  { value: 'comm',  label: 'Communications' },
-]
-
 const DIFFICULTY_OPTIONS = ['easy', 'intermediate', 'advanced']
 const VISIBILITY_OPTIONS  = ['class', 'public']
 
-export default function LessonEditModal({ lesson, onSave, onClose }) {
+export default function LessonEditModal({ lesson, departments = [], onSave, onClose }) {
   const isNew = !lesson?.id
 
-  const [title,      setTitle]      = useState(lesson?.title ?? '')
-  const [category,   setCategory]   = useState(lesson?.category ?? '')
-  const [duration,   setDuration]   = useState(lesson?.duration_minutes ?? '')
-  const [visibility, setVisibility] = useState(lesson?.visibility ?? 'class')
-  const [difficulty, setDifficulty] = useState(lesson?.difficulty ?? 'easy')
-  const [saving,     setSaving]     = useState(false)
-  const [err,        setErr]        = useState(null)
+  const [title,         setTitle]         = useState(lesson?.title ?? '')
+  const [departmentIds, setDepartmentIds] = useState(lesson?.department_ids ?? [])
+  const [duration,      setDuration]      = useState(lesson?.duration_minutes ?? '')
+  const [visibility,    setVisibility]    = useState(lesson?.visibility ?? 'class')
+  const [difficulty,    setDifficulty]    = useState(lesson?.difficulty ?? 'easy')
+  const [saving,        setSaving]        = useState(false)
+  const [err,           setErr]           = useState(null)
+
+  function toggleDept(id) {
+    setDepartmentIds(prev => prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id])
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -33,7 +28,7 @@ export default function LessonEditModal({ lesson, onSave, onClose }) {
     try {
       await onSave({
         title:            title.trim(),
-        category:         category || null,
+        department_ids:   departmentIds,
         duration_minutes: Number(duration),
         visibility,
         difficulty,
@@ -57,7 +52,6 @@ export default function LessonEditModal({ lesson, onSave, onClose }) {
         </div>
 
         <form className="lem-form" onSubmit={handleSubmit}>
-          {/* Title */}
           <div className="lem-field">
             <label className="lem-label">Title <span className="lem-required">*</span></label>
             <input
@@ -70,30 +64,39 @@ export default function LessonEditModal({ lesson, onSave, onClose }) {
             />
           </div>
 
-          {/* Category + Duration */}
-          <div className="lem-row">
-            <div className="lem-field">
-              <label className="lem-label">Category</label>
-              <select className="lem-select" value={category} onChange={e => setCategory(e.target.value)}>
-                {CAT_OPTIONS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="lem-field">
-              <label className="lem-label">Duration (minutes) <span className="lem-required">*</span></label>
-              <input
-                className="lem-input"
-                type="number"
-                min="1"
-                placeholder="e.g. 45"
-                value={duration}
-                onChange={e => setDuration(e.target.value)}
-              />
-            </div>
+          <div className="lem-field">
+            <label className="lem-label">Duration (minutes) <span className="lem-required">*</span></label>
+            <input
+              className="lem-input"
+              type="number"
+              min="1"
+              placeholder="e.g. 45"
+              value={duration}
+              onChange={e => setDuration(e.target.value)}
+            />
           </div>
 
-          {/* Visibility */}
+          {departments.length > 0 && (
+            <div className="lem-field">
+              <label className="lem-label">Departments</label>
+              <div className="lem-check-list">
+                {departments.map(d => (
+                  <label key={d.id} className={`lem-check-item ${departmentIds.includes(d.id) ? 'lem-check-item--active' : ''}`}>
+                    <span className={`lem-check-box ${departmentIds.includes(d.id) ? 'lem-check-box--checked' : ''}`}>
+                      {departmentIds.includes(d.id) && (
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      )}
+                    </span>
+                    <input type="checkbox" checked={departmentIds.includes(d.id)} onChange={() => toggleDept(d.id)} style={{ display: 'none' }} />
+                    <span className="lem-check-label">{d.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="lem-field">
             <label className="lem-label">Visibility</label>
             <div className="lem-pill-row">
@@ -110,7 +113,6 @@ export default function LessonEditModal({ lesson, onSave, onClose }) {
             </div>
           </div>
 
-          {/* Difficulty */}
           <div className="lem-field">
             <label className="lem-label">Difficulty</label>
             <div className="lem-pill-row">

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import Dropdown        from '../../components/shared/Dropdown'
 import NavBar          from '../../components/teacher/NavBar'
 import CourseSidebar   from '../../components/teacher/course-builder/CourseSidebar'
 import CourseEditor    from '../../components/teacher/course-builder/CourseEditor'
@@ -31,6 +32,7 @@ export default function CourseBuilder() {
     saving, loadingDetail,
     selected, selectedLessons,
     visible, bankFiltered, lessonBank, courseLessonsMap, lessonCourseMap,
+    departments,
     activeTab, setActiveTab,
     handleNewCourse,
     handleTitleChange, handleDescChange, handleClassroomChange, handleToggleStatus, handleDeleteCourse,
@@ -54,7 +56,7 @@ export default function CourseBuilder() {
     setNewTitle('')
     setNewDesc('')
     setNewStatus('draft')
-    setNewClassId(classes[0]?.id?.toString() ?? '')
+    setNewClassId(classes[0]?.id ?? null)
     setCreateErr(null)
     setShowCreate(true)
     setTimeout(() => titleRef.current?.focus(), 40)
@@ -67,7 +69,7 @@ export default function CourseBuilder() {
     setCreating(true)
     setCreateErr(null)
     try {
-      await handleNewCourse({ title: newTitle, description: newDesc, status: newStatus, classroom_id: Number(newClassId) })
+      await handleNewCourse({ title: newTitle, description: newDesc, status: newStatus, classroom_id: newClassId })
       setShowCreate(false)
     } catch {
       setCreateErr('Could not create course. Please try again.')
@@ -114,6 +116,7 @@ export default function CourseBuilder() {
                   setBankSearch={setBankSearch}
                   lessonBankCount={lessonBank.length}
                   classes={classes}
+                  departments={departments}
                   onTitleChange={handleTitleChange}
                   onDescChange={handleDescChange}
                   onClassroomChange={handleClassroomChange}
@@ -137,6 +140,7 @@ export default function CourseBuilder() {
               <LessonsManager
                 lessonBank={lessonBank}
                 lessonCourseMap={lessonCourseMap}
+                departments={departments}
                 saving={saving}
                 // onCreateLesson={handleCreateLesson}
                 onUpdateLesson={handleUpdateLesson}
@@ -162,16 +166,12 @@ export default function CourseBuilder() {
             <form className="cb-create-form" onSubmit={handleCreate}>
               <div className="cb-create-field">
                 <label className="cb-create-label">Class <span className="cb-create-required">*</span></label>
-                <select
-                  className="cb-create-select"
+                <Dropdown
                   value={newClassId}
-                  onChange={e => setNewClassId(e.target.value)}
-                >
-                  <option value="">— select a class —</option>
-                  {classes.map(c => (
-                    <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
-                  ))}
-                </select>
+                  onChange={v => setNewClassId(v)}
+                  placeholder="— select a class —"
+                  options={classes.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}
+                />
               </div>
               <div className="cb-create-field">
                 <label className="cb-create-label">Title</label>

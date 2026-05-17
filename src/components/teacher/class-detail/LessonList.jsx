@@ -25,7 +25,7 @@ export default function LessonList({ lessons, classId, onRemove, onUpdate }) {
       <div className="cd-list-header">
         <span className="cd-col cd-col--num">#</span>
         <span className="cd-col cd-col--lesson">Lesson</span>
-        <span className="cd-col cd-col--cat">Category</span>
+        <span className="cd-col cd-col--cat">Departments</span>
         <span className="cd-col cd-col--dur">Duration</span>
         <span className="cd-col cd-col--completion">Completion</span>
         <span className="cd-col cd-col--actions3" />
@@ -53,7 +53,10 @@ export default function LessonList({ lessons, classId, onRemove, onUpdate }) {
                 <span className="cd-lesson-title">{l.title}</span>
               </div>
               <div className="cd-col cd-col--cat">
-                <span className="cd-cat-tag">{l.cat}</span>
+                {(l.department_ids ?? []).length > 0
+                  ? <span className="cd-cat-tag">{(l.department_ids ?? []).length} dept{(l.department_ids ?? []).length !== 1 ? 's' : ''}</span>
+                  : <span className="cd-cat-tag" style={{ opacity: 0.4 }}>—</span>
+                }
               </div>
               <div className="cd-col cd-col--dur">
                 <span className="cd-mono cd-muted">{l.duration}</span>
@@ -137,7 +140,7 @@ export default function LessonList({ lessons, classId, onRemove, onUpdate }) {
 
     {editLesson && (
       <LessonEditModal
-        lesson={{ id: editLesson.id, title: editLesson.title, category: editLesson.cat, duration_minutes: parseInt(editLesson.duration) || '' }}
+        lesson={{ id: editLesson.id, title: editLesson.title, department_ids: editLesson.department_ids ?? [], duration_minutes: parseInt(editLesson.duration) || '' }}
         onSave={handleSave}
         onClose={() => setEditLesson(null)}
       />

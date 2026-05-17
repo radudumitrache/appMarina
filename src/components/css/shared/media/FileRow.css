@@ -89,3 +89,12 @@
 
 .file-action-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
 .file-action-btn--delete:hover { background: color-mix(in srgb, var(--error) 12%, transparent); color: var(--error); }
+
+.file-action-btn--vr-active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+.file-action-btn--vr-active:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent);
+}

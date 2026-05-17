@@ -61,7 +61,10 @@ export function buildSceneUrl(filename) {
  */
 export function resolveSceneUrl(sceneUrl) {
   if (!sceneUrl) return null
-  const filename = decodeURIComponent(sceneUrl.split('/').pop())
+  // Strip query string (signed URL params) and decode
+  const raw = decodeURIComponent(sceneUrl.split('?')[0].split('/').pop())
+  // Strip upload hash prefix like "ef7710fb_" that GCS adds
+  const filename = raw.replace(/^[0-9a-f]{8}_/i, '')
   const scene = VR_SCENES.find(
     s => s.filename.toLowerCase() === filename.toLowerCase()
   )

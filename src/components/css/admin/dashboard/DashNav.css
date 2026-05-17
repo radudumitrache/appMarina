@@ -2,17 +2,12 @@
   position: relative;
   z-index: 10;
   display: grid;
-  grid-template-columns: repeat(3, 200px);
-  grid-template-rows: repeat(3, 180px);
+  grid-template-columns: repeat(4, 200px);
+  grid-template-rows: repeat(2, 180px);
   gap: 16px;
   animation: fadeUp 0.45s var(--ease-default) both;
   animation-delay: 0.35s;
 }
-
-.dash-nav > :nth-child(4) { grid-column: 1; grid-row: 2; }
-.dash-nav > :nth-child(5) { grid-column: 2; grid-row: 2; }
-.dash-nav > :nth-child(6) { grid-column: 3; grid-row: 2; }
-.dash-nav > :nth-child(7) { grid-column: 1 / -1; grid-row: 3; justify-self: center; width: 200px; }
 
 .dash-btn {
   display: flex;

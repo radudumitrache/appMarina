@@ -1,21 +1,30 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { getMediaFiles, getUploadUrl, uploadToGCS, confirmUpload } from '../../../api/media'
 import '../../css/teacher/lesson-panel-editor/ScenePicker.css'
 
-export default function ScenePicker({ value, onChange, classroomId }) {
+function folderLabel(scene) {
+  if (scene.folder === 'public' || scene.folder === 'vr_scenes') return 'Public'
+  return scene.class_name || 'Class'
+}
+
+export default function ScenePicker({ value, onChange, classroomId, folderName }) {
   const [scenes,    setScenes]    = useState([])
   const [loading,   setLoading]   = useState(true)
   const [uploading, setUploading] = useState(false)
   const [uploadErr, setUploadErr] = useState(null)
+  const [previewScene, setPreviewScene] = useState(null)
   const fileRef = useRef()
 
   const folderParams = classroomId
     ? { folder: 'class', classroom_id: classroomId }
     : { folder: 'public' }
 
+  const uploadDestLabel = folderName ?? (classroomId ? 'the class folder' : 'Public')
+
   useEffect(() => {
     getMediaFiles(folderParams)
-      .then(({ data }) => setScenes(data.filter(f => f.file_type === 'image')))
+      .then(({ data }) => setScenes(data.filter(f => f.file_type === 'image' && f.is_vr_scene)))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [classroomId])
@@ -33,11 +42,12 @@ export default function ScenePicker({ value, onChange, classroomId }) {
       })
       await uploadToGCS(urlData.upload_url, file)
       const { data: mediaFile } = await confirmUpload({
-        gcs_path:   urlData.gcs_path,
-        filename:   file.name,
-        file_type:  'image',
-        mime_type:  file.type,
-        size_bytes: file.size,
+        gcs_path:    urlData.gcs_path,
+        filename:    file.name,
+        file_type:   'image',
+        mime_type:   file.type,
+        size_bytes:  file.size,
+        is_vr_scene: true,
         ...folderParams,
       })
       setScenes(prev => [mediaFile, ...prev])
@@ -74,6 +84,7 @@ export default function ScenePicker({ value, onChange, classroomId }) {
             </>
           )}
         </button>
+        <span className="sp-upload-dest">Saved to: <strong>{uploadDestLabel}</strong></span>
         <input
           ref={fileRef}
           type="file"
@@ -88,33 +99,67 @@ export default function ScenePicker({ value, onChange, classroomId }) {
       {loading ? (
         <p className="sp-hint">Loading scenes…</p>
       ) : scenes.length === 0 ? (
-        <p className="sp-hint">No scenes yet — upload a 360° panorama image to get started.</p>
+        <p className="sp-hint">No VR scenes yet — upload a 360° panorama and mark it as a VR Scene.</p>
       ) : (
-        <div className="sp-grid">
+        <div className="sp-list">
           {scenes.map(scene => (
-            <button
-              key={scene.id}
-              className={`sp-item${value === scene.id ? ' sp-item--active' : ''}`}
-              onClick={() => onChange(scene.id, scene.download_url)}
-              title={scene.name}
-            >
-              <div className="sp-thumb-wrap">
-                {scene.download_url
-                  ? <img src={scene.download_url} alt={scene.name} className="sp-thumb" />
-                  : <div className="sp-thumb-placeholder" />
-                }
+            <div key={scene.id} className="sp-list-row">
+              <button
+                className={`sp-list-item${value === scene.id ? ' sp-list-item--active' : ''}`}
+                onClick={() => onChange(scene.id, scene.download_url)}
+                title={scene.name}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="sp-list-icon">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M2 12h20"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                <span className="sp-list-name">{scene.name}</span>
+                <span className="sp-folder-badge">{folderLabel(scene)}</span>
                 {value === scene.id && (
-                  <div className="sp-check">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sp-list-check">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
                 )}
-              </div>
-              <span className="sp-name">{scene.name}</span>
-            </button>
+              </button>
+              <button
+                className="sp-preview-btn"
+                onClick={() => setPreviewScene(previewScene?.id === scene.id ? null : scene)}
+                title="Preview"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
           ))}
         </div>
+      )}
+
+      {previewScene && previewScene.download_url && createPortal(
+        <div className="sp-preview-overlay" onClick={() => setPreviewScene(null)}>
+          <div className="sp-preview-box" onClick={e => e.stopPropagation()}>
+            <div className="sp-preview-header">
+              <span className="sp-preview-title">{previewScene.name}</span>
+              <button className="sp-preview-close" onClick={() => setPreviewScene(null)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <img src={previewScene.download_url} alt={previewScene.name} className="sp-preview-img" />
+            <div className="sp-preview-footer">
+              <button
+                className="sp-preview-select-btn"
+                onClick={() => { onChange(previewScene.id, previewScene.download_url); setPreviewScene(null) }}
+              >
+                Use this scene
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   )

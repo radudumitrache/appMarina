@@ -23,11 +23,34 @@ function computeUniqueName(desiredName, files, currentFileId) {
   return candidate
 }
 
+function FilePreview({ file }) {
+  if (!file.download_url) return null
+
+  if (file.file_type === 'image') {
+    return (
+      <div className="rm-preview">
+        <img src={file.download_url} alt={file.name} className="rm-preview-img" />
+      </div>
+    )
+  }
+
+  if (file.file_type === 'video') {
+    return (
+      <div className="rm-preview">
+        <video src={file.download_url} className="rm-preview-video" muted playsInline controls />
+      </div>
+    )
+  }
+
+  return null
+}
+
 export default function RenameModal({ file, files = [], onClose, onSave }) {
   const [origBase, ext] = splitNameExt(file.name)
-  const [base, setBase] = useState(origBase)
-  const [saving, setSaving] = useState(false)
-  const [conflict, setConflict] = useState(null)
+  const [base, setBase]           = useState(origBase)
+  const [isVrScene, setIsVrScene] = useState(!!file.is_vr_scene)
+  const [saving, setSaving]       = useState(false)
+  const [conflict, setConflict]   = useState(null)
 
   const scopedFiles = files.filter(f =>
     f.folder === file.folder && f.classroom === file.classroom
@@ -37,22 +60,27 @@ export default function RenameModal({ file, files = [], onClose, onSave }) {
     const trimmed = base.trim()
     if (!trimmed) { onClose(); return }
     const fullName = trimmed + ext
-    if (fullName === file.name) { onClose(); return }
+    const nameChanged     = fullName !== file.name
+    const vrSceneChanged  = isVrScene !== !!file.is_vr_scene
 
-    const deduplicated = computeUniqueName(fullName, scopedFiles, file.id)
-    if (deduplicated) {
-      setConflict({ desired: fullName, deduplicated })
-      return
+    if (!nameChanged && !vrSceneChanged) { onClose(); return }
+
+    if (nameChanged) {
+      const deduplicated = computeUniqueName(fullName, scopedFiles, file.id)
+      if (deduplicated) {
+        setConflict({ desired: fullName, deduplicated })
+        return
+      }
     }
 
     setSaving(true)
-    await onSave(file.id, fullName)
+    await onSave(file.id, fullName, isVrScene)
     setSaving(false)
   }
 
   const handleConfirmConflict = async () => {
     setSaving(true)
-    await onSave(file.id, conflict.deduplicated)
+    await onSave(file.id, conflict.deduplicated, isVrScene)
     setSaving(false)
   }
 
@@ -95,7 +123,7 @@ export default function RenameModal({ file, files = [], onClose, onSave }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Rename File</h3>
+          <h3 className="modal-title">Edit File</h3>
           <button className="modal-close" onClick={onClose}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -103,6 +131,8 @@ export default function RenameModal({ file, files = [], onClose, onSave }) {
           </button>
         </div>
         <div className="modal-body">
+          <FilePreview file={file} />
+
           <div className="form-row">
             <label className="form-label">File Name</label>
             <div className="rename-input-wrap">
@@ -116,6 +146,28 @@ export default function RenameModal({ file, files = [], onClose, onSave }) {
               />
               {ext && <span className="rename-ext">{ext}</span>}
             </div>
+          </div>
+
+          <div className="rm-vr-row">
+            <div className="rm-vr-info">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="rm-vr-icon">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M2 12h20"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <div className="rm-vr-text">
+                <span className="rm-vr-label">VR Scene</span>
+                <span className="rm-vr-hint">Mark as a 360° equirectangular panorama</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={`rm-vr-toggle${isVrScene ? ' rm-vr-toggle--on' : ''}`}
+              onClick={() => setIsVrScene(v => !v)}
+              aria-pressed={isVrScene}
+            >
+              <span className="rm-vr-thumb" />
+            </button>
           </div>
         </div>
         <div className="modal-footer">

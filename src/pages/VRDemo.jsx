@@ -39,11 +39,18 @@ const SCENE_IMAGES = [
 ]
 
 /* ── In-scene marker for type='info' ────────────────────────────────────── */
-function InfoMarker({ icon, label }) {
+function InfoMarker({ icon, label, showTitle, titleSize, titleColor }) {
   return (
     <>
       <div className="vr-hotspot-icon-wrap">{icon}</div>
-      <span className="vr-hotspot-label">{label}</span>
+      {showTitle !== false && (
+        <span
+          className={`vr-hotspot-label vr-hotspot-label--${titleSize || 'medium'}`}
+          style={titleColor ? { color: titleColor } : undefined}
+        >
+          {label}
+        </span>
+      )}
     </>
   )
 }
@@ -335,7 +342,7 @@ export default function VRDemo() {
       if (hs.type === 'waypoint') h.className = 'vr-hotspot--anchor'
       if (hs.type === 'info') {
         h.className = 'vr-hotspot--info'
-        h.render = (x) => <InfoMarker icon={x.icon} label={x.label} />
+        h.render = (x) => <InfoMarker icon={x.icon} label={x.label} showTitle={x.show_title} titleSize={x.title_size} titleColor={x.title_text_color} />
       }
 
       if (polygonDrawing) {

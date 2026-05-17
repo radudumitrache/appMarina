@@ -13,6 +13,7 @@
  */
 import { useState, useEffect } from 'react'
 import '../../components/css/shared/VRAnchorEditor.css'
+import ColorPicker from './ColorPicker'
 
 /* ── Icons ─────────────────────────────────────────────────────────────── */
 function IconX() {
@@ -121,6 +122,56 @@ export default function VRAnchorEditor({ anchor, isNew, onSave, onDelete, onCanc
           placeholder="Anchor label…"
         />
       </Field>
+
+      {/* ── Title Display ──────────────────────────────────────────── */}
+      <div className="vr-ae-section-divider">Title Display</div>
+
+      <div className="vr-ae-field vr-ae-toggle-row">
+        <span className="vr-ae-label">Show Title</span>
+        <button
+          type="button"
+          className={`vr-ae-toggle ${form.show_title !== false ? 'vr-ae-toggle--on' : ''}`}
+          onClick={() => set('show_title', form.show_title !== false ? false : true)}
+          aria-pressed={form.show_title !== false}
+        >
+          <span className="vr-ae-toggle-thumb" />
+        </button>
+      </div>
+
+      {form.show_title !== false && (
+        <>
+          <Field label="Title Size">
+            <div className="vr-ae-type-tabs">
+              {['small', 'medium', 'big'].map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  className={`vr-ae-type-tab ${(form.title_size || 'medium') === s ? 'vr-ae-type-tab--active' : ''}`}
+                  onClick={() => set('title_size', s)}
+                >
+                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          <Field label="Title Color">
+            <div className="vr-ae-color-row">
+              <ColorPicker
+                value={form.title_text_color || '#000000'}
+                onChange={v => set('title_text_color', v)}
+              />
+              <input
+                className="vr-ae-input vr-ae-input--mono"
+                value={form.title_text_color || '#000000'}
+                onChange={e => set('title_text_color', e.target.value)}
+                placeholder="#000000"
+                maxLength={7}
+              />
+            </div>
+          </Field>
+        </>
+      )}
 
       {/* Lon/Lat only relevant for point anchors */}
       {form.type !== 'polygon' && (

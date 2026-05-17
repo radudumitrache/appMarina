@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ColorPicker from '../../shared/ColorPicker'
 
 const FONT_FAMILIES = [
   { label: 'Default',           value: '' },
@@ -56,21 +57,14 @@ export default function InlineStyleEditor({ element, editorEl }) {
 
         <div className="lpe-style-row">
           <span className="lpe-style-label">Color</span>
-          <label className="lpe-style-swatch" style={{ background: s.color || 'rgba(255,255,255,0.08)' }}>
-            <input type="color" value={toHex(s.color) || '#ffffff'}
-              onChange={e => apply('color', e.target.value)} />
-          </label>
+          <ColorPicker value={toHex(s.color) || '#ffffff'} onChange={v => apply('color', v)} />
           <span className="lpe-style-val">{s.color || '—'}</span>
           {s.color && <button className="lpe-style-reset" onClick={() => apply('color', '')}>↩</button>}
         </div>
 
         <div className="lpe-style-row">
           <span className="lpe-style-label">Background</span>
-          <label className="lpe-style-swatch lpe-style-swatch--checker"
-            style={s.backgroundColor ? { background: s.backgroundColor } : undefined}>
-            <input type="color" value={toHex(s.backgroundColor) || '#000000'}
-              onChange={e => apply('backgroundColor', e.target.value)} />
-          </label>
+          <ColorPicker value={toHex(s.backgroundColor) || '#000000'} onChange={v => apply('backgroundColor', v)} />
           <span className="lpe-style-val">{s.backgroundColor || '—'}</span>
           {s.backgroundColor && <button className="lpe-style-reset" onClick={() => apply('backgroundColor', '')}>↩</button>}
         </div>

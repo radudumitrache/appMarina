@@ -2,7 +2,7 @@ import { totalDuration } from './courseBuilderUtils'
 import '../../css/teacher/course-builder/SummaryBar.css'
 
 export default function SummaryBar({ selectedLessons }) {
-  const uniqueCategories = [...new Set(selectedLessons.map(l => l.category).filter(Boolean))].length
+  const uniqueDepts = new Set(selectedLessons.flatMap(l => l.department_ids ?? [])).size
 
   return (
     <div className="cb-summary-bar">
@@ -17,8 +17,8 @@ export default function SummaryBar({ selectedLessons }) {
       </div>
       <div className="cb-summary-divider" />
       <div className="cb-summary-stat">
-        <span className="cb-summary-value">{uniqueCategories}</span>
-        <span className="cb-summary-label">categories</span>
+        <span className="cb-summary-value">{uniqueDepts}</span>
+        <span className="cb-summary-label">departments</span>
       </div>
     </div>
   )

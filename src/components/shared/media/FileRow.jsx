@@ -10,7 +10,7 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-export default function FileRow({ file, index, canWrite, onRename, onDelete }) {
+export default function FileRow({ file, index, canWrite, onRename, onDelete, onToggleVrScene }) {
   return (
     <tr className="file-row" style={{ animationDelay: `${Math.min(index, 6) * 0.04}s` }}>
       <td className="file-row-name">
@@ -55,6 +55,19 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete }) {
         )}
         {canWrite && (
           <>
+            {onToggleVrScene && (
+              <button
+                className={`file-action-btn${file.is_vr_scene ? ' file-action-btn--vr-active' : ''}`}
+                onClick={() => onToggleVrScene(file)}
+                title={file.is_vr_scene ? 'VR Scene (click to unmark)' : 'Mark as VR Scene'}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M2 12h20"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+              </button>
+            )}
             <button className="file-action-btn" onClick={() => onRename(file)} title="Rename">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>

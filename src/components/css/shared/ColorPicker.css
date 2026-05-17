@@ -1,0 +1,153 @@
+.cp-root {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+/* ── Trigger swatch ─────────────────────────────────────────────────────── */
+.cp-trigger {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: border-color var(--duration-fast), transform var(--duration-fast);
+}
+
+.cp-trigger:hover  { border-color: var(--border-hover); }
+.cp-trigger:active { transform: scale(0.95); }
+
+/* ── Popover ────────────────────────────────────────────────────────────── */
+.cp-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 300;
+  width: 224px;
+  padding: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: cp-appear 0.12s var(--ease-default) both;
+}
+
+.cp-popover--flip {
+  top: auto;
+  bottom: calc(100% + 8px);
+  animation: cp-appear-up 0.12s var(--ease-default) both;
+}
+
+@keyframes cp-appear {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cp-appear-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SV square ──────────────────────────────────────────────────────────── */
+.cp-sv {
+  width: 100%;
+  height: 136px;
+  border-radius: 6px;
+  cursor: crosshair;
+  position: relative;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cp-sv-thumb {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* ── Hue slider ─────────────────────────────────────────────────────────── */
+.cp-hue {
+  width: 100%;
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(to right,
+    #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cp-hue-thumb {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: transparent;
+}
+
+/* ── Hex row ────────────────────────────────────────────────────────────── */
+.cp-hex-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cp-hex-preview {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.cp-hex-input {
+  flex: 1;
+  height: 28px;
+  padding: 0 9px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+
+.cp-hex-input:focus { border-color: var(--accent-rim); }
+
+/* ── Preset palette ─────────────────────────────────────────────────────── */
+.cp-presets {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+}
+
+.cp-preset {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+.cp-preset:hover       { transform: scale(1.2); border-color: var(--border-hover); }
+.cp-preset--active     { border-color: #fff; }

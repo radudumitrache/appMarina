@@ -22,8 +22,7 @@ export default function LessonPanelEditor() {
   const navigate  = useNavigate()
   const { state } = useLocation()
 
-  const backPath    = state?.backPath ?? '/teacher/builder'
-  const classroomId = state?.classroomId ?? null
+  const backPath = state?.backPath ?? '/teacher/builder'
 
   const {
     lesson, panels, panelIdx, setPanelIdx,
@@ -41,6 +40,15 @@ export default function LessonPanelEditor() {
     handleMove,
     handleQuickDeleteAnchor,
   } = usePanelEditor(id, state?.lesson)
+
+  // Prefer classroomId from router state; fall back to the lesson's own classroom_id
+  // (covers navigation paths that don't pass classroomId in state, e.g. admin view)
+  const classroomId   = state?.classroomId   ?? lesson?.classroom_id   ?? null
+  const classroomName = state?.classroomName ?? lesson?.classroom_name ?? null
+  const classroomCode = state?.classroomCode ?? lesson?.classroom_code ?? null
+  const classroomLabel = classroomName
+    ? (classroomCode ? `${classroomName} (${classroomCode})` : classroomName)
+    : null
 
   const [draggedAnchorPos, setDraggedAnchorPos] = useState(null)
   const [showHtml,         setShowHtml]         = useState(false)
@@ -200,6 +208,7 @@ export default function LessonPanelEditor() {
           saving={saving}
           lessonId={id}
           classroomId={classroomId}
+          classroomLabel={classroomLabel}
           panels={panels}
           onAnchorsChange={handleAnchorsChange}
           focusAnchor={focusAnchor}

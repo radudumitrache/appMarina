@@ -5,14 +5,15 @@ import './css/Login.css'
 
 // phase: 'idle' → 'leaving' → [bg holds ~1s] → 'transitioning' → navigate
 export default function Login() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError]       = useState('')
-  const [phase, setPhase]       = useState('idle')
-  const [role, setRole]         = useState(null)
-  const transitionVideoRef      = useRef(null)
-  const navigate                = useNavigate()
-  const { login, user, loading } = useAuth()
+  const [username,   setUsername]   = useState('')
+  const [password,   setPassword]   = useState('')
+  const [error,      setError]      = useState('')
+  const [phase,      setPhase]      = useState('idle')
+  const [role,       setRole]       = useState(null)
+  const [submitting, setSubmitting] = useState(false)
+  const transitionVideoRef          = useRef(null)
+  const navigate                    = useNavigate()
+  const { login, user, loading }    = useAuth()
 
   useEffect(() => {
     const prev = document.documentElement.getAttribute('data-theme')
@@ -26,6 +27,7 @@ export default function Login() {
       setError('Please fill in both fields')
       return
     }
+    setSubmitting(true)
     try {
       const userRole = await login(username, password)
       setError('')
@@ -34,6 +36,7 @@ export default function Login() {
       // 380ms slide-out + ~1000ms bg-only hold before transition video
       setTimeout(() => setPhase('transitioning'), 1380)
     } catch (err) {
+      setSubmitting(false)
       const detail = err.response?.data?.detail
       setError(detail || 'Invalid username or password')
     }
@@ -42,7 +45,7 @@ export default function Login() {
   const handleTransitionEnd  = () => navigate(`/${role}/dashboard`)
   const handleTransitionError = () => navigate(`/${role}/dashboard`)
 
-  if (!loading && user && phase === 'idle') return <Navigate to={`/${user.role}/dashboard`} replace />
+  if (!loading && user && phase === 'idle' && !submitting) return <Navigate to={`/${user.role}/dashboard`} replace />
 
   return (
     <div className="login-page">

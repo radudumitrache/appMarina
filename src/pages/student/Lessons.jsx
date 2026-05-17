@@ -6,41 +6,43 @@ import ClassCoursesSection from '../../components/student/lessons/ClassCoursesSe
 import PublicLessonsSection from '../../components/student/lessons/PublicLessonsSection'
 import { getLessons, getCourses, completeLesson, uncompleteLesson } from '../../api/lessons'
 import { getClasses } from '../../api/classes'
+import { getDepartments } from '../../api/departments'
 import '../css/student/Lessons.css'
-
-export { CATEGORIES } from '../../components/student/lessons/PublicLessonsSection'
 
 function mapLesson(l) {
   return {
-    id:         l.id,
-    cat:        l.category        ?? 'nav',
-    title:      l.title,
-    duration:   l.duration_minutes ? `${l.duration_minutes} min` : '—',
-    locked:     l.locked          ?? false,
-    complete:   l.completed       ?? false,
-    author:     l.author_name     ?? '',
-    visibility: l.visibility      ?? 'public',
-    difficulty: l.difficulty      ?? 'intermediate',
+    id:             l.id,
+    department_ids: l.department_ids ?? [],
+    title:          l.title,
+    duration:       l.duration_minutes ? `${l.duration_minutes} min` : '—',
+    locked:         l.locked          ?? false,
+    complete:       l.completed       ?? false,
+    author:         l.author_name     ?? '',
+    visibility:     l.visibility      ?? 'public',
+    difficulty:     l.difficulty      ?? 'intermediate',
   }
 }
 
 export default function Lessons() {
-  const [mode, setMode]                     = useState('courses')
-  const [classes, setClasses]               = useState([])
-  const [courses, setCourses]               = useState([])
-  const [publicLessons, setPublicLessons]   = useState([])
-  const [activeCategory, setActiveCategory] = useState('all')
-  const [loading, setLoading]               = useState(true)
+  const [mode, setMode]                   = useState('courses')
+  const [classes, setClasses]             = useState([])
+  const [courses, setCourses]             = useState([])
+  const [publicLessons, setPublicLessons] = useState([])
+  const [departments, setDepartments]     = useState([])
+  const [activeDept, setActiveDept]       = useState('all')
+  const [loading, setLoading]             = useState(true)
 
   useEffect(() => {
     Promise.all([
       getClasses(),
       getCourses(),
       getLessons({ visibility: 'public' }),
-    ]).then(([clsRes, crsRes, lesRes]) => {
+      getDepartments(),
+    ]).then(([clsRes, crsRes, lesRes, deptRes]) => {
       setClasses(clsRes.data ?? [])
       setCourses(crsRes.data ?? [])
       setPublicLessons((lesRes.data ?? []).map(mapLesson))
+      setDepartments(deptRes.data ?? [])
     }).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
@@ -91,8 +93,9 @@ export default function Lessons() {
               {mode === 'public' && (
                 <PublicLessonsSection
                   lessons={publicLessons}
-                  activeCategory={activeCategory}
-                  onCategoryChange={setActiveCategory}
+                  departments={departments}
+                  activeDept={activeDept}
+                  onDeptChange={setActiveDept}
                   onToggleComplete={handlePublicToggle}
                 />
               )}

@@ -376,3 +376,46 @@
   color: var(--error);
 }
 
+/* ─── Department checklist (CreateLessonModal) ────────────────────────────── */
+.alm-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 130px;
+  overflow-y: auto;
+}
+
+.alm-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.alm-check-item:hover { background: var(--surface-3); }
+.alm-check-item--active { background: rgba(217,160,48,0.06); }
+
+.alm-check-box {
+  width: 15px;
+  height: 15px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--bg);
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+.alm-check-box--checked { background: var(--gold); border-color: var(--gold); }
+
+.alm-check-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+}
+.alm-check-item--active .alm-check-label { color: var(--text); }
+
+

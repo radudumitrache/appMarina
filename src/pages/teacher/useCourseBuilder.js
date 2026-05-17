@@ -4,12 +4,13 @@ import {
   getCourse, addCourseLesson, removeCourseLesson, reorderCourseLesson,
   getLessons, createLesson as apiCreateLesson, updateLesson as apiUpdateLesson, deleteLesson as apiDeleteLesson,
 } from '../../api/lessons'
-import { CAT_LABELS } from '../../components/teacher/course-builder/courseBuilderUtils'
+import { getDepartments } from '../../api/departments'
 
 export function useCourseBuilder() {
   const [courses, setCourses]                   = useState([])
   const [courseLessonsMap, setCourseLessonsMap] = useState({})
   const [lessonBank, setLessonBank]             = useState([])
+  const [departments, setDepartments]           = useState([])
   const [selectedId, setSelected]               = useState(null)
   const [search, setSearch]                     = useState('')
   const [bankSearch, setBankSearch]             = useState('')
@@ -32,10 +33,7 @@ export function useCourseBuilder() {
 
   const bankFiltered = lessonBank.filter(l => {
     const q = bankSearch.toLowerCase().trim()
-    return (
-      l.title.toLowerCase().includes(q) ||
-      (CAT_LABELS[l.category] ?? l.category ?? '').toLowerCase().includes(q)
-    )
+    return l.title.toLowerCase().includes(q)
   })
 
   const lessonCourseMap = useMemo(() => {
@@ -54,11 +52,12 @@ export function useCourseBuilder() {
   /* ── Load courses + lesson bank on mount ──────────────────────────────── */
   useEffect(() => {
     setLoading(true)
-    Promise.all([getCourses(), getLessons()])
-      .then(([cRes, lRes]) => {
+    Promise.all([getCourses(), getLessons(), getDepartments()])
+      .then(([cRes, lRes, dRes]) => {
         const list = cRes.data
         setCourses(list)
         setLessonBank(lRes.data)
+        setDepartments(dRes.data)
         if (list.length > 0) setSelected(list[0].id)
       })
       .catch(() => setError('Could not load data.'))
@@ -260,6 +259,7 @@ export function useCourseBuilder() {
     saving, loadingDetail,
     selected, selectedLessons,
     visible, bankFiltered, lessonBank, courseLessonsMap, lessonCourseMap,
+    departments,
     activeTab, setActiveTab,
     handleNewCourse,
     handleTitleChange, handleDescChange, handleClassroomChange, handleToggleStatus, handleDeleteCourse,

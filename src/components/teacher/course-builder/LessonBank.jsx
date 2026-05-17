@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CAT_LABELS, CAT_COLORS, formatDuration } from './courseBuilderUtils'
+import { formatDuration } from './courseBuilderUtils'
 import LessonEditModal from './LessonEditModal'
 import '../../css/teacher/course-builder/LessonBank.css'
 
@@ -10,10 +10,12 @@ export default function LessonBank({
   bankSearch,
   setBankSearch,
   selectedLessons,
+  departments = [],
   saving,
   onAdd,
   onCreateLesson,
 }) {
+  const deptName = id => departments.find(d => d.id === id)?.name ?? id
   const [creatingLesson, setCreatingLesson] = useState(false)
 
   const added = (id) => selectedLessons?.some(l => l.id === id) ?? false
@@ -29,6 +31,7 @@ export default function LessonBank({
     return (
       <LessonEditModal
         lesson={null}
+        departments={departments}
         onSave={handleCreate}
         onClose={() => setCreatingLesson(false)}
       />
@@ -99,11 +102,9 @@ export default function LessonBank({
                     <div className="cb-bank-item-info">
                       <span className="cb-bank-item-title">{lesson.title}</span>
                       <div className="cb-bank-item-meta">
-                        {lesson.category && (
-                          <span className={`cb-cat-tag ${CAT_COLORS[lesson.category] || ''}`}>
-                            {CAT_LABELS[lesson.category] ?? lesson.category}
-                          </span>
-                        )}
+                        {(lesson.department_ids ?? []).map(id => (
+                          <span key={id} className="cb-dept-tag">{deptName(id)}</span>
+                        ))}
                         <span className="cb-bank-item-dur">{formatDuration(lesson.duration_minutes)}</span>
                       </div>
                     </div>

@@ -115,9 +115,11 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     const camera = new THREE.PerspectiveCamera(FOV, w / h, 1, 1100)
     camera.position.set(0, 0, 0)
 
-    // Panorama sphere
+    // Panorama sphere — scale(-1,1,1) reverses UV winding so the texture
+    // reads left-to-right from inside without mirroring (FrontSide renders correctly after the flip)
     const geometry = new THREE.SphereGeometry(500, 60, 40)
-    const material = new THREE.MeshBasicMaterial({ side: THREE.BackSide })
+    geometry.scale(-1, 1, 1)
+    const material = new THREE.MeshBasicMaterial()
     scene.add(new THREE.Mesh(geometry, material))
 
     // Invisible pick sphere for edit-mode click-to-place raycasting
@@ -437,7 +439,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
 
   /* ── Texture swap ───────────────────────────────────────────────────────── */
   useEffect(() => {
-    if (!src || !stateRef.current.material) return
+    if (!stateRef.current.material) return
     setLoading(true)
 
     // Tear down any previous video element
@@ -449,12 +451,18 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
 
     const { material } = stateRef.current
 
+    // Clear old texture immediately so the previous scene doesn't bleed through
+    const prev = material.map
+    material.map = null
+    material.needsUpdate = true
+    if (prev) prev.dispose()
+
+    if (!src) { setLoading(false); return }
+
     const swapTexture = (texture) => {
       texture.colorSpace = THREE.SRGBColorSpace
-      const old = material.map
       material.map = texture
       material.needsUpdate = true
-      if (old) old.dispose()
       setLoading(false)
     }
 
@@ -524,7 +532,14 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
               : (
                 <>
                   {hs.image && <img src={hs.image} className="vr-hotspot-img" alt={hs.label || ''} />}
-                  <span className="vr-hotspot-label">{hs.label}</span>
+                  {hs.show_title !== false && (
+                    <span
+                      className={`vr-hotspot-label vr-hotspot-label--${hs.title_size || 'medium'}`}
+                      style={hs.title_text_color ? { color: hs.title_text_color } : undefined}
+                    >
+                      {hs.label}
+                    </span>
+                  )}
                 </>
               )
             }

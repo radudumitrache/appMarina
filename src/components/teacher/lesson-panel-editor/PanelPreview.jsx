@@ -33,6 +33,9 @@ export default function PanelPreview({
       return {
         id: `text-${a.id}`, lon, lat, label: a.title,
         className: 'vr-hotspot--anchor',
+        show_title: a.show_title,
+        title_size: a.title_size,
+        title_text_color: a.title_text_color,
         onClick: editMode
           ? (e) => onEditModeAnchorClick(a, 'text', e.clientX, e.clientY)
           : () => onAnchorClick({ type: 'text', label: a.title, description: a.description }),
@@ -44,6 +47,9 @@ export default function PanelPreview({
       return {
         id: `nav-${a.id}`, lon, lat, label: a.title || `→ Panel #${a.target_panel}`,
         className: 'vr-hotspot--anchor',
+        show_title: a.show_title,
+        title_size: a.title_size,
+        title_text_color: a.title_text_color,
         onClick: editMode ? (e) => onEditModeAnchorClick(a, 'nav', e.clientX, e.clientY) : null,
         onDrag: drag,
       }
@@ -66,7 +72,7 @@ export default function PanelPreview({
       ...pa,
       onClick: editMode
         ? (_pa, clientX, clientY) => onEditModeAnchorClick(pa, 'poly', clientX ?? 0, clientY ?? 0)
-        : () => onAnchorClick({ type: 'waypoint', label: pa.title, description: pa.content, status: 'active', category: 'Polygon Region' }),
+        : () => onAnchorClick({ type: 'waypoint', label: pa.title, description: pa.content, status: 'active', category: 'Polygon Region', navigate: false }),
     }))
   , [panel, editMode, onAnchorClick, onEditModeAnchorClick])
 

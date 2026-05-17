@@ -1,3 +1,5 @@
+import ColorPicker from '../../shared/ColorPicker'
+
 const FITS   = ['cover', 'contain', 'fill', 'none']
 const BSTYLES = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge']
 
@@ -163,12 +165,7 @@ export default function ImageStyleEditor({ element, editorEl }) {
           <div className="ise-row ise-border-color-row">
             <span className="ise-label ise-label--sm">Color</span>
             <div className="ise-color-wrap">
-              <input
-                type="color"
-                className="ise-color-picker"
-                value={toHex(borderColor)}
-                onChange={e => apply('borderColor', e.target.value)}
-              />
+              <ColorPicker value={toHex(borderColor)} onChange={v => apply('borderColor', v)} />
               <input
                 className="ise-color-text"
                 value={borderColor}

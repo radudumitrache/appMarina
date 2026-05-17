@@ -5,7 +5,7 @@ import MediaToolbar     from '../../components/shared/media/MediaToolbar'
 import FileRow          from '../../components/shared/media/FileRow'
 import RenameModal      from '../../components/shared/media/RenameModal'
 import UploadModal      from '../../components/shared/media/UploadModal'
-import { getMediaFiles, renameMediaFile, deleteMediaFile } from '../../api/media'
+import { getMediaFiles, deleteMediaFile, patchMediaFile } from '../../api/media'
 import { getClasses }   from '../../api/classes'
 import '../css/admin/Media.css'
 
@@ -83,8 +83,8 @@ export default function AdminMedia() {
     ]
   }, [filtered, activeFolder, classes])
 
-  const handleRename = async (id, name) => {
-    const { data } = await renameMediaFile(id, name)
+  const handleRename = async (id, name, isVrScene) => {
+    const { data } = await patchMediaFile(id, { name, is_vr_scene: isVrScene })
     setFiles(prev => prev.map(f => f.id === id ? data : f))
     setRenameTarget(null)
   }
@@ -94,6 +94,11 @@ export default function AdminMedia() {
     setFiles(prev => prev.filter(f => f.id !== file.id))
     try { await deleteMediaFile(file.id) }
     catch { setFiles(snapshot) }
+  }
+
+  const handleToggleVrScene = async (file) => {
+    const { data } = await patchMediaFile(file.id, { is_vr_scene: !file.is_vr_scene })
+    setFiles(prev => prev.map(f => f.id === file.id ? data : f))
   }
 
   const activeLabel = folders.find(f => f.id === activeFolder)?.label ?? 'Files'
@@ -149,6 +154,7 @@ export default function AdminMedia() {
                           canWrite={true}
                           onRename={setRenameTarget}
                           onDelete={handleDelete}
+                          onToggleVrScene={handleToggleVrScene}
                         />
                       ))}
                     </tbody>
@@ -176,6 +182,7 @@ export default function AdminMedia() {
                       canWrite={true}
                       onRename={setRenameTarget}
                       onDelete={handleDelete}
+                      onToggleVrScene={handleToggleVrScene}
                     />
                   ))}
                 </tbody>

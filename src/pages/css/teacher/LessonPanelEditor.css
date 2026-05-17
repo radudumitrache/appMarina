@@ -1892,6 +1892,105 @@
 }
 .lpe-anchor-cancel-btn:disabled { opacity: 0.4; cursor: default; }
 
+/* ─── Title Display controls ─────────────────────────────────────────────── */
+.lpe-title-display {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 2px;
+  border-top: 1px solid var(--border);
+}
+
+.lpe-title-display-header {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.lpe-title-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lpe-toggle {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  border-radius: 9999px;
+  border: none;
+  background: var(--surface-3, #1a2740);
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  transition: background 0.12s;
+  flex-shrink: 0;
+}
+.lpe-toggle--on { background: var(--accent, #0bbda4); }
+
+.lpe-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.55);
+  transition: transform 0.12s, background 0.12s;
+}
+.lpe-toggle--on .lpe-toggle-thumb {
+  transform: translateX(16px);
+  background: var(--bg, #07111f);
+}
+
+.lpe-size-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.lpe-size-tab {
+  flex: 1;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-3);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.lpe-size-tab:hover { background: var(--surface-2); color: var(--text-2); }
+.lpe-size-tab--active {
+  background: rgba(11,189,164,0.1);
+  border-color: rgba(11,189,164,0.4);
+  color: var(--accent, #0bbda4);
+}
+
+.lpe-color-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.lpe-color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: none;
+  padding: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.lpe-color-swatch::-webkit-color-swatch-wrapper { padding: 0; }
+.lpe-color-swatch::-webkit-color-swatch { border-radius: 3px; border: none; }
+
 /* ─── Anchor back button (deselect / return to list) ────────────────────── */
 .lpe-anchor-back-btn {
   display: flex;

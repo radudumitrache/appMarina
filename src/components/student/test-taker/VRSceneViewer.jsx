@@ -231,10 +231,12 @@ export default function VRSceneViewer({
     cameraRef.current = camera
     rendRef.current   = renderer
 
-    // 360° sphere (inside-out)
+    // 360° sphere — scale(-1,1,1) reverses UV winding so the texture reads
+    // left-to-right from inside without mirroring (FrontSide renders correctly after the flip)
     const geo  = new THREE.SphereGeometry(SPHERE_R, 64, 40)
+    geo.scale(-1, 1, 1)
     const tex  = new THREE.TextureLoader().load(vr.scene_url)
-    const mat  = new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide })
+    const mat  = new THREE.MeshBasicMaterial({ map: tex })
     scene.add(new THREE.Mesh(geo, mat))
 
     // Exercise anchor sprites

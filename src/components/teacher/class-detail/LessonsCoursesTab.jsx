@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { getCourses, getCourse, createCourse, deleteCourse, updateCourse, removeCourseLesson } from '../../../api/lessons'
 import { unassignLesson, getClasses } from '../../../api/classes'
 import CourseLessonModal from './CourseLessonModal'
+import Dropdown from '../../shared/Dropdown'
 import '../../css/teacher/class-detail/LessonsCoursesTab.css'
 
-const CAT_LABELS = { nav: 'NAV', emg: 'EMG', eng: 'ENG', cargo: 'CARGO', comm: 'COMM' }
 
 export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, onClassLessonUpdate }) {
   const [courses, setCourses]             = useState([])
@@ -100,8 +100,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
     catch { setCourses(prev => prev.map(c => c.id === course.id ? { ...c, classroom_id: prevClassroomId } : c)) }
   }
 
-  const lessonCat = l => CAT_LABELS[l.cat ?? l.category] ?? l.cat ?? l.category ?? '—'
-
   return (
     <>
     <div className="lct">
@@ -164,17 +162,14 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
                   <span className={`lct-status lct-status--${course.status}`}>{course.status}</span>
                   {cls && <span className="lct-course-count">{cls.length} lesson{cls.length !== 1 ? 's' : ''}</span>}
                   {allClasses.length > 0 && (
-                    <select
-                      className="lct-classroom-select"
-                      value={course.classroom_id ?? ''}
-                      onChange={e => handleCourseClassroomChange(course, e.target.value)}
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <option value="">— no class —</option>
-                      {allClasses.map(c => (
-                        <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
-                      ))}
-                    </select>
+                    <div onClick={e => e.stopPropagation()}>
+                      <Dropdown
+                        value={course.classroom_id ?? null}
+                        onChange={v => handleCourseClassroomChange(course, v)}
+                        placeholder="— no class —"
+                        options={allClasses.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}
+                      />
+                    </div>
                   )}
                 </div>
 
@@ -229,7 +224,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
                         <div key={l.id} className="lct-cl-item">
                           <span className="lct-cl-num">{i + 1}</span>
                           <span className="lct-cl-title">{l.title}</span>
-                          {lessonCat(l) !== '—' && <span className="lct-cat-tag">{lessonCat(l)}</span>}
 
                           <div className="lct-cl-actions">
                             {isConf ? (

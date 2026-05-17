@@ -1,11 +1,6 @@
 import { useState } from 'react'
 import '../../css/teacher/profile/PersonalInfoPanel.css'
 
-const TIMEZONES = [
-  'Europe/Madrid', 'Europe/London', 'Europe/Paris',
-  'America/New_York', 'America/Vancouver', 'America/Chicago',
-  'Asia/Tokyo', 'Asia/Singapore', 'Australia/Sydney', 'UTC',
-]
 
 const LANGUAGES = ['English', 'Spanish', 'French', 'Portuguese', 'Japanese', 'Mandarin', 'Arabic']
 
@@ -89,6 +84,7 @@ export default function PersonalInfoPanel({ profile, onSave }) {
         </div>
 
         {field('Nationality',   'nationality')}
+        {field('Organisation',  'organisation')}
 
         <div className="tp-form-field">
           <label className="tp-form-label">Language</label>
@@ -101,16 +97,6 @@ export default function PersonalInfoPanel({ profile, onSave }) {
             : <span className="tp-form-value">{profile.language}</span>}
         </div>
 
-        <div className="tp-form-field">
-          <label className="tp-form-label">Timezone</label>
-          {editing
-            ? (
-              <select className="tp-form-input tp-form-select" value={draft.timezone} onChange={e => setDraft(d => ({ ...d, timezone: e.target.value }))}>
-                {TIMEZONES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            )
-            : <span className="tp-form-value">{profile.timezone}</span>}
-        </div>
       </div>
     </div>
   )
