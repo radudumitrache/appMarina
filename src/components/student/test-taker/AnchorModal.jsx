@@ -1,4 +1,5 @@
 import '../../css/student/test-taker/AnchorModal.css'
+import '../../css/student/test-taker/PanelView.css'
 
 export default function AnchorModal({ anchor, value, onChange, onClose }) {
   if (!anchor) return null

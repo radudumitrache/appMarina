@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react'
 import QuestionHtmlEditor from '../test-builder/QuestionHtmlEditor'
 
+function stripHtml(html) {
+  if (!html) return ''
+  return html.replace(/<[^>]*>/g, '').trim()
+}
+
 const DELETE_ICON = (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 6 5 6 21 6"/>
@@ -74,7 +79,8 @@ export default function VRAnchorDrawer({
           />
 
           <QuestionHtmlEditor
-            value={editForm.text || ''}
+            key={selectedAnchor.data.id}
+            value={selectedAnchor.data.text || ''}
             classroomId={classroomId}
             onBlur={html => setEditForm(f => ({ ...f, text: html }))}
             placeholder="Question / prompt text…"
@@ -150,7 +156,7 @@ export default function VRAnchorDrawer({
               <span className="vrpe-anchor-badge">MCQ</span>
               <div className="vrpe-anchor-info">
                 {a.title && <span className="vrpe-anchor-title">{a.title}</span>}
-                <span className="vrpe-anchor-text">{a.text || '(no text)'}</span>
+                <span className="vrpe-anchor-text">{stripHtml(a.text) || '(no text)'}</span>
               </div>
               <button className="vrpe-anchor-del" onClick={e => { e.stopPropagation(); onDeleteAnchor('mcq', a.id) }} title="Delete">{DELETE_ICON}</button>
             </div>
@@ -161,7 +167,7 @@ export default function VRAnchorDrawer({
               <span className="vrpe-anchor-badge">WC</span>
               <div className="vrpe-anchor-info">
                 {a.title && <span className="vrpe-anchor-title">{a.title}</span>}
-                <span className="vrpe-anchor-text">{a.text || '(no text)'}</span>
+                <span className="vrpe-anchor-text">{stripHtml(a.text) || '(no text)'}</span>
               </div>
               <button className="vrpe-anchor-del" onClick={e => { e.stopPropagation(); onDeleteAnchor('wc', a.id) }} title="Delete">{DELETE_ICON}</button>
             </div>
@@ -172,7 +178,7 @@ export default function VRAnchorDrawer({
               <span className="vrpe-anchor-badge">LOC</span>
               <div className="vrpe-anchor-info">
                 {a.title && <span className="vrpe-anchor-title">{a.title}</span>}
-                <span className="vrpe-anchor-text">{a.text || '(no text)'}</span>
+                <span className="vrpe-anchor-text">{stripHtml(a.text) || '(no text)'}</span>
               </div>
               <button className="vrpe-anchor-del" onClick={e => { e.stopPropagation(); onDeleteAnchor('loc', a.id) }} title="Delete">{DELETE_ICON}</button>
             </div>

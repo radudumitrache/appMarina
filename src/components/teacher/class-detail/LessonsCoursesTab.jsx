@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { getCourses, getCourse, createCourse, deleteCourse, updateCourse, removeCourseLesson } from '../../../api/lessons'
-import { unassignLesson, getClasses } from '../../../api/classes'
+import { unassignLesson } from '../../../api/classes'
 import CourseLessonModal from './CourseLessonModal'
-import Dropdown from '../../shared/Dropdown'
 import '../../css/teacher/class-detail/LessonsCoursesTab.css'
 
 
@@ -19,7 +18,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
   const [removingLesson, setRemovingLesson] = useState(null)
   const [expandedCourses, setExpandedCourses] = useState(new Set())
   const [confirmCourseLesson, setConfirmCourseLesson] = useState(null)
-  const [allClasses, setAllClasses] = useState([])
   const newTitleRef = useRef(null)
 
   const toggleCourse = (id) => setExpandedCourses(prev => {
@@ -47,7 +45,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
         }).catch(() => {})
       })
     }).catch(() => setLoadingCourses(false))
-    getClasses().then(r => setAllClasses(r.data)).catch(() => {})
   }, [])
 
   const openCreate = () => {
@@ -90,14 +87,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
     setCourses(prev => prev.map(c => c.id === course.id ? { ...c, status: newStatus } : c))
     try { await updateCourse(course.id, { status: newStatus }) }
     catch { setCourses(prev => prev.map(c => c.id === course.id ? { ...c, status: course.status } : c)) }
-  }
-
-  const handleCourseClassroomChange = async (course, newClassroomId) => {
-    const prevClassroomId = course.classroom_id ?? null
-    const next = newClassroomId ? Number(newClassroomId) : null
-    setCourses(prev => prev.map(c => c.id === course.id ? { ...c, classroom_id: next } : c))
-    try { await updateCourse(course.id, { classroom_id: next }) }
-    catch { setCourses(prev => prev.map(c => c.id === course.id ? { ...c, classroom_id: prevClassroomId } : c)) }
   }
 
   return (
@@ -161,16 +150,6 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
                   <span className="lct-course-title">{course.title}</span>
                   <span className={`lct-status lct-status--${course.status}`}>{course.status}</span>
                   {cls && <span className="lct-course-count">{cls.length} lesson{cls.length !== 1 ? 's' : ''}</span>}
-                  {allClasses.length > 0 && (
-                    <div onClick={e => e.stopPropagation()}>
-                      <Dropdown
-                        value={course.classroom_id ?? null}
-                        onChange={v => handleCourseClassroomChange(course, v)}
-                        placeholder="— no class —"
-                        options={allClasses.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}
-                      />
-                    </div>
-                  )}
                 </div>
 
                 <div className="lct-course-actions">

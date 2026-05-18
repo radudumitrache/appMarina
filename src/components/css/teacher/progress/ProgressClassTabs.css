@@ -71,6 +71,10 @@
   font-weight: 500;
   color: var(--text-2);
   line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .tp-class-card--all .tp-class-card-name {

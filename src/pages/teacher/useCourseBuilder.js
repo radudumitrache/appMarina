@@ -52,15 +52,16 @@ export function useCourseBuilder() {
   /* ── Load courses + lesson bank on mount ──────────────────────────────── */
   useEffect(() => {
     setLoading(true)
-    Promise.all([getCourses(), getLessons(), getDepartments()])
+    const safe = p => p.catch(() => null)
+    Promise.all([safe(getCourses()), safe(getLessons()), safe(getDepartments())])
       .then(([cRes, lRes, dRes]) => {
+        if (!cRes) { setError('Could not load courses.'); return }
         const list = cRes.data
         setCourses(list)
-        setLessonBank(lRes.data)
-        setDepartments(dRes.data)
+        if (lRes) setLessonBank(lRes.data)
+        if (dRes) setDepartments(dRes.data)
         if (list.length > 0) setSelected(list[0].id)
       })
-      .catch(() => setError('Could not load data.'))
       .finally(() => setLoading(false))
   }, [])
 

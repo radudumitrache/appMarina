@@ -67,26 +67,15 @@ export default function EditDetailsModal({ editForm, onChange, onClose, onSave, 
             </div>
           </div>
 
-          <div className="form-2col">
-            <div className="form-row">
-              <label className="form-label">Semester</label>
-              <input
-                className="form-input"
-                type="text"
-                value={editForm.semester}
-                onChange={e => onChange('semester', e.target.value)}
-              />
-            </div>
-            <div className="form-row">
-              <label className="form-label">Status</label>
-              <div className="form-radio-group">
-                {['active', 'archived'].map(s => (
-                  <label key={s} className={`form-radio ${editForm.status === s ? 'form-radio--active' : ''}`}>
-                    <input type="radio" name="cd-status" value={s} checked={editForm.status === s} onChange={() => onChange('status', s)} />
-                    <span>{s.charAt(0).toUpperCase() + s.slice(1)}</span>
-                  </label>
-                ))}
-              </div>
+          <div className="form-row">
+            <label className="form-label">Status</label>
+            <div className="form-radio-group">
+              {['active', 'archived'].map(s => (
+                <label key={s} className={`form-radio ${editForm.status === s ? 'form-radio--active' : ''}`}>
+                  <input type="radio" name="cd-status" value={s} checked={editForm.status === s} onChange={() => onChange('status', s)} />
+                  <span>{s.charAt(0).toUpperCase() + s.slice(1)}</span>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -97,7 +86,11 @@ export default function EditDetailsModal({ editForm, onChange, onClose, onSave, 
                 className="form-input"
                 type="date"
                 value={editForm.start_date ?? ''}
-                onChange={e => onChange('start_date', e.target.value)}
+                max={editForm.end_date || undefined}
+                onChange={e => {
+                  onChange('start_date', e.target.value)
+                  if (editForm.end_date && e.target.value > editForm.end_date) onChange('end_date', '')
+                }}
               />
             </div>
             <div className="form-row">
@@ -106,7 +99,11 @@ export default function EditDetailsModal({ editForm, onChange, onClose, onSave, 
                 className="form-input"
                 type="date"
                 value={editForm.end_date ?? ''}
-                onChange={e => onChange('end_date', e.target.value)}
+                min={editForm.start_date || undefined}
+                onChange={e => {
+                  onChange('end_date', e.target.value)
+                  if (editForm.start_date && e.target.value < editForm.start_date) onChange('start_date', '')
+                }}
               />
             </div>
           </div>

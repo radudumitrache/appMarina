@@ -2,10 +2,9 @@
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  overflow: hidden;
   animation: fadeUp 0.35s var(--ease-default) both;
   transition: border-color var(--duration-fast), background var(--duration-fast);
 }
@@ -13,50 +12,62 @@
   border-color: var(--border-hover);
   background: var(--surface-2);
 }
-.class-card--archived { opacity: 0.6; }
+.class-card--archived { opacity: 0.55; }
 
-.class-card-header {
+/* ── Top section ─────────────────────────────────────────────────────────── */
+.class-card-top {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
+  padding: 18px 18px 14px;
 }
 
 .class-card-name-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
 }
 
 .class-card-name {
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
 .class-status-badge {
   font-family: var(--font-ui);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.07em;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 3px 8px;
+  padding: 3px 7px;
   border-radius: 4px;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 .class-status-badge--active   { color: var(--success); background: rgba(46, 199, 122, 0.12); }
 .class-status-badge--archived { color: var(--text-3);  background: rgba(255,255,255,0.06);   }
 
-.class-card-desc {
+.class-card-subject {
   font-family: var(--font-ui);
   font-size: 12px;
   color: var(--text-3);
-  line-height: 1.5;
 }
 
-.class-card-teacher {
+/* ── Meta row (teacher + dates) ──────────────────────────────────────────── */
+.class-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 18px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.class-card-meta-row {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -65,129 +76,95 @@
 
 .class-teacher-name {
   font-family: var(--font-ui);
-  font-size: 13px;
-  color: var(--gold);
+  font-size: 12px;
   font-weight: 500;
+  color: var(--gold);
 }
 
+.class-date-range {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ── Counts ──────────────────────────────────────────────────────────────── */
 .class-card-counts {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: stretch;
+  border-top: 1px solid var(--border);
 }
 
 .class-count-btn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--surface-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 8px;
+  background: none;
+  border: none;
   cursor: pointer;
   color: var(--text-3);
-  transition: border-color var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+  transition: color var(--duration-fast), background var(--duration-fast);
 }
-.class-count-btn svg { flex-shrink: 0; width: 15px; height: 15px; }
 .class-count-btn:hover {
-  border-color: rgba(224, 82, 82, 0.3);
+  background: rgba(224, 82, 82, 0.06);
   color: var(--error);
-  background: rgba(224, 82, 82, 0.05);
+}
+
+.class-count-divider {
+  width: 1px;
+  background: var(--border);
+  flex-shrink: 0;
 }
 
 .class-count-num {
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text);
 }
+.class-count-btn:hover .class-count-num { color: inherit; }
 
 .class-count-label {
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: 12px;
   color: inherit;
 }
 
-.class-count-sep {
-  color: var(--border-hover);
-  font-size: 14px;
-}
-
-.class-expand {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  padding: 12px;
-  background: var(--surface-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  animation: fadeUp 0.2s var(--ease-default) both;
-}
-
-.class-expand-label {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-3);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.class-expand-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.class-expand-chip {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  color: var(--text-2);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 3px 8px;
-}
-
-.class-expand-empty {
-  font-family: var(--font-ui);
-  font-size: 12px;
-  color: var(--text-3);
-  font-style: italic;
-}
-
+/* ── Actions ─────────────────────────────────────────────────────────────── */
 .class-card-actions {
   display: flex;
-  gap: 6px;
-  padding-top: 4px;
+  align-items: stretch;
   border-top: 1px solid var(--border);
-  justify-content: center;
 }
 
 .class-action-btn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 5px;
   justify-content: center;
-  padding: 7px 16px;
+  gap: 5px;
+  padding: 10px 6px;
   background: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border: none;
   font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 500;
   color: var(--text-3);
   cursor: pointer;
-  transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+  transition: background var(--duration-fast), color var(--duration-fast);
 }
-.class-action-btn:hover {
-  background: rgba(255,255,255,0.05);
-  border-color: var(--border-hover);
+.class-action-btn + .class-action-btn {
+  border-left: 1px solid var(--border);
+}
+
+.class-action-btn--view:hover,
+.class-action-btn--edit:hover {
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text);
 }
-.class-action-btn--manage:hover,
 .class-action-btn--delete:hover {
   background: rgba(224, 82, 82, 0.08);
-  border-color: rgba(224, 82, 82, 0.3);
   color: var(--error);
 }

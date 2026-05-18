@@ -141,6 +141,54 @@
 .form-textarea::placeholder { color: var(--text-3); }
 .form-textarea:focus { border-color: rgba(224, 82, 82, 0.4); }
 
+/* Department checklist */
+.form-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.form-check-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--duration-fast);
+}
+.form-check-item:hover { background: var(--surface-3); }
+.form-check-item--active { background: rgba(224, 82, 82, 0.06); }
+
+.form-check-box {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+.form-check-box--checked {
+  border-color: var(--error);
+  background: var(--error);
+  color: #fff;
+}
+
+.form-check-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+}
+.form-check-item--active .form-check-label { color: var(--text); }
+
 /* Panel action buttons */
 .btn-primary {
   display: flex;

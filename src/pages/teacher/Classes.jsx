@@ -12,7 +12,7 @@ import '../css/teacher/Classes.css'
 
 const EMPTY_FORM = {
   name: '', code: '', subject: '',
-  semester: '', start_date: '', end_date: '', status: 'active',
+  start_date: '', end_date: '', status: 'active',
 }
 
 export default function Classes() {
@@ -66,7 +66,6 @@ export default function Classes() {
     if (!form.name.trim())     clientErrors.name       = 'Class name is required.'
     if (!form.code.trim())     clientErrors.code       = 'Class code is required.'
     if (!form.subject.trim())  clientErrors.subject    = 'Subject is required.'
-    if (!form.semester.trim()) clientErrors.semester   = 'Semester is required.'
     if (!form.start_date)      clientErrors.start_date = 'Start date is required.'
     if (!form.end_date)        clientErrors.end_date   = 'End date is required.'
 

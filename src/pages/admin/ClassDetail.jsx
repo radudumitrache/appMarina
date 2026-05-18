@@ -67,7 +67,6 @@ export default function AdminClassDetail() {
       code:       cls.code,
       subject:    cls.subject,
       teacher:    cls.teacher,
-      semester:   cls.semester,
       start_date: cls.start_date,
       end_date:   cls.end_date,
       status:     cls.status,

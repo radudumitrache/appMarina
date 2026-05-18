@@ -75,6 +75,27 @@
   flex-direction: column;
 }
 
+/* ── Option overrides inside the modal ───────────────────────────────────── */
+.anchor-modal .tt-mcq-option {
+  color: var(--text);
+}
+.anchor-modal .tt-mcq-option:hover {
+  color: var(--text);
+}
+.anchor-modal .tt-mcq-option--selected {
+  color: var(--text);
+}
+.anchor-modal .tt-tf-btn {
+  color: var(--text);
+}
+.anchor-modal .tt-tf-btn:hover {
+  color: var(--text);
+}
+.anchor-modal .tt-tf-btn--selected {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 .anchor-modal__vr-note {
   font-size: 13px;
   color: var(--text-3);

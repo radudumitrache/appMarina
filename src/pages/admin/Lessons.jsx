@@ -31,6 +31,7 @@ function mapLesson(l) {
     difficulty:       l.difficulty,
     visibility:       l.visibility,
     author:           l.author_name ?? '',
+    author_id:        l.author ?? null,
     locked:           l.locked,
     classroom_id:     l.classroom_id ?? null,
     organisation_id:  l.organisation_id ?? null,
@@ -164,18 +165,22 @@ export default function Lessons() {
               ) : filtered.length === 0 ? (
                 <p className="lessons-adm-empty">No lessons match your filters.</p>
               ) : (
-                filtered.map((lesson, i) => (
-                  <LessonRow
-                    key={lesson.id}
-                    lesson={lesson}
-                    departments={departments}
-                    classes={classes}
-                    index={i}
-                    onView={() => navigate(`/admin/lessons/${lesson.id}/panels`, { state: { backPath: '/admin/lessons' } })}
-                    onEdit={() => openEdit(lesson)}
-                    onDelete={() => setDeleteTarget(lesson)}
-                  />
-                ))
+                filtered.map((lesson, i) => {
+                  const canEdit = user?.is_staff || lesson.visibility !== 'public' || lesson.author_id === user?.id
+                  return (
+                    <LessonRow
+                      key={lesson.id}
+                      lesson={lesson}
+                      departments={departments}
+                      classes={classes}
+                      index={i}
+                      canEdit={canEdit}
+                      onView={() => navigate(`/admin/lessons/${lesson.id}/panels`, { state: { backPath: '/admin/lessons' } })}
+                      onEdit={() => openEdit(lesson)}
+                      onDelete={() => setDeleteTarget(lesson)}
+                    />
+                  )
+                })
               )}
             </div>
           </main>

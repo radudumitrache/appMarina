@@ -101,17 +101,6 @@ export default function ClassFormModal({ mode = 'create', form, errors = {}, onC
               />
               {err('subject')}
             </div>
-            <div className="form-row">
-              <Label required>Semester</Label>
-              <input
-                className={`form-input${errors.semester ? ' form-input--error' : ''}`}
-                type="text"
-                placeholder="e.g. Spring 2025"
-                value={form.semester}
-                onChange={e => onChange('semester', e.target.value)}
-              />
-              {err('semester')}
-            </div>
           </div>
 
           <div className="form-2col">

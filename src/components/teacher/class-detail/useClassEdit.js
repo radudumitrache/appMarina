@@ -13,7 +13,6 @@ export function useClassEdit(id, cls, setCls) {
       name:       cls.name,
       code:       cls.code,
       subject:    cls.subject    ?? '',
-      semester:   cls.semester   ?? '',
       start_date: cls.start_date ?? '',
       end_date:   cls.end_date   ?? '',
       status:     cls.status     ?? 'active',
@@ -32,7 +31,6 @@ export function useClassEdit(id, cls, setCls) {
     if (!editForm.name?.trim())     errs.name       = 'Class name is required.'
     if (!editForm.code?.trim())     errs.code       = 'Class code is required.'
     if (!editForm.subject?.trim())  errs.subject    = 'Subject is required.'
-    if (!editForm.semester?.trim()) errs.semester   = 'Semester is required.'
     if (!editForm.start_date)       errs.start_date = 'Start date is required.'
     if (!editForm.end_date)         errs.end_date   = 'End date is required.'
     if (Object.keys(errs).length)  { setEditErrors(errs); return }

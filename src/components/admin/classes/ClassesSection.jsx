@@ -15,24 +15,25 @@ export default function ClassesSection({ title, classes, startIndex, loading, sk
         {loading ? (
           Array.from({ length: skeletonCount }).map((_, i) => (
             <div key={i} className="class-card" style={{ opacity: 1 - i * 0.15, animation: 'none' }}>
-              <div className="class-card-header">
+              <div className="class-card-top">
                 <div className="class-card-name-row">
-                  <Sk w={`${55 + (i % 3) * 10}%`} h={16} r={4} />
+                  <Sk w={`${55 + (i % 3) * 10}%`} h={15} r={4} />
                   <Sk w={52} h={18} r={4} style={{ flexShrink: 0 }} />
                 </div>
-                <Sk w="45%" h={11} r={3} />
+                <Sk w="40%" h={11} r={3} />
               </div>
-              <div className="class-card-teacher">
-                <Sk w={120} h={12} r={3} />
+              <div className="class-card-meta">
+                <Sk w={110} h={12} r={3} />
+                <Sk w={160} h={11} r={3} />
               </div>
-              <div className="class-card-counts" style={{ gap: 8 }}>
-                <Sk w={90} h={28} r={4} />
-                <Sk w={90} h={28} r={4} />
+              <div className="class-card-counts">
+                <Sk style={{ flex: 1, height: 38, borderRadius: 0 }} />
+                <Sk style={{ flex: 1, height: 38, borderRadius: 0 }} />
               </div>
-              <div className="class-card-actions" style={{ paddingTop: 4, borderTop: '1px solid var(--border)', display: 'flex', gap: 6 }}>
-                <Sk h={30} r={4} />
-                <Sk h={30} r={4} />
-                <Sk h={30} r={4} />
+              <div className="class-card-actions">
+                <Sk style={{ flex: 1, height: 36, borderRadius: 0 }} />
+                <Sk style={{ flex: 1, height: 36, borderRadius: 0 }} />
+                <Sk style={{ flex: 1, height: 36, borderRadius: 0 }} />
               </div>
             </div>
           ))

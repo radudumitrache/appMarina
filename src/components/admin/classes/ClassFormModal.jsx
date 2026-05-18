@@ -95,28 +95,15 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
             </div>
           </div>
 
-          <div className="form-2col">
-            <div className="form-row">
-              <label className="form-label">Semester</label>
-              <input
-                className={`form-input${err('semester') ? ' form-input--error' : ''}`}
-                type="text"
-                placeholder="e.g. Spring 2025"
-                value={form.semester}
-                onChange={e => onChange('semester', e.target.value)}
-              />
-              {err('semester')}
-            </div>
-            <div className="form-row">
-              <label className="form-label">Status</label>
-              <div className="form-radio-group">
-                {['active', 'archived'].map(s => (
-                  <label key={s} className={`form-radio ${form.status === s ? 'form-radio--active' : ''}`}>
-                    <input type="radio" name="class-status" value={s} checked={form.status === s} onChange={() => onChange('status', s)} />
-                    <span>{s.charAt(0).toUpperCase() + s.slice(1)}</span>
-                  </label>
-                ))}
-              </div>
+          <div className="form-row">
+            <label className="form-label">Status</label>
+            <div className="form-radio-group">
+              {['active', 'archived'].map(s => (
+                <label key={s} className={`form-radio ${form.status === s ? 'form-radio--active' : ''}`}>
+                  <input type="radio" name="class-status" value={s} checked={form.status === s} onChange={() => onChange('status', s)} />
+                  <span>{s.charAt(0).toUpperCase() + s.slice(1)}</span>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -125,9 +112,13 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
               <label className="form-label">Start Date</label>
               <DatePicker
                 value={form.start_date}
-                onChange={v => onChange('start_date', v)}
+                onChange={v => {
+                  onChange('start_date', v)
+                  if (form.end_date && v > form.end_date) onChange('end_date', '')
+                }}
                 placeholder="e.g. Jan 1, 2025"
                 hasError={!!errors.start_date}
+                max={form.end_date || undefined}
               />
               {err('start_date')}
             </div>
@@ -135,9 +126,13 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
               <label className="form-label">End Date</label>
               <DatePicker
                 value={form.end_date}
-                onChange={v => onChange('end_date', v)}
+                onChange={v => {
+                  onChange('end_date', v)
+                  if (form.start_date && v < form.start_date) onChange('start_date', '')
+                }}
                 placeholder="e.g. Jun 30, 2025"
                 hasError={!!errors.end_date}
+                min={form.start_date || undefined}
               />
               {err('end_date')}
             </div>
