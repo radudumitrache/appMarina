@@ -35,9 +35,9 @@ export default function CourseCard({ course, index, onLessonToggle }) {
   const completed = lessons.filter(cl => cl.lesson_detail?.completed).length
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0
 
-  function handleToggle(cl, e) {
+  function handleToggle(cl, isLocked, e) {
     e.stopPropagation()
-    if (cl.lesson_detail?.locked) return
+    if (isLocked) return
     const wasComplete = !!cl.lesson_detail?.completed
     onLessonToggle(course.id, cl.lesson, !wasComplete)
     const apiCall = wasComplete ? uncompleteLesson : completeLesson
@@ -69,7 +69,8 @@ export default function CourseCard({ course, index, onLessonToggle }) {
           ) : (
             lessons.map((cl, i) => {
               const ld = cl.lesson_detail ?? {}
-              const isLocked = ld.locked
+              const seqLocked = i > 0 && lessons.slice(0, i).some(l => !l.lesson_detail?.completed)
+              const isLocked = ld.locked || seqLocked
               const isDone = !!ld.completed
               return (
                 <div
@@ -88,7 +89,7 @@ export default function CourseCard({ course, index, onLessonToggle }) {
                   ) : (
                     <button
                       className={`crs-lesson-toggle ${isDone ? 'crs-lesson-toggle--done' : ''}`}
-                      onClick={e => handleToggle(cl, e)}
+                      onClick={e => handleToggle(cl, isLocked, e)}
                       title={isDone ? 'Mark incomplete' : 'Mark complete'}
                     >
                       <CheckIcon />
