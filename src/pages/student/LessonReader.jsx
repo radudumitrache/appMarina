@@ -85,17 +85,26 @@ export default function LessonReader() {
     const out = []
     for (const ta of activeTour.text_anchors ?? []) {
       const { lon, lat } = vec3ToLonLat(ta.pos_x, ta.pos_y, ta.pos_z)
-      out.push({ id: `ta-${ta.id}`, lon, lat, label: ta.title, className: 'vr-hotspot--anchor', onClick: () => setAnchor(ta) })
+      out.push({
+        id: `ta-${ta.id}`, lon, lat, label: ta.title,
+        show_title: ta.show_title, title_size: ta.title_size, title_text_color: ta.title_text_color,
+        className: 'vr-hotspot--anchor', onClick: () => setAnchor(ta),
+      })
     }
     for (const na of activeTour.navigator_anchors ?? []) {
       const { lon, lat } = vec3ToLonLat(na.pos_x, na.pos_y, na.pos_z)
-      out.push({ id: `na-${na.id}`, lon, lat, label: na.title || 'Go →', className: 'vr-hotspot--anchor vr-hotspot--nav', onClick: () => {
-        const idx = panels.findIndex(p => p.id === na.target_panel)
-        if (idx !== -1) {
-          const targetPanel = panels[idx]
-          setNavConfirm({ idx, label: targetPanel?.title || na.title || 'next panel' })
-        }
-      } })
+      out.push({
+        id: `na-${na.id}`, lon, lat, label: na.title || 'Go →',
+        show_title: na.show_title, title_size: na.title_size, title_text_color: na.title_text_color,
+        className: 'vr-hotspot--anchor vr-hotspot--nav',
+        onClick: () => {
+          const idx = panels.findIndex(p => p.id === na.target_panel)
+          if (idx !== -1) {
+            const targetPanel = panels[idx]
+            setNavConfirm({ idx, label: targetPanel?.title || na.title || 'next panel' })
+          }
+        },
+      })
     }
     return out
   }, [activeTour])
