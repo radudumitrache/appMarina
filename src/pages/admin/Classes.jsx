@@ -36,9 +36,15 @@ export default function Classes() {
       .finally(() => setLoading(false))
   }, [])
 
-  const matchesSearch = c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    (c.teacher_name || '').toLowerCase().includes(search.toLowerCase())
+  const matchesSearch = c => {
+    const q = search.toLowerCase()
+    return (
+      (c.name        || '').toLowerCase().includes(q) ||
+      (c.code        || '').toLowerCase().includes(q) ||
+      (c.subject     || '').toLowerCase().includes(q) ||
+      (c.teacher_name || '').toLowerCase().includes(q)
+    )
+  }
 
   const activeClasses   = classes.filter(c => c.status === 'active'   && matchesSearch(c))
   const archivedClasses = classes.filter(c => c.status === 'archived' && matchesSearch(c))
