@@ -32,20 +32,20 @@
   transition: background var(--duration-default), border-color var(--duration-default), transform var(--duration-default) var(--ease-default);
   animation: fadeUp 0.45s var(--ease-default) both;
 }
-.dash-btn:hover {
+.admin-dashboard .dash-btn:hover {
   background: rgba(224, 82, 82, 0.07);
   border-color: rgba(224, 82, 82, 0.3);
   transform: translateY(-3px);
 }
 .dash-btn:active { transform: translateY(-1px); }
 
-.dash-btn-icon {
+.admin-dashboard .dash-btn-icon {
   color: var(--error);
   opacity: 0.85;
   display: flex;
   transition: opacity var(--duration-fast);
 }
-.dash-btn:hover .dash-btn-icon { opacity: 1; }
+.admin-dashboard .dash-btn:hover .dash-btn-icon { opacity: 1; }
 
 .dash-btn-label {
   font-family: var(--font-ui);
@@ -56,15 +56,15 @@
 }
 
 /* ─── Light theme — blue-glass tiles ─────────────────────────────────────── */
-[data-theme="light"] .dash-btn {
+[data-theme="light"] .admin-dashboard .dash-btn {
   background: rgba(15, 45, 95, 0.62);
   border-color: rgba(70, 130, 195, 0.28);
 }
-[data-theme="light"] .dash-btn:hover {
+[data-theme="light"] .admin-dashboard .dash-btn:hover {
   background: rgba(11, 189, 164, 0.14);
   border-color: rgba(11, 189, 164, 0.32);
 }
-[data-theme="light"] .dash-btn-label  { color: #c8ddf0; }
-[data-theme="light"] .dash-controls   { background: rgba(15, 45, 95, 0.65); border-color: rgba(70, 130, 195, 0.28); }
-[data-theme="light"] .ctrl-btn        { color: rgba(180, 215, 240, 0.75); }
-[data-theme="light"] .ctrl-btn:hover  { color: #e4edf6; background: rgba(255, 255, 255, 0.07); }
+[data-theme="light"] .admin-dashboard .dash-btn-label  { color: #c8ddf0; }
+[data-theme="light"] .admin-dashboard .dash-controls   { background: rgba(15, 45, 95, 0.65); border-color: rgba(70, 130, 195, 0.28); }
+[data-theme="light"] .admin-dashboard .ctrl-btn        { color: rgba(180, 215, 240, 0.75); }
+[data-theme="light"] .admin-dashboard .ctrl-btn:hover  { color: #e4edf6; background: rgba(255, 255, 255, 0.07); }

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useParams, useNavigate } from 'react-router-dom'
 import NavBar from '../../components/admin/NavBar'
-import { getCourse, getCourses, getLessons, addCourseLesson, removeCourseLesson, updateCourse } from '../../api/lessons'
+import { getCourse, getCourses, getLessons, addCourseLesson, removeCourseLesson, reorderCourseLesson, updateCourse } from '../../api/lessons'
 import {
   getCourseDiplomas, createCourseDiploma, updateCourseDiploma,
   deleteCourseDiploma, awardCourseDiploma, revokeCourseDiploma,
@@ -20,22 +21,53 @@ function StatusBadge({ status }) {
 
 // ── Diploma Form Modal ────────────────────────────────────────────────────────
 
-function DiplomaFormModal({ mode, form, errors, courses, onChange, onClose, onSave }) {
-  return (
-    <div className="crd-modal-backdrop" onClick={onClose}>
-      <div className="crd-modal-card" onClick={e => e.stopPropagation()}>
-        <div className="crd-modal-header">
-          <span className="crd-modal-title">{mode === 'create' ? 'New Diploma' : 'Edit Diploma'}</span>
-          <button className="crd-modal-close" onClick={onClose}>✕</button>
-        </div>
-        <div className="crd-modal-body">
+function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClose, onSave }) {
+  return createPortal(
+    <div className="crd-cert-overlay" onMouseDown={e => { if (e.target === e.currentTarget && !saving) onClose() }}>
+      <div className="crd-cert-wrap">
+
+        <button className="crd-cert-dismiss" onClick={onClose} disabled={saving} aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+
+        <div className="crd-cert">
+          {/* corner ornaments */}
+          <span className="crd-cert-corner crd-cert-corner--tl" aria-hidden="true"/>
+          <span className="crd-cert-corner crd-cert-corner--tr" aria-hidden="true"/>
+          <span className="crd-cert-corner crd-cert-corner--bl" aria-hidden="true"/>
+          <span className="crd-cert-corner crd-cert-corner--br" aria-hidden="true"/>
+
+          {/* logo */}
+          <div className="crd-cert-logo">HANSA360</div>
+          <div className="crd-cert-logo-sub">Maritime Training Platform</div>
+
+          {/* top rule */}
+          <div className="crd-cert-rule" aria-hidden="true">
+            <span className="crd-cert-rule-line"/><span className="crd-cert-rule-diamond"/><span className="crd-cert-rule-line"/>
+          </div>
+
+          {/* anchor ornament */}
+          <svg className="crd-cert-anchor" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <circle cx="32" cy="14" r="6" stroke="currentColor" strokeWidth="2"/>
+            <line x1="32" y1="20" x2="32" y2="52" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="16" y1="36" x2="48" y2="36" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M16 36 Q10 44 16 50 Q22 56 32 52" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <path d="M48 36 Q54 44 48 50 Q42 56 32 52" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <line x1="20" y1="36" x2="16" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="44" y1="36" x2="48" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+
+          {/* course selector */}
           {courses.length > 0 && (
-            <div className="crd-form-group">
-              <label className="crd-form-label">Course</label>
+            <div className="crd-cert-course-row">
+              <label className="crd-cert-course-label">Course</label>
               <select
-                className="crd-form-input crd-form-select"
+                className="crd-cert-course-select"
                 value={form.courseId}
                 onChange={e => onChange('courseId', Number(e.target.value))}
+                disabled={saving}
               >
                 {courses.map(c => (
                   <option key={c.id} value={c.id}>{c.title}</option>
@@ -43,36 +75,51 @@ function DiplomaFormModal({ mode, form, errors, courses, onChange, onClose, onSa
               </select>
             </div>
           )}
-          <div className="crd-form-group">
-            <label className="crd-form-label">Title</label>
-            <input
-              className={`crd-form-input${errors.title ? ' crd-form-input--error' : ''}`}
-              placeholder="e.g. Certificate of Completion"
-              value={form.title}
-              onChange={e => onChange('title', e.target.value)}
-            />
-            {errors.title && <span className="crd-form-error">{errors.title}</span>}
+
+          {/* title field */}
+          <input
+            className={`crd-cert-title-input${errors.title ? ' crd-cert-title-input--err' : ''}`}
+            type="text"
+            value={form.title}
+            onChange={e => onChange('title', e.target.value)}
+            placeholder="e.g. Certificate of Completion"
+            maxLength={300}
+            disabled={saving}
+            autoFocus
+          />
+          {errors.title && <p className="crd-cert-error">{errors.title}</p>}
+
+          {/* bottom rule */}
+          <div className="crd-cert-rule" aria-hidden="true">
+            <span className="crd-cert-rule-line"/><span className="crd-cert-rule-diamond"/><span className="crd-cert-rule-line"/>
           </div>
-          <div className="crd-form-group">
-            <label className="crd-form-label">Description (optional)</label>
-            <textarea
-              className="crd-form-input crd-form-textarea"
-              placeholder="Describe what this diploma certifies…"
-              value={form.description}
-              onChange={e => onChange('description', e.target.value)}
-              rows={3}
-            />
+
+          <p className="crd-cert-intro">Hereby this diploma is awarded to</p>
+          <div className="crd-cert-recipient-placeholder">
+            <span className="crd-cert-recipient-name">Student Name</span>
           </div>
-          {errors.non_field_errors && <p className="crd-form-error">{errors.non_field_errors}</p>}
-        </div>
-        <div className="crd-modal-footer">
-          <button className="crd-btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="crd-btn-primary" onClick={onSave}>
-            {mode === 'create' ? 'Create Diploma' : 'Save Changes'}
-          </button>
+
+          <textarea
+            className="crd-cert-desc-input"
+            value={form.description}
+            onChange={e => onChange('description', e.target.value)}
+            placeholder="in recognition of… (describe what this diploma recognises)"
+            rows={3}
+            disabled={saving}
+          />
+
+          {errors.non_field_errors && <p className="crd-cert-error">{errors.non_field_errors}</p>}
+
+          <div className="crd-cert-actions">
+            <button className="crd-cert-btn-ghost" onClick={onClose} disabled={saving}>Cancel</button>
+            <button className="crd-cert-btn-primary" onClick={onSave} disabled={saving}>
+              {saving ? 'Saving…' : mode === 'create' ? 'Create Diploma' : 'Save Changes'}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
@@ -192,9 +239,24 @@ function DiplomaCard({ diploma, onEdit, onDelete, onAward }) {
 
 // ── Lesson Row ────────────────────────────────────────────────────────────────
 
-function LessonRow({ entry, onRemove }) {
+function LessonRow({ entry, index, dragOverIndex, onRemove, onDragStart, onDragOver, onDrop, onDragEnd }) {
+  const isTarget = dragOverIndex === index
   return (
-    <div className="crd-lesson-row">
+    <div
+      className={`crd-lesson-row${isTarget ? ' crd-lesson-row--drag-over' : ''}`}
+      draggable
+      onDragStart={() => onDragStart(index)}
+      onDragOver={e => { e.preventDefault(); onDragOver(index) }}
+      onDrop={e => { e.preventDefault(); onDrop(index) }}
+      onDragEnd={onDragEnd}
+    >
+      <span className="crd-drag-handle" title="Drag to reorder">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="8" y1="6" x2="16" y2="6"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+          <line x1="8" y1="18" x2="16" y2="18"/>
+        </svg>
+      </span>
       <span className="crd-lesson-order">{entry.order}</span>
       <span className="crd-lesson-title">{entry.lesson_detail?.title ?? `Lesson #${entry.lesson}`}</span>
       <button className="crd-lesson-remove" onClick={() => onRemove(entry)}>
@@ -224,10 +286,13 @@ export default function CourseDetail() {
   const [deleteTarget, setDeleteTarget]   = useState(null)
   const [diplomaForm, setDiplomaForm]     = useState({ title: '', description: '', courseId: Number(id) })
   const [diplomaErrors, setDiplomaErrors] = useState({})
+  const [diplomaSaving, setDiplomaSaving] = useState(false)
 
   const [lessonSearch, setLessonSearch] = useState('')
   const [lessonFocus, setLessonFocus]   = useState(false)
   const [addingLesson, setAddingLesson] = useState(false)
+  const [dragIdx,     setDragIdx]      = useState(null)
+  const [dragOverIdx, setDragOverIdx]  = useState(null)
 
   useEffect(() => {
     getCourses().then(r => setAllCourses(r.data.map(c => ({ id: c.id, title: c.title })))).catch(() => {})
@@ -298,6 +363,7 @@ export default function CourseDetail() {
     if (!diplomaForm.title.trim()) errs.title = 'Title is required.'
     if (Object.keys(errs).length) { setDiplomaErrors(errs); return }
     setDiplomaErrors({})
+    setDiplomaSaving(true)
     const targetCourseId = diplomaForm.courseId || Number(id)
     const payload = { title: diplomaForm.title.trim(), description: diplomaForm.description.trim() }
     try {
@@ -322,6 +388,8 @@ export default function CourseDetail() {
       } else {
         setDiplomaErrors({ non_field_errors: 'Something went wrong.' })
       }
+    } finally {
+      setDiplomaSaving(false)
     }
   }
 
@@ -358,13 +426,22 @@ export default function CourseDetail() {
   // ── Add Lesson ────────────────────────────────────────────────────────────
 
   const courseLessonIds = course?.lessons?.map(cl => cl.lesson) ?? []
-  const filteredLessons = allLessons.filter(l => {
-    const q = lessonSearch.toLowerCase()
-    return (
-      !courseLessonIds.includes(l.id) &&
-      (l.title || '').toLowerCase().includes(q)
-    )
+
+  // Only surface: public lessons OR lessons assigned to this course's classroom
+  const q = lessonSearch.trim().toLowerCase()
+  const availableLessons = allLessons.filter(l => {
+    if (courseLessonIds.includes(l.id)) return false
+    const isPublic   = l.visibility === 'public'
+    const isForClass = course?.classroom_id && l.classroom_id === course.classroom_id
+    return isPublic || isForClass
   })
+  const filteredLessons = q
+    ? availableLessons.filter(l => (l.title || '').toLowerCase().includes(q))
+    : availableLessons
+
+  // Group: class-specific lessons first, then public
+  const classSpecificLessons = filteredLessons.filter(l => l.classroom_id === course?.classroom_id)
+  const publicLessons        = filteredLessons.filter(l => l.visibility === 'public')
 
   const handleAddLesson = async lesson => {
     try {
@@ -386,6 +463,31 @@ export default function CourseDetail() {
         lessons: (prev.lessons ?? []).filter(cl => cl.id !== entry.id),
       }))
     } catch {}
+  }
+
+  const handleDrop = async (toIdx) => {
+    const fromIdx = dragIdx
+    setDragIdx(null)
+    setDragOverIdx(null)
+    if (fromIdx == null || fromIdx === toIdx) return
+
+    const lessons = [...(course.lessons ?? [])]
+    const [moved] = lessons.splice(fromIdx, 1)
+    lessons.splice(toIdx, 0, moved)
+    const reordered = lessons.map((l, i) => ({ ...l, order: i + 1 }))
+
+    // Optimistic update
+    setCourse(prev => ({ ...prev, lessons: reordered }))
+
+    // Persist changed positions in parallel
+    try {
+      await Promise.all(
+        reordered.map(l => reorderCourseLesson(id, { lesson_id: l.lesson, new_order: l.order }))
+      )
+    } catch {
+      // Revert on failure
+      setCourse(prev => ({ ...prev, lessons: course.lessons }))
+    }
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -449,23 +551,56 @@ export default function CourseDetail() {
           <div className="crd-lesson-search-wrap" ref={null}>
             <input
               className="crd-form-input"
-              placeholder="Add lesson…"
+              placeholder="Search lessons to add…"
               value={lessonSearch}
               onChange={e => setLessonSearch(e.target.value)}
               onFocus={() => setLessonFocus(true)}
               onBlur={() => setTimeout(() => setLessonFocus(false), 150)}
             />
-            {lessonFocus && lessonSearch && filteredLessons.length > 0 && (
+            {lessonFocus && (
               <div className="crd-lesson-dropdown">
-                {filteredLessons.slice(0, 8).map(l => (
-                  <button
-                    key={l.id}
-                    className="crd-lesson-option"
-                    onMouseDown={() => handleAddLesson(l)}
-                  >
-                    {l.title}
-                  </button>
-                ))}
+                {filteredLessons.length === 0 ? (
+                  <p className="crd-lesson-no-results">
+                    {q ? 'No lessons match your search.' : 'No lessons available to add.'}
+                  </p>
+                ) : (
+                  <>
+                    {classSpecificLessons.length > 0 && (
+                      <>
+                        <div className="crd-lesson-group-label">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                          </svg>
+                          Class lessons
+                        </div>
+                        {classSpecificLessons.slice(0, 6).map(l => (
+                          <button key={l.id} className="crd-lesson-option" onMouseDown={() => handleAddLesson(l)}>
+                            <span className="crd-lesson-option-title">{l.title}</span>
+                            <span className="crd-lesson-badge crd-lesson-badge--class">Class</span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                    {publicLessons.length > 0 && (
+                      <>
+                        <div className="crd-lesson-group-label">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                          </svg>
+                          Public lessons
+                        </div>
+                        {publicLessons.slice(0, 6).map(l => (
+                          <button key={l.id} className="crd-lesson-option" onMouseDown={() => handleAddLesson(l)}>
+                            <span className="crd-lesson-option-title">{l.title}</span>
+                            <span className="crd-lesson-badge crd-lesson-badge--public">Public</span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -474,8 +609,18 @@ export default function CourseDetail() {
             {(course.lessons?.length ?? 0) === 0 ? (
               <p className="crd-empty-msg">No lessons added yet.</p>
             ) : (
-              course.lessons.map(entry => (
-                <LessonRow key={entry.id} entry={entry} onRemove={handleRemoveLesson} />
+              course.lessons.map((entry, index) => (
+                <LessonRow
+                  key={entry.id}
+                  entry={entry}
+                  index={index}
+                  dragOverIndex={dragOverIdx}
+                  onRemove={handleRemoveLesson}
+                  onDragStart={i => setDragIdx(i)}
+                  onDragOver={i => setDragOverIdx(i)}
+                  onDrop={handleDrop}
+                  onDragEnd={() => { setDragIdx(null); setDragOverIdx(null) }}
+                />
               ))
             )}
           </div>
@@ -519,8 +664,9 @@ export default function CourseDetail() {
           form={diplomaForm}
           errors={diplomaErrors}
           courses={allCourses}
+          saving={diplomaSaving}
           onChange={handleDiplomaFormChange}
-          onClose={() => { setDiplomaModal(null); setDiplomaErrors({}) }}
+          onClose={() => { if (!diplomaSaving) { setDiplomaModal(null); setDiplomaErrors({}) } }}
           onSave={handleDiplomaSave}
         />
       )}

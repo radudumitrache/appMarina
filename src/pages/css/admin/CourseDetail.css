@@ -187,23 +187,81 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   z-index: 50;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 320px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.35);
 }
 
+.crd-lesson-group-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px 4px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+  border-top: 1px solid var(--border);
+}
+.crd-lesson-group-label:first-child { border-top: none; }
+
 .crd-lesson-option {
   width: 100%;
-  padding: 9px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px;
   background: none;
   border: none;
   text-align: left;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  color: var(--text-2);
   cursor: pointer;
   transition: background var(--duration-fast);
 }
-.crd-lesson-option:hover { background: var(--surface-2); color: var(--text); }
+.crd-lesson-option:hover { background: var(--surface-2); }
+
+.crd-lesson-option-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--duration-fast);
+}
+.crd-lesson-option:hover .crd-lesson-option-title { color: var(--text); }
+
+.crd-lesson-badge {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.crd-lesson-badge--class {
+  background: rgba(224, 82, 82, 0.1);
+  color: var(--error);
+  border: 1px solid rgba(224, 82, 82, 0.25);
+}
+.crd-lesson-badge--public {
+  background: rgba(46, 199, 122, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(46, 199, 122, 0.25);
+}
+
+.crd-lesson-no-results {
+  padding: 16px 14px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  margin: 0;
+}
 
 /* ─── Lessons list ───────────────────────────────────────────────────────── */
 .crd-lessons-list {
@@ -222,9 +280,33 @@
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  transition: border-color var(--duration-fast);
+  transition: border-color var(--duration-fast), background var(--duration-fast), opacity var(--duration-fast);
+  cursor: default;
+  user-select: none;
 }
 .crd-lesson-row:hover { border-color: var(--border-hover); }
+
+.crd-lesson-row[draggable="true"] { cursor: grab; }
+.crd-lesson-row[draggable="true"]:active { cursor: grabbing; }
+
+.crd-lesson-row--drag-over {
+  border-color: var(--error);
+  background: rgba(224, 82, 82, 0.05);
+  box-shadow: 0 0 0 1px var(--error);
+}
+
+.crd-drag-handle {
+  display: flex;
+  align-items: center;
+  color: var(--text-3);
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity var(--duration-fast), color var(--duration-fast);
+}
+.crd-lesson-row:hover .crd-drag-handle {
+  opacity: 1;
+  color: var(--text-2);
+}
 
 .crd-lesson-order {
   font-family: var(--font-mono);
@@ -380,6 +462,272 @@
   background: rgba(224, 82, 82, 0.08);
   color: var(--error);
 }
+
+/* ─── Certificate diploma editor ─────────────────────────────────────────── */
+.crd-cert-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  animation: fadeIn 0.15s ease both;
+}
+
+.crd-cert-wrap {
+  position: relative;
+  animation: fadeUp 0.38s var(--ease-default) both;
+}
+
+.crd-cert-dismiss {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.crd-cert-dismiss:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+
+.crd-cert {
+  position: relative;
+  width: 580px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: var(--bg);
+  border: 2px solid rgba(224, 82, 82, 0.45);
+  border-radius: var(--radius-lg);
+  padding: 40px 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 0 0 6px rgba(224, 82, 82, 0.06), inset 0 0 0 1px rgba(224, 82, 82, 0.1);
+}
+
+/* Corner ornaments */
+.crd-cert-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: rgba(224, 82, 82, 0.45);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.crd-cert-corner--tl { top: 10px;    left: 10px;  border-top-width: 2px; border-left-width: 2px; }
+.crd-cert-corner--tr { top: 10px;    right: 10px; border-top-width: 2px; border-right-width: 2px; }
+.crd-cert-corner--bl { bottom: 10px; left: 10px;  border-bottom-width: 2px; border-left-width: 2px; }
+.crd-cert-corner--br { bottom: 10px; right: 10px; border-bottom-width: 2px; border-right-width: 2px; }
+
+.crd-cert-logo {
+  font-family: var(--font-brand);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--error);
+}
+
+.crd-cert-logo-sub {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: -8px;
+}
+
+.crd-cert-rule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.crd-cert-rule-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(224, 82, 82, 0.35), transparent);
+}
+.crd-cert-rule-diamond {
+  width: 6px;
+  height: 6px;
+  background: rgba(224, 82, 82, 0.5);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+.crd-cert-anchor {
+  width: 40px;
+  height: 40px;
+  color: rgba(224, 82, 82, 0.35);
+  flex-shrink: 0;
+}
+
+.crd-cert-course-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding-bottom: 4px;
+}
+
+.crd-cert-course-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.crd-cert-course-select {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-1);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 5px 10px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+  transition: border-color var(--duration-fast);
+}
+.crd-cert-course-select:focus { border-color: rgba(224, 82, 82, 0.4); }
+.crd-cert-course-select option { background: var(--surface-2); color: var(--text-1); }
+
+.crd-cert-title-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(224, 82, 82, 0.3);
+  border-radius: 0;
+  padding: 6px 0;
+  font-family: var(--font-ui);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  outline: none;
+  transition: border-color var(--duration-fast);
+  box-sizing: border-box;
+}
+.crd-cert-title-input::placeholder { color: var(--text-3); font-weight: 400; font-size: 16px; }
+.crd-cert-title-input:focus { border-bottom-color: rgba(224, 82, 82, 0.7); }
+.crd-cert-title-input--err { border-bottom-color: var(--error); }
+
+.crd-cert-intro {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+  margin: 0;
+  text-align: center;
+}
+
+.crd-cert-recipient-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-bottom: 1px dashed rgba(224, 82, 82, 0.25);
+  padding-bottom: 6px;
+}
+
+.crd-cert-recipient-name {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  font-style: italic;
+  color: rgba(224, 82, 82, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.crd-cert-desc-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(224, 82, 82, 0.15);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.6;
+  transition: border-color var(--duration-fast);
+  box-sizing: border-box;
+}
+.crd-cert-desc-input::placeholder { color: var(--text-3); }
+.crd-cert-desc-input:focus { border-color: rgba(224, 82, 82, 0.35); }
+
+.crd-cert-error {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--error);
+  margin: 0;
+  align-self: flex-start;
+}
+
+.crd-cert-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+  padding-top: 4px;
+}
+
+.crd-cert-btn-ghost {
+  height: 34px;
+  padding: 0 16px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color var(--duration-fast), color var(--duration-fast);
+}
+.crd-cert-btn-ghost:hover:not(:disabled) { border-color: var(--text-3); color: var(--text-2); }
+.crd-cert-btn-ghost:disabled { opacity: 0.45; cursor: default; }
+
+.crd-cert-btn-primary {
+  height: 34px;
+  padding: 0 18px;
+  background: var(--error);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+.crd-cert-btn-primary:hover:not(:disabled) { opacity: 0.85; }
+.crd-cert-btn-primary:disabled { opacity: 0.45; cursor: default; }
 
 /* ─── Modal ──────────────────────────────────────────────────────────────── */
 .crd-modal-backdrop {

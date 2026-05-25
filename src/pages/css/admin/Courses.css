@@ -87,11 +87,37 @@
 .courses-status-filter {
   display: flex;
   align-items: center;
-  background: var(--surface-3);
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 3px;
   gap: 2px;
+}
+
+.status-filter-btn {
+  height: 28px;
+  padding: 0 12px;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  white-space: nowrap;
+}
+.status-filter-btn:hover:not(.status-filter-btn--active) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-2);
+}
+
+.status-filter-btn--active {
+  background: var(--error);
+  color: #fff;
+  font-weight: 600;
+  cursor: default;
 }
 
 /* ─── Stats strip ────────────────────────────────────────────────────────── */

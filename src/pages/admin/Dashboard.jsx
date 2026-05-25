@@ -23,7 +23,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={`dashboard-page${uiLeaving ? ' dashboard-page--leaving' : ''}`}>
+    <div className={`dashboard-page admin-dashboard${uiLeaving ? ' dashboard-page--leaving' : ''}`}>
       <video className="dashboard-bg" autoPlay muted loop playsInline src="/shipInThePortToshipInThePort.mp4" />
       <div className="dashboard-overlay" />
 

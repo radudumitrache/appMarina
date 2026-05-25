@@ -31,15 +31,15 @@
 }
 
 /* ─── Leaving state ──────────────────────────────────────────────────────── */
-.dashboard-page--leaving .dash-controls,
-.dashboard-page--leaving .dash-role-badge,
-.dashboard-page--leaving .dash-nav {
+.admin-dashboard.dashboard-page--leaving .dash-controls,
+.admin-dashboard.dashboard-page--leaving .dash-role-badge,
+.admin-dashboard.dashboard-page--leaving .dash-nav {
   animation: slideOutLeft 0.35s var(--ease-out) both;
   pointer-events: none;
 }
 
 /* ─── Role badge ─────────────────────────────────────────────────────────── */
-.dash-role-badge {
+.admin-dashboard .dash-role-badge {
   position: absolute;
   top: 28px;
   right: 28px;
@@ -59,8 +59,8 @@
 }
 
 /* ─── Light theme — keep dashboard in blue-glass family ──────────────────── */
-[data-theme="light"] .dashboard-page   { background: #0a1e3c; }
-[data-theme="light"] .dashboard-overlay {
+[data-theme="light"] .admin-dashboard   { background: #0a1e3c; }
+[data-theme="light"] .admin-dashboard .dashboard-overlay {
   background: linear-gradient(
     180deg,
     rgba(5, 18, 40, 0.45) 0%,
@@ -68,11 +68,11 @@
     rgba(5, 18, 40, 0.60) 100%
   );
 }
-[data-theme="light"] .dash-role-badge {
+[data-theme="light"] .admin-dashboard .dash-role-badge {
   background: rgba(15, 45, 95, 0.65);
   border-color: rgba(70, 130, 195, 0.28);
 }
-[data-theme="light"] .dash-controls {
+[data-theme="light"] .admin-dashboard .dash-controls {
   background: rgba(15, 45, 95, 0.65);
   border-color: rgba(70, 130, 195, 0.28);
 }
