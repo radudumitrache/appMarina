@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QuestionHtmlEditor from './QuestionHtmlEditor'
+import DocumentSection from '../lesson-panel-editor/DocumentSection'
+import { useAuth } from '../../../auth/AuthContext'
 import {
   deleteTestPanel, updateTestPanel,
   createExercise, updateExercise, deleteExercise,
@@ -9,6 +11,11 @@ import {
   updateWordCompletionAnchor, deleteWordCompletionAnchor,
   updateLocalizationAnchor, deleteLocalizationAnchor,
   createLocalizationPoint, deleteLocalizationPoint,
+  createTestPanelDocument, deleteTestPanelDocument,
+  createExerciseDocument, deleteExerciseDocument,
+  createMCQAnchorDocument, deleteMCQAnchorDocument,
+  createWCAnchorDocument, deleteWCAnchorDocument,
+  createLocAnchorDocument, deleteLocAnchorDocument,
 } from '../../../api/tests'
 import { Q_TYPES } from '../../../pages/teacher/testBuilderMock'
 import '../../css/teacher/test-builder/QuestionCard.css'
@@ -180,7 +187,12 @@ function GapFillEditor({ exercise, panelId, testId, onExerciseUpdate }) {
 
 // ── Exercise Card ─────────────────────────────────────────────────────────────
 
-function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate, onDelete }) {
+function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate, onDelete, canWrite }) {
+  const [docs,         setDocs]         = useState(exercise.documents ?? [])
+  const [docUploading, setDocUploading] = useState(false)
+
+  useEffect(() => { setDocs(exercise.documents ?? []) }, [exercise.id])
+
   async function handleTextBlur(html) {
     if (html === exercise.text) return
     await updateExercise(testId, panelId, exercise.id, { text: html })
@@ -195,6 +207,21 @@ function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate,
   async function handleTFChange(val) {
     const res = await updateExercise(testId, panelId, exercise.id, { correct_tf: val })
     onUpdate(exercise.id, res.data)
+  }
+
+  async function handleDocUpload(fileData) {
+    setDocUploading(true)
+    try {
+      const res = await createExerciseDocument(testId, panelId, exercise.id, fileData)
+      setDocs(prev => [...prev, res.data])
+    } finally {
+      setDocUploading(false)
+    }
+  }
+
+  async function handleDocDelete(docId) {
+    await deleteExerciseDocument(testId, panelId, exercise.id, docId)
+    setDocs(prev => prev.filter(d => d.id !== docId))
   }
 
   const typeName = Q_TYPES.find(t => t.id === exercise.type)?.label
@@ -253,18 +280,30 @@ function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate,
       {exercise.type === 'gap_fill' && (
         <GapFillEditor exercise={exercise} panelId={panelId} testId={testId} onExerciseUpdate={onUpdate} />
       )}
+
+      <DocumentSection
+        documents={docs}
+        onUpload={handleDocUpload}
+        onDelete={handleDocDelete}
+        uploading={docUploading}
+        isAdmin={canWrite}
+        classroomId={classroomId}
+      />
     </div>
   )
 }
 
 // ── VR Anchor Cards ───────────────────────────────────────────────────────────
 
-function MCQAnchorCard({ anchor, panelId, testId, classroomId, onReload }) {
-  const [titleLocal, setTitleLocal] = useState(anchor.title ?? '')
-  const [localOpts,  setLocalOpts]  = useState(anchor.options?.map(o => o.text) ?? [])
+function MCQAnchorCard({ anchor, panelId, testId, classroomId, onReload, canWrite }) {
+  const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
+  const [localOpts,    setLocalOpts]    = useState(anchor.options?.map(o => o.text) ?? [])
+  const [docs,         setDocs]         = useState(anchor.documents ?? [])
+  const [docUploading, setDocUploading] = useState(false)
 
   useEffect(() => { setTitleLocal(anchor.title ?? '') }, [anchor.title])
   useEffect(() => { setLocalOpts(anchor.options?.map(o => o.text) ?? []) }, [anchor.options])
+  useEffect(() => { setDocs(anchor.documents ?? []) }, [anchor.id])
 
   async function handleTitleBlur() {
     if (titleLocal === (anchor.title ?? '')) return
@@ -280,6 +319,21 @@ function MCQAnchorCard({ anchor, panelId, testId, classroomId, onReload }) {
     if (!window.confirm('Delete this anchor?')) return
     await deleteMCQAnchor(testId, panelId, anchor.id)
     onReload()
+  }
+
+  async function handleDocUpload(fileData) {
+    setDocUploading(true)
+    try {
+      const res = await createMCQAnchorDocument(testId, panelId, anchor.id, fileData)
+      setDocs(prev => [...prev, res.data])
+    } finally {
+      setDocUploading(false)
+    }
+  }
+
+  async function handleDocDelete(docId) {
+    await deleteMCQAnchorDocument(testId, panelId, anchor.id, docId)
+    setDocs(prev => prev.filter(d => d.id !== docId))
   }
 
   async function saveOpts(opts) {
@@ -345,21 +399,47 @@ function MCQAnchorCard({ anchor, panelId, testId, classroomId, onReload }) {
           <button className="tb-add-option-btn" onClick={handleAddOpt}>+ Add option</button>
         </div>
       </div>
+      <DocumentSection
+        documents={docs}
+        onUpload={handleDocUpload}
+        onDelete={handleDocDelete}
+        uploading={docUploading}
+        isAdmin={canWrite}
+        classroomId={classroomId}
+      />
     </div>
   )
 }
 
-function WordCompletionCard({ anchor, panelId, testId, classroomId, onReload }) {
-  const [titleLocal, setTitleLocal] = useState(anchor.title ?? '')
-  const [wordLocal,  setWordLocal]  = useState(anchor.correct_word)
+function WordCompletionCard({ anchor, panelId, testId, classroomId, onReload, canWrite }) {
+  const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
+  const [wordLocal,    setWordLocal]    = useState(anchor.correct_word)
+  const [docs,         setDocs]         = useState(anchor.documents ?? [])
+  const [docUploading, setDocUploading] = useState(false)
 
   useEffect(() => { setTitleLocal(anchor.title ?? '') }, [anchor.title])
   useEffect(() => { setWordLocal(anchor.correct_word) }, [anchor.correct_word])
+  useEffect(() => { setDocs(anchor.documents ?? []) }, [anchor.id])
 
   async function handleDelete() {
     if (!window.confirm('Delete this anchor?')) return
     await deleteWordCompletionAnchor(testId, panelId, anchor.id)
     onReload()
+  }
+
+  async function handleDocUpload(fileData) {
+    setDocUploading(true)
+    try {
+      const res = await createWCAnchorDocument(testId, panelId, anchor.id, fileData)
+      setDocs(prev => [...prev, res.data])
+    } finally {
+      setDocUploading(false)
+    }
+  }
+
+  async function handleDocDelete(docId) {
+    await deleteWCAnchorDocument(testId, panelId, anchor.id, docId)
+    setDocs(prev => prev.filter(d => d.id !== docId))
   }
 
   async function handleTitleBlur() {
@@ -408,20 +488,46 @@ function WordCompletionCard({ anchor, panelId, testId, classroomId, onReload }) 
           placeholder="Expected answer…"
         />
       </div>
+      <DocumentSection
+        documents={docs}
+        onUpload={handleDocUpload}
+        onDelete={handleDocDelete}
+        uploading={docUploading}
+        isAdmin={canWrite}
+        classroomId={classroomId}
+      />
     </div>
   )
 }
 
-function LocalizationCard({ anchor, panelId, testId, classroomId, onReload }) {
-  const [titleLocal, setTitleLocal] = useState(anchor.title ?? '')
+function LocalizationCard({ anchor, panelId, testId, classroomId, onReload, canWrite }) {
+  const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
+  const [docs,         setDocs]         = useState(anchor.documents ?? [])
+  const [docUploading, setDocUploading] = useState(false)
   const points = anchor.polygon_points ?? []
 
   useEffect(() => { setTitleLocal(anchor.title ?? '') }, [anchor.title])
+  useEffect(() => { setDocs(anchor.documents ?? []) }, [anchor.id])
 
   async function handleDelete() {
     if (!window.confirm('Delete this anchor?')) return
     await deleteLocalizationAnchor(testId, panelId, anchor.id)
     onReload()
+  }
+
+  async function handleDocUpload(fileData) {
+    setDocUploading(true)
+    try {
+      const res = await createLocAnchorDocument(testId, panelId, anchor.id, fileData)
+      setDocs(prev => [...prev, res.data])
+    } finally {
+      setDocUploading(false)
+    }
+  }
+
+  async function handleDocDelete(docId) {
+    await deleteLocAnchorDocument(testId, panelId, anchor.id, docId)
+    setDocs(prev => prev.filter(d => d.id !== docId))
   }
 
   async function handleTitleBlur() {
@@ -478,13 +584,21 @@ function LocalizationCard({ anchor, panelId, testId, classroomId, onReload }) {
         </div>
         <button className="tb-add-option-btn" onClick={handleAddPoint}>+ Add point</button>
       </div>
+      <DocumentSection
+        documents={docs}
+        onUpload={handleDocUpload}
+        onDelete={handleDocDelete}
+        uploading={docUploading}
+        isAdmin={canWrite}
+        classroomId={classroomId}
+      />
     </div>
   )
 }
 
 // ── VR Panel Section (inline in test builder) ─────────────────────────────────
 
-function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePath, onReload }) {
+function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePath, onReload, canWrite }) {
   const navigate   = useNavigate()
   const mcqAnchors = vr?.mcq_anchors ?? []
   const wcAnchors  = vr?.word_completion_anchors ?? []
@@ -517,9 +631,9 @@ function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePa
             <span className="tb-vr-section-title">Placed Anchors ({allCount})</span>
             <span className="tb-vr-section-hint">Edit content below — use the VR Scene Editor to add, move or delete anchors.</span>
           </div>
-          {mcqAnchors.map(a => <MCQAnchorCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} />)}
-          {wcAnchors.map(a => <WordCompletionCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} />)}
-          {locAnchors.map(a => <LocalizationCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} />)}
+          {mcqAnchors.map(a => <MCQAnchorCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} canWrite={canWrite} />)}
+          {wcAnchors.map(a => <WordCompletionCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} canWrite={canWrite} />)}
+          {locAnchors.map(a => <LocalizationCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} canWrite={canWrite} />)}
         </div>
       ) : (
         <div className="tb-anchor-empty">
@@ -537,19 +651,40 @@ function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePa
 // ── Panel Section (main export) ───────────────────────────────────────────────
 
 export default function PanelSection({ panel, testId, classroomId, vrBasePath, index, expanded, onExpand, onReload }) {
+  const { user } = useAuth()
+  const canWrite = user?.role === 'teacher' || user?.role === 'admin' || !!user?.is_staff
+
   const [titleLocal, setTitleLocal] = useState(panel.title)
   const [addingEx,   setAddingEx]   = useState(false)
   const [newExType,  setNewExType]  = useState('mcq')
   const [localExercises, setLocalExercises] = useState(
     panel.exercise_content?.exercises ?? []
   )
+  const [panelDocs,         setPanelDocs]         = useState(panel.documents ?? [])
+  const [panelDocUploading, setPanelDocUploading] = useState(false)
 
   useEffect(() => { setTitleLocal(panel.title) }, [panel.title])
   useEffect(() => {
     setLocalExercises(panel.exercise_content?.exercises ?? [])
+    setPanelDocs(panel.documents ?? [])
   }, [panel.id])
 
   const vr = panel.vr_exercise
+
+  async function handlePanelDocUpload(fileData) {
+    setPanelDocUploading(true)
+    try {
+      const res = await createTestPanelDocument(testId, panel.id, fileData)
+      setPanelDocs(prev => [...prev, res.data])
+    } finally {
+      setPanelDocUploading(false)
+    }
+  }
+
+  async function handlePanelDocDelete(docId) {
+    await deleteTestPanelDocument(testId, panel.id, docId)
+    setPanelDocs(prev => prev.filter(d => d.id !== docId))
+  }
 
   function updateExerciseLocal(exId, patch) {
     setLocalExercises(prev =>
@@ -621,6 +756,7 @@ export default function PanelSection({ panel, testId, classroomId, vrBasePath, i
                     index={i}
                     onUpdate={updateExerciseLocal}
                     onDelete={deleteExerciseLocal}
+                    canWrite={canWrite}
                   />
                 ))}
                 {localExercises.length === 0 && !addingEx && (
@@ -661,8 +797,17 @@ export default function PanelSection({ panel, testId, classroomId, vrBasePath, i
           )}
 
           {panel.type === 'vr_exercise' && (
-            <VRPanelSection vr={vr} panelId={panel.id} testId={testId} classroomId={classroomId} vrBasePath={vrBasePath} panelTitle={titleLocal} onReload={onReload} />
+            <VRPanelSection vr={vr} panelId={panel.id} testId={testId} classroomId={classroomId} vrBasePath={vrBasePath} panelTitle={titleLocal} onReload={onReload} canWrite={canWrite} />
           )}
+
+          <DocumentSection
+            documents={panelDocs}
+            onUpload={handlePanelDocUpload}
+            onDelete={handlePanelDocDelete}
+            uploading={panelDocUploading}
+            isAdmin={canWrite}
+            classroomId={classroomId}
+          />
         </div>
       )}
     </div>

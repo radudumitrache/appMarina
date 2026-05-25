@@ -118,13 +118,27 @@ function makeMarkerCanvas(type, answered, color) {
     ctx.stroke()
 
   } else if (type === 'navigator') {
-    // Right-pointing chevron
-    const sz = d * 0.17
-    ctx.lineWidth = d * 0.11
+    // Diamond outline with a forward arrow inside — distinct from all exercise types
+    const half = d * 0.30
+    // Diamond outline
+    ctx.lineWidth = d * 0.072
     ctx.beginPath()
-    ctx.moveTo(cx - sz * 0.5, cy - sz * 1.1)
-    ctx.lineTo(cx + sz * 0.9, cy)
-    ctx.lineTo(cx - sz * 0.5, cy + sz * 1.1)
+    ctx.moveTo(cx,          cy - half)  // top
+    ctx.lineTo(cx + half,   cy)         // right
+    ctx.lineTo(cx,          cy + half)  // bottom
+    ctx.lineTo(cx - half,   cy)         // left
+    ctx.closePath()
+    ctx.stroke()
+    // Arrow pointing right inside the diamond
+    const aw = d * 0.14
+    ctx.lineWidth = d * 0.092
+    ctx.beginPath()
+    ctx.moveTo(cx - aw * 0.9, cy)
+    ctx.lineTo(cx + aw * 0.7, cy)
+    ctx.moveTo(cx + aw * 0.7, cy)
+    ctx.lineTo(cx + aw * 0.1, cy - aw * 0.6)
+    ctx.moveTo(cx + aw * 0.7, cy)
+    ctx.lineTo(cx + aw * 0.1, cy + aw * 0.6)
     ctx.stroke()
   }
 

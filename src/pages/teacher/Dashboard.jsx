@@ -29,7 +29,7 @@ export default function Dashboard() {
 
       <div className="dash-role-badge">Instructor</div>
 
-      <DashControls onLogout={handleLogout} />
+      <DashControls onLogout={handleLogout} onProfile={() => navigate('/teacher/profile')} />
       <DashNav />
 
       {transitioning && <PageTransition onEnd={handleTransitionEnd} />}

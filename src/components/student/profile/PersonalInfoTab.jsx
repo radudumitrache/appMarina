@@ -87,8 +87,12 @@ export default function PersonalInfoTab({ profile, onSave }) {
           {editing ? <input className="form-input" value={draft.nationality} onChange={set('nationality')} /> : <span className="form-value">{profile.nationality}</span>}
         </div>
         <div className="form-field">
-          <label className="form-label">Organisation</label>
-          {editing ? <input className="form-input" value={draft.organisation ?? ''} onChange={set('organisation')} placeholder="e.g. University, Company…" /> : <span className="form-value">{profile.organisation || '—'}</span>}
+          <label className="form-label">Organisation <span className="form-label-hint">set by admin</span></label>
+          <span className="form-value">{profile.organisation || '—'}</span>
+        </div>
+        <div className="form-field">
+          <label className="form-label">Crew ID</label>
+          <span className="form-value">{profile.crewId || '—'}</span>
         </div>
         <div className="form-field">
           <label className="form-label">Language</label>

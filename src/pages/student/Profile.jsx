@@ -9,6 +9,7 @@ import ProfileTabs     from '../../components/student/profile/ProfileTabs'
 import { getMe, updateMe } from '../../api/users'
 import { changePassword } from '../../api/auth'
 import { getProgress, getAchievements, getCertifications } from '../../api/progress'
+import { getMyDiplomas } from '../../api/classes'
 import '../css/student/Profile.css'
 
 function mapProfile(data) {
@@ -18,6 +19,7 @@ function mapProfile(data) {
     email:         data.email                  ?? '',
     username:      data.username               ?? '',
     studentId:     data.profile?.student_id    ?? '',
+    crewId:        data.profile?.crew_id       ?? '',
     nationality:   data.profile?.nationality   ?? '',
     dateOfBirth:   data.profile?.date_of_birth ?? '',
     phone:         data.profile?.phone         ?? '',
@@ -40,12 +42,13 @@ export default function Profile() {
   const [stats,          setStats]          = useState(null)
   const [achievements,   setAchievements]   = useState([])
   const [certifications, setCertifications] = useState([])
+  const [diplomas,       setDiplomas]       = useState([])
   const [loading,        setLoading]        = useState(true)
   const [activeTab,      setTab]            = useState('personal')
 
   useEffect(() => {
-    Promise.all([getMe(), getProgress(), getAchievements(), getCertifications()])
-      .then(([meRes, progressRes, achRes, certRes]) => {
+    Promise.all([getMe(), getProgress(), getAchievements(), getCertifications(), getMyDiplomas()])
+      .then(([meRes, progressRes, achRes, certRes, dipRes]) => {
         setProfile(mapProfile(meRes.data))
         setStats(progressRes.data)
         setAchievements((achRes.data ?? []).map(a => ({
@@ -62,6 +65,7 @@ export default function Profile() {
           expires: c.expiry_date ?? null,
           status:  c.status,
         })))
+        setDiplomas(dipRes.data ?? [])
       })
       .finally(() => setLoading(false))
   }, [])
@@ -84,7 +88,6 @@ export default function Profile() {
         nationality:   draft.nationality,
         date_of_birth: draft.dateOfBirth,
         phone:         draft.phone,
-        organisation:  draft.organisation,
         language:      draft.language,
       },
     })
@@ -128,6 +131,7 @@ export default function Profile() {
             stats={stats}
             achievements={achievements}
             certifications={certifications}
+            diplomas={diplomas}
             onSave={handleSave}
             onChangePassword={changePassword}
           />

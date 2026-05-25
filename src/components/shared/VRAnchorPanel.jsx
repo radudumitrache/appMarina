@@ -62,6 +62,34 @@ function IconInfo() {
   )
 }
 
+/* ── Helpers ────────────────────────────────────────────────────────────── */
+function DocIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+  )
+}
+function DownloadIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  )
+}
+function OpenIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+      <polyline points="15 3 21 3 21 9"/>
+      <line x1="10" y1="14" x2="21" y2="3"/>
+    </svg>
+  )
+}
+
 /* ── Text anchor panel (HTML content, resizable) ───────────────────────── */
 function TextPanel({ anchor, onClose }) {
   const [width, setWidth]     = useState(340)
@@ -112,6 +140,30 @@ function TextPanel({ anchor, onClose }) {
         className="vr-ap-html-body"
         dangerouslySetInnerHTML={{ __html: anchor.description || '' }}
       />
+      {anchor.documents?.length > 0 && (
+        <div className="vr-ap-docs">
+          <div className="vr-ap-docs-label">Attachments</div>
+          <ul className="vr-ap-docs-list">
+            {anchor.documents.map(doc => (
+              <li key={doc.id} className="vr-ap-doc-item">
+                <span className="vr-ap-doc-icon"><DocIcon /></span>
+                <span className="vr-ap-doc-name" title={doc.name}>{doc.name}</span>
+                <div className="vr-ap-doc-actions">
+                  {doc.mime_type === 'application/pdf' ? (
+                    <a href={doc.download_url} target="_blank" rel="noreferrer" className="vr-ap-doc-btn" title="Open">
+                      <OpenIcon />
+                    </a>
+                  ) : (
+                    <a href={doc.download_url} download={doc.name} className="vr-ap-doc-btn" title="Download">
+                      <DownloadIcon />
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </aside>
   )
 }
@@ -160,6 +212,31 @@ function WaypointPanel({ anchor, onClose }) {
         <div className="vr-ap-meta-row">
           <span className="vr-ap-meta-label">Bearing</span>
           <span className="vr-ap-meta-value vr-ap-mono">{anchor.bearing}°</span>
+        </div>
+      )}
+
+      {anchor.documents?.length > 0 && (
+        <div className="vr-ap-docs">
+          <div className="vr-ap-docs-label">Attachments</div>
+          <ul className="vr-ap-docs-list">
+            {anchor.documents.map(doc => (
+              <li key={doc.id} className="vr-ap-doc-item">
+                <span className="vr-ap-doc-icon"><DocIcon /></span>
+                <span className="vr-ap-doc-name" title={doc.name}>{doc.name}</span>
+                <div className="vr-ap-doc-actions">
+                  {doc.mime_type === 'application/pdf' ? (
+                    <a href={doc.download_url} target="_blank" rel="noreferrer" className="vr-ap-doc-btn" title="Open">
+                      <OpenIcon />
+                    </a>
+                  ) : (
+                    <a href={doc.download_url} download={doc.name} className="vr-ap-doc-btn" title="Download">
+                      <DownloadIcon />
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

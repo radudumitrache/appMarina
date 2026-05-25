@@ -27,6 +27,7 @@ function mapProfile(data) {
     email:         data.email            ?? '',
     username:      data.username         ?? '',
     employeeId:    data.profile?.student_id    ?? '',
+    crewId:        data.profile?.crew_id       ?? '',
     nationality:   data.profile?.nationality   ?? '',
     dateOfBirth:   data.profile?.date_of_birth ?? '',
     phone:         data.profile?.phone         ?? '',

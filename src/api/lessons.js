@@ -5,8 +5,10 @@ export const createLesson        = (data)     => api.post('/lessons/', data)
 export const getLesson           = (id)       => api.get(`/lessons/${id}/`)
 export const updateLesson        = (id, data) => api.patch(`/lessons/${id}/`, data)
 export const deleteLesson        = (id)       => api.delete(`/lessons/${id}/`)
-export const completeLesson      = (id)       => api.post(`/lessons/${id}/complete/`)
-export const uncompleteLesson    = (id)       => api.delete(`/lessons/${id}/complete/`)
+export const completeLesson           = (id)       => api.post(`/lessons/${id}/complete/`)
+export const uncompleteLesson         = (id)       => api.delete(`/lessons/${id}/complete/`)
+export const getAnchorInteractions    = (id)       => api.get(`/lessons/${id}/interactions/`)
+export const recordAnchorInteraction  = (id, data) => api.post(`/lessons/${id}/interactions/`, data)
 
 // Panels
 export const getPanels    = (lessonId)                    => api.get(`/lessons/${lessonId}/panels/`)
@@ -36,6 +38,20 @@ export const deletePolygonAnchor    = (lessonId, panelId, anchorId)          => 
 export const createPolygonPoint     = (lessonId, panelId, anchorId, data)               => api.post(`/lessons/${lessonId}/panels/${panelId}/polygon-anchors/${anchorId}/points/`, data)
 export const updatePolygonPoint     = (lessonId, panelId, anchorId, pointId, data)      => api.patch(`/lessons/${lessonId}/panels/${panelId}/polygon-anchors/${anchorId}/points/${pointId}/`, data)
 export const deletePolygonPoint     = (lessonId, panelId, anchorId, pointId)            => api.delete(`/lessons/${lessonId}/panels/${panelId}/polygon-anchors/${anchorId}/points/${pointId}/`)
+
+// Panel Documents (admin upload, all roles read)
+export const listPanelDocuments   = (lessonId, panelId)              => api.get(`/lessons/${lessonId}/panels/${panelId}/documents/`)
+export const createPanelDocument  = (lessonId, panelId, data)        => api.post(`/lessons/${lessonId}/panels/${panelId}/documents/`, data)
+export const deletePanelDocument  = (lessonId, panelId, docId)       => api.delete(`/lessons/${lessonId}/panels/${panelId}/documents/${docId}/`)
+
+// Text Anchor Documents (admin upload, all roles read)
+export const listAnchorDocuments  = (lessonId, panelId, anchorId)              => api.get(`/lessons/${lessonId}/panels/${panelId}/text-anchors/${anchorId}/documents/`)
+export const createAnchorDocument = (lessonId, panelId, anchorId, data)        => api.post(`/lessons/${lessonId}/panels/${panelId}/text-anchors/${anchorId}/documents/`, data)
+export const deleteAnchorDocument = (lessonId, panelId, anchorId, docId)       => api.delete(`/lessons/${lessonId}/panels/${panelId}/text-anchors/${anchorId}/documents/${docId}/`)
+
+// Polygon Anchor Documents (admin upload, all roles read)
+export const createPolygonAnchorDocument = (lessonId, panelId, anchorId, data)       => api.post(`/lessons/${lessonId}/panels/${panelId}/polygon-anchors/${anchorId}/documents/`, data)
+export const deletePolygonAnchorDocument = (lessonId, panelId, anchorId, docId)      => api.delete(`/lessons/${lessonId}/panels/${panelId}/polygon-anchors/${anchorId}/documents/${docId}/`)
 
 // Courses
 export const getCourses          = ()         => api.get('/courses/')

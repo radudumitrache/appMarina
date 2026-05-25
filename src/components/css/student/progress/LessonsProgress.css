@@ -1,0 +1,156 @@
+/* ── Empty ────────────────────────────────────────────── */
+.lp-empty {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  padding: 16px 0;
+  text-align: center;
+}
+
+/* ── Scrollable body ──────────────────────────────────── */
+.lp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Per-class group ──────────────────────────────────── */
+.lp-class { display: flex; flex-direction: column; gap: 6px; }
+
+.lp-class-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.lp-class-name {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-class-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.lp-class-bar {
+  width: 64px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.lp-class-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ── Lesson rows ──────────────────────────────────────── */
+.lp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.lp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+  transition: background var(--duration-fast);
+}
+
+.lp-row:hover { background: var(--surface-2); }
+
+/* Status dot / check */
+.lp-status {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--duration-fast), background var(--duration-fast), color var(--duration-fast);
+}
+
+.lp-status--done {
+  background: rgba(var(--accent-rgb, 32 178 170) / 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.lp-status--pending {
+  background: transparent;
+  border-color: var(--border);
+  color: transparent;
+}
+
+/* Title */
+.lp-title {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--duration-fast);
+}
+
+.lp-row--done .lp-title { color: var(--text-3); }
+
+/* Meta */
+.lp-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.lp-diff {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.lp-diff--easy         { color: var(--success, #4caf7d); background: rgba(76, 175, 125, 0.1); }
+.lp-diff--intermediate { color: var(--gold, #d4a017);    background: rgba(212, 160, 23, 0.1);  }
+.lp-diff--advanced     { color: var(--error, #e05252);   background: rgba(224, 82, 82, 0.1);   }
+
+.lp-duration {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}

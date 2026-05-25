@@ -1,0 +1,637 @@
+/* ─── Page shell ─────────────────────────────────────────────────────────── */
+.crd-page {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.crd-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+/* ─── Topbar ─────────────────────────────────────────────────────────────── */
+.crd-topbar {
+  height: 64px;
+  flex-shrink: 0;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeIn 0.25s var(--ease-default) both;
+}
+
+.crd-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  flex-shrink: 0;
+}
+.crd-back-btn:hover { background: var(--surface-2); color: var(--text); }
+
+.crd-topbar-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.crd-course-title {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crd-status-badge {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.crd-status-badge--published { color: var(--success); background: rgba(46, 199, 122, 0.12); }
+.crd-status-badge--draft     { color: var(--text-3);  background: rgba(255,255,255,0.06);   }
+
+.crd-course-class,
+.crd-course-org {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+.crd-course-org { color: var(--gold); }
+
+.crd-publish-btn {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+.crd-publish-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.crd-publish-btn--active {
+  background: rgba(46, 199, 122, 0.12);
+  border-color: rgba(46, 199, 122, 0.3);
+  color: var(--success);
+}
+.crd-publish-btn--active:hover {
+  background: rgba(46, 199, 122, 0.2);
+}
+
+/* ─── Two-column body ────────────────────────────────────────────────────── */
+.crd-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* ─── Section ────────────────────────────────────────────────────────────── */
+.crd-section {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 24px 28px;
+  animation: fadeUp var(--duration-enter) var(--ease-default) 0.08s both;
+}
+
+.crd-section--lessons {
+  border-right: 1px solid var(--border);
+}
+
+.crd-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.crd-section-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.crd-section-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 1px 8px;
+  line-height: 1.6;
+}
+
+.crd-empty-msg {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  padding: 20px 0;
+}
+
+/* ─── Lesson search ──────────────────────────────────────────────────────── */
+.crd-lesson-search-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.crd-lesson-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  z-index: 50;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+.crd-lesson-option {
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.crd-lesson-option:hover { background: var(--surface-2); color: var(--text); }
+
+/* ─── Lessons list ───────────────────────────────────────────────────────── */
+.crd-lessons-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crd-lesson-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--duration-fast);
+}
+.crd-lesson-row:hover { border-color: var(--border-hover); }
+
+.crd-lesson-order {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-3);
+  min-width: 18px;
+  text-align: center;
+}
+
+.crd-lesson-title {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crd-lesson-remove {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  flex-shrink: 0;
+}
+.crd-lesson-remove:hover { background: rgba(224, 82, 82, 0.1); color: var(--error); }
+
+/* ─── Diplomas list ──────────────────────────────────────────────────────── */
+.crd-diplomas-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─── Diploma card ───────────────────────────────────────────────────────── */
+.crd-diploma-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--duration-fast);
+}
+.crd-diploma-card:hover { border-color: var(--border-hover); }
+
+.crd-diploma-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px 12px;
+}
+
+.crd-diploma-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(224, 82, 82, 0.1);
+  border: 1px solid rgba(224, 82, 82, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--error);
+  flex-shrink: 0;
+}
+
+.crd-diploma-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.crd-diploma-title {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.crd-diploma-desc {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+.crd-diploma-recipients {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 16px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.crd-diploma-recipient-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  margin-right: 4px;
+}
+
+.crd-recipient-chip {
+  padding: 2px 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-2);
+}
+.crd-recipient-chip--more {
+  color: var(--text-3);
+  border-style: dashed;
+}
+
+.crd-diploma-actions {
+  display: flex;
+  border-top: 1px solid var(--border);
+}
+
+.crd-diploma-btn {
+  flex: 1;
+  padding: 9px 6px;
+  background: none;
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.crd-diploma-btn + .crd-diploma-btn { border-left: 1px solid var(--border); }
+.crd-diploma-btn--award:hover {
+  background: rgba(224, 82, 82, 0.08);
+  color: var(--error);
+}
+.crd-diploma-btn:not(.crd-diploma-btn--award):not(.crd-diploma-btn--danger):hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+}
+.crd-diploma-btn--danger:hover {
+  background: rgba(224, 82, 82, 0.08);
+  color: var(--error);
+}
+
+/* ─── Modal ──────────────────────────────────────────────────────────────── */
+.crd-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: fadeIn 0.2s var(--ease-default);
+}
+
+.crd-modal-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 440px;
+  max-width: calc(100vw - 40px);
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.22s var(--ease-default);
+}
+.crd-modal-card--sm { width: 360px; }
+.crd-modal-card--lg { width: 520px; }
+
+.crd-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.crd-modal-title {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.crd-modal-close {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.crd-modal-close:hover { background: var(--surface-2); color: var(--text); }
+
+.crd-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.crd-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.crd-award-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+  margin-right: auto;
+}
+
+.crd-award-hint {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.crd-award-empty {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* ─── Student list (award modal) ─────────────────────────────────────────── */
+.crd-student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.crd-student-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.crd-student-row:hover { background: var(--surface-2); }
+
+.crd-student-check {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--error);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.crd-student-name {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.crd-student-email {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ─── Form elements ──────────────────────────────────────────────────────── */
+.crd-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.crd-form-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.crd-form-input {
+  height: 36px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--duration-fast);
+  width: 100%;
+  box-sizing: border-box;
+}
+.crd-form-input:focus        { border-color: rgba(224, 82, 82, 0.4); }
+.crd-form-input--error       { border-color: var(--error); }
+.crd-form-input::placeholder { color: var(--text-3); }
+
+.crd-form-textarea {
+  height: auto;
+  padding: 10px 12px;
+  resize: vertical;
+  min-height: 72px;
+}
+
+.crd-form-select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.crd-form-select option {
+  background: var(--surface-2);
+  color: var(--text-1);
+}
+
+.crd-form-error {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--error);
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.crd-btn-primary {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  background: var(--error);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity var(--duration-fast);
+}
+.crd-btn-primary:hover { opacity: 0.88; }
+.crd-btn-sm { height: 28px; font-size: 12px; padding: 0 10px; margin-left: auto; }
+
+.crd-btn-ghost {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.crd-btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+
+.crd-btn-danger {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  background: rgba(224, 82, 82, 0.15);
+  border: 1px solid rgba(224, 82, 82, 0.3);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--error);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+.crd-btn-danger:hover { background: rgba(224, 82, 82, 0.25); }
+
+.crd-delete-confirm-text {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+}

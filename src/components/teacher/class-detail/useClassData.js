@@ -27,6 +27,8 @@ export function useClassData(id) {
         name:       e.student_name,
         email:      e.student_email,
         done:       e.lessons_done ?? 0,
+        testsTotal: e.tests_total  ?? 0,
+        testsDone:  e.tests_done   ?? 0,
         lastActive: e.last_active ? new Date(e.last_active).toLocaleDateString() : '—',
         status:     e.status,
       })))

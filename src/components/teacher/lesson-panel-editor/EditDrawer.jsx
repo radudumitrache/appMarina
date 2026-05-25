@@ -3,7 +3,10 @@ import { createPortal } from 'react-dom'
 import ScenePicker from './ScenePicker'
 import MediaInsertModal from './MediaInsertModal'
 import AnchorSection from './AnchorSection'
+import DocumentSection from './DocumentSection'
 import { IconClose } from './LPEIcons'
+import { useAuth } from '../../../auth/AuthContext'
+import { createPanelDocument, deletePanelDocument } from '../../../api/lessons'
 
 const TOOLBAR_GROUPS = [
   {
@@ -161,8 +164,11 @@ export default function EditDrawer({
   newAnchorPlacement, onNewAnchorSaved,
   newPolyPlacement, onNewPolySaved,
   newPolyPoint, onNewPolyPointSaved,
-  onActivePolyPointsChange, draggedAnchorPos,
+  onActivePolyPointsChange, draggedAnchorPos, getViewerCameraDir,
 }) {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+
   const savedBody        = panel.text_content?.body ?? ''
   const savedMediaFileId = panel.vr_tour?.media_file ?? null
 
@@ -174,6 +180,24 @@ export default function EditDrawer({
   const [dragging,       setDragging]       = useState(false)
   const [mediaMode,      setMediaMode]      = useState(null)
   const [scenePickerOpen, setScenePickerOpen] = useState(false)
+
+  const [panelDocs,      setPanelDocs]      = useState(panel.documents ?? [])
+  const [docUploading,   setDocUploading]   = useState(false)
+
+  const handleDocUpload = async (fileData) => {
+    setDocUploading(true)
+    try {
+      const res = await createPanelDocument(lessonId, panel.id, fileData)
+      setPanelDocs(prev => [...prev, res.data])
+    } finally {
+      setDocUploading(false)
+    }
+  }
+
+  const handleDocDelete = async (docId) => {
+    await deletePanelDocument(lessonId, panel.id, docId)
+    setPanelDocs(prev => prev.filter(d => d.id !== docId))
+  }
   const dragStartX     = useRef(0)
   const dragStartWidth = useRef(0)
 
@@ -345,6 +369,18 @@ export default function EditDrawer({
           </div>
         )}
 
+        {/* Panel documents */}
+        {!anchorEditing && (
+          <DocumentSection
+            documents={panelDocs}
+            onUpload={handleDocUpload}
+            onDelete={handleDocDelete}
+            uploading={docUploading}
+            isAdmin={isAdmin}
+            classroomId={classroomId}
+          />
+        )}
+
         {/* VR anchor management */}
         {panel.type === 'vr_tour' && (
           <AnchorSection
@@ -368,6 +404,7 @@ export default function EditDrawer({
             onActivePolyPointsChange={onActivePolyPointsChange}
             onAnchorEditingChange={setAnchorEditing}
             draggedAnchorPos={draggedAnchorPos}
+            getViewerCameraDir={getViewerCameraDir}
           />
         )}
       </div>

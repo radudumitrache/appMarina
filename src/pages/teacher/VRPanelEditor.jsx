@@ -375,6 +375,8 @@ export default function VRPanelEditor() {
           moving={moving}
           saving={saving}
           classroomId={classroomId}
+          testId={testId}
+          panelId={panelId}
           onOpenEdit={openEdit}
           onCloseEdit={closeEdit}
           onSaveEdit={handleSaveEdit}

@@ -509,6 +509,84 @@
   display: block;
 }
 
+/* ── Attachments (documents) in text anchor panel ─────────────────────── */
+.vr-ap-docs {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  animation: fadeUp var(--duration-enter, 380ms) var(--ease-default, cubic-bezier(0.16,1,0.3,1)) 0.16s both;
+}
+
+.vr-ap-docs-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-secondary, var(--text-3));
+  margin-bottom: 8px;
+}
+
+.vr-ap-docs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vr-ap-doc-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.vr-ap-doc-icon {
+  flex-shrink: 0;
+  color: var(--text-secondary, var(--text-3));
+  display: flex;
+  align-items: center;
+}
+
+.vr-ap-doc-name {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.vr-ap-doc-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.vr-ap-doc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-secondary, var(--text-3));
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+}
+
+.vr-ap-doc-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
 /* ─── Light theme ────────────────────────────────────────────────────────── */
 [data-theme="light"] .vr-ap {
   background: rgba(242, 247, 252, 0.92);

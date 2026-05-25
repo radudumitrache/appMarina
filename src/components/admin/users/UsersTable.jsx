@@ -4,6 +4,7 @@ import UserRow from './UserRow'
 const COLUMNS = [
   { label: 'Name',         key: 'name' },
   { label: 'Role',         key: 'role' },
+  { label: 'Crew ID',      key: 'crew_id' },
   { label: 'Email',        key: 'email' },
   { label: 'Organisation', key: 'organisation_name' },
   { label: 'Status',       key: 'status' },
@@ -59,6 +60,7 @@ export default function UsersTable({ loading, users, sortKey, sortDir, onSort, o
                 <div><Sk w={110} h={13} mb={5} /><Sk w={80} h={11} /></div>
               </div></td>
               <td><Sk w={58} h={20} r={4} /></td>
+              <td><Sk w={80} h={13} /></td>
               <td><Sk w={150} h={13} /></td>
               <td><Sk w={70}  h={13} /></td>
               <td><Sk w={55}  h={20} r={10} /></td>
@@ -77,7 +79,7 @@ export default function UsersTable({ loading, users, sortKey, sortDir, onSort, o
       {thead}
       <tbody>
         {users.length === 0 ? (
-          <tr><td colSpan={6} className="users-empty">No users found.</td></tr>
+          <tr><td colSpan={7} className="users-empty">No users found.</td></tr>
         ) : (
           users.map((user, i) => (
             <UserRow

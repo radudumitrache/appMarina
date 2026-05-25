@@ -18,7 +18,7 @@ export default function PanelPreview({
   showHtml, rawHtml, onRawHtmlChange, drawerWidth,
   placementMode, onSceneClick, pendingPlacement, pendingPolyPoints,
   activePolyPoints, activeTextAnchor, onAnchorClick, onEditModeAnchorClick, onCloseAnchorPanel,
-  onAnchorDrag,
+  onAnchorDrag, onNavAnchorClick, onViewerReady, initialLon = 0, initialLat = 0,
 }) {
   const sceneSrc = useMemo(() => {
     if (!panel?.vr_tour?.scene_url) return null
@@ -38,7 +38,7 @@ export default function PanelPreview({
         title_text_color: a.title_text_color,
         onClick: editMode
           ? (e) => onEditModeAnchorClick(a, 'text', e.clientX, e.clientY)
-          : () => onAnchorClick({ type: 'text', label: a.title, description: a.description }),
+          : () => onAnchorClick({ type: 'text', label: a.title, description: a.description, documents: a.documents ?? [] }),
         onDrag: drag,
       }
     })
@@ -46,11 +46,13 @@ export default function PanelPreview({
       const { lon, lat } = posToLonLat(a.pos_x, a.pos_y, a.pos_z)
       return {
         id: `nav-${a.id}`, lon, lat, label: a.title || `→ Panel #${a.target_panel}`,
-        className: 'vr-hotspot--anchor',
+        className: 'vr-hotspot--anchor vr-hotspot--nav',
         show_title: a.show_title,
         title_size: a.title_size,
         title_text_color: a.title_text_color,
-        onClick: editMode ? (e) => onEditModeAnchorClick(a, 'nav', e.clientX, e.clientY) : null,
+        onClick: editMode
+          ? (e) => onEditModeAnchorClick(a, 'nav', e.clientX, e.clientY)
+          : onNavAnchorClick ? () => onNavAnchorClick(a) : null,
         onDrag: drag,
       }
     })
@@ -72,14 +74,14 @@ export default function PanelPreview({
       ...pa,
       onClick: editMode
         ? (_pa, clientX, clientY) => onEditModeAnchorClick(pa, 'poly', clientX ?? 0, clientY ?? 0)
-        : () => onAnchorClick({ type: 'waypoint', label: pa.title, description: pa.content, status: 'active', category: 'Polygon Region', navigate: false }),
+        : () => onAnchorClick({ type: 'waypoint', label: pa.title, description: pa.content, status: 'active', category: 'Polygon Region', navigate: false, documents: pa.documents ?? [] }),
     }))
   , [panel, editMode, onAnchorClick, onEditModeAnchorClick])
 
   if (panel.type === 'vr_tour') {
     return (
       <div className="lpe-vr-wrap">
-        <VRViewer src={sceneSrc} hotspots={hotspots} polygonAnchors={polygonAnchors} editMode={editMode} onSceneClick={placementMode ? onSceneClick : undefined} />
+        <VRViewer src={sceneSrc} hotspots={hotspots} polygonAnchors={polygonAnchors} editMode={editMode} onSceneClick={placementMode ? onSceneClick : undefined} onSceneReady={onViewerReady ? ({ getCameraDir }) => onViewerReady(getCameraDir) : undefined} initialLon={initialLon} initialLat={initialLat} />
         <div className="lpe-vr-label"><span className="lpe-vr-tag">360°</span>{panel.title}</div>
         <div className="lpe-vr-hint">Drag to look around · Scroll to zoom</div>
         <VRAnchorPanel anchor={activeTextAnchor} onClose={onCloseAnchorPanel} />

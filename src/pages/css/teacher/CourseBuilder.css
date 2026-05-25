@@ -38,12 +38,88 @@
   flex-direction: column;
 }
 
-/* ─── Section head ───────────────────────────────────────────────────────── */
+/* ─── Section tabs ───────────────────────────────────────────────────────── */
+.cb-section-tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.cb-section-tab-pills {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface-2, rgba(255,255,255,0.04));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  flex: 1;
+}
+
+.cb-section-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: transparent;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.cb-section-pill:hover { color: var(--text-2); }
+.cb-section-pill--active {
+  background: var(--surface-1);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.cb-section-pill-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 4px;
+  background: rgba(212, 160, 23, 0.15);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gold);
+}
+
+/* ─── Section head (legacy, kept for compatibility) ──────────────────────── */
 .cb-section-head {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+}
+
+/* ─── Diplomas states ────────────────────────────────────────────────────── */
+.cb-diplomas-no-class {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 20px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.cb-diplomas-loading {
+  padding: 40px 20px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
 }
 
 .cb-section-title {

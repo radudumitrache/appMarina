@@ -87,6 +87,11 @@ export default function PersonalInfoPanel({ profile, onSave }) {
         {field('Organisation',  'organisation')}
 
         <div className="tp-form-field">
+          <label className="tp-form-label">Crew ID</label>
+          <span className="tp-form-value">{profile.crewId || '—'}</span>
+        </div>
+
+        <div className="tp-form-field">
           <label className="tp-form-label">Language</label>
           {editing
             ? (

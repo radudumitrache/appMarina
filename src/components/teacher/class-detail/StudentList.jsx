@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import '../../css/teacher/class-detail/StudentList.css'
 
-export default function StudentList({ students, lessonsTotal }) {
+export default function StudentList({ students, lessonsTotal, testsTotal = 0 }) {
   const navigate = useNavigate()
   return (
     <div className="cd-list">
@@ -17,7 +17,9 @@ export default function StudentList({ students, lessonsTotal }) {
         <p className="cd-empty">No students match your search.</p>
       ) : (
         students.map((s, i) => {
-          const pct = Math.round((s.done / lessonsTotal) * 100)
+          const total = lessonsTotal + testsTotal
+          const done  = (s.done || 0) + (s.testsDone || 0)
+          const pct   = total > 0 ? Math.round((done / total) * 100) : 0
           return (
             <div
               key={s.id}

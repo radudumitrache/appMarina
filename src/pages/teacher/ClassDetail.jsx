@@ -56,8 +56,13 @@ export default function ClassDetail() {
   const totalStudents   = students.length
   const activeStudents  = students.filter(s => s.status === 'active').length
   const lessonsComplete = lessons.filter(l => l.total > 0 && l.completed === l.total).length
-  const avgProgress     = totalStudents > 0
-    ? Math.round(students.reduce((sum, s) => sum + (s.done / (lessons.length || 1)) * 100, 0) / totalStudents)
+  const testsTotal      = tests.length
+  const totalItems      = lessons.length + testsTotal
+  const avgProgress     = totalStudents > 0 && totalItems > 0
+    ? Math.round(
+        students.reduce((sum, s) => sum + ((s.done || 0) + (s.testsDone || 0)), 0)
+        / (totalStudents * totalItems) * 100
+      )
     : 0
 
   const filteredStudents = students.filter(s =>
@@ -98,7 +103,7 @@ export default function ClassDetail() {
 
             <div className="cd-tab-content">
               {tab === 'students' && (
-                <StudentList students={filteredStudents} lessonsTotal={lessons.length} />
+                <StudentList students={filteredStudents} lessonsTotal={lessons.length} testsTotal={testsTotal} />
               )}
               {tab === 'lessons' && (
                 <LessonsCoursesTab

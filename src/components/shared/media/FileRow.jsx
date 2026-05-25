@@ -20,42 +20,72 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
               <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
               <polyline points="21 15 16 10 5 21"/>
             </svg>
-          ) : (
+          ) : file.file_type === 'video' ? (
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+            </svg>
+          ) : (
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
             </svg>
           )}
         </span>
         <span className="file-name-text">{file.name}</span>
       </td>
       <td className="file-row-location">
-        {file.folder === 'public'
+        {file.folder === 'public' || file.folder === 'vr_scenes'
           ? <span className="location-badge location-badge--public">Public</span>
           : <span className="location-badge location-badge--class">{file.class_name || '—'}</span>
         }
+      </td>
+      <td className="file-row-type">
+        <span className={`file-type-text file-type-text--${file.file_type}`}>
+          {file.file_type === 'image' ? 'Image' : file.file_type === 'video' ? 'Video' : 'Doc'}
+        </span>
+        {file.is_vr_scene && (
+          <span className="file-vr-badge" title="VR Scene">360°</span>
+        )}
       </td>
       <td className="file-row-size">{formatBytes(file.size_bytes)}</td>
       <td className="file-row-uploader">{file.uploader_name || '—'}</td>
       <td className="file-row-date">{formatDate(file.uploaded_at)}</td>
       <td className="file-row-actions">
         {file.download_url && (
-          <a
-            className="file-action-btn"
-            href={file.download_url}
-            target="_blank"
-            rel="noreferrer"
-            title="Download"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-          </a>
+          file.file_type !== 'document' || file.mime_type === 'application/pdf' ? (
+            <a
+              className="file-action-btn"
+              href={file.download_url}
+              target="_blank"
+              rel="noreferrer"
+              title={file.file_type === 'document' ? 'Open' : 'Download'}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </a>
+          ) : (
+            <a
+              className="file-action-btn"
+              href={file.download_url}
+              download={file.name}
+              title="Download"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </a>
+          )
         )}
         {canWrite && (
           <>
-            {onToggleVrScene && (
+            {onToggleVrScene && file.file_type !== 'document' && (
               <button
                 className={`file-action-btn${file.is_vr_scene ? ' file-action-btn--vr-active' : ''}`}
                 onClick={() => onToggleVrScene(file)}

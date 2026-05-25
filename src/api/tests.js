@@ -56,6 +56,26 @@ export const createLocalizationPoint = (tid, pid, aid, data)       => api.post(`
 export const updateLocalizationPoint = (tid, pid, aid, ptid, data) => api.patch(`/tests/${tid}/panels/${pid}/vr/localization-anchors/${aid}/points/${ptid}/`, data)
 export const deleteLocalizationPoint = (tid, pid, aid, ptid)       => api.delete(`/tests/${tid}/panels/${pid}/vr/localization-anchors/${aid}/points/${ptid}/`)
 
+// Documents — test panel
+export const createTestPanelDocument = (tid, pid, data)         => api.post(`/tests/${tid}/panels/${pid}/documents/`, data)
+export const deleteTestPanelDocument = (tid, pid, docId)        => api.delete(`/tests/${tid}/panels/${pid}/documents/${docId}/`)
+
+// Documents — exercise
+export const createExerciseDocument  = (tid, pid, eid, data)    => api.post(`/tests/${tid}/panels/${pid}/exercises/${eid}/documents/`, data)
+export const deleteExerciseDocument  = (tid, pid, eid, docId)   => api.delete(`/tests/${tid}/panels/${pid}/exercises/${eid}/documents/${docId}/`)
+
+// Documents — MCQ anchor
+export const createMCQAnchorDocument = (tid, pid, aid, data)    => api.post(`/tests/${tid}/panels/${pid}/vr/mcq-anchors/${aid}/documents/`, data)
+export const deleteMCQAnchorDocument = (tid, pid, aid, docId)   => api.delete(`/tests/${tid}/panels/${pid}/vr/mcq-anchors/${aid}/documents/${docId}/`)
+
+// Documents — Word completion anchor
+export const createWCAnchorDocument  = (tid, pid, aid, data)    => api.post(`/tests/${tid}/panels/${pid}/vr/word-completion-anchors/${aid}/documents/`, data)
+export const deleteWCAnchorDocument  = (tid, pid, aid, docId)   => api.delete(`/tests/${tid}/panels/${pid}/vr/word-completion-anchors/${aid}/documents/${docId}/`)
+
+// Documents — Localization anchor
+export const createLocAnchorDocument = (tid, pid, aid, data)    => api.post(`/tests/${tid}/panels/${pid}/vr/localization-anchors/${aid}/documents/`, data)
+export const deleteLocAnchorDocument = (tid, pid, aid, docId)   => api.delete(`/tests/${tid}/panels/${pid}/vr/localization-anchors/${aid}/documents/${docId}/`)
+
 // Submissions
 export const submitTest       = (id, answers)   => api.post(`/tests/${id}/submit/`, { answers })
 export const getMySubmission       = (id)  => api.get(`/tests/${id}/submission/`)

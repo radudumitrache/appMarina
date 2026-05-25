@@ -1,6 +1,7 @@
 import api from './axios'
 
 export const getProgress        = ()       => api.get('/progress/')
+export const getLessonProgress  = ()       => api.get('/progress/lessons/')
 export const getActivity        = ()       => api.get('/progress/activity/')
 export const getTestResults     = ()       => api.get('/progress/test-results/')
 export const getTeacherProgress = (params) => api.get('/teacher/progress/', { params })

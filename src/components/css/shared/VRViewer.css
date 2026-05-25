@@ -138,6 +138,49 @@
   100% { box-shadow: 0 0 0 0    rgba(11, 189, 164, 0),    0 2px 8px rgba(0,0,0,0.45); }
 }
 
+/* ── Navigator anchor — diamond marker (gold) ────────────────────────────
+ * Overrides the teal circle from --anchor::before.
+ * Rotated square gives a clear "waypoint/nav" visual distinct from text anchors.
+ */
+.vr-hotspot--nav::before {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: rgba(245, 158, 11, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.65), 0 2px 8px rgba(0,0,0,0.45);
+  animation: vr-pulse-nav 2.4s ease-out infinite;
+  transform: rotate(45deg);
+}
+
+@keyframes vr-pulse-nav {
+  0%   { box-shadow: 0 0 0 0    rgba(245, 158, 11, 0.65), 0 2px 8px rgba(0,0,0,0.45); }
+  70%  { box-shadow: 0 0 0 14px rgba(245, 158, 11, 0),    0 2px 8px rgba(0,0,0,0.45); }
+  100% { box-shadow: 0 0 0 0    rgba(245, 158, 11, 0),    0 2px 8px rgba(0,0,0,0.45); }
+}
+
+/* ── Visited state — stop pulse, show green check badge ─────────────────
+ * Applied when the student has already interacted with this anchor.
+ */
+.vr-hotspot--visited::before {
+  background: #4caf7d;
+  border-color: rgba(255, 255, 255, 0.8);
+  animation: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.vr-hotspot--visited.vr-hotspot--nav::before {
+  background: #4caf7d;
+  animation: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.vr-hotspot--visited .vr-hotspot-label::after {
+  content: ' ✓';
+  color: #4caf7d;
+  font-size: 0.85em;
+}
+
 /* ── Type 3: Info marker ─────────────────────────────────────────────────
  * Compact gold icon circle — replaces the full InfoCard in-scene.
  * Clicking opens the VRAnchorPanel with full detail.

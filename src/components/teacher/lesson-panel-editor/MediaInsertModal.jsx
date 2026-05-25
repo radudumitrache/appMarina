@@ -40,7 +40,9 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
       .finally(() => setLoading(false))
   }, [classroomId])
 
-  const displayed = files.filter(f => f.file_type === mode && !f.is_vr_scene)
+  const displayed = vrScene
+    ? files.filter(f => f.file_type === mode && f.is_vr_scene)
+    : files.filter(f => f.file_type === mode && !f.is_vr_scene)
 
   const doUpload = async (file, filename) => {
     setUploadErr(null)

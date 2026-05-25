@@ -79,6 +79,13 @@
   color: #f87171;
 }
 
+.ctrl-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 2px;
+}
+
 /* ─── Role badge ─────────────────────────────────────────────────────────── */
 .dash-role-badge {
   position: absolute;

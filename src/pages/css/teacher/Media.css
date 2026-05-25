@@ -52,16 +52,22 @@
 /* ── Folder groups (all-files view) ──────────────────────────────────── */
 
 .media-folder-group {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border);
 }
+.media-folder-group:last-child { border-bottom: none; }
 
 .media-folder-group-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px 8px;
-  color: var(--text-3);
-  border-bottom: 1px solid var(--border);
+  padding: 11px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+.media-folder-group-header:hover {
+  background: rgba(255,255,255,0.03);
 }
 
 .media-folder-group-label {
@@ -71,10 +77,64 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-2);
+  flex: 1;
 }
 
 .media-folder-group-count {
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-3);
+}
+
+.media-folder-group-chevron {
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.media-folder-group-chevron--open {
+  transform: rotate(90deg);
+}
+
+/* Collapsible body — grid trick for smooth height animation */
+.media-folder-group-body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.22s ease, opacity 0.18s ease;
+  opacity: 1;
+}
+.media-folder-group-body--collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+.media-folder-group-body > * {
+  overflow: hidden;
+}
+
+/* Group filter summary chips */
+.media-group-filter-summary {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 16px 8px;
+  flex-wrap: wrap;
+}
+.media-group-filter-tag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  font-family: var(--font-mono);
+}
+.media-group-filter-tag--type {
+  border-color: var(--accent-rim, rgba(11,189,164,0.3));
+  color: var(--accent);
+  background: var(--accent-dim, rgba(11,189,164,0.06));
+}
+.media-group-filter-tag--vr {
+  border-color: rgba(217,160,48,0.3);
+  color: var(--gold, #d9a030);
+  background: rgba(217,160,48,0.06);
 }

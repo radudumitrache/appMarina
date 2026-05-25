@@ -10,7 +10,7 @@ import { getOrganisations } from '../../api/organisations'
 import { getDepartments } from '../../api/departments'
 import '../css/admin/Users.css'
 
-const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '', organisation_id: null, department_ids: [] }
+const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '', organisation_id: null, department_ids: [], crew_id: '' }
 
 function mapUser(u) {
   const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username
@@ -25,6 +25,7 @@ function mapUser(u) {
     organisation_id: u.profile?.organisation_id ?? null,
     organisation_name: u.profile?.organisation_name ?? null,
     department_ids: u.profile?.department_ids ?? [],
+    crew_id: u.profile?.crew_id ?? '',
   }
 }
 
@@ -92,10 +93,14 @@ export default function Users() {
 
   const filtered = users
     .filter(u => roleFilter === 'all' || u.role === roleFilter)
-    .filter(u =>
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter(u => {
+      const q = search.toLowerCase()
+      return (
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        (u.crew_id && u.crew_id.toLowerCase().includes(q))
+      )
+    })
     .sort((a, b) => {
       const aVal = a[sortKey] ?? ''
       const bVal = b[sortKey] ?? ''
@@ -117,6 +122,7 @@ export default function Users() {
       password: '',
       organisation_id: user.organisation_id ?? null,
       department_ids: user.department_ids ?? [],
+      crew_id: user.crew_id ?? '',
     })
     setModal('edit')
   }
@@ -140,6 +146,7 @@ export default function Users() {
       ...(form.password && { password: form.password }),
       organisation_id: form.organisation_id,
       department_ids: form.department_ids,
+      ...(['student', 'teacher'].includes(form.role) && { crew_id: form.crew_id || null }),
     }
     setSaving(true)
     setFormError('')

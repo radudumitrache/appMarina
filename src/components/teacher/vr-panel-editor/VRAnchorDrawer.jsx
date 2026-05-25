@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react'
 import QuestionHtmlEditor from '../test-builder/QuestionHtmlEditor'
+import DocumentSection from '../lesson-panel-editor/DocumentSection'
+import {
+  createMCQAnchorDocument, deleteMCQAnchorDocument,
+  createWCAnchorDocument, deleteWCAnchorDocument,
+  createLocAnchorDocument, deleteLocAnchorDocument,
+} from '../../../api/tests'
 
 function stripHtml(html) {
   if (!html) return ''
@@ -16,15 +22,18 @@ const DELETE_ICON = (
 
 export default function VRAnchorDrawer({
   mcqAnchors, wcAnchors, locAnchors, allCount,
-  selectedAnchor, moving, saving, classroomId,
+  selectedAnchor, moving, saving, classroomId, testId, panelId,
   onOpenEdit, onCloseEdit, onSaveEdit, onDeleteAnchor, onSetMoving,
 }) {
-  const [drawerWidth, setDrawerWidth] = useState(300)
-  const [editForm, setEditForm]       = useState({})
+  const [drawerWidth,  setDrawerWidth]  = useState(300)
+  const [editForm,     setEditForm]     = useState({})
+  const [docs,         setDocs]         = useState([])
+  const [docUploading, setDocUploading] = useState(false)
 
   useEffect(() => {
-    if (!selectedAnchor) { setEditForm({}); return }
+    if (!selectedAnchor) { setEditForm({}); setDocs([]); return }
     const { type, data } = selectedAnchor
+    setDocs(data.documents ?? [])
     if (type === 'mcq') {
       setEditForm({
         title: data.title || '',
@@ -38,6 +47,30 @@ export default function VRAnchorDrawer({
       setEditForm({ title: data.title || '', text: data.text || '' })
     }
   }, [selectedAnchor])
+
+  async function handleDocUpload(fileData) {
+    if (!selectedAnchor) return
+    setDocUploading(true)
+    try {
+      const { type, data } = selectedAnchor
+      let res
+      if (type === 'mcq') res = await createMCQAnchorDocument(testId, panelId, data.id, fileData)
+      else if (type === 'wc') res = await createWCAnchorDocument(testId, panelId, data.id, fileData)
+      else if (type === 'loc') res = await createLocAnchorDocument(testId, panelId, data.id, fileData)
+      if (res) setDocs(prev => [...prev, res.data])
+    } finally {
+      setDocUploading(false)
+    }
+  }
+
+  async function handleDocDelete(docId) {
+    if (!selectedAnchor) return
+    const { type, data } = selectedAnchor
+    if (type === 'mcq') await deleteMCQAnchorDocument(testId, panelId, data.id, docId)
+    else if (type === 'wc') await deleteWCAnchorDocument(testId, panelId, data.id, docId)
+    else if (type === 'loc') await deleteLocAnchorDocument(testId, panelId, data.id, docId)
+    setDocs(prev => prev.filter(d => d.id !== docId))
+  }
 
   function handleResizeDrag(e) {
     e.preventDefault()
@@ -128,6 +161,15 @@ export default function VRAnchorDrawer({
               />
             </div>
           )}
+
+          <DocumentSection
+            documents={docs}
+            onUpload={handleDocUpload}
+            onDelete={handleDocDelete}
+            uploading={docUploading}
+            isAdmin
+            classroomId={classroomId}
+          />
 
           <div className="vrpe-edit-actions">
             <button className="vrpe-edit-move-btn" onClick={() => onSetMoving(true)} disabled={moving || saving}>

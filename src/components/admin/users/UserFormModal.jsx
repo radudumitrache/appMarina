@@ -88,6 +88,23 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
             />
           </div>
 
+          {/* ── Crew ID (students and teachers only) ── */}
+          {form.role !== 'admin' && (
+            <div className="form-row">
+              <label className="form-label">
+                Crew ID
+                <span className="form-hint"> — optional</span>
+              </label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder="e.g. CREW-2024-001"
+                value={form.crew_id}
+                onChange={e => onChange('crew_id', e.target.value)}
+              />
+            </div>
+          )}
+
           {/* ── Organisation (superadmin only; required when creating an admin) ── */}
           {isSuperAdmin && (
             <div className="form-row">

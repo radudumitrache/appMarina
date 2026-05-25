@@ -10,6 +10,7 @@ export default function UserRow({ user, index, onEdit, onToggleStatus, onDelete 
       <td>
         <span className={`role-badge role-badge--${user.role}`}>{user.role}</span>
       </td>
+      <td className="user-crew-id">{user.role !== 'admin' ? (user.crew_id || '—') : '—'}</td>
       <td className="user-email">{user.email}</td>
       <td className="user-org">{user.organisation_name ?? '—'}</td>
       <td>

@@ -31,7 +31,8 @@ const AUTO_ROTATE_SPEED = 0.03
 const POLY_RADIUS       = 496   // slightly inside the 500-unit sphere
 const POLY_OPACITY      = 0.22
 const POLY_OPACITY_HOV  = 0.50
-const POLY_COLOR        = 0x0bbda4  // teal
+const POLY_COLOR         = 0x0bbda4  // teal
+const POLY_COLOR_VISITED = 0x4caf7d  // green
 
 // Reusable scratch objects
 const _vec    = new THREE.Vector3()
@@ -68,7 +69,7 @@ function buildPolyGeometry(points) {
   return geo
 }
 
-export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSceneReady, editMode = false, onSceneClick }) {
+export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSceneReady, editMode = false, onSceneClick, initialLon = 0, initialLat = 0 }) {
   const containerRef    = useRef(null)
   const stateRef        = useRef({})
   const hotspotElsRef   = useRef({})
@@ -157,6 +158,8 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
 
     // Expose autoRotate control so the editMode effect can freeze it
     stateRef.current.setAutoRotate = (v) => { autoRotate = v }
+    stateRef.current.setCameraDir  = (newLon, newLat) => { lon = newLon; lat = newLat }
+    stateRef.current.getCameraDir  = () => ({ lon, lat })
 
     // Mouse
     const onMouseDown = (e) => {
@@ -243,6 +246,21 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
           if (hovId != null) {
             const pa = polyAnchorsRef.current.find(p => p.id === hovId)
             if (pa?.onClick) pa.onClick(pa, e.clientX, e.clientY)
+          } else if (onSceneClickRef.current) {
+            getNDC(e.clientX, e.clientY)
+            raycaster.setFromCamera(mouse2d, camera)
+            const sphere = pickSphereRef.current
+            if (sphere) {
+              const hits = raycaster.intersectObject(sphere)
+              if (hits.length > 0) {
+                const p = hits[0].point
+                const cLon = THREE.MathUtils.radToDeg(Math.atan2(p.z, p.x))
+                const cLat = 90 - THREE.MathUtils.radToDeg(
+                  Math.acos(THREE.MathUtils.clamp(p.y / 498, -1, 1))
+                )
+                onSceneClickRef.current(cLon, cLat, e.clientX, e.clientY)
+              }
+            }
           }
         }
       }
@@ -287,7 +305,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
               const tLat = 90 - THREE.MathUtils.radToDeg(
                 Math.acos(THREE.MathUtils.clamp(p.y / 498, -1, 1))
               )
-              onSceneClickRef.current(Math.round(tLon), Math.round(tLat), t.clientX, t.clientY)
+              onSceneClickRef.current(tLon, tLat, t.clientX, t.clientY)
             }
           }
         } else {
@@ -295,6 +313,21 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
           if (hovId != null) {
             const pa = polyAnchorsRef.current.find(p => p.id === hovId)
             if (pa?.onClick) pa.onClick(pa, t.clientX, t.clientY)
+          } else if (onSceneClickRef.current) {
+            getNDC(t.clientX, t.clientY)
+            raycaster.setFromCamera(mouse2d, camera)
+            const sphere = pickSphereRef.current
+            if (sphere) {
+              const hits = raycaster.intersectObject(sphere)
+              if (hits.length > 0) {
+                const p = hits[0].point
+                const tLon2 = THREE.MathUtils.radToDeg(Math.atan2(p.z, p.x))
+                const tLat2 = 90 - THREE.MathUtils.radToDeg(
+                  Math.acos(THREE.MathUtils.clamp(p.y / 498, -1, 1))
+                )
+                onSceneClickRef.current(tLon2, tLat2, t.clientX, t.clientY)
+              }
+            }
           }
         }
       }
@@ -367,18 +400,18 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
 
         el.style.transform     = `translate(-50%, -50%) translate(${x}px, ${y}px)`
         el.style.opacity       = '1'
-        el.style.pointerEvents = 'auto'
+        el.style.pointerEvents = hs.onClick ? 'auto' : 'none'
       }
 
       renderer.render(scene, camera)
     }
     tick()
 
-    stateRef.current = { material, renderer, scene, camera }
+    Object.assign(stateRef.current, { material, renderer, scene, camera })
 
     let sceneCleanup
     if (typeof onReadyRef.current === 'function') {
-      sceneCleanup = onReadyRef.current({ scene, camera, renderer })
+      sceneCleanup = onReadyRef.current({ scene, camera, renderer, getCameraDir: () => ({ lon, lat }) })
     }
 
     return () => {
@@ -421,9 +454,9 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       if (!geo) continue
 
       const mat = new THREE.MeshBasicMaterial({
-        color: POLY_COLOR,
+        color: pa.visited ? POLY_COLOR_VISITED : POLY_COLOR,
         transparent: true,
-        opacity: POLY_OPACITY,
+        opacity: pa.visited ? 0.38 : POLY_OPACITY,
         side: THREE.DoubleSide,
         depthTest: false,   // always visible over the sphere
         depthWrite: false,
@@ -440,6 +473,9 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
   /* ── Texture swap ───────────────────────────────────────────────────────── */
   useEffect(() => {
     if (!stateRef.current.material) return
+    if (stateRef.current.setCameraDir) {
+      stateRef.current.setCameraDir(initialLon, initialLat)
+    }
     setLoading(true)
 
     // Tear down any previous video element
@@ -524,7 +560,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
               if (el) hotspotElsRef.current[hs.id] = el
               else    delete hotspotElsRef.current[hs.id]
             }}
-            className={`vr-hotspot ${hs.className || ''}${hs.onDrag ? ' vr-hotspot--draggable' : ''}`}
+            className={`vr-hotspot ${hs.className || ''}${hs.visited ? ' vr-hotspot--visited' : ''}${hs.onDrag ? ' vr-hotspot--draggable' : ''}`}
             onClick={hs.onClick}
           >
             {hs.render

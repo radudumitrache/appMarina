@@ -40,8 +40,9 @@
   flex-shrink: 0;
 }
 
-.file-type-badge--image { background: var(--accent-subtle); color: var(--accent); }
-.file-type-badge--video { background: color-mix(in srgb, var(--gold, #c9a84c) 12%, transparent); color: var(--gold, #c9a84c); }
+.file-type-badge--image    { background: var(--accent-subtle); color: var(--accent); }
+.file-type-badge--video    { background: color-mix(in srgb, var(--gold, #c9a84c) 12%, transparent); color: var(--gold, #c9a84c); }
+.file-type-badge--document { background: var(--surface-2); color: var(--text-secondary); }
 
 .location-badge {
   font-size: 11px;
@@ -58,6 +59,46 @@
 .location-badge--class {
   background: var(--surface-2);
   color: var(--text-secondary);
+}
+
+.file-row-type {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+}
+
+.file-type-text {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.file-type-text--image {
+  background: var(--accent-subtle, rgba(11,189,164,0.1));
+  color: var(--accent);
+}
+
+.file-type-text--video {
+  background: color-mix(in srgb, var(--gold, #c9a84c) 12%, transparent);
+  color: var(--gold, #c9a84c);
+}
+
+.file-type-text--document {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.file-vr-badge {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono, monospace);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(217,160,48,0.1);
+  color: var(--gold, #c9a84c);
+  border: 1px solid rgba(217,160,48,0.25);
+  letter-spacing: 0.02em;
 }
 
 .file-row-size, .file-row-date {

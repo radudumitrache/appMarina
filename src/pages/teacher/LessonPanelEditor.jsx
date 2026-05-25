@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useEditor }          from '@tiptap/react'
 import StarterKit              from '@tiptap/starter-kit'
@@ -50,7 +50,10 @@ export default function LessonPanelEditor() {
     ? (classroomCode ? `${classroomName} (${classroomCode})` : classroomName)
     : null
 
+  const [navConfirm,       setNavConfirm]       = useState(null) // { idx, label, targetLon, targetLat }
+  const [lookDir,          setLookDir]          = useState({ lon: 0, lat: 0 })
   const [draggedAnchorPos, setDraggedAnchorPos] = useState(null)
+  const getCamDirRef = useRef(null)
   const [showHtml,         setShowHtml]         = useState(false)
   const [rawHtml,          setRawHtml]          = useState('')
   const [drawerWidth,      setDrawerWidth]      = useState(380)
@@ -158,6 +161,13 @@ export default function LessonPanelEditor() {
           onEditModeAnchorClick={(anchor, anchorType, x, y) => setAnchorMenu({ anchor, anchorType, x, y })}
           onCloseAnchorPanel={() => setActiveTextAnchor(null)}
           onAnchorDrag={(x, y, z) => setDraggedAnchorPos({ x, y, z, ts: Date.now() })}
+          initialLon={lookDir.lon}
+          initialLat={lookDir.lat}
+          onViewerReady={(fn) => { getCamDirRef.current = fn }}
+          onNavAnchorClick={(anchor) => {
+            const idx = panels.findIndex(p => p.id === anchor.target_panel)
+            if (idx !== -1) setNavConfirm({ idx, label: panels[idx].title, description: anchor.description ?? '', targetLon: anchor.target_lon ?? 0, targetLat: anchor.target_lat ?? 0 })
+          }}
         />
       )}
 
@@ -166,7 +176,7 @@ export default function LessonPanelEditor() {
         lessonId={id}
         panelCount={panels.length}
         panelIdx={panelIdx}
-        onChangePanelIdx={setPanelIdx}
+        onChangePanelIdx={(i) => { setLookDir({ lon: 0, lat: 0 }); setPanelIdx(i) }}
         onBack={() => navigate(backPath)}
       />
 
@@ -190,7 +200,7 @@ export default function LessonPanelEditor() {
       />
 
       {panels.length > 0 && (
-        <PanelStrip panels={panels} panelIdx={panelIdx} onSelect={setPanelIdx} />
+        <PanelStrip panels={panels} panelIdx={panelIdx} onSelect={(i) => { setLookDir({ lon: 0, lat: 0 }); setPanelIdx(i) }} />
       )}
 
       {drawerOpen && panel && (
@@ -221,6 +231,7 @@ export default function LessonPanelEditor() {
           onNewPolyPointSaved={() => setNewPolyPoint(null)}
           onActivePolyPointsChange={pts => setActivePolyPoints(pts ?? null)}
           draggedAnchorPos={draggedAnchorPos}
+          getViewerCameraDir={() => getCamDirRef.current?.()}
         />
       )}
 
@@ -256,6 +267,32 @@ export default function LessonPanelEditor() {
           onConfirm={() => handleDeletePanel(deleteTarget)}
           onCancel={() => setDeleteTarget(null)}
         />
+      )}
+
+      {navConfirm && (
+        <div className="lpe-overlay" onClick={() => setNavConfirm(null)}>
+          <div className="lpe-dialog" onClick={e => e.stopPropagation()}>
+            <h3 className="lpe-dialog-title">Navigate to panel?</h3>
+            <p className="lpe-dialog-body">
+              This will switch the preview to <strong>{navConfirm.label}</strong>.
+            </p>
+            {navConfirm.description && (
+              <div
+                className="lpe-dialog-anchor-desc"
+                dangerouslySetInnerHTML={{ __html: navConfirm.description }}
+              />
+            )}
+            <div className="lpe-dialog-actions">
+              <button className="lpe-dialog-cancel" onClick={() => setNavConfirm(null)}>Cancel</button>
+              <button
+                className="lpe-dialog-confirm lpe-dialog-confirm--nav"
+                onClick={() => { setLookDir({ lon: navConfirm.targetLon ?? 0, lat: navConfirm.targetLat ?? 0 }); setPanelIdx(navConfirm.idx); setNavConfirm(null) }}
+              >
+                Go to panel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

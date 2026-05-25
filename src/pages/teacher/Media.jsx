@@ -112,6 +112,7 @@ export default function TeacherMedia() {
                   <tr>
                     <th>Name</th>
                     <th>Location</th>
+                    <th>Type</th>
                     <th>Size</th>
                     <th>Uploaded by</th>
                     <th>Date</th>

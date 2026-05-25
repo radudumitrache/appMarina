@@ -4,10 +4,13 @@ import NavBar             from '../../components/student/NavBar'
 import ProgressHeader     from '../../components/student/progress/ProgressHeader'
 import ProgressSkeleton   from '../../components/student/progress/ProgressSkeleton'
 import ProgressStatCards  from '../../components/student/progress/ProgressStatCards'
-import ModuleProgress     from '../../components/student/progress/ModuleProgress'
+import LessonsProgress    from '../../components/student/progress/LessonsProgress'
 import TestResults        from '../../components/student/progress/TestResults'
 import ActivityFeed       from '../../components/student/progress/ActivityFeed'
-import { getProgress, getTestResults, getActivity } from '../../api/progress'
+import DiplomasSection    from '../../components/student/progress/DiplomasSection'
+import { getProgress, getLessonProgress, getTestResults, getActivity } from '../../api/progress'
+import { getMyDiplomas } from '../../api/classes'
+import { getMe }         from '../../api/users'
 import '../css/student/Progress.css'
 
 function fmtDate(iso) {
@@ -18,14 +21,18 @@ export default function Progress() {
   const navigate = useNavigate()
 
   const [summary,     setSummary]     = useState(null)
+  const [lessons,     setLessons]     = useState([])
   const [testResults, setTestResults] = useState([])
   const [activity,    setActivity]    = useState([])
+  const [diplomas,    setDiplomas]    = useState([])
+  const [studentName, setStudentName] = useState('')
   const [loading,     setLoading]     = useState(true)
 
   useEffect(() => {
-    Promise.all([getProgress(), getTestResults(), getActivity()])
-      .then(([progRes, testsRes, actRes]) => {
+    Promise.all([getProgress(), getLessonProgress(), getTestResults(), getActivity(), getMyDiplomas(), getMe()])
+      .then(([progRes, lessonsRes, testsRes, actRes, dipRes, meRes]) => {
         setSummary(progRes.data)
+        setLessons(lessonsRes.data ?? [])
         setTestResults(testsRes.data.map(s => ({
           id:      s.id,
           testId:  s.test,
@@ -43,6 +50,9 @@ export default function Progress() {
           refId: log.ref_id,
           date:  fmtDate(log.created_at),
         })))
+        setDiplomas(dipRes.data ?? [])
+        const me = meRes.data
+        setStudentName(`${me.first_name ?? ''} ${me.last_name ?? ''}`.trim())
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -58,16 +68,12 @@ export default function Progress() {
     )
   }
 
-  const totalDone  = summary.modules.reduce((s, m) => s + m.done,  0)
-  const totalAll   = summary.modules.reduce((s, m) => s + m.total, 0)
-  const overallPct = totalAll > 0 ? Math.round((totalDone / totalAll) * 100) : 0
-
   const statCards = [
     {
       label:  'Lessons Complete',
       value:  String(summary.lessons_complete),
       suffix: `/${summary.lessons_total}`,
-      sub:    `${totalAll > 0 ? Math.round((summary.lessons_complete / summary.lessons_total) * 100) : 0}% of curriculum`,
+      sub:    `${summary.lessons_total > 0 ? Math.round((summary.lessons_complete / summary.lessons_total) * 100) : 0}% of curriculum`,
     },
     {
       label:  'Avg Test Grade',
@@ -99,7 +105,7 @@ export default function Progress() {
           <ProgressStatCards cards={statCards} />
 
           <div className="progress-grid">
-            <ModuleProgress modules={summary.modules} overallPct={overallPct} />
+            <LessonsProgress lessons={lessons} />
             <TestResults
               results={testResults}
               onViewAll={() => navigate('/student/tests')}
@@ -117,6 +123,12 @@ export default function Progress() {
             }}
           />
         </div>
+
+        {diplomas.length > 0 && (
+          <div className="progress-screen">
+            <DiplomasSection diplomas={diplomas} studentName={studentName} />
+          </div>
+        )}
       </div>
     </div>
   )

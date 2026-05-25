@@ -13,10 +13,18 @@ import {
   createPolygonPoint,
   updatePolygonPoint,
   deletePolygonPoint,
+  createAnchorDocument,
+  deleteAnchorDocument,
+  createPolygonAnchorDocument,
+  deletePolygonAnchorDocument,
 } from '../../../api/lessons'
 import { IconEdit, IconTrash, IconPlus, IconPin, IconCompass, IconPolygon, IconCrosshair, IconChevronUp, IconChevronDown } from './LPEIcons'
 import RichTextEditor from '../../shared/RichTextEditor'
 import ColorPicker from '../../shared/ColorPicker'
+import DocumentSection from './DocumentSection'
+import { useAuth } from '../../../auth/AuthContext'
+import VRViewer from '../../shared/VRViewer'
+import { resolveSceneUrl } from '../../shared/VRSceneRenderer'
 
 function IconChevronRight() {
   return (
@@ -36,6 +44,130 @@ function IconArrowLeft() {
   )
 }
 
+
+function NavLookPicker({ targetPanel, targetLon, targetLat, onPick, onClear }) {
+  const sceneSrc = resolveSceneUrl(targetPanel?.vr_tour?.scene_url)
+  const hasDir   = targetLon !== '' && targetLat !== ''
+
+  const refHotspots = useMemo(() => {
+    const tour = targetPanel?.vr_tour
+    if (!tour) return []
+    const out = []
+    for (const ta of tour.text_anchors ?? []) {
+      const { lon, lat } = posToLonLat(ta.pos_x, ta.pos_y, ta.pos_z)
+      out.push({ id: `ref-ta-${ta.id}`, lon, lat, label: ta.title, show_title: false, className: 'vr-hotspot--anchor lpe-ref-hotspot', onClick: null })
+    }
+    for (const na of tour.navigator_anchors ?? []) {
+      const { lon, lat } = posToLonLat(na.pos_x, na.pos_y, na.pos_z)
+      out.push({ id: `ref-na-${na.id}`, lon, lat, label: na.title || '→', show_title: false, className: 'vr-hotspot--anchor vr-hotspot--nav lpe-ref-hotspot', onClick: null })
+    }
+    if (hasDir) {
+      out.push({
+        id: '__dir__',
+        lon: parseFloat(targetLon),
+        lat: parseFloat(targetLat),
+        label: '',
+        show_title: false,
+        className: 'lpe-look-dir-hotspot',
+        onClick: null,
+        render: () => (
+          <div className="lpe-look-dir-marker">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+        ),
+      })
+    }
+    return out
+  }, [targetPanel, targetLon, targetLat, hasDir])
+
+  return (
+    <div className="lpe-field">
+      <div className="lpe-nav-look-header">
+        <label className="lpe-label">Look direction on arrival <span className="lpe-label-opt">(optional)</span></label>
+        {hasDir && (
+          <button type="button" className="lpe-nav-look-clear" onClick={onClear} title="Clear direction">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        )}
+      </div>
+      <div className="lpe-nav-look-picker">
+        <VRViewer
+          src={sceneSrc}
+          hotspots={refHotspots}
+          polygonAnchors={[]}
+          onSceneClick={(lon, lat) => onPick(lon, lat)}
+        />
+        <div className="lpe-nav-look-hint">
+          {hasDir
+            ? `Lon ${targetLon}° · Lat ${targetLat}° — click to reposition`
+            : 'Click anywhere to set look direction'}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PanelPicker({ value, onChange, panels }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open])
+
+  const selected = panels.find(p => String(p.id) === String(value))
+
+  return (
+    <div className={`lpe-panel-picker${open ? ' lpe-panel-picker--open' : ''}`} ref={ref}>
+      <button
+        type="button"
+        className="lpe-panel-picker-trigger"
+        onClick={() => setOpen(o => !o)}
+      >
+        <span className={`lpe-panel-picker-label${!selected ? ' lpe-panel-picker-label--placeholder' : ''}`}>
+          {selected ? selected.title : '— select a panel —'}
+        </span>
+        <svg className="lpe-panel-picker-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      {open && (
+        <div className="lpe-panel-picker-list">
+          {panels.map(p => {
+            const isActive = String(p.id) === String(value)
+            const badge = p.type === 'vr_tour' ? '360°' : 'Text'
+            return (
+              <div
+                key={p.id}
+                className={`lpe-panel-picker-option${isActive ? ' lpe-panel-picker-option--active' : ''}`}
+                onMouseDown={(e) => { e.preventDefault(); onChange(String(p.id)); setOpen(false) }}
+              >
+                <span className="lpe-panel-picker-option-name">{p.title}</span>
+                <span className="lpe-panel-picker-option-badge">{badge}</span>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function TitleDisplayControls({ showTitle, setShowTitle, titleSize, setTitleSize, titleTextColor, setTitleTextColor }) {
   return (
@@ -132,10 +264,20 @@ export default function AnchorSection({
   onActivePolyPointsChange,  // (hotspots | null) → void — scene hotspots for editing polygon points
   onAnchorEditingChange,     // (boolean) → void — true when an anchor edit form is open
   draggedAnchorPos,          // { x, y, z, ts } | null — live drag from VRViewer
+  getViewerCameraDir,        // () => { lon, lat } | null — reads live camera direction from VRViewer
 }) {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+
   const [textAnchors, setTextAnchors] = useState(initialTextAnchors ?? [])
   const [navAnchors,  setNavAnchors]  = useState(initialNavAnchors  ?? [])
   const [polyAnchors, setPolyAnchors] = useState(initialPolyAnchors ?? [])
+
+  const [anchorDocs,     setAnchorDocs]     = useState([])
+  const [docUploading,   setDocUploading]   = useState(false)
+
+  const [polyDocs,       setPolyDocs]       = useState([])
+  const [polyDocUploading, setPolyDocUploading] = useState(false)
 
   // All panels available as navigation targets (any type, excluding current)
   const targetPanels = useMemo(() =>
@@ -237,6 +379,14 @@ export default function AnchorSection({
   const [showTitle,      setShowTitle]      = useState(true)
   const [titleSize,      setTitleSize]      = useState('medium')
   const [titleTextColor, setTitleTextColor] = useState('#000000')
+  const [targetLon,      setTargetLon]      = useState('')
+  const [targetLat,      setTargetLat]      = useState('')
+
+  const targetPanelObj = useMemo(() =>
+    panels.find(p => String(p.id) === String(targetTour)) ?? null
+  , [panels, targetTour])
+
+  const targetIsVR = targetPanelObj?.type === 'vr_tour'
 
   function openForm(type, anchor = null) {
     setPolyForm(null)
@@ -247,6 +397,8 @@ export default function AnchorSection({
     setATitle(anchor?.title ?? '')
     setADesc(anchor?.description ?? '')
     setTargetTour(anchor?.target_panel ?? '')
+    setTargetLon(anchor?.target_lon != null ? String(anchor.target_lon) : '')
+    setTargetLat(anchor?.target_lat != null ? String(anchor.target_lat) : '')
     setShowTitle(anchor?.show_title ?? true)
     setTitleSize(anchor?.title_size ?? 'medium')
     setTitleTextColor(anchor?.title_text_color ?? '#000000')
@@ -256,8 +408,33 @@ export default function AnchorSection({
   function closeForm() {
     setForm(null)
     setAnchorError(null)
+    setAnchorDocs([])
     setTextAnchors(prev => prev.filter(a => a.id !== '__preview__'))
     setNavAnchors(prev => prev.filter(a => a.id !== '__preview__'))
+  }
+
+  // Sync documents when opening an existing text anchor form
+  useEffect(() => {
+    if (form?.type === 'text' && form.anchor) {
+      setAnchorDocs(form.anchor.documents ?? [])
+    }
+  }, [form?.anchor?.id, form?.type])
+
+  const handleAnchorDocUpload = async (fileData) => {
+    if (!form?.anchor) return
+    setDocUploading(true)
+    try {
+      const res = await createAnchorDocument(lessonId, panelId, form.anchor.id, fileData)
+      setAnchorDocs(prev => [...prev, res.data])
+    } finally {
+      setDocUploading(false)
+    }
+  }
+
+  const handleAnchorDocDelete = async (docId) => {
+    if (!form?.anchor) return
+    await deleteAnchorDocument(lessonId, panelId, form.anchor.id, docId)
+    setAnchorDocs(prev => prev.filter(d => d.id !== docId))
   }
 
   // When the user drags an anchor hotspot in the VR scene, update the open form's position
@@ -300,7 +477,11 @@ export default function AnchorSection({
           setAnchorSaving(false)
           return
         }
-        const data = { ...pos, target_panel: tvt, title: aTitle.trim(), description: aDesc.trim(), ...titleDisplay }
+        const data = {
+          ...pos, target_panel: tvt, title: aTitle.trim(), description: aDesc.trim(), ...titleDisplay,
+          target_lon: targetLon !== '' ? parseFloat(targetLon) : null,
+          target_lat: targetLat !== '' ? parseFloat(targetLat) : null,
+        }
         if (form.anchor) {
           const res = await updateNavigatorAnchor(lessonId, panelId, form.anchor.id, data)
           setNavAnchors(prev => prev.map(a => a.id === form.anchor.id ? res.data : a))
@@ -463,6 +644,31 @@ export default function AnchorSection({
     setPolyForm(null)
     setPolyError(null)
     setEditingPoint(null)
+    setPolyDocs([])
+  }
+
+  // Sync polygon anchor documents when opening an existing polygon form
+  useEffect(() => {
+    if (polyForm?.anchor) {
+      setPolyDocs(polyForm.anchor.documents ?? [])
+    }
+  }, [polyForm?.anchor?.id])
+
+  const handlePolyDocUpload = async (fileData) => {
+    if (!polyForm?.anchor) return
+    setPolyDocUploading(true)
+    try {
+      const res = await createPolygonAnchorDocument(lessonId, panelId, polyForm.anchor.id, fileData)
+      setPolyDocs(prev => [...prev, res.data])
+    } finally {
+      setPolyDocUploading(false)
+    }
+  }
+
+  const handlePolyDocDelete = async (docId) => {
+    if (!polyForm?.anchor) return
+    await deletePolygonAnchorDocument(lessonId, panelId, polyForm.anchor.id, docId)
+    setPolyDocs(prev => prev.filter(d => d.id !== docId))
   }
 
   function openEditPoint(pt) {
@@ -713,6 +919,16 @@ export default function AnchorSection({
                       placeholder="Description…"
                     />
                   </div>
+                  {form.anchor && (
+                    <DocumentSection
+                      documents={anchorDocs}
+                      onUpload={handleAnchorDocUpload}
+                      onDelete={handleAnchorDocDelete}
+                      uploading={docUploading}
+                      isAdmin={isAdmin}
+                      classroomId={classroomId}
+                    />
+                  )}
                 </>
               )}
 
@@ -723,18 +939,11 @@ export default function AnchorSection({
                     {targetPanels.length === 0 ? (
                       <p className="lpe-anchor-empty">No other panels in this lesson.</p>
                     ) : (
-                      <select
-                        className="lpe-style-select"
+                      <PanelPicker
                         value={targetTour}
-                        onChange={e => setTargetTour(e.target.value)}
-                      >
-                        <option value="">— select a panel —</option>
-                        {targetPanels.map(p => (
-                          <option key={p.id} value={p.id}>
-                            {p.title} ({p.type === 'vr_tour' ? '360°' : 'Text'})
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(v) => { setTargetTour(v); setTargetLon(''); setTargetLat('') }}
+                        panels={targetPanels}
+                      />
                     )}
                   </div>
                   <div className="lpe-field">
@@ -751,6 +960,15 @@ export default function AnchorSection({
                       placeholder="Description…"
                     />
                   </div>
+                  {targetIsVR && targetPanelObj && (
+                    <NavLookPicker
+                      targetPanel={targetPanelObj}
+                      targetLon={targetLon}
+                      targetLat={targetLat}
+                      onPick={(lon, lat) => { setTargetLon(String(lon)); setTargetLat(String(lat)) }}
+                      onClear={() => { setTargetLon(''); setTargetLat('') }}
+                    />
+                  )}
                 </>
               )}
 
@@ -797,6 +1015,17 @@ export default function AnchorSection({
                   placeholder="Polygon region content…"
                 />
               </div>
+
+              {polyForm.anchor && (
+                <DocumentSection
+                  documents={polyDocs}
+                  onUpload={handlePolyDocUpload}
+                  onDelete={handlePolyDocDelete}
+                  uploading={polyDocUploading}
+                  isAdmin={isAdmin}
+                  classroomId={classroomId}
+                />
+              )}
 
               {polyError && <p className="lpe-anchor-form-error">{polyError}</p>}
 

@@ -7,6 +7,11 @@ const AuthContext = createContext(null)
 const STORAGE_KEY         = 'seafarer_user'
 const REFRESH_STORAGE_KEY = 'seafarer_refresh'
 
+// Prevents the token refresh from running twice in React StrictMode (dev).
+// ROTATE_REFRESH_TOKENS=True means the first call blacklists the token; the
+// second call with the same token would fail and wipe the session.
+let _sessionRestoreAttempted = false
+
 export function AuthProvider({ children }) {
   const { setTheme } = useTheme()
 
@@ -19,6 +24,9 @@ export function AuthProvider({ children }) {
 
   // On app load: restore session from stored refresh token
   useEffect(() => {
+    if (_sessionRestoreAttempted) return
+    _sessionRestoreAttempted = true
+
     const refreshToken = localStorage.getItem(REFRESH_STORAGE_KEY)
     if (!refreshToken) {
       localStorage.removeItem(STORAGE_KEY)

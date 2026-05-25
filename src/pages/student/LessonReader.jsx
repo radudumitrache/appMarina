@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { getLesson, getPanels, completeLesson, uncompleteLesson } from '../../api/lessons'
+import { getLesson, getPanels, completeLesson, uncompleteLesson, getAnchorInteractions, recordAnchorInteraction } from '../../api/lessons'
 import LessonTopBar from '../../components/student/lesson-reader/LessonTopBar'
 import VRPanel from '../../components/student/lesson-reader/VRPanel'
 import TextPanel from '../../components/student/lesson-reader/TextPanel'
@@ -36,22 +36,27 @@ export default function LessonReader() {
   const [lesson,   setLesson]   = useState(state?.lesson ?? null)
   const [panels,   setPanels]   = useState([])
   const [panelIdx, setPanelIdx] = useState(0)
-  const [anchor,     setAnchor]     = useState(null)
-  const [tourId,     setTourId]     = useState(null)
-  const [loading,    setLoading]    = useState(true)
-  const [error,      setError]      = useState(null)
-  const [navConfirm,  setNavConfirm]  = useState(null) // { idx, label }
-  const [completed,   setCompleted]   = useState(false)
-  const [completing,  setCompleting]  = useState(false)
+  const [anchor,       setAnchor]       = useState(null)
+  const [tourId,       setTourId]       = useState(null)
+  const [loading,      setLoading]      = useState(true)
+  const [error,        setError]        = useState(null)
+  const [navConfirm,   setNavConfirm]   = useState(null)
+  const [completed,    setCompleted]    = useState(false)
+  const [completing,   setCompleting]   = useState(false)
+  const [interactions, setInteractions] = useState(new Set())
+  const [lookDir,      setLookDir]      = useState({ lon: 0, lat: 0 })
 
   useEffect(() => {
     setLoading(true)
-    Promise.all([getLesson(id), getPanels(id)])
-      .then(([lessonRes, panelsRes]) => {
+    Promise.all([getLesson(id), getPanels(id), getAnchorInteractions(id)])
+      .then(([lessonRes, panelsRes, intRes]) => {
         setLesson(lessonRes.data)
         setCompleted(lessonRes.data.completed ?? false)
         const sorted = [...panelsRes.data].sort((a, b) => a.order - b.order)
         setPanels(sorted)
+        setInteractions(new Set(
+          (intRes.data ?? []).map(i => `${i.panel_id}:${i.anchor_type}:${i.anchor_id}`)
+        ))
       })
       .catch(err => {
         if (err?.response?.status === 403) {
@@ -80,6 +85,22 @@ export default function LessonReader() {
     return panel.vr_tour
   }, [tourId, panel, panels])
 
+  const currentPanelId = useMemo(
+    () => panels.find(p => p.vr_tour?.id === activeTour?.id)?.id ?? null,
+    [panels, activeTour],
+  )
+
+  function recordInteraction(panelId, anchorType, anchorId) {
+    if (!panelId) return
+    const key = `${panelId}:${anchorType}:${anchorId}`
+    setInteractions(prev => {
+      if (prev.has(key)) return prev
+      recordAnchorInteraction(id, { panel_id: panelId, anchor_type: anchorType, anchor_id: anchorId })
+        .catch(() => {})
+      return new Set([...prev, key])
+    })
+  }
+
   const hotspots = useMemo(() => {
     if (!activeTour) return []
     const out = []
@@ -88,7 +109,9 @@ export default function LessonReader() {
       out.push({
         id: `ta-${ta.id}`, lon, lat, label: ta.title,
         show_title: ta.show_title, title_size: ta.title_size, title_text_color: ta.title_text_color,
-        className: 'vr-hotspot--anchor', onClick: () => setAnchor(ta),
+        className: 'vr-hotspot--anchor',
+        visited: interactions.has(`${currentPanelId}:text:${ta.id}`),
+        onClick: () => { recordInteraction(currentPanelId, 'text', ta.id); setAnchor(ta) },
       })
     }
     for (const na of activeTour.navigator_anchors ?? []) {
@@ -97,22 +120,28 @@ export default function LessonReader() {
         id: `na-${na.id}`, lon, lat, label: na.title || 'Go →',
         show_title: na.show_title, title_size: na.title_size, title_text_color: na.title_text_color,
         className: 'vr-hotspot--anchor vr-hotspot--nav',
+        visited: interactions.has(`${currentPanelId}:navigator:${na.id}`),
         onClick: () => {
+          recordInteraction(currentPanelId, 'navigator', na.id)
           const idx = panels.findIndex(p => p.id === na.target_panel)
           if (idx !== -1) {
             const targetPanel = panels[idx]
-            setNavConfirm({ idx, label: targetPanel?.title || na.title || 'next panel' })
+            setNavConfirm({ idx, label: targetPanel?.title || na.title || 'next panel', targetLon: na.target_lon ?? 0, targetLat: na.target_lat ?? 0 })
           }
         },
       })
     }
     return out
-  }, [activeTour])
+  }, [activeTour, interactions, currentPanelId])
 
   const polygonAnchors = useMemo(() => {
     if (!activeTour) return []
-    return (activeTour.polygon_anchors ?? []).map(pa => ({ ...pa, onClick: (clicked) => setAnchor(clicked) }))
-  }, [activeTour])
+    return (activeTour.polygon_anchors ?? []).map(pa => ({
+      ...pa,
+      visited: interactions.has(`${currentPanelId}:polygon:${pa.id}`),
+      onClick: (clicked) => { recordInteraction(currentPanelId, 'polygon', clicked.id); setAnchor(clicked) },
+    }))
+  }, [activeTour, interactions, currentPanelId])
 
   if (loading) {
     return (
@@ -149,6 +178,7 @@ export default function LessonReader() {
 
   const confirmNav = () => {
     if (!navConfirm) return
+    setLookDir({ lon: navConfirm.targetLon ?? 0, lat: navConfirm.targetLat ?? 0 })
     setAnchor(null)
     setPanelIdx(navConfirm.idx)
     setNavConfirm(null)
@@ -182,8 +212,8 @@ export default function LessonReader() {
         completed={completed}
         completing={completing}
         onBack={() => navigate('/student/lessons')}
-        onPrev={() => setPanelIdx(i => i - 1)}
-        onNext={() => setPanelIdx(i => i + 1)}
+        onPrev={() => { setLookDir({ lon: 0, lat: 0 }); setPanelIdx(i => i - 1) }}
+        onNext={() => { setLookDir({ lon: 0, lat: 0 }); setPanelIdx(i => i + 1) }}
         onToggleComplete={handleToggleComplete}
       />
 
@@ -203,6 +233,10 @@ export default function LessonReader() {
           onPanelChange={setPanelIdx}
           anchor={anchor}
           onAnchorClose={() => setAnchor(null)}
+          visitedAnchors={hotspots.filter(h => h.visited).length + polygonAnchors.filter(p => p.visited).length}
+          totalAnchors={(activeTour?.text_anchors?.length ?? 0) + (activeTour?.navigator_anchors?.length ?? 0) + (activeTour?.polygon_anchors?.length ?? 0)}
+          initialLon={lookDir.lon}
+          initialLat={lookDir.lat}
         />
       ) : (
         <TextPanel
