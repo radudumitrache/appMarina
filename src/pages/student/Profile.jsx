@@ -27,7 +27,6 @@ function mapProfile(data) {
     organisation:  data.profile?.organisation  ?? '',
     program:       data.profile?.program       ?? '',
     startYear:     data.profile?.start_year    ?? '',
-    language:      data.profile?.language      ?? 'English',
     accountStatus: data.profile?.account_status ?? 'active',
     createdAt:     data.profile?.created_at    ?? '',
     lastActive:    data.profile?.last_active   ?? '',
@@ -88,7 +87,6 @@ export default function Profile() {
         nationality:   draft.nationality,
         date_of_birth: draft.dateOfBirth,
         phone:         draft.phone,
-        language:      draft.language,
       },
     })
     setProfile(mapProfile(data))

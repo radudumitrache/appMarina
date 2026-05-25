@@ -2,8 +2,6 @@ import '../../css/student/profile/PersonalInfoTab.css'
 import { useState } from 'react'
 
 
-const LANGUAGES = ['English', 'French', 'Spanish', 'Portuguese', 'Japanese', 'Mandarin', 'Arabic']
-
 function formatDate(iso) {
   if (!iso) return '—'
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -93,14 +91,6 @@ export default function PersonalInfoTab({ profile, onSave }) {
         <div className="form-field">
           <label className="form-label">Crew ID</label>
           <span className="form-value">{profile.crewId || '—'}</span>
-        </div>
-        <div className="form-field">
-          <label className="form-label">Language</label>
-          {editing ? (
-            <select className="form-input form-select" value={draft.language} onChange={set('language')}>
-              {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
-            </select>
-          ) : <span className="form-value">{profile.language}</span>}
         </div>
       </div>
     </div>
