@@ -115,12 +115,19 @@ export default function DashNav() {
 
   const actions = ACTIONS.filter(a => !a.superadminOnly || user?.is_staff)
 
+  // Choose columns so tiles fill the grid evenly:
+  //   9 tiles → 3 columns (3×3)
+  //   8 tiles → 4 columns (4×2)
+  //   anything else → 3 columns as safe fallback
+  const cols = actions.length % 4 === 0 ? 4 : 3
+
   return (
-    <div className="dash-nav">
-      {actions.map((action) => (
+    <div className={`dash-nav dash-nav--${cols}col`}>
+      {actions.map((action, i) => (
         <button
           key={action.id}
           className="dash-btn"
+          style={{ animationDelay: `${0.35 + i * 0.04}s` }}
           onClick={() => navigate(action.path)}
         >
           <span className="dash-btn-icon">{action.icon}</span>
