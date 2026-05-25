@@ -159,26 +159,64 @@
   100% { box-shadow: 0 0 0 0    rgba(245, 158, 11, 0),    0 2px 8px rgba(0,0,0,0.45); }
 }
 
-/* ── Visited state — stop pulse, show green check badge ─────────────────
- * Applied when the student has already interacted with this anchor.
+/* ── Visited state ───────────────────────────────────────────────────────
+ * Anchor dot turns green and grows, with a steady breathing glow so it
+ * remains clearly distinguishable from unvisited anchors even in bright
+ * panoramas. Navigator diamond gets the same treatment.
  */
 .vr-hotspot--visited::before {
-  background: #4caf7d;
-  border-color: rgba(255, 255, 255, 0.8);
-  animation: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  width: 24px;
+  height: 24px;
+  background: #16a34a;
+  border: 2.5px solid #86efac;
+  animation: vr-visited-breathe 2.4s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7), 0 2px 10px rgba(0,0,0,0.5);
+}
+
+@keyframes vr-visited-breathe {
+  0%,100% { box-shadow: 0 0 0 0   rgba(34,197,94,0.7), 0 2px 10px rgba(0,0,0,0.5); }
+  50%     { box-shadow: 0 0 0 10px rgba(34,197,94,0),   0 2px 10px rgba(0,0,0,0.5); }
 }
 
 .vr-hotspot--visited.vr-hotspot--nav::before {
-  background: #4caf7d;
-  animation: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  background: #16a34a;
+  border: 2.5px solid #86efac;
+  animation: vr-visited-breathe 2.4s ease-in-out infinite;
+}
+
+/* Checkmark on the label when title is shown */
+.vr-hotspot--visited .vr-hotspot-label {
+  background: rgba(22, 163, 74, 0.85);
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px 6px;
 }
 
 .vr-hotspot--visited .vr-hotspot-label::after {
   content: ' ✓';
-  color: #4caf7d;
-  font-size: 0.85em;
+  color: #bbf7d0;
+  font-weight: 700;
+}
+
+/* Checkmark badge for anchors with no title — large, impossible to miss */
+.vr-hotspot--visited:not(:has(.vr-hotspot-label))::after {
+  content: '✓';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #15803d;
+  border: 2px solid #bbf7d0;
+  font-size: 11px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.6);
 }
 
 /* ── Type 3: Info marker ─────────────────────────────────────────────────

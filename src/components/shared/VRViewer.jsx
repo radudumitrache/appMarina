@@ -32,7 +32,7 @@ const POLY_RADIUS       = 496   // slightly inside the 500-unit sphere
 const POLY_OPACITY      = 0.22
 const POLY_OPACITY_HOV  = 0.50
 const POLY_COLOR         = 0x0bbda4  // teal
-const POLY_COLOR_VISITED = 0x4caf7d  // green
+const POLY_COLOR_VISITED = 0x22c55e  // bright green
 
 // Reusable scratch objects
 const _vec    = new THREE.Vector3()
@@ -456,9 +456,9 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       const mat = new THREE.MeshBasicMaterial({
         color: pa.visited ? POLY_COLOR_VISITED : POLY_COLOR,
         transparent: true,
-        opacity: pa.visited ? 0.38 : POLY_OPACITY,
+        opacity: pa.visited ? 0.68 : POLY_OPACITY,
         side: THREE.DoubleSide,
-        depthTest: false,   // always visible over the sphere
+        depthTest: false,
         depthWrite: false,
       })
 
@@ -467,6 +467,23 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       mesh.userData.polyId = pa.id
       scene.add(mesh)
       polyMeshesRef.current[pa.id] = mesh
+
+      if (pa.visited) {
+        const wireMat = new THREE.MeshBasicMaterial({
+          color: POLY_COLOR_VISITED,
+          transparent: true,
+          opacity: 0.9,
+          side: THREE.DoubleSide,
+          depthTest: false,
+          depthWrite: false,
+          wireframe: true,
+        })
+        const wireMesh = new THREE.Mesh(geo, wireMat)
+        wireMesh.renderOrder = 2
+        wireMesh.userData.polyId = pa.id
+        scene.add(wireMesh)
+        polyMeshesRef.current[`${pa.id}_wire`] = wireMesh
+      }
     }
   }, [polygonAnchors])
 
