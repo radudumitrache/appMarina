@@ -29,9 +29,6 @@ export default function UploadModal({ uploadableFolders, existingFiles = [], onC
 
   const handleFile = (f) => {
     if (!f) return
-    const isImage = f.type.startsWith('image/')
-    const isVideo = f.type.startsWith('video/')
-    if (!isImage && !isVideo) { setError('Only image and video files are supported.'); return }
     setFile(f)
     setError('')
     setConflict(null)
@@ -62,7 +59,7 @@ export default function UploadModal({ uploadableFolders, existingFiles = [], onC
       const { data: mediaFile } = await confirmUpload({
         gcs_path:      urlData.gcs_path,
         filename,
-        file_type:     file.type.startsWith('image/') ? 'image' : 'video',
+        file_type:     file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'document',
         mime_type:     file.type,
         size_bytes:    file.size,
         folder:        selectedFolder.folder,
@@ -142,12 +139,12 @@ export default function UploadModal({ uploadableFolders, existingFiles = [], onC
               <span className="upload-drop-label">
                 {file
                   ? `${file.name} — ${formatBytes(file.size)}`
-                  : 'Click or drag an image / video file here'}
+                  : 'Click or drag a file here — image, video, or document'}
               </span>
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/*,video/*"
+                accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt"
                 style={{ display: 'none' }}
                 onChange={e => handleFile(e.target.files?.[0])}
               />

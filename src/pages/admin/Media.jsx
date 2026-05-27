@@ -99,8 +99,9 @@ export default function AdminMedia() {
   const folders = useMemo(() => {
     const countFor = (pred) => files.filter(pred).length
     return [
-      { id: 'all',    label: 'All Files', count: files.length },
-      { id: 'public', label: 'Public',    count: countFor(f => f.folder === 'public' || f.folder === 'vr_scenes') },
+      { id: 'all',       label: 'All Files',  count: files.length },
+      { id: 'public',    label: 'Public',     count: countFor(f => f.folder === 'public' || f.folder === 'vr_scenes') },
+      { id: 'documents', label: 'Documents',  count: countFor(f => f.folder === 'documents') },
       ...departments.map(c => ({
         id:          `class-${c.id}`,
         label:       c.name,
@@ -112,7 +113,8 @@ export default function AdminMedia() {
   }, [files, departments])
 
   const uploadableFolders = useMemo(() => [
-    { id: 'public', label: 'Public', folder: 'public' },
+    { id: 'public',    label: 'Public',    folder: 'public' },
+    { id: 'documents', label: 'Documents', folder: 'documents' },
     ...departments.map(c => ({
       id:          `class-${c.id}`,
       label:       c.name,
@@ -126,6 +128,8 @@ export default function AdminMedia() {
     // Folder filter
     if (activeFolder === 'public') {
       list = list.filter(f => f.folder === 'public' || f.folder === 'vr_scenes')
+    } else if (activeFolder === 'documents') {
+      list = list.filter(f => f.folder === 'documents')
     } else if (activeFolder.startsWith('class-')) {
       const cid = parseInt(activeFolder.replace('class-', ''), 10)
       list = list.filter(f => f.department === cid)
