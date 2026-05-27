@@ -31,7 +31,7 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
     ? { folder: 'class', department_id: departmentId }
     : { folder: 'public' }
 
-  const displayFolder = folderLabel ?? (departmentId ? 'Class folder' : 'Public')
+  const displayFolder = folderLabel ?? (departmentId ? 'Department folder' : 'Public')
 
   useEffect(() => {
     getMediaFiles(folderParams)

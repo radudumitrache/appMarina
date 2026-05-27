@@ -28,8 +28,8 @@ export function useClassEdit(id, cls, setCls) {
 
   async function handleEditSave() {
     const errs = {}
-    if (!editForm.name?.trim())     errs.name       = 'Class name is required.'
-    if (!editForm.code?.trim())     errs.code       = 'Class code is required.'
+    if (!editForm.name?.trim())     errs.name       = 'Department name is required.'
+    if (!editForm.code?.trim())     errs.code       = 'Department code is required.'
     if (!editForm.subject?.trim())  errs.subject    = 'Subject is required.'
     if (!editForm.start_date)       errs.start_date = 'Start date is required.'
     if (!editForm.end_date)         errs.end_date   = 'End date is required.'

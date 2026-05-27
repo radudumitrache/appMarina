@@ -12,7 +12,7 @@ export default function ClassRoster({ classmates, myRank }) {
   return (
     <section className="myclass-section">
       <div className="section-head">
-        <span className="section-title">Class Roster</span>
+        <span className="section-title">Department Roster</span>
         <span className="section-meta">
           Your rank&nbsp;
           <span className="section-meta-num">{myRank}</span>

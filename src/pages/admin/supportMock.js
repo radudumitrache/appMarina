@@ -17,13 +17,13 @@ export const INITIAL_TICKETS = [
     author_name: 'Alice Chen',
     author_role: 'student',
     subject: 'Cannot access Cargo Management lessons',
-    description: 'Lessons 10 and 11 in Cargo Management are locked even though I completed the prerequisites. Please check the access control settings for my class.',
+    description: 'Lessons 10 and 11 in Cargo Management are locked even though I completed the prerequisites. Please check the access control settings for my department.',
     tag: 'Access',
     status: 'open',
     created_at: '2026-03-25T09:00:00Z',
     updated_at: '2026-03-27T14:30:00Z',
     comments: [
-      { id: 1, author_name: 'Support Admin', body: 'We are checking the access control settings for your class. Could you confirm your class code (e.g. SEC-2024-A)?', created_at: '2026-03-27T14:30:00Z' },
+      { id: 1, author_name: 'Support Admin', body: 'We are checking the access control settings for your department. Could you confirm your department code (e.g. SEC-2024-A)?', created_at: '2026-03-27T14:30:00Z' },
     ],
   },
   {
@@ -84,7 +84,7 @@ export const INITIAL_TICKETS = [
     created_at: '2026-03-26T10:00:00Z',
     updated_at: '2026-03-28T16:00:00Z',
     comments: [
-      { id: 6, author_name: 'Support Admin', body: "Could you confirm the student's class code and check in Course Builder that the course is assigned to that specific class?", created_at: '2026-03-28T16:00:00Z' },
+      { id: 6, author_name: 'Support Admin', body: "Could you confirm the student's department code and check in Course Builder that the course is assigned to that specific department?", created_at: '2026-03-28T16:00:00Z' },
     ],
   },
   {

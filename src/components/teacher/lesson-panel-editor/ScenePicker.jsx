@@ -20,7 +20,7 @@ export default function ScenePicker({ value, onChange, departmentId, folderName 
     ? { folder: 'class', department_id: departmentId }
     : { folder: 'public' }
 
-  const uploadDestLabel = folderName ?? (departmentId ? 'the class folder' : 'Public')
+  const uploadDestLabel = folderName ?? (departmentId ? 'the department folder' : 'Public')
 
   useEffect(() => {
     getMediaFiles(folderParams)

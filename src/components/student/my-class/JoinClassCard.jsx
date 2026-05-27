@@ -12,8 +12,8 @@ export default function JoinClassCard({ joinCode, onChange, joining, joinError, 
             <line x1="22" y1="11" x2="16" y2="11"/>
           </svg>
         </div>
-        <h2 className="myclass-join-title">Join a Class</h2>
-        <p className="myclass-join-sub">Enter the class code your teacher gave you.</p>
+        <h2 className="myclass-join-title">Join a Department</h2>
+        <p className="myclass-join-sub">Enter the department code your teacher gave you.</p>
         <form className="myclass-join-form" onSubmit={onSubmit}>
           <input
             ref={codeRef}
@@ -28,7 +28,7 @@ export default function JoinClassCard({ joinCode, onChange, joining, joinError, 
           />
           {joinError && <p className="myclass-join-error">{joinError}</p>}
           <button className="myclass-join-btn" type="submit" disabled={joining || !joinCode.trim()}>
-            {joining ? 'Joining…' : 'Join Class'}
+            {joining ? 'Joining…' : 'Join Department'}
           </button>
         </form>
       </div>

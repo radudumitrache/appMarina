@@ -2,7 +2,7 @@ import '../../css/student/tests/TestsToolbar.css'
 
 const SOURCE_OPTIONS = [
   { id: 'all',   label: 'All'        },
-  { id: 'class', label: 'My Classes' },
+  { id: 'class', label: 'My Departments' },
   { id: 'open',  label: 'Open Access'},
 ]
 

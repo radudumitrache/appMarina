@@ -3,13 +3,13 @@ import '../../css/student/my-class/JoinClassInline.css'
 export default function JoinClassInline({ joinCode, onChange, joining, joinError, onSubmit, onCancel, codeRef }) {
   return (
     <div className="myclass-join-inline">
-      <span className="myclass-join-inline-label">Join another class</span>
+      <span className="myclass-join-inline-label">Join another department</span>
       <form className="myclass-join-inline-form" onSubmit={onSubmit}>
         <input
           ref={codeRef}
           className={`myclass-join-input myclass-join-input--inline${joinError ? ' myclass-join-input--error' : ''}`}
           type="text"
-          placeholder="Class code — e.g. MN-2026-A"
+          placeholder="Department code — e.g. MN-2026-A"
           value={joinCode}
           onChange={onChange}
           autoFocus
