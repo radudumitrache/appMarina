@@ -6,7 +6,7 @@ const LINKS = [
   { label: 'Lessons',   slug: 'lessons'   },
   { label: 'Tests',     slug: 'tests'     },
   { label: 'Progress',  slug: 'progress'  },
-  { label: 'My Class',  slug: 'my-class'  },
+  { label: 'My Department', slug: 'my-class'  },
   { label: 'Support',   slug: 'support'   },
 ]
 

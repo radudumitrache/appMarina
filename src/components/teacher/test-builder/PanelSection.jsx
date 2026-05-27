@@ -187,7 +187,7 @@ function GapFillEditor({ exercise, panelId, testId, onExerciseUpdate }) {
 
 // ── Exercise Card ─────────────────────────────────────────────────────────────
 
-function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate, onDelete, canWrite }) {
+function ExerciseCard({ exercise, panelId, testId, departmentId, index, onUpdate, onDelete, canWrite }) {
   const [docs,         setDocs]         = useState(exercise.documents ?? [])
   const [docUploading, setDocUploading] = useState(false)
 
@@ -238,7 +238,7 @@ function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate,
 
       <QuestionHtmlEditor
         value={exercise.text}
-        classroomId={classroomId}
+        departmentId={departmentId}
         onBlur={handleTextBlur}
         placeholder="Question text…"
       />
@@ -287,7 +287,7 @@ function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate,
         onDelete={handleDocDelete}
         uploading={docUploading}
         isAdmin={canWrite}
-        classroomId={classroomId}
+        departmentId={departmentId}
       />
     </div>
   )
@@ -295,7 +295,7 @@ function ExerciseCard({ exercise, panelId, testId, classroomId, index, onUpdate,
 
 // ── VR Anchor Cards ───────────────────────────────────────────────────────────
 
-function MCQAnchorCard({ anchor, panelId, testId, classroomId, onReload, canWrite }) {
+function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWrite }) {
   const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
   const [localOpts,    setLocalOpts]    = useState(anchor.options?.map(o => o.text) ?? [])
   const [docs,         setDocs]         = useState(anchor.documents ?? [])
@@ -383,7 +383,7 @@ function MCQAnchorCard({ anchor, panelId, testId, classroomId, onReload, canWrit
       />
       <QuestionHtmlEditor
         value={anchor.text}
-        classroomId={classroomId}
+        departmentId={departmentId}
         onBlur={handleTextBlur}
         placeholder="Question text…"
       />
@@ -405,13 +405,13 @@ function MCQAnchorCard({ anchor, panelId, testId, classroomId, onReload, canWrit
         onDelete={handleDocDelete}
         uploading={docUploading}
         isAdmin={canWrite}
-        classroomId={classroomId}
+        departmentId={departmentId}
       />
     </div>
   )
 }
 
-function WordCompletionCard({ anchor, panelId, testId, classroomId, onReload, canWrite }) {
+function WordCompletionCard({ anchor, panelId, testId, departmentId, onReload, canWrite }) {
   const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
   const [wordLocal,    setWordLocal]    = useState(anchor.correct_word)
   const [docs,         setDocs]         = useState(anchor.documents ?? [])
@@ -474,7 +474,7 @@ function WordCompletionCard({ anchor, panelId, testId, classroomId, onReload, ca
       />
       <QuestionHtmlEditor
         value={anchor.text}
-        classroomId={classroomId}
+        departmentId={departmentId}
         onBlur={handleTextBlur}
         placeholder="Sentence with ___ for the blank…"
       />
@@ -494,13 +494,13 @@ function WordCompletionCard({ anchor, panelId, testId, classroomId, onReload, ca
         onDelete={handleDocDelete}
         uploading={docUploading}
         isAdmin={canWrite}
-        classroomId={classroomId}
+        departmentId={departmentId}
       />
     </div>
   )
 }
 
-function LocalizationCard({ anchor, panelId, testId, classroomId, onReload, canWrite }) {
+function LocalizationCard({ anchor, panelId, testId, departmentId, onReload, canWrite }) {
   const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
   const [docs,         setDocs]         = useState(anchor.documents ?? [])
   const [docUploading, setDocUploading] = useState(false)
@@ -567,7 +567,7 @@ function LocalizationCard({ anchor, panelId, testId, classroomId, onReload, canW
       />
       <QuestionHtmlEditor
         value={anchor.text}
-        classroomId={classroomId}
+        departmentId={departmentId}
         onBlur={handleTextBlur}
         placeholder="What should the student locate?…"
       />
@@ -590,7 +590,7 @@ function LocalizationCard({ anchor, panelId, testId, classroomId, onReload, canW
         onDelete={handleDocDelete}
         uploading={docUploading}
         isAdmin={canWrite}
-        classroomId={classroomId}
+        departmentId={departmentId}
       />
     </div>
   )
@@ -598,7 +598,7 @@ function LocalizationCard({ anchor, panelId, testId, classroomId, onReload, canW
 
 // ── VR Panel Section (inline in test builder) ─────────────────────────────────
 
-function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePath, onReload, canWrite }) {
+function VRPanelSection({ vr, panelId, testId, departmentId, panelTitle, vrBasePath, onReload, canWrite }) {
   const navigate   = useNavigate()
   const mcqAnchors = vr?.mcq_anchors ?? []
   const wcAnchors  = vr?.word_completion_anchors ?? []
@@ -608,7 +608,7 @@ function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePa
   function openVREditor() {
     const base = vrBasePath ?? '/teacher/assignments'
     navigate(`${base}/${testId}/panels/${panelId}/vr`, {
-      state: { vr, panelTitle, classroomId },
+      state: { vr, panelTitle, departmentId },
     })
   }
 
@@ -631,9 +631,9 @@ function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePa
             <span className="tb-vr-section-title">Placed Anchors ({allCount})</span>
             <span className="tb-vr-section-hint">Edit content below — use the VR Scene Editor to add, move or delete anchors.</span>
           </div>
-          {mcqAnchors.map(a => <MCQAnchorCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} canWrite={canWrite} />)}
-          {wcAnchors.map(a => <WordCompletionCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} canWrite={canWrite} />)}
-          {locAnchors.map(a => <LocalizationCard key={a.id} anchor={a} panelId={panelId} testId={testId} classroomId={classroomId} onReload={onReload} canWrite={canWrite} />)}
+          {mcqAnchors.map(a => <MCQAnchorCard key={a.id} anchor={a} panelId={panelId} testId={testId} departmentId={departmentId} onReload={onReload} canWrite={canWrite} />)}
+          {wcAnchors.map(a => <WordCompletionCard key={a.id} anchor={a} panelId={panelId} testId={testId} departmentId={departmentId} onReload={onReload} canWrite={canWrite} />)}
+          {locAnchors.map(a => <LocalizationCard key={a.id} anchor={a} panelId={panelId} testId={testId} departmentId={departmentId} onReload={onReload} canWrite={canWrite} />)}
         </div>
       ) : (
         <div className="tb-anchor-empty">
@@ -650,7 +650,7 @@ function VRPanelSection({ vr, panelId, testId, classroomId, panelTitle, vrBasePa
 
 // ── Panel Section (main export) ───────────────────────────────────────────────
 
-export default function PanelSection({ panel, testId, classroomId, vrBasePath, index, expanded, onExpand, onReload }) {
+export default function PanelSection({ panel, testId, departmentId, vrBasePath, index, expanded, onExpand, onReload }) {
   const { user } = useAuth()
   const canWrite = user?.role === 'teacher' || user?.role === 'admin' || !!user?.is_staff
 
@@ -752,7 +752,7 @@ export default function PanelSection({ panel, testId, classroomId, vrBasePath, i
                     exercise={ex}
                     panelId={panel.id}
                     testId={testId}
-                    classroomId={classroomId}
+                    departmentId={departmentId}
                     index={i}
                     onUpdate={updateExerciseLocal}
                     onDelete={deleteExerciseLocal}
@@ -797,7 +797,7 @@ export default function PanelSection({ panel, testId, classroomId, vrBasePath, i
           )}
 
           {panel.type === 'vr_exercise' && (
-            <VRPanelSection vr={vr} panelId={panel.id} testId={testId} classroomId={classroomId} vrBasePath={vrBasePath} panelTitle={titleLocal} onReload={onReload} canWrite={canWrite} />
+            <VRPanelSection vr={vr} panelId={panel.id} testId={testId} departmentId={departmentId} vrBasePath={vrBasePath} panelTitle={titleLocal} onReload={onReload} canWrite={canWrite} />
           )}
 
           <DocumentSection
@@ -806,7 +806,7 @@ export default function PanelSection({ panel, testId, classroomId, vrBasePath, i
             onDelete={handlePanelDocDelete}
             uploading={panelDocUploading}
             isAdmin={canWrite}
-            classroomId={classroomId}
+            departmentId={departmentId}
           />
         </div>
       )}

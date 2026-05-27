@@ -11,13 +11,9 @@ function XIcon() {
   )
 }
 
-export default function LessonFormPanel({ mode, form, onChange, onClose, onSave, departments = [], difficulties, classes = [], organisations = [] }) {
+export default function LessonFormPanel({ mode, form, onChange, onClose, onSave, difficulties, departments = [], organisations = [] }) {
   const { user } = useAuth()
   const isSuperAdmin = user?.is_staff
-  const toggleDept = (id) => {
-    const prev = form.department_ids ?? []
-    onChange('department_ids', prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id])
-  }
 
   return (
     <>
@@ -39,29 +35,6 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
               onChange={e => onChange('title', e.target.value)}
             />
           </div>
-
-          {departments.length > 0 && (
-            <div className="form-row">
-              <label className="form-label">Departments</label>
-              <div className="form-check-list">
-                {departments.map(d => {
-                  const checked = (form.department_ids ?? []).includes(d.id)
-                  return (
-                    <label key={d.id} className={`form-check-item ${checked ? 'form-check-item--active' : ''}`} onClick={() => toggleDept(d.id)}>
-                      <span className={`form-check-box ${checked ? 'form-check-box--checked' : ''}`}>
-                        {checked && (
-                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12"/>
-                          </svg>
-                        )}
-                      </span>
-                      <span className="form-check-label">{d.name}</span>
-                    </label>
-                  )
-                })}
-              </div>
-            </div>
-          )}
 
           <div className="form-row-2col">
             <div className="form-row">
@@ -91,10 +64,10 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
               value={form.visibility}
               onChange={v => {
                 onChange('visibility', v)
-                if (v !== 'class') onChange('classroom', null)
+                if (v !== 'class') onChange('department', null)
               }}
               options={[
-                { value: 'class', label: 'Class only' },
+                { value: 'class', label: 'Department only' },
                 { value: 'public', label: 'Public' },
               ]}
             />
@@ -102,12 +75,12 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
 
           {form.visibility === 'class' && (
             <div className="form-row">
-              <label className="form-label">Class</label>
+              <label className="form-label">Department</label>
               <Dropdown
-                value={form.classroom ?? null}
-                onChange={v => onChange('classroom', v)}
-                placeholder="— Select a class —"
-                options={classes.map(c => ({ value: c.id, label: `${c.name}${c.code ? ` (${c.code})` : ''}` }))}
+                value={form.department ?? null}
+                onChange={v => onChange('department', v)}
+                placeholder="— Select a department —"
+                options={departments.map(c => ({ value: c.id, label: `${c.name}${c.code ? ` (${c.code})` : ''}` }))}
               />
             </div>
           )}
@@ -127,7 +100,7 @@ export default function LessonFormPanel({ mode, form, onChange, onClose, onSave,
 
         <div className="panel-footer">
           <button className="btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="btn-primary" onClick={onSave} disabled={!form.title.trim() || (form.visibility === 'class' && !form.classroom)}>
+          <button className="btn-primary" onClick={onSave} disabled={!form.title.trim() || (form.visibility === 'class' && !form.department)}>
             {mode === 'create' ? 'Create Lesson' : 'Save Changes'}
           </button>
         </div>

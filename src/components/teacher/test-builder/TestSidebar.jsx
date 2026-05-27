@@ -101,7 +101,7 @@ export default function TestSidebar({ tests, selectedId, onSelect, onNew, onDele
 
               {!confirming && (
                 <div className="tb-test-item-meta">
-                  <span>{t.class_name || 'No class'}</span>
+                  <span>{t.department_name || 'No department'}</span>
                   <span>{t.time_limit_minutes} min</span>
                 </div>
               )}

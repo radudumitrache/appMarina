@@ -40,13 +40,13 @@ export default function LessonsProgress({ lessons }) {
   const done  = lessons.filter(l => l.completed).length
   const total = lessons.length
 
-  // Group by classroom
+  // Group by department
   const classMap = new Map()
   for (const l of lessons) {
-    if (!classMap.has(l.classroom_id)) {
-      classMap.set(l.classroom_id, { name: l.classroom_name, lessons: [] })
+    if (!classMap.has(l.department_id)) {
+      classMap.set(l.department_id, { name: l.department_name, lessons: [] })
     }
-    classMap.get(l.classroom_id).lessons.push(l)
+    classMap.get(l.department_id).lessons.push(l)
   }
 
   return (

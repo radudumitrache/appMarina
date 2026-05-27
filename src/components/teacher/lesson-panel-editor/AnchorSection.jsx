@@ -247,7 +247,7 @@ function posToLonLat(x, y, z) {
 export default function AnchorSection({
   lessonId,
   panelId,
-  classroomId,
+  departmentId,
   panels = [],
   initialTextAnchors,
   initialNavAnchors,
@@ -915,7 +915,7 @@ export default function AnchorSection({
                       key={form.anchor?.id ?? 'new'}
                       value={aDesc}
                       onChange={setADesc}
-                      classroomId={classroomId}
+                      departmentId={departmentId}
                       placeholder="Description…"
                     />
                   </div>
@@ -926,7 +926,7 @@ export default function AnchorSection({
                       onDelete={handleAnchorDocDelete}
                       uploading={docUploading}
                       isAdmin={isAdmin}
-                      classroomId={classroomId}
+                      departmentId={departmentId}
                     />
                   )}
                 </>
@@ -956,7 +956,7 @@ export default function AnchorSection({
                       key={`nav-${form.anchor?.id ?? 'new'}`}
                       value={aDesc}
                       onChange={setADesc}
-                      classroomId={classroomId}
+                      departmentId={departmentId}
                       placeholder="Description…"
                     />
                   </div>
@@ -1011,7 +1011,7 @@ export default function AnchorSection({
                   key={polyForm.anchor?.id ?? 'new-poly'}
                   value={polyContent}
                   onChange={setPolyContent}
-                  classroomId={classroomId}
+                  departmentId={departmentId}
                   placeholder="Polygon region content…"
                 />
               </div>
@@ -1023,7 +1023,7 @@ export default function AnchorSection({
                   onDelete={handlePolyDocDelete}
                   uploading={polyDocUploading}
                   isAdmin={isAdmin}
-                  classroomId={classroomId}
+                  departmentId={departmentId}
                 />
               )}
 

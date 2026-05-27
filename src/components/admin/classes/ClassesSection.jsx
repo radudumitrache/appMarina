@@ -38,7 +38,7 @@ export default function ClassesSection({ title, classes, startIndex, loading, sk
             </div>
           ))
         ) : classes.length === 0 ? (
-          <p className="classes-section-empty">No {title.toLowerCase()} classes.</p>
+          <p className="classes-section-empty">No {title.toLowerCase()} departments.</p>
         ) : (
           classes.map((cls, i) => (
             <ClassCard

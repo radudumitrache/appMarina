@@ -56,7 +56,7 @@ export default function VRPanelEditor() {
   const navigate             = useNavigate()
   const { state }            = useLocation()
 
-  const classroomId = state?.classroomId ?? null
+  const departmentId = state?.departmentId ?? null
 
   const [vr,            setVR]            = useState(state?.vr ?? null)
   const [panelTitle,    setPanelTitle]    = useState(state?.panelTitle ?? '')
@@ -354,7 +354,7 @@ export default function VRPanelEditor() {
           locStep={locStep}
           pendingLocPoints={pendingLocPoints}
           saving={saving}
-          classroomId={classroomId}
+          departmentId={departmentId}
           onSetPlacing={handleSetPlacing}
           onSetLocStep={setLocStep}
           onCancel={cancelPlacement}
@@ -374,7 +374,7 @@ export default function VRPanelEditor() {
           selectedAnchor={selectedAnchor}
           moving={moving}
           saving={saving}
-          classroomId={classroomId}
+          departmentId={departmentId}
           testId={testId}
           panelId={panelId}
           onOpenEdit={openEdit}
@@ -390,7 +390,7 @@ export default function VRPanelEditor() {
           initialMode="image"
           imageOnly
           vrScene
-          classroomId={classroomId}
+          departmentId={departmentId}
           onInsert={handleSceneSelect}
           onClose={() => setSceneModal(false)}
         />

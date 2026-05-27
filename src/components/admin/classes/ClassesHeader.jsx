@@ -4,8 +4,8 @@ export default function ClassesHeader({ filteredCount, search, onSearchChange, s
   return (
     <div className="classes-adm-header">
       <div className="classes-adm-header-left">
-        <h1 className="classes-adm-title">Classes</h1>
-        <span className="classes-adm-count">{filteredCount} classes</span>
+        <h1 className="classes-adm-title">Departments</h1>
+        <span className="classes-adm-count">{filteredCount} departments</span>
       </div>
       <div className="classes-adm-header-right">
         <div className="search-wrap-inline">
@@ -16,7 +16,7 @@ export default function ClassesHeader({ filteredCount, search, onSearchChange, s
           <input
             className="search-input-inline"
             type="text"
-            placeholder="Search classes or teachers…"
+            placeholder="Search departments or teachers…"
             value={search}
             onChange={e => onSearchChange(e.target.value)}
           />
@@ -41,7 +41,7 @@ export default function ClassesHeader({ filteredCount, search, onSearchChange, s
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          New Class
+          New Department
         </button>
       </div>
     </div>

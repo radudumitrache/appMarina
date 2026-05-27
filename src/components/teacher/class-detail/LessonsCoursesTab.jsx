@@ -1,17 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { getCourses, getCourse, createCourse, deleteCourse, updateCourse, removeCourseLesson } from '../../../api/lessons'
-import { unassignLesson, getDiplomas, awardDiploma, revokeDiploma, getClassCourseProgress } from '../../../api/classes'
+import { unassignLesson, getDiplomas, awardDiploma, revokeDiploma, getClassCourseProgress } from '../../../api/departments'
 import CourseLessonModal from './CourseLessonModal'
 import '../../css/teacher/class-detail/LessonsCoursesTab.css'
 
 function initials(name) {
   return (name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-}
-
-function lessonCat(l) {
-  if (l.department_ids?.length) return `${l.department_ids.length} dept${l.department_ids.length !== 1 ? 's' : ''}`
-  return null
 }
 
 // ── Quick diploma award modal ─────────────────────────────────────────────────
@@ -184,7 +179,7 @@ function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
 
 // ── Main tab ──────────────────────────────────────────────────────────────────
 
-export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, onClassLessonUpdate }) {
+export default function LessonsCoursesTab({ departmentId, classLessons, onNewLesson, onClassLessonUpdate }) {
   const [courses, setCourses]               = useState([])
   const [courseLessons, setCourseLessons]   = useState({})
   const [loadingCourses, setLoadingCourses] = useState(true)
@@ -224,7 +219,7 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
     if (!progressData[courseId] && !progressLoading.has(courseId)) {
       setProgressLoading(prev => new Set([...prev, courseId]))
       try {
-        const { data } = await getClassCourseProgress(classId, courseId)
+        const { data } = await getClassCourseProgress(departmentId, courseId)
         setProgressData(prev => ({ ...prev, [courseId]: data }))
       } catch {
       } finally {
@@ -233,7 +228,7 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
     }
     if (!diplomasLoaded) {
       try {
-        const { data } = await getDiplomas(classId)
+        const { data } = await getDiplomas(departmentId)
         setDiplomas(data)
       } catch {
       } finally {
@@ -251,7 +246,7 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
 
   useEffect(() => {
     getCourses().then(res => {
-      const list = res.data.filter(c => c.classroom_id === classId || c.classroom_id === Number(classId))
+      const list = res.data.filter(c => c.department_id === departmentId || c.department_id === Number(departmentId))
       setCourses(list)
       setLoadingCourses(false)
       list.forEach(c => {
@@ -274,7 +269,7 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
     if (!newTitle.trim()) return
     setSavingCourse(true)
     try {
-      const { data } = await createCourse({ title: newTitle.trim(), description: '', status: 'draft', classroom_id: classId })
+      const { data } = await createCourse({ title: newTitle.trim(), description: '', status: 'draft', department_id: departmentId })
       setCourses(prev => [data, ...prev])
       setCreatingCourse(false)
       setNewTitle('')
@@ -292,7 +287,7 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
 
   const handleRemoveClassLesson = async (lessonId) => {
     setRemovingLesson(lessonId)
-    try { await unassignLesson(classId, lessonId) } finally {
+    try { await unassignLesson(departmentId, lessonId) } finally {
       setRemovingLesson(null)
       setConfirmClassLesson(null)
     }
@@ -493,24 +488,22 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
       <div className="lct-divider" />
 
       <div className="lct-section-hd">
-        <span className="lct-section-label">Class Lessons</span>
+        <span className="lct-section-label">Department Lessons</span>
       </div>
 
       {classLessons.length === 0 ? (
-        <p className="lct-empty">No lessons assigned to this class yet.</p>
+        <p className="lct-empty">No lessons assigned to this department yet.</p>
       ) : (
         classLessons.map(l => {
           const isConf = confirmClassLesson === l.id
           const isBusy = removingLesson === l.id
           const pct    = l.total > 0 ? Math.round((l.completed / l.total) * 100) : 0
           const isDone = l.total > 0 && l.completed === l.total
-          const cat    = lessonCat(l)
 
           return (
             <div key={l.id} className="lct-lesson-row">
               <span className="lct-lesson-num">{l.num}</span>
               <span className="lct-lesson-title">{l.title}</span>
-              {cat && <span className="lct-cat-tag">{cat}</span>}
               <span className="lct-dur">{l.duration}</span>
 
               <div className="lct-mini-progress">
@@ -532,7 +525,7 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
                     </button>
                   </div>
                 ) : (
-                  <button className="lct-icon-btn" onClick={() => setConfirmClassLesson(l.id)} title="Remove from class">
+                  <button className="lct-icon-btn" onClick={() => setConfirmClassLesson(l.id)} title="Remove from department">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="3 6 5 6 21 6"/>
                       <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -564,7 +557,7 @@ export default function LessonsCoursesTab({ classId, classLessons, onNewLesson, 
 
     {awardTarget && (
       <QuickAwardModal
-        classId={classId}
+        classId={departmentId}
         student={awardTarget}
         diplomas={diplomas}
         onClose={() => setAwardTarget(null)}

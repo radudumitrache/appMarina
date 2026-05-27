@@ -41,7 +41,7 @@ export default function ClassSidebar({ classes, selectedId, onSelect, onJoin }) 
   return (
     <aside className="cls-sidebar">
       <div className="cls-sidebar-head">
-        <span className="cls-sidebar-label">My Classes</span>
+        <span className="cls-sidebar-label">My Departments</span>
         <span className="cls-sidebar-count">{classes.length}</span>
       </div>
 
@@ -68,7 +68,7 @@ export default function ClassSidebar({ classes, selectedId, onSelect, onJoin }) 
               ref={inputRef}
               className={`cls-join-input${joinError ? ' cls-join-input--error' : ''}`}
               type="text"
-              placeholder="Class code"
+              placeholder="Department code"
               value={joinCode}
               onChange={e => { setJoinCode(e.target.value.toUpperCase()); setJoinError(null) }}
               autoComplete="off"
@@ -90,7 +90,7 @@ export default function ClassSidebar({ classes, selectedId, onSelect, onJoin }) 
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5"  y1="12" x2="19" y2="12"/>
             </svg>
-            Join another class
+            Join another department
           </button>
         )}
       </div>

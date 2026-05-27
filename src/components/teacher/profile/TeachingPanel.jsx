@@ -49,7 +49,7 @@ export default function TeachingPanel({ profile, stats = {} }) {
         <div className="tp-snapshot-sep" />
         <div className="tp-snapshot-item">
           <span className="tp-snapshot-value">{stats.activeClasses ?? '—'}</span>
-          <span className="tp-snapshot-label">Active classes</span>
+          <span className="tp-snapshot-label">Active departments</span>
         </div>
       </div>
 

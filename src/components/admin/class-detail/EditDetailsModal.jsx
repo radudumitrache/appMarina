@@ -14,7 +14,7 @@ export default function EditDetailsModal({ editForm, onChange, onClose, onSave, 
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Edit Class Details</h3>
+          <h3 className="modal-title">Edit Department Details</h3>
           <button className="modal-close" onClick={onClose}>
             <XIcon size={15} />
           </button>
@@ -22,7 +22,7 @@ export default function EditDetailsModal({ editForm, onChange, onClose, onSave, 
         <div className="modal-body">
           <div className="form-2col">
             <div className="form-row">
-              <label className="form-label">Class Name</label>
+              <label className="form-label">Department Name</label>
               <input
                 className="form-input"
                 type="text"
@@ -31,7 +31,7 @@ export default function EditDetailsModal({ editForm, onChange, onClose, onSave, 
               />
             </div>
             <div className="form-row">
-              <label className="form-label">Class Code</label>
+              <label className="form-label">Department Code</label>
               <input
                 className="form-input"
                 type="text"

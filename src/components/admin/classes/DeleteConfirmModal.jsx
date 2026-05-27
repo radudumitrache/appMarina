@@ -14,7 +14,7 @@ export default function DeleteConfirmModal({ target, onClose, onConfirm }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal--sm" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Delete Class</h3>
+          <h3 className="modal-title">Delete Department</h3>
           <button className="modal-close" onClick={onClose}><XIcon /></button>
         </div>
         <div className="modal-body">
@@ -26,7 +26,7 @@ export default function DeleteConfirmModal({ target, onClose, onConfirm }) {
         </div>
         <div className="modal-footer">
           <button className="btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="btn-danger" onClick={onConfirm}>Delete Class</button>
+          <button className="btn-danger" onClick={onConfirm}>Delete Department</button>
         </div>
       </div>
     </div>

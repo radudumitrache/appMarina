@@ -9,7 +9,7 @@ import PersonalInfoPanel   from '../../components/teacher/profile/PersonalInfoPa
 import SecurityPanel       from '../../components/teacher/profile/SecurityPanel'
 import { getMe, updateMe } from '../../api/users'
 import { changePassword }  from '../../api/auth'
-import { getClasses }      from '../../api/classes'
+import { getDepartments } from '../../api/departments'
 import { getLessons }      from '../../api/lessons'
 import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/Profile.css'
@@ -53,7 +53,7 @@ export default function Profile() {
   const [activeTab, setTab]   = useState('personal')
 
   useEffect(() => {
-    Promise.all([getMe(), getClasses(), getLessons()])
+    Promise.all([getMe(), getDepartments(), getLessons()])
       .then(([meRes, clsRes, lesRes]) => {
         setProfile(mapProfile(meRes.data))
         const classes = clsRes.data

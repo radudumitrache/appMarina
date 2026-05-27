@@ -5,7 +5,7 @@ import CourseSidebar   from '../../components/teacher/course-builder/CourseSideb
 import CourseEditor    from '../../components/teacher/course-builder/CourseEditor'
 import LessonsManager  from '../../components/teacher/course-builder/LessonsManager'
 import { useCourseBuilder } from './useCourseBuilder'
-import { getClasses } from '../../api/classes'
+import { getDepartments } from '../../api/departments'
 import '../css/teacher/CourseBuilder.css'
 
 export default function CourseBuilder() {
@@ -16,11 +16,11 @@ export default function CourseBuilder() {
   const [newClassId,  setNewClassId]  = useState('')
   const [creating,    setCreating]    = useState(false)
   const [createErr,   setCreateErr]   = useState(null)
-  const [classes,     setClasses]     = useState([])
+  const [departments, setDepartments] = useState([])
   const titleRef = useRef(null)
 
   useEffect(() => {
-    getClasses().then(r => setClasses(r.data)).catch(() => {})
+    getDepartments().then(r => setDepartments(r.data)).catch(() => {})
   }, [])
 
   const {
@@ -32,7 +32,6 @@ export default function CourseBuilder() {
     saving, loadingDetail,
     selected, selectedLessons,
     visible, bankFiltered, lessonBank, courseLessonsMap, lessonCourseMap,
-    departments,
     activeTab, setActiveTab,
     handleNewCourse,
     handleTitleChange, handleDescChange, handleClassroomChange, handleToggleStatus, handleDeleteCourse,
@@ -56,7 +55,7 @@ export default function CourseBuilder() {
     setNewTitle('')
     setNewDesc('')
     setNewStatus('draft')
-    setNewClassId(classes[0]?.id ?? null)
+    setNewClassId(departments[0]?.id ?? null)
     setCreateErr(null)
     setShowCreate(true)
     setTimeout(() => titleRef.current?.focus(), 40)
@@ -65,11 +64,11 @@ export default function CourseBuilder() {
   async function handleCreate(e) {
     e.preventDefault()
     if (!newTitle.trim()) { setCreateErr('Title is required.'); return }
-    if (!newClassId) { setCreateErr('Please select a class.'); return }
+    if (!newClassId) { setCreateErr('Please select a department.'); return }
     setCreating(true)
     setCreateErr(null)
     try {
-      await handleNewCourse({ title: newTitle, description: newDesc, status: newStatus, classroom_id: newClassId })
+      await handleNewCourse({ title: newTitle, description: newDesc, status: newStatus, department_id: newClassId })
       setShowCreate(false)
     } catch {
       setCreateErr('Could not create course. Please try again.')
@@ -99,7 +98,7 @@ export default function CourseBuilder() {
               lessonBankCount={lessonBank.length}
               onShowAllLessons={switchToAllLessons}
               showingAllLessons={activeTab === 'lessons'}
-              classes={classes}
+              classes={departments}
             />
 
             {activeTab === 'courses' ? (
@@ -115,8 +114,7 @@ export default function CourseBuilder() {
                   bankSearch={bankSearch}
                   setBankSearch={setBankSearch}
                   lessonBankCount={lessonBank.length}
-                  classes={classes}
-                  departments={departments}
+                  classes={departments}
                   onTitleChange={handleTitleChange}
                   onDescChange={handleDescChange}
                   onClassroomChange={handleClassroomChange}
@@ -140,7 +138,6 @@ export default function CourseBuilder() {
               <LessonsManager
                 lessonBank={lessonBank}
                 lessonCourseMap={lessonCourseMap}
-                departments={departments}
                 saving={saving}
                 // onCreateLesson={handleCreateLesson}
                 onUpdateLesson={handleUpdateLesson}
@@ -165,12 +162,12 @@ export default function CourseBuilder() {
 
             <form className="cb-create-form" onSubmit={handleCreate}>
               <div className="cb-create-field">
-                <label className="cb-create-label">Class <span className="cb-create-required">*</span></label>
+                <label className="cb-create-label">Department <span className="cb-create-required">*</span></label>
                 <Dropdown
                   value={newClassId}
                   onChange={v => setNewClassId(v)}
-                  placeholder="— select a class —"
-                  options={classes.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}
+                  placeholder="— select a department —"
+                  options={departments.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}
                 />
               </div>
               <div className="cb-create-field">

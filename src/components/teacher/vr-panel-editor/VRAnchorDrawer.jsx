@@ -22,7 +22,7 @@ const DELETE_ICON = (
 
 export default function VRAnchorDrawer({
   mcqAnchors, wcAnchors, locAnchors, allCount,
-  selectedAnchor, moving, saving, classroomId, testId, panelId,
+  selectedAnchor, moving, saving, departmentId, testId, panelId,
   onOpenEdit, onCloseEdit, onSaveEdit, onDeleteAnchor, onSetMoving,
 }) {
   const [drawerWidth,  setDrawerWidth]  = useState(300)
@@ -114,7 +114,7 @@ export default function VRAnchorDrawer({
           <QuestionHtmlEditor
             key={selectedAnchor.data.id}
             value={selectedAnchor.data.text || ''}
-            classroomId={classroomId}
+            departmentId={departmentId}
             onBlur={html => setEditForm(f => ({ ...f, text: html }))}
             placeholder="Question / prompt text…"
           />
@@ -168,7 +168,7 @@ export default function VRAnchorDrawer({
             onDelete={handleDocDelete}
             uploading={docUploading}
             isAdmin
-            classroomId={classroomId}
+            departmentId={departmentId}
           />
 
           <div className="vrpe-edit-actions">

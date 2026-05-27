@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import DiplomasTab from '../class-detail/DiplomasTab'
-import { getCourseDiplomas, getClassStudents, getClassCourseProgress } from '../../../api/classes'
+import { getCourseDiplomas, getClassStudents, getClassCourseProgress } from '../../../api/departments'
 import { getCourses } from '../../../api/lessons'
 
-export default function CourseDiplomasSection({ courseId, classroomId, composing, onComposeDone }) {
+export default function CourseDiplomasSection({ courseId, departmentId, composing, onComposeDone }) {
   const [diplomas,           setDiplomas]           = useState([])
   const [students,           setStudents]           = useState([])
   const [courses,            setCourses]            = useState([])
@@ -14,9 +14,9 @@ export default function CourseDiplomasSection({ courseId, classroomId, composing
     if (!courseId) return
     setLoading(true)
     const reqs = [getCourseDiplomas(courseId)]
-    if (classroomId) {
-      reqs.push(getClassStudents(classroomId))
-      reqs.push(getClassCourseProgress(classroomId, courseId))
+    if (departmentId) {
+      reqs.push(getClassStudents(departmentId))
+      reqs.push(getClassCourseProgress(departmentId, courseId))
     }
     Promise.all(reqs).then(([dipRes, stuRes, progRes]) => {
       setDiplomas(dipRes.data)
@@ -38,20 +38,20 @@ export default function CourseDiplomasSection({ courseId, classroomId, composing
         setCompletedStudentIds(finished)
       }
     }).catch(() => {}).finally(() => setLoading(false))
-  }, [courseId, classroomId])
+  }, [courseId, departmentId])
 
   useEffect(() => {
-    if (!classroomId) return
+    if (!departmentId) return
     getCourses().then(res => {
       setCourses(
         res.data
-          .filter(c => c.classroom_id === classroomId)
+          .filter(c => c.department_id === departmentId)
           .map(c => ({ id: c.id, title: c.title }))
       )
     }).catch(() => {})
-  }, [classroomId])
+  }, [departmentId])
 
-  if (!classroomId) {
+  if (!departmentId) {
     return (
       <div className="cb-diplomas-no-class">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
@@ -70,7 +70,7 @@ export default function CourseDiplomasSection({ courseId, classroomId, composing
   return (
     <DiplomasTab
       courseId={courseId}
-      classId={classroomId}
+      classId={departmentId}
       diplomas={diplomas}
       students={students}
       courses={courses}

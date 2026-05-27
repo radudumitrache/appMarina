@@ -41,13 +41,13 @@ export default function LessonPanelEditor() {
     handleQuickDeleteAnchor,
   } = usePanelEditor(id, state?.lesson)
 
-  // Prefer classroomId from router state; fall back to the lesson's own classroom_id
-  // (covers navigation paths that don't pass classroomId in state, e.g. admin view)
-  const classroomId   = state?.classroomId   ?? lesson?.classroom_id   ?? null
-  const classroomName = state?.classroomName ?? lesson?.classroom_name ?? null
-  const classroomCode = state?.classroomCode ?? lesson?.classroom_code ?? null
-  const classroomLabel = classroomName
-    ? (classroomCode ? `${classroomName} (${classroomCode})` : classroomName)
+  // Prefer departmentId from router state; fall back to the lesson's own department_id
+  // (covers navigation paths that don't pass departmentId in state, e.g. admin view)
+  const departmentId    = state?.departmentId    ?? lesson?.department_id    ?? null
+  const departmentName  = state?.departmentName  ?? lesson?.department_name  ?? null
+  const departmentCode  = state?.departmentCode  ?? lesson?.department_code  ?? null
+  const departmentLabel = departmentName
+    ? (departmentCode ? `${departmentName} (${departmentCode})` : departmentName)
     : null
 
   const [navConfirm,       setNavConfirm]       = useState(null) // { idx, label, targetLon, targetLat }
@@ -217,8 +217,8 @@ export default function LessonPanelEditor() {
           onClose={handleCloseDrawer}
           saving={saving}
           lessonId={id}
-          classroomId={classroomId}
-          classroomLabel={classroomLabel}
+          departmentId={departmentId}
+          departmentLabel={departmentLabel}
           panels={panels}
           onAnchorsChange={handleAnchorsChange}
           focusAnchor={focusAnchor}

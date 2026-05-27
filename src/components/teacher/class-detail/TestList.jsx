@@ -63,7 +63,7 @@ export default function TestList({ tests }) {
                   onClick={e => {
                     e.stopPropagation()
                     navigate(`/teacher/tests/${t.id}/submissions`, {
-                      state: { backPath: `/teacher/classes/${classId}`, testTitle: t.title },
+                      state: { backPath: `/teacher/departments/${classId}`, testTitle: t.title },
                     })
                   }}
                 >

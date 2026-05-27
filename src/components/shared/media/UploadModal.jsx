@@ -51,7 +51,7 @@ export default function UploadModal({ uploadableFolders, existingFiles = [], onC
         filename,
         content_type: file.type,
         folder:       selectedFolder.folder,
-        classroom_id: selectedFolder.classroomId ?? null,
+        department_id: selectedFolder.departmentId ?? null,
       })
 
       setProgress('uploading')
@@ -60,13 +60,13 @@ export default function UploadModal({ uploadableFolders, existingFiles = [], onC
 
       setProgress('confirming')
       const { data: mediaFile } = await confirmUpload({
-        gcs_path:     urlData.gcs_path,
+        gcs_path:      urlData.gcs_path,
         filename,
-        file_type:    file.type.startsWith('image/') ? 'image' : 'video',
-        mime_type:    file.type,
-        size_bytes:   file.size,
-        folder:       selectedFolder.folder,
-        classroom_id: selectedFolder.classroomId ?? null,
+        file_type:     file.type.startsWith('image/') ? 'image' : 'video',
+        mime_type:     file.type,
+        size_bytes:    file.size,
+        folder:        selectedFolder.folder,
+        department_id: selectedFolder.departmentId ?? null,
       })
 
       onUploaded(mediaFile)
@@ -80,8 +80,8 @@ export default function UploadModal({ uploadableFolders, existingFiles = [], onC
     if (!file || !selectedFolder) return
 
     const folderFiles = existingFiles.filter(f =>
-      selectedFolder.classroomId
-        ? f.classroom === selectedFolder.classroomId
+      selectedFolder.departmentId
+        ? f.department === selectedFolder.departmentId
         : f.folder === selectedFolder.folder
     )
     const existingNames = new Set(folderFiles.map(f => f.name))

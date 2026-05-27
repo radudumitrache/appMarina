@@ -9,7 +9,6 @@ const TYPE_LABELS = { vr_tour: 'VR Tour', text: 'Text' }
 export default function LessonsManager({
   lessonBank,
   lessonCourseMap,
-  departments = [],
   saving,
   onCreateLesson,
   onUpdateLesson,
@@ -19,18 +18,13 @@ export default function LessonsManager({
 }) {
   const navigate = useNavigate()
   const [search,         setSearch]         = useState('')
-  const [deptFilter,     setDeptFilter]     = useState('')
   const [editLesson,     setEditLesson]     = useState(null)
   const [confirmDelete,  setConfirmDelete]  = useState(null)
   const [deleteLoading,  setDeleteLoading]  = useState(false)
 
-  const deptName = id => departments.find(d => d.id === id)?.name ?? id
-
   const filtered = lessonBank.filter(l => {
     const q = search.toLowerCase().trim()
-    const matchSearch = !q || l.title.toLowerCase().includes(q)
-    const matchDept   = !deptFilter || (l.department_ids ?? []).includes(Number(deptFilter))
-    return matchSearch && matchDept
+    return !q || l.title.toLowerCase().includes(q)
   })
 
   async function handleSave(data) {
@@ -79,24 +73,6 @@ export default function LessonsManager({
           />
         </div>
 
-        <div className="lm-cat-filters">
-          <button
-            className={`lm-cat-btn ${deptFilter === '' ? 'lm-cat-btn--active' : ''}`}
-            onClick={() => setDeptFilter('')}
-          >
-            All
-          </button>
-          {departments.map(d => (
-            <button
-              key={d.id}
-              className={`lm-cat-btn ${deptFilter === String(d.id) ? 'lm-cat-btn--active' : ''}`}
-              onClick={() => setDeptFilter(String(d.id))}
-            >
-              {d.name}
-            </button>
-          ))}
-        </div>
-
         <span className="lm-count">{filtered.length} lesson{filtered.length !== 1 ? 's' : ''}</span>
       </div>
 
@@ -115,7 +91,6 @@ export default function LessonsManager({
             <thead>
               <tr className="lm-thead-row">
                 <th className="lm-th lm-th--title">Lesson</th>
-                <th className="lm-th lm-th--cat">Departments</th>
                 <th className="lm-th lm-th--type">Type</th>
                 <th className="lm-th lm-th--dur">Duration</th>
                 <th className="lm-th lm-th--courses">In Courses</th>
@@ -135,17 +110,6 @@ export default function LessonsManager({
                       <span className="lm-lesson-title">{lesson.title}</span>
                       {lesson.description && (
                         <span className="lm-lesson-desc">{lesson.description}</span>
-                      )}
-                    </td>
-                    <td className="lm-td">
-                      {(lesson.department_ids ?? []).length > 0 ? (
-                        <div className="lm-dept-tags">
-                          {(lesson.department_ids ?? []).map(id => (
-                            <span key={id} className="cb-dept-tag">{deptName(id)}</span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="lm-no-value">—</span>
                       )}
                     </td>
                     <td className="lm-td">
@@ -234,7 +198,6 @@ export default function LessonsManager({
       {editLesson !== null && (
         <LessonEditModal
           lesson={editLesson?.id ? editLesson : null}
-          departments={departments}
           onSave={handleSave}
           onClose={() => setEditLesson(null)}
         />

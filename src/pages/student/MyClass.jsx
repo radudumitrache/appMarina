@@ -9,9 +9,9 @@ import JoinClassCard      from '../../components/student/my-class/JoinClassCard'
 import ClassSidebar       from '../../components/student/my-class/ClassSidebar'
 import ClassStatCards     from '../../components/student/my-class/ClassStatCards'
 import {
-  getClasses, getClassStudents, getClassLessons,
+  getDepartments, getClassStudents, getClassLessons,
   getClassAssignments, getAnnouncements, joinClass,
-} from '../../api/classes'
+} from '../../api/departments'
 import '../css/student/MyClass.css'
 
 function initials(name) {
@@ -22,7 +22,7 @@ export default function MyClass() {
   const navigate = useNavigate()
   const { user } = useAuth()
 
-  const [classes,       setClasses]       = useState([])
+  const [departments,   setDepartments]   = useState([])
   const [selectedId,    setSelectedId]    = useState(null)
   const [enrollments,   setEnrollments]   = useState([])
   const [lessons,       setLessons]       = useState([])
@@ -43,8 +43,8 @@ export default function MyClass() {
   async function loadClasses() {
     setLoading(true)
     try {
-      const { data } = await getClasses()
-      setClasses(data)
+      const { data } = await getDepartments()
+      setDepartments(data)
       if (data.length > 0) setSelectedId(data[0].id)
     } catch {
     } finally {
@@ -52,14 +52,14 @@ export default function MyClass() {
     }
   }
 
-  async function loadClassDetail(classId) {
+  async function loadClassDetail(departmentId) {
     setDetailLoading(true)
     try {
       const [enrollRes, lessonRes, assignRes, announceRes] = await Promise.all([
-        getClassStudents(classId),
-        getClassLessons(classId),
-        getClassAssignments(classId),
-        getAnnouncements(classId),
+        getClassStudents(departmentId),
+        getClassLessons(departmentId),
+        getClassAssignments(departmentId),
+        getAnnouncements(departmentId),
       ])
       setEnrollments(enrollRes.data)
       setLessons(lessonRes.data)
@@ -79,8 +79,8 @@ export default function MyClass() {
     setJoinError(null)
     try {
       await joinClass(joinCode.trim())
-      const { data } = await getClasses()
-      setClasses(data)
+      const { data } = await getDepartments()
+      setDepartments(data)
       setSelectedId(data[0]?.id ?? null)
       setJoinCode('')
     } catch (err) {
@@ -94,9 +94,9 @@ export default function MyClass() {
   // Called by ClassSidebar — throws on error so the sidebar can show it
   async function handleSidebarJoin(code) {
     await joinClass(code)
-    const { data: updated } = await getClasses()
-    const newClass = updated.find(c => !classes.some(old => old.id === c.id))
-    setClasses(updated)
+    const { data: updated } = await getDepartments()
+    const newClass = updated.find(c => !departments.some(old => old.id === c.id))
+    setDepartments(updated)
     setSelectedId(newClass ? newClass.id : updated[0]?.id ?? null)
   }
 
@@ -109,7 +109,7 @@ export default function MyClass() {
     )
   }
 
-  if (classes.length === 0) {
+  if (departments.length === 0) {
     return (
       <div className="myclass-page">
         <NavBar />
@@ -126,7 +126,7 @@ export default function MyClass() {
   }
 
   // ── Enrolled in at least one class ────────────────────────────────────────
-  const classroom = classes.find(c => c.id === selectedId) ?? classes[0]
+  const classroom = departments.find(c => c.id === selectedId) ?? departments[0]
 
   const classmates = enrollments
     .map(e => ({
@@ -170,12 +170,12 @@ export default function MyClass() {
     {
       label: 'Classmates',
       value: String(Math.max(0, classroom.student_count - 1)),
-      sub:   'in your class',
+      sub:   'in your department',
     },
     {
       label: 'Lessons Assigned',
       value: String(lessons.length),
-      sub:   me ? `${me.lessonsComplete} of ${me.totalLessons} complete` : 'in your class',
+      sub:   me ? `${me.lessonsComplete} of ${me.totalLessons} complete` : 'in your department',
     },
     {
       label: 'Tests Assigned',
@@ -196,7 +196,7 @@ export default function MyClass() {
 
       <div className="myclass-body">
         <ClassSidebar
-          classes={classes}
+          classes={departments}
           selectedId={selectedId}
           onSelect={setSelectedId}
           onJoin={handleSidebarJoin}

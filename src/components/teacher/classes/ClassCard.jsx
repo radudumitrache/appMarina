@@ -43,9 +43,9 @@ export default function ClassCard({ cls, index, onView, onDelete }) {
 
       <div className="class-card-actions">
         <button className="class-btn-view" onClick={() => onView?.(cls)}>
-          View Class
+          View Department
         </button>
-        <button className="class-btn-delete" onClick={() => onDelete?.(cls)} title="Delete class">
+        <button className="class-btn-delete" onClick={() => onDelete?.(cls)} title="Delete department">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>

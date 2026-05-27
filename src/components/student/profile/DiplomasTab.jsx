@@ -95,8 +95,8 @@ function CertificatePreview({ diploma, studentName, onClose }) {
           {/* Footer */}
           <div className="sdip-footer">
             <div className="sdip-footer-col">
-              <span className="sdip-footer-label">Class</span>
-              <span className="sdip-footer-value">{diploma.classroom_name}</span>
+              <span className="sdip-footer-label">Department</span>
+              <span className="sdip-footer-value">{diploma.department_name}</span>
             </div>
             <div className="sdip-footer-col">
               <span className="sdip-footer-label">Issued</span>
@@ -139,7 +139,7 @@ export default function DiplomasTab({ diplomas, studentName }) {
               </div>
               <div className="sdip-card-body">
                 <span className="sdip-card-title">{d.title}</span>
-                <span className="sdip-card-class">{d.classroom_name}</span>
+                <span className="sdip-card-class">{d.department_name}</span>
                 <span className="sdip-card-date">{formatDate(d.issued_at)}</span>
               </div>
               <div className="sdip-card-arrow">

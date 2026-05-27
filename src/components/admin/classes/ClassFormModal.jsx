@@ -26,7 +26,7 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">{mode === 'create' ? 'New Class' : 'Edit Class'}</h3>
+          <h3 className="modal-title">{mode === 'create' ? 'New Department' : 'Edit Department'}</h3>
           <button className="modal-close" onClick={onClose}><XIcon /></button>
         </div>
         <div className="modal-body modal-body--scroll">
@@ -37,7 +37,7 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
 
           <div className="form-2col">
             <div className="form-row">
-              <label className="form-label">Class Name</label>
+              <label className="form-label">Department Name</label>
               <input
                 className={`form-input${err('name') ? ' form-input--error' : ''}`}
                 type="text"
@@ -48,7 +48,7 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
               {err('name')}
             </div>
             <div className="form-row">
-              <label className="form-label">Class Code</label>
+              <label className="form-label">Department Code</label>
               <div className="form-input-with-btn">
                 <input
                   className={`form-input${err('code') ? ' form-input--error' : ''}`}
@@ -141,7 +141,7 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
         <div className="modal-footer">
           <button className="btn-ghost" onClick={onClose}>Cancel</button>
           <button className="btn-primary" onClick={onSave}>
-            {mode === 'create' ? 'Create Class' : 'Save Changes'}
+            {mode === 'create' ? 'Create Department' : 'Save Changes'}
           </button>
         </div>
       </div>

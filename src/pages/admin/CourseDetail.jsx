@@ -6,8 +6,8 @@ import { getCourse, getCourses, getLessons, addCourseLesson, removeCourseLesson,
 import {
   getCourseDiplomas, createCourseDiploma, updateCourseDiploma,
   deleteCourseDiploma, awardCourseDiploma, revokeCourseDiploma,
-} from '../../api/classes'
-import { getClassStudents } from '../../api/classes'
+  getClassStudents,
+} from '../../api/departments'
 import { getUsers } from '../../api/admin'
 import '../css/admin/CourseDetail.css'
 
@@ -306,10 +306,10 @@ export default function CourseDetail() {
         setDiplomas(dRes.data)
         setAllLessons(lRes.data)
 
-        // Load students: from classroom enrollment if classroom-tied, else all students
-        const classroomId = courseData.classroom_id
-        if (classroomId) {
-          return getClassStudents(classroomId).then(sRes => {
+        // Load students: from department enrollment if department-tied, else all students
+        const departmentId = courseData.department_id
+        if (departmentId) {
+          return getClassStudents(departmentId).then(sRes => {
             setStudents(sRes.data.map(e => ({
               id: e.student,
               name: e.student_name,
@@ -432,15 +432,15 @@ export default function CourseDetail() {
   const availableLessons = allLessons.filter(l => {
     if (courseLessonIds.includes(l.id)) return false
     const isPublic   = l.visibility === 'public'
-    const isForClass = course?.classroom_id && l.classroom_id === course.classroom_id
+    const isForClass = course?.department_id && l.department_id === course.department_id
     return isPublic || isForClass
   })
   const filteredLessons = q
     ? availableLessons.filter(l => (l.title || '').toLowerCase().includes(q))
     : availableLessons
 
-  // Group: class-specific lessons first, then public
-  const classSpecificLessons = filteredLessons.filter(l => l.classroom_id === course?.classroom_id)
+  // Group: department-specific lessons first, then public
+  const classSpecificLessons = filteredLessons.filter(l => l.department_id === course?.department_id)
   const publicLessons        = filteredLessons.filter(l => l.visibility === 'public')
 
   const handleAddLesson = async lesson => {
@@ -525,10 +525,10 @@ export default function CourseDetail() {
         <div className="crd-topbar-center">
           <h1 className="crd-course-title">{course.title}</h1>
           <StatusBadge status={course.status} />
-          {course.classroom_name && (
-            <span className="crd-course-class">{course.classroom_name}</span>
+          {course.department_name && (
+            <span className="crd-course-class">{course.department_name}</span>
           )}
-          {course.organisation_name && !course.classroom_name && (
+          {course.organisation_name && !course.department_name && (
             <span className="crd-course-org">{course.organisation_name}</span>
           )}
         </div>
@@ -572,12 +572,12 @@ export default function CourseDetail() {
                             <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
                             <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
                           </svg>
-                          Class lessons
+                          Department lessons
                         </div>
                         {classSpecificLessons.slice(0, 6).map(l => (
                           <button key={l.id} className="crd-lesson-option" onMouseDown={() => handleAddLesson(l)}>
                             <span className="crd-lesson-option-title">{l.title}</span>
-                            <span className="crd-lesson-badge crd-lesson-badge--class">Class</span>
+                            <span className="crd-lesson-badge crd-lesson-badge--class">Department</span>
                           </button>
                         ))}
                       </>

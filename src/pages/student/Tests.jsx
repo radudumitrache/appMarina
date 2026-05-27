@@ -4,14 +4,14 @@ import TestsSidebar from '../../components/student/tests/TestsSidebar'
 import TestsToolbar from '../../components/student/tests/TestsToolbar'
 import TestsContent from '../../components/student/tests/TestsContent'
 import { getTests }   from '../../api/tests'
-import { getClasses } from '../../api/classes'
+import { getDepartments } from '../../api/departments'
 import '../css/student/Tests.css'
 
-function getClassStats(tests, classId) {
+function getClassStats(tests, departmentId) {
   const subset =
-    classId === 'all'  ? tests :
-    classId === 'open' ? tests.filter(t => !t.class_id) :
-    tests.filter(t => t.class_id === classId)
+    departmentId === 'all'  ? tests :
+    departmentId === 'open' ? tests.filter(t => !t.department_id) :
+    tests.filter(t => t.department_id === departmentId)
   return {
     total:   subset.length,
     pending: subset.filter(t => !t.completed).length,
@@ -26,20 +26,20 @@ function avgGrade(tests) {
 }
 
 export default function Tests() {
-  const [tests,        setTests]        = useState([])
-  const [classes,      setClasses]      = useState([])
-  const [loading,      setLoading]      = useState(true)
-  const [error,        setError]        = useState(null)
-  const [activeClass,  setActiveClass]  = useState('all')
+  const [tests,             setTests]             = useState([])
+  const [departments,       setDepartments]       = useState([])
+  const [loading,           setLoading]           = useState(true)
+  const [error,             setError]             = useState(null)
+  const [activeDepartment,  setActiveDepartment]  = useState('all')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [searchQuery,  setSearchQuery]  = useState('')
 
   useEffect(() => {
-    Promise.all([getTests({}), getClasses()])
+    Promise.all([getTests({}), getDepartments()])
       .then(([testsRes, classesRes]) => {
         console.log('[Tests] API returned', testsRes.data.length, 'tests:', testsRes.data)
         setTests(testsRes.data)
-        setClasses(classesRes.data)
+        setDepartments(classesRes.data)
       })
       .catch(err => {
         console.error('[Tests] API error:', err.response ?? err)
@@ -49,19 +49,19 @@ export default function Tests() {
   }, [])
 
   const activeLabel =
-    activeClass === 'all'  ? 'All Tests'    :
-    activeClass === 'open' ? 'Open Access'  :
-    classes.find(c => c.code === activeClass)?.name ?? 'Tests'
+    activeDepartment === 'all'  ? 'All Tests'    :
+    activeDepartment === 'open' ? 'Open Access'  :
+    departments.find(c => c.id === activeDepartment)?.name ?? 'Tests'
 
   const byClass =
-    activeClass === 'all'  ? tests :
-    activeClass === 'open' ? tests.filter(t => !t.class_id) :
-    tests.filter(t => t.class_id === activeClass)
+    activeDepartment === 'all'  ? tests :
+    activeDepartment === 'open' ? tests.filter(t => !t.department_id) :
+    tests.filter(t => t.department_id === activeDepartment)
 
   const bySource =
     sourceFilter === 'all'   ? byClass :
-    sourceFilter === 'class' ? byClass.filter(t => t.class_id) :
-    byClass.filter(t => !t.class_id)
+    sourceFilter === 'class' ? byClass.filter(t => t.department_id) :
+    byClass.filter(t => !t.department_id)
 
   const filtered  = bySource.filter(t =>
     t.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
@@ -77,6 +77,7 @@ export default function Tests() {
   })
 
   const overall = getClassStats(tests, 'all')
+
   const avg     = avgGrade(tests)
 
   return (
@@ -87,9 +88,9 @@ export default function Tests() {
         <div className="tests-body">
           <TestsSidebar
             tests={tests}
-            classes={classes}
-            activeClass={activeClass}
-            onClassChange={setActiveClass}
+            departments={departments}
+            activeDepartment={activeDepartment}
+            onDepartmentChange={setActiveDepartment}
             overall={overall}
             avg={avg}
           />

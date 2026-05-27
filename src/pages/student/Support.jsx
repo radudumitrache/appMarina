@@ -13,7 +13,7 @@ const FAQ = [
   { id: 2, q: 'How do I retake a test?', a: 'Test retakes must be approved by your instructor. Contact Capt. Rodriguez directly or submit a support ticket with the test name and your reason for requesting a retake.' },
   { id: 3, q: 'My VR headset is not being detected. What should I do?', a: 'Ensure the SeaFarer VR app is running on your host machine, the headset firmware is up to date, and both devices are on the same network. Restart the companion app and re-pair if needed.' },
   { id: 4, q: 'How is my overall progress calculated?', a: 'Progress is based on lessons marked complete divided by total lessons in the curriculum. Test grades are tracked separately and averaged independently.' },
-  { id: 5, q: 'Can I change my class or enrol in multiple classes?', a: 'Class enrolment is managed by your institution. Contact your programme coordinator or submit an Account ticket to request a class change.' },
+  { id: 5, q: 'Can I change my department or enrol in multiple departments?', a: 'Department enrolment is managed by your institution. Contact your programme coordinator or submit an Account ticket to request a department change.' },
 ]
 
 function mapTicket(t) {

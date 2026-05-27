@@ -10,7 +10,6 @@ export default function CourseEditor({
   bankOpen, setBankOpen,
   bankFiltered, bankSearch, setBankSearch, lessonBankCount,
   classes = [],
-  departments = [],
   onTitleChange, onDescChange, onClassroomChange, onToggleStatus, onDeleteCourse,
   onRemoveLesson, onMoveLesson, onAddLesson, onCreateLesson,
   panelsBasePath = '/teacher/lessons',
@@ -38,13 +37,13 @@ export default function CourseEditor({
         onDeleteCourse={onDeleteCourse}
       />
 
-      {!selected.classroom_id && (
+      {!selected.department_id && (
         <div className="cb-warn-banner">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
             <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
-          Assign this course to a class to enable image and video uploads in lessons.
+          Assign this course to a department to enable image and video uploads in lessons.
         </div>
       )}
 
@@ -79,7 +78,7 @@ export default function CourseEditor({
           </button>
         )}
 
-        {section === 'diplomas' && selected.classroom_id && (
+        {section === 'diplomas' && selected.department_id && (
           <button className="cb-add-lesson-btn" onClick={() => setComposingDiploma(true)}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -93,11 +92,11 @@ export default function CourseEditor({
       {section === 'lessons' && (
         <LessonList
           selectedLessons={selectedLessons}
-          departments={departments}
+
           loadingDetail={loadingDetail}
           onRemove={onRemoveLesson}
           onMove={onMoveLesson}
-          onNavigatePanels={id => navigate(`${panelsBasePath}/${id}/panels`, { state: { backPath: builderPath, classroomId: selected.classroom_id ?? null } })}
+          onNavigatePanels={id => navigate(`${panelsBasePath}/${id}/panels`, { state: { backPath: builderPath, departmentId: selected.department_id ?? null } })}
           onViewLesson={lesson => navigate(`${panelsBasePath}/${lesson.id}`, { state: { lesson } })}
         />
       )}
@@ -105,7 +104,7 @@ export default function CourseEditor({
       {section === 'diplomas' && (
         <CourseDiplomasSection
           courseId={selected.id}
-          classroomId={selected.classroom_id ?? null}
+          departmentId={selected.department_id ?? null}
           composing={composingDiploma}
           onComposeDone={() => setComposingDiploma(false)}
         />
@@ -120,7 +119,7 @@ export default function CourseEditor({
           bankSearch={bankSearch}
           setBankSearch={setBankSearch}
           selectedLessons={selectedLessons}
-          departments={departments}
+
           saving={saving}
           onAdd={onAddLesson}
           onCreateLesson={onCreateLesson}

@@ -4,7 +4,7 @@ import '../../css/teacher/class-detail/AssignLessonModal.css'
 
 const EMPTY = { title: '', time_limit_minutes: '30' }
 
-export default function CreateTestModal({ classId, onClose, onCreated }) {
+export default function CreateTestModal({ departmentId, onClose, onCreated }) {
   const [form, setForm]     = useState(EMPTY)
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
@@ -24,7 +24,7 @@ export default function CreateTestModal({ classId, onClose, onCreated }) {
     try {
       const { data } = await createTest({
         title:              form.title.trim(),
-        classroom:          classId,
+        department:         departmentId,
         time_limit_minutes: Number(form.time_limit_minutes),
       })
       onCreated(data)

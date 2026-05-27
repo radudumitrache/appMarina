@@ -19,8 +19,8 @@ const StudentMyClass      = lazy(() => import('./pages/student/MyClass'))
 const StudentSupport      = lazy(() => import('./pages/student/Support'))
 const StudentProfile      = lazy(() => import('./pages/student/Profile'))
 const TeacherDashboard    = lazy(() => import('./pages/teacher/Dashboard'))
-const TeacherClasses      = lazy(() => import('./pages/teacher/Classes'))
-const TeacherClassDetail  = lazy(() => import('./pages/teacher/ClassDetail'))
+const TeacherClasses      = lazy(() => import('./pages/teacher/Departments'))
+const TeacherClassDetail  = lazy(() => import('./pages/teacher/DepartmentDetail'))
 const TeacherProgress     = lazy(() => import('./pages/teacher/Progress'))
 const TeacherTestBuilder  = lazy(() => import('./pages/teacher/TestBuilder'))
 const TeacherVRPanelEditor= lazy(() => import('./pages/teacher/VRPanelEditor'))
@@ -37,8 +37,8 @@ const AdminDashboard      = lazy(() => import('./pages/admin/Dashboard'))
 const AdminOrganisations  = lazy(() => import('./pages/admin/Organisations'))
 const AdminUsers          = lazy(() => import('./pages/admin/Users'))
 const AdminLessons        = lazy(() => import('./pages/admin/Lessons'))
-const AdminClasses        = lazy(() => import('./pages/admin/Classes'))
-const AdminClassDetail        = lazy(() => import('./pages/admin/ClassDetail'))
+const AdminClasses        = lazy(() => import('./pages/admin/Departments'))
+const AdminClassDetail        = lazy(() => import('./pages/admin/DepartmentDetail'))
 const AdminStudentProgress    = lazy(() => import('./pages/admin/StudentProgress'))
 const AdminSubmissionOverview = lazy(() => import('./pages/admin/SubmissionOverview'))
 const AdminMedia          = lazy(() => import('./pages/admin/Media'))
@@ -74,8 +74,8 @@ function PageShell() {
 
           {/* Teacher */}
           <Route path="/teacher/dashboard"    element={<PrivateRoute allowedRoles={['teacher']}><TeacherDashboard /></PrivateRoute>} />
-          <Route path="/teacher/classes"      element={<PrivateRoute allowedRoles={['teacher']}><TeacherClasses /></PrivateRoute>} />
-          <Route path="/teacher/classes/:id"  element={<PrivateRoute allowedRoles={['teacher']}><TeacherClassDetail /></PrivateRoute>} />
+          <Route path="/teacher/departments"      element={<PrivateRoute allowedRoles={['teacher']}><TeacherClasses /></PrivateRoute>} />
+          <Route path="/teacher/departments/:id"  element={<PrivateRoute allowedRoles={['teacher']}><TeacherClassDetail /></PrivateRoute>} />
           <Route path="/teacher/progress"     element={<PrivateRoute allowedRoles={['teacher']}><TeacherProgress /></PrivateRoute>} />
           <Route path="/teacher/assignments"  element={<PrivateRoute allowedRoles={['teacher']}><TeacherTestBuilder /></PrivateRoute>} />
           <Route path="/teacher/assignments/:testId/panels/:panelId/vr" element={<PrivateRoute allowedRoles={['teacher', 'admin']}><TeacherVRPanelEditor /></PrivateRoute>} />
@@ -95,8 +95,8 @@ function PageShell() {
           <Route path="/admin/users"          element={<PrivateRoute allowedRoles={['admin']}><AdminUsers /></PrivateRoute>} />
           <Route path="/admin/lessons"            element={<PrivateRoute allowedRoles={['admin']}><AdminLessons /></PrivateRoute>} />
           <Route path="/admin/lessons/:id/panels" element={<PrivateRoute allowedRoles={['admin']}><AdminLessonPanelEditor /></PrivateRoute>} />
-          <Route path="/admin/classes"        element={<PrivateRoute allowedRoles={['admin']}><AdminClasses /></PrivateRoute>} />
-          <Route path="/admin/classes/:id"    element={<PrivateRoute allowedRoles={['admin']}><AdminClassDetail /></PrivateRoute>} />
+          <Route path="/admin/departments"        element={<PrivateRoute allowedRoles={['admin']}><AdminClasses /></PrivateRoute>} />
+          <Route path="/admin/departments/:id"    element={<PrivateRoute allowedRoles={['admin']}><AdminClassDetail /></PrivateRoute>} />
           <Route path="/admin/students/:studentId/progress" element={<PrivateRoute allowedRoles={['admin']}><AdminStudentProgress /></PrivateRoute>} />
           <Route path="/admin/submissions/:submissionId"   element={<PrivateRoute allowedRoles={['admin']}><AdminSubmissionOverview /></PrivateRoute>} />
           <Route path="/admin/courses"        element={<PrivateRoute allowedRoles={['admin']}><AdminCourses /></PrivateRoute>} />

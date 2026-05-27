@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getClassAssignments } from '../../../api/classes'
+import { getClassAssignments } from '../../../api/departments'
 import { getAllSubmissions }    from '../../../api/tests'
 import Sk from '../../shared/Skeleton'
 import '../../css/teacher/progress/StudentDrawer.css'
@@ -16,9 +16,9 @@ export default function StudentDrawer({ student, onClose }) {
   const [loadingTests, setLoadingTests] = useState(true)
 
   useEffect(() => {
-    if (!student.classId) { setLoadingTests(false); return }
+    if (!student.departmentId) { setLoadingTests(false); return }
     setLoadingTests(true)
-    getClassAssignments(student.classId)
+    getClassAssignments(student.departmentId)
       .then(async ({ data: assignments }) => {
         const withScores = await Promise.all(
           assignments.map(async (test) => {
@@ -35,7 +35,7 @@ export default function StudentDrawer({ student, onClose }) {
       })
       .catch(() => {})
       .finally(() => setLoadingTests(false))
-  }, [student.id, student.classId])
+  }, [student.id, student.departmentId])
 
   const pct = student.lessonsTotal > 0
     ? Math.round((student.lessonsDone / student.lessonsTotal) * 100)

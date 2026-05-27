@@ -7,7 +7,7 @@ import ClassesToolbar from '../../components/teacher/classes/ClassesToolbar'
 import ClassesGrid from '../../components/teacher/classes/ClassesGrid'
 import ClassFormModal from '../../components/teacher/classes/ClassFormModal'
 import DeleteConfirmModal from '../../components/admin/classes/DeleteConfirmModal'
-import { getClasses, createClass, deleteClass } from '../../api/classes'
+import { getDepartments, createDepartment, deleteDepartment } from '../../api/departments'
 import '../css/teacher/Classes.css'
 
 const EMPTY_FORM = {
@@ -15,30 +15,30 @@ const EMPTY_FORM = {
   start_date: '', end_date: '', status: 'active',
 }
 
-export default function Classes() {
+export default function Departments() {
   const navigate = useNavigate()
-  const [classes, setClasses]       = useState([])
-  const [loading, setLoading]       = useState(true)
-  const [tab, setTab]               = useState('all')
-  const [search, setSearch]         = useState('')
-  const [showModal, setShowModal]     = useState(false)
-  const [form, setForm]               = useState(EMPTY_FORM)
-  const [formErrors, setFormErrors]   = useState({})
-  const [deleteTarget, setDeleteTarget] = useState(null)
-  const [saving, setSaving]             = useState(false)
+  const [departments, setDepartments]       = useState([])
+  const [loading, setLoading]               = useState(true)
+  const [tab, setTab]                       = useState('all')
+  const [search, setSearch]                 = useState('')
+  const [showModal, setShowModal]           = useState(false)
+  const [form, setForm]                     = useState(EMPTY_FORM)
+  const [formErrors, setFormErrors]         = useState({})
+  const [deleteTarget, setDeleteTarget]     = useState(null)
+  const [saving, setSaving]                 = useState(false)
 
   useEffect(() => {
-    getClasses()
-      .then(({ data }) => setClasses(data.map(cls => ({
-        ...cls,
-        students:     cls.student_count,
-        lessonsTotal: cls.lesson_count,
+    getDepartments()
+      .then(({ data }) => setDepartments(data.map(dep => ({
+        ...dep,
+        students:     dep.student_count,
+        lessonsTotal: dep.lesson_count,
         lessonsDone:  0,
       }))))
       .finally(() => setLoading(false))
   }, [])
 
-  const filtered = classes
+  const filtered = departments
     .filter(c => tab === 'all' || c.status === tab)
     .filter(c =>
       c.name.toLowerCase().includes(search.toLowerCase().trim()) ||
@@ -50,8 +50,8 @@ export default function Classes() {
 
   const executeDelete = async () => {
     try {
-      await deleteClass(deleteTarget.id)
-      setClasses(prev => prev.filter(c => c.id !== deleteTarget.id))
+      await deleteDepartment(deleteTarget.id)
+      setDepartments(prev => prev.filter(c => c.id !== deleteTarget.id))
     } catch {}
     setDeleteTarget(null)
   }
@@ -63,24 +63,24 @@ export default function Classes() {
 
   const handleSave = async () => {
     const clientErrors = {}
-    if (!form.name.trim())     clientErrors.name       = 'Class name is required.'
-    if (!form.code.trim())     clientErrors.code       = 'Class code is required.'
+    if (!form.name.trim())     clientErrors.name       = 'Department name is required.'
+    if (!form.code.trim())     clientErrors.code       = 'Department code is required.'
     if (!form.subject.trim())  clientErrors.subject    = 'Subject is required.'
     if (!form.start_date)      clientErrors.start_date = 'Start date is required.'
     if (!form.end_date)        clientErrors.end_date   = 'End date is required.'
 
-    const nameTaken = classes.some(c => c.name.trim().toLowerCase() === form.name.trim().toLowerCase())
-    const codeTaken = classes.some(c => c.code.trim().toLowerCase() === form.code.trim().toLowerCase())
-    if (nameTaken) clientErrors.name = 'A class with this name already exists.'
-    if (codeTaken) clientErrors.code = 'A class with this code already exists.'
+    const nameTaken = departments.some(c => c.name.trim().toLowerCase() === form.name.trim().toLowerCase())
+    const codeTaken = departments.some(c => c.code.trim().toLowerCase() === form.code.trim().toLowerCase())
+    if (nameTaken) clientErrors.name = 'A department with this name already exists.'
+    if (codeTaken) clientErrors.code = 'A department with this code already exists.'
 
     if (Object.keys(clientErrors).length) { setFormErrors(clientErrors); return }
 
     setFormErrors({})
     setSaving(true)
     try {
-      const { data } = await createClass(form)
-      setClasses(prev => [{ ...data, students: data.student_count, lessonsTotal: data.lesson_count, lessonsDone: 0 }, ...prev])
+      const { data } = await createDepartment(form)
+      setDepartments(prev => [{ ...data, students: data.student_count, lessonsTotal: data.lesson_count, lessonsDone: 0 }, ...prev])
       closeModal()
     } catch (err) {
       const d = err?.response?.data
@@ -94,8 +94,8 @@ export default function Classes() {
     }
   }
 
-  const totalStudents = classes.reduce((sum, c) => sum + c.student_count, 0)
-  const activeCount   = classes.filter(c => c.status === 'active').length
+  const totalStudents = departments.reduce((sum, c) => sum + c.student_count, 0)
+  const activeCount   = departments.filter(c => c.status === 'active').length
   const avgProgress   = 0
 
   return (
@@ -108,14 +108,14 @@ export default function Classes() {
 
         <div className="classes-content">
           <ClassesStats
-            totalClasses={classes.length}
+            totalClasses={departments.length}
             totalStudents={totalStudents}
             activeCount={activeCount}
             avgProgress={avgProgress}
           />
 
           <ClassesToolbar
-            classes={classes}
+            classes={departments}
             tab={tab}
             onTabChange={setTab}
             search={search}
@@ -125,7 +125,7 @@ export default function Classes() {
           <ClassesGrid
             loading={loading}
             classes={filtered}
-            onView={cls => navigate(`/teacher/classes/${cls.id}`)}
+            onView={dep => navigate(`/teacher/departments/${dep.id}`)}
             onDelete={setDeleteTarget}
           />
         </div>

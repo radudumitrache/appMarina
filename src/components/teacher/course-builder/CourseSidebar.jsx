@@ -44,10 +44,10 @@ export default function CourseSidebar({
   const groups = (() => {
     const result = []
     for (const cls of classes) {
-      const items = visible.filter(c => c.classroom_id === cls.id)
+      const items = visible.filter(c => c.department_id === cls.id)
       if (items.length > 0) result.push({ label: cls.name, code: cls.code, items })
     }
-    const unassigned = visible.filter(c => !c.classroom_id || !classes.some(cls => cls.id === c.classroom_id))
+    const unassigned = visible.filter(c => !c.department_id || !classes.some(cls => cls.id === c.department_id))
     if (unassigned.length > 0) result.push({ label: 'Unassigned', code: null, items: unassigned })
     return result
   })()

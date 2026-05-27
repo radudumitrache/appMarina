@@ -7,7 +7,6 @@ import LessonRow from '../../components/admin/lessons/LessonRow'
 import LessonFormPanel from '../../components/admin/lessons/LessonFormPanel'
 import LessonDeleteModal from '../../components/admin/lessons/LessonDeleteModal'
 import { getLessons, createLesson, updateLesson, deleteLesson } from '../../api/lessons'
-import { getClasses } from '../../api/classes'
 import { getDepartments } from '../../api/departments'
 import { getOrganisations } from '../../api/organisations'
 import { useAuth } from '../../auth/AuthContext'
@@ -17,15 +16,14 @@ import '../css/admin/Lessons.css'
 const DIFFICULTIES = ['easy', 'intermediate', 'advanced']
 
 const EMPTY_FORM = {
-  title: '', department_ids: [], duration_minutes: 60,
-  difficulty: 'intermediate', visibility: 'class', classroom: null, organisation_id: null,
+  title: '', duration_minutes: 60,
+  difficulty: 'intermediate', visibility: 'class', department: null, organisation_id: null,
 }
 
 function mapLesson(l) {
   return {
     id:               l.id,
     title:            l.title,
-    department_ids:   l.department_ids ?? [],
     duration:         `${l.duration_minutes} min`,
     duration_minutes: l.duration_minutes,
     difficulty:       l.difficulty,
@@ -33,7 +31,7 @@ function mapLesson(l) {
     author:           l.author_name ?? '',
     author_id:        l.author ?? null,
     locked:           l.locked,
-    classroom_id:     l.classroom_id ?? null,
+    department_id:    l.department_id ?? null,
     organisation_id:  l.organisation_id ?? null,
   }
 }
@@ -43,23 +41,21 @@ export default function Lessons() {
   const { user } = useAuth()
 
   const [lessons, setLessons]               = useState([])
-  const [departments, setDepartments]       = useState([])
   const [organisations, setOrganisations]   = useState([])
   const [loading, setLoading]               = useState(true)
   const [search, setSearch]                 = useState('')
-  const [activeDept, setActiveDept]         = useState('all')
   const [visFilter, setVisFilter]           = useState('all')
+  const [activeDepartment, setActiveDepartment] = useState('all')
   const [panel, setPanel]                   = useState(null)
   const [form, setForm]                     = useState(EMPTY_FORM)
   const [editTarget, setEditTarget]         = useState(null)
   const [deleteTarget, setDeleteTarget]     = useState(null)
-  const [classes, setClasses]               = useState([])
+  const [departments, setDepartments]       = useState([])
 
   useEffect(() => {
     getLessons()
       .then(({ data }) => setLessons(data.map(mapLesson)))
       .finally(() => setLoading(false))
-    getClasses().then(({ data }) => setClasses(data)).catch(() => {})
     getDepartments().then(({ data }) => setDepartments(data)).catch(() => {})
     if (user?.is_staff) {
       getOrganisations().then(({ data }) => setOrganisations(data)).catch(() => {})
@@ -67,7 +63,7 @@ export default function Lessons() {
   }, [])
 
   const filtered = lessons
-    .filter(l => activeDept === 'all' || l.department_ids.includes(Number(activeDept)))
+    .filter(l => activeDepartment === 'all' || (activeDepartment === null ? !l.department_id : l.department_id === activeDepartment))
     .filter(l => visFilter === 'all' || l.visibility === visFilter)
     .filter(l => l.title.toLowerCase().includes(search.toLowerCase().trim()))
 
@@ -77,11 +73,10 @@ export default function Lessons() {
     setEditTarget(lesson)
     setForm({
       title:            lesson.title,
-      department_ids:   lesson.department_ids,
       duration_minutes: lesson.duration_minutes,
       difficulty:       lesson.difficulty,
       visibility:       lesson.visibility,
-      classroom:        lesson.classroom_id ?? null,
+      department:       lesson.department_id ?? null,
       organisation_id:  lesson.organisation_id ?? null,
     })
     setPanel('edit')
@@ -116,10 +111,6 @@ export default function Lessons() {
     setDeleteTarget(null)
   }
 
-  const activeDeptLabel = activeDept === 'all'
-    ? 'All Lessons'
-    : departments.find(d => String(d.id) === activeDept)?.name ?? 'Lessons'
-
   return (
     <div className="lessons-adm-page">
       <div className="lessons-adm-layout">
@@ -127,15 +118,15 @@ export default function Lessons() {
         <div className="lessons-adm-body">
 
           <LessonsSidebar
-            departments={departments}
-            activeDept={activeDept}
-            onDeptChange={setActiveDept}
             lessons={lessons}
+            departments={departments}
+            activeDepartment={activeDepartment}
+            onDepartmentChange={setActiveDepartment}
           />
 
           <main className="lessons-adm-main">
             <LessonsToolbar
-              title={activeDeptLabel}
+              title={activeDepartment === 'all' ? 'All Lessons' : activeDepartment === null ? 'Unassigned Lessons' : (departments.find(c => c.id === activeDepartment)?.name ?? 'Lessons')}
               filteredCount={filtered.length}
               search={search}
               onSearchChange={setSearch}
@@ -172,7 +163,6 @@ export default function Lessons() {
                       key={lesson.id}
                       lesson={lesson}
                       departments={departments}
-                      classes={classes}
                       index={i}
                       canEdit={canEdit}
                       onView={() => navigate(`/admin/lessons/${lesson.id}/panels`, { state: { backPath: '/admin/lessons' } })}
@@ -194,9 +184,8 @@ export default function Lessons() {
           onChange={handleFormChange}
           onClose={() => { setPanel(null); setEditTarget(null) }}
           onSave={panel === 'create' ? handleSave : handleUpdate}
-          departments={departments}
           difficulties={DIFFICULTIES}
-          classes={classes}
+          departments={departments}
           organisations={organisations}
         />
       )}

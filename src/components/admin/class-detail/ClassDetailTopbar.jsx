@@ -13,7 +13,7 @@ export default function ClassDetailTopbar({ status, onBack, onToggleArchive, onE
     <div className="cd-topbar">
       <button className="cd-back-btn" onClick={onBack}>
         <ChevronLeft />
-        Classes
+        Departments
       </button>
       <div className="cd-topbar-right">
         <button

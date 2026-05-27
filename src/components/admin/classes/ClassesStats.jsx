@@ -2,7 +2,7 @@ import '../../css/admin/classes/ClassesStats.css'
 
 export default function ClassesStats({ stats }) {
   const items = [
-    { label: 'Total Classes',     value: stats.total    },
+    { label: 'Total Departments',  value: stats.total    },
     { label: 'Active',            value: stats.active   },
     { label: 'Archived',          value: stats.archived },
     { label: 'Students Enrolled', value: stats.students },

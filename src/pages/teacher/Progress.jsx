@@ -6,7 +6,7 @@ import ProgressClassTabs from '../../components/teacher/progress/ProgressClassTa
 import ProgressToolbar   from '../../components/teacher/progress/ProgressToolbar'
 import ProgressTable     from '../../components/teacher/progress/ProgressTable'
 import { getTeacherProgress } from '../../api/progress'
-import { getClasses }         from '../../api/classes'
+import { getDepartments } from '../../api/departments'
 import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/Progress.css'
 
@@ -32,8 +32,8 @@ function mapStudent(s) {
     id:           s.student_id,
     name:         s.student_name,
     initials:     initials(s.student_name),
-    classId:      s.classroom_id,
-    className:    s.classroom_name,
+    departmentId:   s.department_id,
+    className:      s.department_name,
     lessonsDone:  s.lessons_done,
     lessonsTotal: s.lessons_total,
     lastActive:   relativeTime(s.last_active),
@@ -44,21 +44,21 @@ function mapStudent(s) {
 export default function Progress() {
   const navigate = useNavigate()
 
-  const [students,        setStudents]        = useState([])
-  const [classes,         setClasses]         = useState([])
-  const [loading,         setLoading]         = useState(true)
-  const [classFilter,     setClassFilter]     = useState('all')
+  const [students,          setStudents]          = useState([])
+  const [departments,       setDepartments]       = useState([])
+  const [loading,           setLoading]           = useState(true)
+  const [departmentFilter,  setDepartmentFilter]  = useState('all')
   const [search,          setSearch]          = useState('')
   const [sortBy,          setSortBy]          = useState('name')
   const [page,            setPage]            = useState(1)
   const [pageSize,        setPageSize]        = useState(10)
 
   useEffect(() => {
-    Promise.all([getTeacherProgress(), getClasses()])
+    Promise.all([getTeacherProgress(), getDepartments()])
       .then(([progRes, clsRes]) => {
         setStudents(progRes.data.map(mapStudent))
-        setClasses([
-          { id: 'all', label: 'All Classes' },
+        setDepartments([
+          { id: 'all', label: 'All Departments' },
           ...clsRes.data.map(c => ({ id: c.id, label: c.code ? `${c.code} — ${c.name}` : c.name })),
         ])
       })
@@ -68,7 +68,7 @@ export default function Progress() {
   const visible = useMemo(() => {
     setPage(1)
     return students
-      .filter(s => classFilter === 'all' || s.classId === classFilter)
+      .filter(s => departmentFilter === 'all' || s.departmentId === departmentFilter)
       .filter(s =>
         s.name.toLowerCase().includes(search.toLowerCase().trim()) ||
         s.className.toLowerCase().includes(search.toLowerCase().trim())
@@ -78,7 +78,7 @@ export default function Progress() {
         if (sortBy === 'progress') return (b.lessonsDone / (b.lessonsTotal || 1)) - (a.lessonsDone / (a.lessonsTotal || 1))
         return 0
       })
-  }, [students, classFilter, search, sortBy])
+  }, [students, departmentFilter, search, sortBy])
 
   const totalPages = Math.max(1, Math.ceil(visible.length / pageSize))
   const paginated  = visible.slice((page - 1) * pageSize, page * pageSize)
@@ -86,6 +86,7 @@ export default function Progress() {
   const avgPct = students.length
     ? Math.round(students.reduce((sum, s) => sum + (s.lessonsDone / (s.lessonsTotal || 1)) * 100, 0) / students.length)
     : 0
+
 
   if (loading) {
     return (
@@ -147,16 +148,16 @@ export default function Progress() {
       <div className="tp-content">
         <ProgressStats
           totalStudents={students.length}
-          classCount={classes.length - 1}
+          classCount={departments.length - 1}
           avgPct={avgPct}
         />
 
         <div className="tp-body">
           <ProgressClassTabs
-            classes={classes}
+            departments={departments}
             students={students}
-            classFilter={classFilter}
-            onClassChange={setClassFilter}
+            departmentFilter={departmentFilter}
+            onDepartmentChange={setDepartmentFilter}
           />
 
           <div className="tp-main">

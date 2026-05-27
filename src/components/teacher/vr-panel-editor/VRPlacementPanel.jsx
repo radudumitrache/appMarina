@@ -2,7 +2,7 @@ import { useState } from 'react'
 import QuestionHtmlEditor from '../test-builder/QuestionHtmlEditor'
 
 export default function VRPlacementPanel({
-  pendingCoords, placing, locStep, pendingLocPoints, saving, classroomId,
+  pendingCoords, placing, locStep, pendingLocPoints, saving, departmentId,
   onSetPlacing, onSetLocStep, onCancel, onUndoLocPoint,
   onAddMCQ, onAddWC, onAddLoc,
 }) {
@@ -63,7 +63,7 @@ export default function VRPlacementPanel({
           />
           <QuestionHtmlEditor
             value={mcqForm.text}
-            classroomId={classroomId}
+            departmentId={departmentId}
             onBlur={html => setMCQForm(f => ({ ...f, text: html }))}
             placeholder="Question text…"
           />
@@ -98,7 +98,7 @@ export default function VRPlacementPanel({
           />
           <QuestionHtmlEditor
             value={wcForm.text}
-            classroomId={classroomId}
+            departmentId={departmentId}
             onBlur={html => setWCForm(f => ({ ...f, text: html }))}
             placeholder="Sentence with ___ for the blank…"
           />
@@ -157,7 +157,7 @@ export default function VRPlacementPanel({
           />
           <QuestionHtmlEditor
             value={locForm.text}
-            classroomId={classroomId}
+            departmentId={departmentId}
             onBlur={html => setLocForm(f => ({ ...f, text: html }))}
             placeholder="What should the student locate?…"
           />

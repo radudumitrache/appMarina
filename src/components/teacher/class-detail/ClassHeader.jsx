@@ -41,7 +41,7 @@ export default function ClassHeader({ name, code, status, onEdit, onDelete }) {
           <div className="cd-breadcrumb">
             <button className="cd-crumb-link" onClick={() => navigate('/teacher/dashboard')}>Dashboard</button>
             <span className="cd-crumb-sep">/</span>
-            <button className="cd-crumb-link" onClick={() => navigate('/teacher/classes')}>My Classes</button>
+            <button className="cd-crumb-link" onClick={() => navigate('/teacher/departments')}>My Departments</button>
             <span className="cd-crumb-sep">/</span>
           </div>
           <div className="cd-title-row">
@@ -57,7 +57,7 @@ export default function ClassHeader({ name, code, status, onEdit, onDelete }) {
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
-            Edit Class
+            Edit Department
           </button>
           <div className="cd-menu-wrap">
             <button
@@ -84,7 +84,7 @@ export default function ClassHeader({ name, code, status, onEdit, onDelete }) {
                       <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
                       <path d="M9 6V4h6v2"/>
                     </svg>
-                    Delete Class
+                    Delete Department
                   </button>
                 </div>
               </>
@@ -99,9 +99,9 @@ export default function ClassHeader({ name, code, status, onEdit, onDelete }) {
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
             <polyline points="22,6 12,13 2,6"/>
           </svg>
-          <span className="cd-enroll-label">Class Code</span>
+          <span className="cd-enroll-label">Department Code</span>
           <span className="cd-enroll-code">{code}</span>
-          <span className="cd-enroll-hint">Share this code with students so they can enroll in this class</span>
+          <span className="cd-enroll-hint">Share this code with students so they can enroll in this department</span>
         </div>
         <button className="cd-copy-btn" onClick={handleCopy}>
           {copied ? (

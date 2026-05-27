@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { getLessons } from '../../../api/lessons'
-import { assignLesson } from '../../../api/classes'
+import { assignLesson } from '../../../api/departments'
 import '../../css/teacher/class-detail/AssignLessonModal.css'
 
-export default function AssignLessonModal({ classId, assignedIds = [], onClose, onAssigned }) {
+export default function AssignLessonModal({ departmentId, assignedIds = [], onClose, onAssigned }) {
   const [lessons, setLessons]   = useState([])
   const [search, setSearch]     = useState('')
   const [selected, setSelected] = useState(null)
@@ -27,7 +27,7 @@ export default function AssignLessonModal({ classId, assignedIds = [], onClose, 
     setSaving(true)
     setError(null)
     try {
-      const { data } = await assignLesson(classId, { lesson: selected })
+      const { data } = await assignLesson(departmentId, { lesson: selected })
       onAssigned(data)
       onClose()
     } catch {

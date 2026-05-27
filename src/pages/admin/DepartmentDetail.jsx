@@ -6,18 +6,18 @@ import ClassDetailHeader from '../../components/admin/class-detail/ClassDetailHe
 import ManagementPanel from '../../components/admin/class-detail/ManagementPanel'
 import EditDetailsModal from '../../components/admin/class-detail/EditDetailsModal'
 import {
-  getClass, updateClass,
+  getDepartment, updateDepartment,
   getClassStudents, enrollStudent, removeStudent,
   getClassLessons, assignLesson, unassignLesson,
   getClassTests,
-} from '../../api/classes'
+} from '../../api/departments'
 import { getUsers, getTeachers } from '../../api/admin'
 import { getLessons } from '../../api/lessons'
 import { getTests, updateTest } from '../../api/tests'
 import Sk from '../../components/shared/Skeleton'
 import '../css/admin/ClassDetail.css'
 
-export default function AdminClassDetail() {
+export default function AdminDepartmentDetail() {
   const { id }   = useParams()
   const navigate = useNavigate()
 
@@ -41,7 +41,7 @@ export default function AdminClassDetail() {
 
   useEffect(() => {
     Promise.all([
-      getClass(id),
+      getDepartment(id),
       getClassStudents(id),
       getClassLessons(id),
       getClassTests(id),
@@ -77,7 +77,7 @@ export default function AdminClassDetail() {
   const saveEdit = async () => {
     if (!editForm.name.trim()) return
     try {
-      const { data } = await updateClass(id, editForm)
+      const { data } = await updateDepartment(id, editForm)
       setCls(data)
     } catch {}
     setEditMode(false)
@@ -144,7 +144,7 @@ export default function AdminClassDetail() {
   const addTest = async t => {
     setTestSearch('')
     try {
-      await updateTest(t.id, { classroom: parseInt(id, 10) })
+      await updateTest(t.id, { department: parseInt(id, 10) })
       setTests(prev => [...prev, t])
     } catch {}
   }
@@ -152,7 +152,7 @@ export default function AdminClassDetail() {
   const handleRemoveTest = async tid => {
     setTests(prev => prev.filter(t => t.id !== tid))
     try {
-      await updateTest(tid, { classroom: null })
+      await updateTest(tid, { department: null })
     } catch {
       setTests(prev => [...prev])
     }
@@ -161,7 +161,7 @@ export default function AdminClassDetail() {
   const toggleArchive = async () => {
     const newStatus = cls.status === 'active' ? 'archived' : 'active'
     try {
-      const { data } = await updateClass(id, { status: newStatus })
+      const { data } = await updateDepartment(id, { status: newStatus })
       setCls(data)
     } catch {}
   }
@@ -204,8 +204,8 @@ export default function AdminClassDetail() {
       <div className="cd-page">
         <NavBar />
         <div className="cd-not-found">
-          <p>Class not found.</p>
-          <button className="btn-ghost" onClick={() => navigate('/admin/classes')}>Back to Classes</button>
+          <p>Department not found.</p>
+          <button className="btn-ghost" onClick={() => navigate('/admin/departments')}>Back to Departments</button>
         </div>
       </div>
     )
@@ -217,7 +217,7 @@ export default function AdminClassDetail() {
 
       <ClassDetailTopbar
         status={cls.status}
-        onBack={() => navigate('/admin/classes')}
+        onBack={() => navigate('/admin/departments')}
         onToggleArchive={toggleArchive}
         onEdit={openEdit}
       />

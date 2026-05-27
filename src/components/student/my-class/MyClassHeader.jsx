@@ -11,7 +11,7 @@ export default function MyClassHeader({ classInfo, onBack }) {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6"/>
           </svg>
-          <span className="breadcrumb-current">My Class</span>
+          <span className="breadcrumb-current">My Department</span>
         </div>
         <div className="myclass-header-title-row">
           <h1 className="myclass-page-title">{classInfo.name}</h1>

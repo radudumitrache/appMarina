@@ -9,7 +9,7 @@ import ProfileTabs     from '../../components/student/profile/ProfileTabs'
 import { getMe, updateMe } from '../../api/users'
 import { changePassword } from '../../api/auth'
 import { getProgress, getAchievements, getCertifications } from '../../api/progress'
-import { getMyDiplomas } from '../../api/classes'
+import { getMyDiplomas } from '../../api/departments'
 import '../css/student/Profile.css'
 
 function mapProfile(data) {

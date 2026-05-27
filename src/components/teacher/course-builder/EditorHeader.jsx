@@ -32,7 +32,7 @@ export default function EditorHeader({
           <div className="cb-classroom-row">
             <span className="cb-classroom-label">Class</span>
             <Dropdown
-              value={selected.classroom_id ?? null}
+              value={selected.department_id ?? null}
               onChange={v => onClassroomChange?.(selected.id, v)}
               placeholder="— unassigned —"
               options={classes.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}

@@ -12,9 +12,9 @@ export default function ClassCoursesSection({ classes, courseGroups, onLessonTog
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
-          <span>You haven't joined a class yet.</span>
+          <span>You haven't joined a department yet.</span>
           <button className="les-join-link" onClick={() => navigate('/student/my-class')}>
-            Go to My Class →
+            Go to My Department →
           </button>
         </div>
       </div>
@@ -29,7 +29,7 @@ export default function ClassCoursesSection({ classes, courseGroups, onLessonTog
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
-          <span>No published courses in your classes yet.</span>
+          <span>No published courses in your departments yet.</span>
         </div>
       </div>
     )

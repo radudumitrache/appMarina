@@ -20,28 +20,28 @@ export default function TestMetaRow({ selected, panelCount, classes = [], organi
 
   function handleClassChange(e) {
     const val = e.target.value
-    onUpdate({ classroom: val ? Number(val) : null })
+    onUpdate({ department: val ? Number(val) : null })
   }
 
-  const noClassSelected = !selected.classroom
+  const noClassSelected = !selected.department
 
   return (
     <div className="tb-meta-row">
       <div className="tb-meta-field">
         <label className="tb-meta-label">
-          Class
+          Department
           {!allowPublic && noClassSelected && (
             <span className="tb-meta-required">Required</span>
           )}
         </label>
         <select
           className={`tb-meta-input tb-meta-select${!allowPublic && noClassSelected ? ' tb-meta-select--required' : ''}`}
-          value={selected.classroom ?? ''}
+          value={selected.department ?? ''}
           onChange={handleClassChange}
         >
           {allowPublic
             ? <option value="">— Public —</option>
-            : <option value="" disabled>— Select a class —</option>
+            : <option value="" disabled>— Select a department —</option>
           }
           {classes.map(c => (
             <option key={c.id} value={c.id}>{c.name}</option>

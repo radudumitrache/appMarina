@@ -156,10 +156,10 @@ const TOOLBAR_GROUPS = [
  * value       {string}    Initial HTML content. Loaded once on mount.
  * onChange     {Function}  Called with HTML on every editor update (optional).
  * onBlur      {Function}  Called with HTML when editor loses focus (optional).
- * classroomId {number}    Passed to MediaInsertModal for scoped uploads.
+ * departmentId {number}    Passed to MediaInsertModal for scoped uploads.
  * placeholder {string}    Placeholder text shown when editor is empty.
  */
-export default function RichTextEditor({ value = '', onChange, onBlur, classroomId, placeholder }) {
+export default function RichTextEditor({ value = '', onChange, onBlur, departmentId, placeholder }) {
   const [showHtml,   setShowHtml]   = useState(false)
   const [rawHtml,    setRawHtml]    = useState('')
   const [mediaMode,  setMediaMode]  = useState(null)
@@ -270,7 +270,7 @@ export default function RichTextEditor({ value = '', onChange, onBlur, classroom
       {mediaMode && createPortal(
         <MediaInsertModal
           initialMode={mediaMode}
-          classroomId={classroomId}
+          departmentId={departmentId}
           onInsert={handleMediaInsert}
           onClose={() => setMediaMode(null)}
         />,

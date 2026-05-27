@@ -42,7 +42,7 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-export default function DocumentPickerModal({ classroomId, onConfirm, onClose }) {
+export default function DocumentPickerModal({ departmentId, onConfirm, onClose }) {
   const [tab,          setTab]          = useState('upload')
   const [folderFiles,  setFolderFiles]  = useState([])
   const [loadingFiles, setLoadingFiles] = useState(false)
@@ -51,11 +51,11 @@ export default function DocumentPickerModal({ classroomId, onConfirm, onClose })
   const [dragOver,     setDragOver]     = useState(false)
   const fileRef = useRef(null)
 
-  const folderParams = classroomId
-    ? { folder: 'class', classroom_id: classroomId }
+  const folderParams = departmentId
+    ? { folder: 'class', department_id: departmentId }
     : { folder: 'documents' }
 
-  const folderLabel = classroomId ? 'Class folder' : 'Documents'
+  const folderLabel = departmentId ? 'Department folder' : 'Documents'
 
   useEffect(() => {
     if (tab !== 'folder') return
@@ -64,7 +64,7 @@ export default function DocumentPickerModal({ classroomId, onConfirm, onClose })
       .then(({ data }) => setFolderFiles(data.filter(f => f.file_type === 'document')))
       .catch(() => {})
       .finally(() => setLoadingFiles(false))
-  }, [tab, classroomId])
+  }, [tab, departmentId])
 
   async function uploadFile(file) {
     setUploadError(null)

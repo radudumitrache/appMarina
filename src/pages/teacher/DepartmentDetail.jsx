@@ -16,7 +16,7 @@ import { useClassData } from '../../components/teacher/class-detail/useClassData
 import { useClassEdit } from '../../components/teacher/class-detail/useClassEdit'
 import '../css/teacher/ClassDetail.css'
 
-export default function ClassDetail() {
+export default function DepartmentDetail() {
   const { id } = useParams()
   const [tab,    setTab]    = useState('students')
   const [search, setSearch] = useState('')
@@ -47,7 +47,7 @@ export default function ClassDetail() {
       <div className="cd-page">
         <div className="cd-layout">
           <NavBar />
-          <div className="cd-not-found">Class not found.</div>
+          <div className="cd-not-found">Department not found.</div>
         </div>
       </div>
     )
@@ -107,7 +107,7 @@ export default function ClassDetail() {
               )}
               {tab === 'lessons' && (
                 <LessonsCoursesTab
-                  classId={id}
+                  departmentId={id}
                   classLessons={lessons}
                   onClassLessonUpdate={handleClassLessonUpdate}
                 />
@@ -115,7 +115,7 @@ export default function ClassDetail() {
               {tab === 'tests' && <TestList tests={tests} />}
               {tab === 'announcements' && (
                 <AnnouncementsTab
-                  classId={id}
+                  departmentId={id}
                   announcements={announcements}
                   onAdd={handleAnnouncementAdded}
                   onUpdate={handleAnnouncementUpdated}
@@ -129,7 +129,7 @@ export default function ClassDetail() {
 
       {showTestModal && (
         <CreateTestModal
-          classId={id}
+          departmentId={id}
           onClose={() => setShowTestModal(false)}
           onCreated={handleTestCreated}
         />

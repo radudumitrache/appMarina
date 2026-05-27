@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import LessonEditModal from '../course-builder/LessonEditModal'
 import '../../css/teacher/class-detail/StudentList.css'
 
-export default function LessonList({ lessons, classId, onRemove, onUpdate }) {
+export default function LessonList({ lessons, departmentId, onRemove, onUpdate }) {
   const navigate = useNavigate()
   const [confirmId, setConfirmId] = useState(null)
   const [editLesson, setEditLesson] = useState(null)
@@ -25,7 +25,6 @@ export default function LessonList({ lessons, classId, onRemove, onUpdate }) {
       <div className="cd-list-header">
         <span className="cd-col cd-col--num">#</span>
         <span className="cd-col cd-col--lesson">Lesson</span>
-        <span className="cd-col cd-col--cat">Departments</span>
         <span className="cd-col cd-col--dur">Duration</span>
         <span className="cd-col cd-col--completion">Completion</span>
         <span className="cd-col cd-col--actions3" />
@@ -51,12 +50,6 @@ export default function LessonList({ lessons, classId, onRemove, onUpdate }) {
               </div>
               <div className="cd-col cd-col--lesson">
                 <span className="cd-lesson-title">{l.title}</span>
-              </div>
-              <div className="cd-col cd-col--cat">
-                {(l.department_ids ?? []).length > 0
-                  ? <span className="cd-cat-tag">{(l.department_ids ?? []).length} dept{(l.department_ids ?? []).length !== 1 ? 's' : ''}</span>
-                  : <span className="cd-cat-tag" style={{ opacity: 0.4 }}>—</span>
-                }
               </div>
               <div className="cd-col cd-col--dur">
                 <span className="cd-mono cd-muted">{l.duration}</span>
@@ -119,7 +112,7 @@ export default function LessonList({ lessons, classId, onRemove, onUpdate }) {
                     </button>
                     <button
                       className="cd-row-action"
-                      title="Remove from class"
+                      title="Remove from department"
                       onClick={() => setConfirmId(l.id)}
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -140,7 +133,7 @@ export default function LessonList({ lessons, classId, onRemove, onUpdate }) {
 
     {editLesson && (
       <LessonEditModal
-        lesson={{ id: editLesson.id, title: editLesson.title, department_ids: editLesson.department_ids ?? [], duration_minutes: parseInt(editLesson.duration) || '' }}
+        lesson={{ id: editLesson.id, title: editLesson.title, duration_minutes: parseInt(editLesson.duration) || '' }}
         onSave={handleSave}
         onClose={() => setEditLesson(null)}
       />

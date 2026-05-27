@@ -1,24 +1,24 @@
 import '../../css/teacher/progress/ProgressClassTabs.css'
 
-export default function ProgressClassTabs({ classes, students, classFilter, onClassChange }) {
+export default function ProgressClassTabs({ departments, students, departmentFilter, onDepartmentChange }) {
   return (
     <aside className="tp-class-sidebar">
-      <div className="tp-class-sidebar-title">Classes</div>
+      <div className="tp-class-sidebar-title">Departments</div>
 
-      {classes.map(c => {
+      {departments.map(c => {
         const count  = c.id === 'all'
           ? students.length
-          : students.filter(s => s.classId === c.id).length
-        const active = classFilter === c.id
+          : students.filter(s => s.departmentId === c.id).length
+        const active = departmentFilter === c.id
 
         if (c.id === 'all') {
           return (
             <button
               key="all"
               className={`tp-class-card tp-class-card--all ${active ? 'tp-class-card--active' : ''}`}
-              onClick={() => onClassChange('all')}
+              onClick={() => onDepartmentChange('all')}
             >
-              <span className="tp-class-card-name">All Classes</span>
+              <span className="tp-class-card-name">All Departments</span>
               <span className="tp-class-card-count">{count}</span>
             </button>
           )
@@ -31,7 +31,7 @@ export default function ProgressClassTabs({ classes, students, classFilter, onCl
           <button
             key={c.id}
             className={`tp-class-card ${active ? 'tp-class-card--active' : ''}`}
-            onClick={() => onClassChange(c.id)}
+            onClick={() => onDepartmentChange(c.id)}
           >
             <div className="tp-class-card-top">
               <span className="tp-class-card-code">{code}</span>

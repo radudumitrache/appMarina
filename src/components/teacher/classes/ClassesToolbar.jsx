@@ -35,7 +35,7 @@ export default function ClassesToolbar({ classes, tab, onTabChange, search, onSe
         <input
           className="classes-search-input"
           type="text"
-          placeholder="Search classes…"
+          placeholder="Search departments…"
           value={search}
           onChange={e => onSearchChange(e.target.value)}
         />

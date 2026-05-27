@@ -6,7 +6,7 @@ import ClassesStats from '../../components/admin/classes/ClassesStats'
 import ClassesSection from '../../components/admin/classes/ClassesSection'
 import ClassFormModal from '../../components/admin/classes/ClassFormModal'
 import DeleteConfirmModal from '../../components/admin/classes/DeleteConfirmModal'
-import { getClasses, createClass, updateClass, deleteClass } from '../../api/classes'
+import { getDepartments, createDepartment, updateDepartment, deleteDepartment } from '../../api/departments'
 import { getTeachers } from '../../api/admin'
 import '../css/admin/Classes.css'
 
@@ -15,22 +15,22 @@ const EMPTY_FORM = {
   start_date: '', end_date: '', status: 'active',
 }
 
-export default function Classes() {
+export default function Departments() {
   const navigate = useNavigate()
-  const [classes, setClasses]           = useState([])
-  const [teachers, setTeachers]         = useState([])
-  const [loading, setLoading]           = useState(true)
-  const [search, setSearch]             = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [modal, setModal]               = useState(null)
-  const [form, setForm]                 = useState(EMPTY_FORM)
-  const [formErrors, setFormErrors]     = useState({})
-  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [departments, setDepartments]        = useState([])
+  const [teachers, setTeachers]              = useState([])
+  const [loading, setLoading]                = useState(true)
+  const [search, setSearch]                  = useState('')
+  const [statusFilter, setStatusFilter]      = useState('all')
+  const [modal, setModal]                    = useState(null)
+  const [form, setForm]                      = useState(EMPTY_FORM)
+  const [formErrors, setFormErrors]          = useState({})
+  const [deleteTarget, setDeleteTarget]      = useState(null)
 
   useEffect(() => {
-    Promise.all([getClasses(), getTeachers()])
+    Promise.all([getDepartments(), getTeachers()])
       .then(([clsRes, tchRes]) => {
-        setClasses(clsRes.data)
+        setDepartments(clsRes.data)
         setTeachers(tchRes.data)
       })
       .finally(() => setLoading(false))
@@ -46,14 +46,14 @@ export default function Classes() {
     )
   }
 
-  const activeClasses   = classes.filter(c => c.status === 'active'   && matchesSearch(c))
-  const archivedClasses = classes.filter(c => c.status === 'archived' && matchesSearch(c))
+  const activeDepartments   = departments.filter(c => c.status === 'active'   && matchesSearch(c))
+  const archivedDepartments = departments.filter(c => c.status === 'archived' && matchesSearch(c))
 
   const stats = {
-    total:    classes.length,
-    active:   classes.filter(c => c.status === 'active').length,
-    archived: classes.filter(c => c.status === 'archived').length,
-    students: classes.reduce((sum, c) => sum + (c.student_count || 0), 0),
+    total:    departments.length,
+    active:   departments.filter(c => c.status === 'active').length,
+    archived: departments.filter(c => c.status === 'archived').length,
+    students: departments.reduce((sum, c) => sum + (c.student_count || 0), 0),
   }
 
   const openCreate = () => { setForm(EMPTY_FORM); setFormErrors({}); setModal('create') }
@@ -78,8 +78,8 @@ export default function Classes() {
 
   const handleSave = async () => {
     const clientErrors = {}
-    if (!form.name.trim())     clientErrors.name       = 'Class name is required.'
-    if (!form.code.trim())     clientErrors.code       = 'Class code is required.'
+    if (!form.name.trim())     clientErrors.name       = 'Department name is required.'
+    if (!form.code.trim())     clientErrors.code       = 'Department code is required.'
     if (!form.subject.trim())  clientErrors.subject    = 'Subject is required.'
     if (!form.start_date)      clientErrors.start_date = 'Start date is required.'
     if (!form.end_date)        clientErrors.end_date   = 'End date is required.'
@@ -88,11 +88,11 @@ export default function Classes() {
     setFormErrors({})
     try {
       if (modal === 'create') {
-        const { data } = await createClass(form)
-        setClasses(prev => [data, ...prev])
+        const { data } = await createDepartment(form)
+        setDepartments(prev => [data, ...prev])
       } else {
-        const { data } = await updateClass(modal.id, form)
-        setClasses(prev => prev.map(c => c.id === modal.id ? data : c))
+        const { data } = await updateDepartment(modal.id, form)
+        setDepartments(prev => prev.map(c => c.id === modal.id ? data : c))
       }
       setModal(null)
     } catch (err) {
@@ -110,28 +110,28 @@ export default function Classes() {
   }
 
   const toggleArchive = async id => {
-    const cls = classes.find(c => c.id === id)
-    if (!cls) return
-    const newStatus = cls.status === 'active' ? 'archived' : 'active'
-    setClasses(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c))
+    const dep = departments.find(c => c.id === id)
+    if (!dep) return
+    const newStatus = dep.status === 'active' ? 'archived' : 'active'
+    setDepartments(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c))
     try {
-      const { data } = await updateClass(id, { status: newStatus })
-      setClasses(prev => prev.map(c => c.id === id ? data : c))
+      const { data } = await updateDepartment(id, { status: newStatus })
+      setDepartments(prev => prev.map(c => c.id === id ? data : c))
     } catch {
-      setClasses(prev => prev.map(c => c.id === id ? cls : c))
+      setDepartments(prev => prev.map(c => c.id === id ? dep : c))
     }
   }
 
   const executeDelete = async () => {
     try {
-      await deleteClass(deleteTarget.id)
-      setClasses(prev => prev.filter(c => c.id !== deleteTarget.id))
+      await deleteDepartment(deleteTarget.id)
+      setDepartments(prev => prev.filter(c => c.id !== deleteTarget.id))
     } catch {}
     setDeleteTarget(null)
   }
 
   const sectionHandlers = {
-    onManage:        cls => navigate(`/admin/classes/${cls.id}`),
+    onManage:        cls => navigate(`/admin/departments/${cls.id}`),
     onEdit:          openEdit,
     onToggleArchive: toggleArchive,
     onDelete:        cls => setDeleteTarget(cls),
@@ -142,8 +142,8 @@ export default function Classes() {
   const showArchived = statusFilter === 'archived'
 
   const filteredCount = showBoth
-    ? activeClasses.length + archivedClasses.length
-    : showActive ? activeClasses.length : archivedClasses.length
+    ? activeDepartments.length + archivedDepartments.length
+    : showActive ? activeDepartments.length : archivedDepartments.length
 
   return (
     <div className="classes-adm-page">
@@ -166,17 +166,17 @@ export default function Classes() {
             <>
               <ClassesSection
                 title="Active"
-                classes={activeClasses}
+                classes={activeDepartments}
                 startIndex={0}
                 loading={loading}
                 skeletonCount={3}
                 {...sectionHandlers}
               />
-              {(loading || archivedClasses.length > 0) && (
+              {(loading || archivedDepartments.length > 0) && (
                 <ClassesSection
                   title="Archived"
-                  classes={archivedClasses}
-                  startIndex={activeClasses.length}
+                  classes={archivedDepartments}
+                  startIndex={activeDepartments.length}
                   loading={loading}
                   skeletonCount={1}
                   {...sectionHandlers}
@@ -188,7 +188,7 @@ export default function Classes() {
           {showActive && (
             <ClassesSection
               title="Active"
-              classes={activeClasses}
+              classes={activeDepartments}
               startIndex={0}
               loading={loading}
               skeletonCount={4}
@@ -199,7 +199,7 @@ export default function Classes() {
           {showArchived && (
             <ClassesSection
               title="Archived"
-              classes={archivedClasses}
+              classes={archivedDepartments}
               startIndex={0}
               loading={loading}
               skeletonCount={2}

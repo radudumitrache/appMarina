@@ -26,7 +26,7 @@ export default function ClassesGrid({ loading, classes, onView, onDelete }) {
   }
 
   if (classes.length === 0) {
-    return <p className="classes-empty">No classes match your search.</p>
+    return <p className="classes-empty">No departments match your search.</p>
   }
 
   return (

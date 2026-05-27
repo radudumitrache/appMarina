@@ -87,8 +87,8 @@ function CertificatePreview({ diploma, studentName, onClose }) {
 
           <div className="ds-cert-footer">
             <div className="ds-cert-footer-col">
-              <span className="ds-cert-footer-label">Class</span>
-              <span className="ds-cert-footer-value">{diploma.classroom_name}</span>
+              <span className="ds-cert-footer-label">Department</span>
+              <span className="ds-cert-footer-value">{diploma.department_name}</span>
             </div>
             <div className="ds-cert-footer-col">
               <span className="ds-cert-footer-label">Issued</span>
@@ -133,7 +133,7 @@ export default function DiplomasSection({ diplomas, studentName }) {
             </div>
             <div className="ds-row-body">
               <span className="ds-row-title">{d.title}</span>
-              <span className="ds-row-class">{d.classroom_name}</span>
+              <span className="ds-row-class">{d.department_name}</span>
             </div>
             <span className="ds-row-date">{formatDate(d.issued_at)}</span>
             <svg className="ds-row-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

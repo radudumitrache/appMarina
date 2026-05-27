@@ -4,20 +4,15 @@ import '../../css/teacher/course-builder/LessonEditModal.css'
 const DIFFICULTY_OPTIONS = ['easy', 'intermediate', 'advanced']
 const VISIBILITY_OPTIONS  = ['class', 'public']
 
-export default function LessonEditModal({ lesson, departments = [], onSave, onClose }) {
+export default function LessonEditModal({ lesson, onSave, onClose }) {
   const isNew = !lesson?.id
 
-  const [title,         setTitle]         = useState(lesson?.title ?? '')
-  const [departmentIds, setDepartmentIds] = useState(lesson?.department_ids ?? [])
-  const [duration,      setDuration]      = useState(lesson?.duration_minutes ?? '')
+  const [title,    setTitle]    = useState(lesson?.title ?? '')
+  const [duration, setDuration] = useState(lesson?.duration_minutes ?? '')
   const [visibility,    setVisibility]    = useState(lesson?.visibility ?? 'class')
   const [difficulty,    setDifficulty]    = useState(lesson?.difficulty ?? 'easy')
   const [saving,        setSaving]        = useState(false)
   const [err,           setErr]           = useState(null)
-
-  function toggleDept(id) {
-    setDepartmentIds(prev => prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id])
-  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -28,7 +23,6 @@ export default function LessonEditModal({ lesson, departments = [], onSave, onCl
     try {
       await onSave({
         title:            title.trim(),
-        department_ids:   departmentIds,
         duration_minutes: Number(duration),
         visibility,
         difficulty,
@@ -76,27 +70,6 @@ export default function LessonEditModal({ lesson, departments = [], onSave, onCl
             />
           </div>
 
-          {departments.length > 0 && (
-            <div className="lem-field">
-              <label className="lem-label">Departments</label>
-              <div className="lem-check-list">
-                {departments.map(d => (
-                  <label key={d.id} className={`lem-check-item ${departmentIds.includes(d.id) ? 'lem-check-item--active' : ''}`}>
-                    <span className={`lem-check-box ${departmentIds.includes(d.id) ? 'lem-check-box--checked' : ''}`}>
-                      {departmentIds.includes(d.id) && (
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                      )}
-                    </span>
-                    <input type="checkbox" checked={departmentIds.includes(d.id)} onChange={() => toggleDept(d.id)} style={{ display: 'none' }} />
-                    <span className="lem-check-label">{d.name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-
           <div className="lem-field">
             <label className="lem-label">Visibility</label>
             <div className="lem-pill-row">
@@ -107,7 +80,7 @@ export default function LessonEditModal({ lesson, departments = [], onSave, onCl
                   className={`lem-pill ${visibility === v ? 'lem-pill--active' : ''}`}
                   onClick={() => setVisibility(v)}
                 >
-                  {v === 'class' ? 'Class' : 'Public'}
+                  {v === 'class' ? 'Department only' : 'Public'}
                 </button>
               ))}
             </div>

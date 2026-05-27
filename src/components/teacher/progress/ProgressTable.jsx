@@ -23,7 +23,7 @@ export default function ProgressTable({
             const pct = s.lessonsTotal > 0 ? Math.round((s.lessonsDone / s.lessonsTotal) * 100) : 0
             return (
               <div
-                key={`${s.id}-${s.classId}`}
+                key={`${s.id}-${s.departmentId}`}
                 className={`tp-row ${selectedId === s.id ? 'tp-row--selected' : ''}`}
                 style={{ animationDelay: `${Math.min(i, 6) * 0.04}s`, cursor: 'pointer' }}
                 onClick={() => onSelect(s)}

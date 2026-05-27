@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { createLesson } from '../../../api/lessons'
-import { assignLesson } from '../../../api/classes'
-import { getDepartments } from '../../../api/departments'
+import { assignLesson } from '../../../api/departments'
 import '../../css/teacher/class-detail/AssignLessonModal.css'
 
 const EMPTY = {
@@ -11,23 +10,15 @@ const EMPTY = {
   difficulty: 'easy',
 }
 
-export default function CreateLessonModal({ classId, onClose, onCreated }) {
-  const [form, setForm]           = useState(EMPTY)
-  const [departments, setDepts]   = useState([])
-  const [deptIds, setDeptIds]     = useState([])
-  const [errors, setErrors]       = useState({})
-  const [saving, setSaving]       = useState(false)
-
-  useEffect(() => {
-    getDepartments().then(r => setDepts(r.data)).catch(() => {})
-  }, [])
+export default function CreateLessonModal({ departmentId, onClose, onCreated }) {
+  const [form, setForm]   = useState(EMPTY)
+  const [errors, setErrors] = useState({})
+  const [saving, setSaving] = useState(false)
 
   const set = (field, value) => {
     setForm(f => ({ ...f, [field]: value }))
     setErrors(e => { const n = { ...e }; delete n[field]; return n })
   }
-
-  const toggleDept = (id) => setDeptIds(prev => prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id])
 
   const handleSave = async () => {
     const errs = {}
@@ -39,12 +30,11 @@ export default function CreateLessonModal({ classId, onClose, onCreated }) {
     try {
       const { data: lesson } = await createLesson({
         title:            form.title.trim(),
-        department_ids:   deptIds,
         duration_minutes: Number(form.duration_minutes),
         visibility:       form.visibility,
         difficulty:       form.difficulty,
       })
-      const { data: classLesson } = await assignLesson(classId, { lesson: lesson.id })
+      const { data: classLesson } = await assignLesson(departmentId, { lesson: lesson.id })
       onCreated(classLesson, lesson)
       onClose()
     } catch (err) {
@@ -102,27 +92,6 @@ export default function CreateLessonModal({ classId, onClose, onCreated }) {
             {err('duration_minutes')}
           </div>
 
-          {departments.length > 0 && (
-            <div className="alm-form-row">
-              <label className="alm-label">Departments</label>
-              <div className="alm-check-list">
-                {departments.map(d => (
-                  <label key={d.id} className={`alm-check-item ${deptIds.includes(d.id) ? 'alm-check-item--active' : ''}`}>
-                    <span className={`alm-check-box ${deptIds.includes(d.id) ? 'alm-check-box--checked' : ''}`}>
-                      {deptIds.includes(d.id) && (
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                      )}
-                    </span>
-                    <input type="checkbox" checked={deptIds.includes(d.id)} onChange={() => toggleDept(d.id)} style={{ display: 'none' }} />
-                    <span className="alm-check-label">{d.name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-
           <div className="alm-form-2col">
             <div className="alm-form-row">
               <label className="alm-label">Visibility</label>
@@ -130,7 +99,7 @@ export default function CreateLessonModal({ classId, onClose, onCreated }) {
                 {['class', 'public'].map(v => (
                   <label key={v} className={`alm-radio ${form.visibility === v ? 'alm-radio--active' : ''}`}>
                     <input type="radio" name="visibility" value={v} checked={form.visibility === v} onChange={() => set('visibility', v)} />
-                    <span>{v.charAt(0).toUpperCase() + v.slice(1)}</span>
+                    <span>{v === 'class' ? 'Department only' : v.charAt(0).toUpperCase() + v.slice(1)}</span>
                   </label>
                 ))}
               </div>

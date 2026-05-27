@@ -3,7 +3,7 @@ import FilterPanel from './FilterPanel'
 
 const VISIBILITY_OPTIONS = [
   { id: 'all',    label: 'All'      },
-  { id: 'class',  label: 'My Class' },
+  { id: 'class',  label: 'My Department' },
   { id: 'public', label: 'Public'   },
 ]
 

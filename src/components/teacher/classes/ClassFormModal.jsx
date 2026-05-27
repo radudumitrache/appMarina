@@ -40,7 +40,7 @@ export default function ClassFormModal({ mode = 'create', form, errors = {}, onC
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">{isEdit ? 'Edit Class' : 'New Class'}</h3>
+          <h3 className="modal-title">{isEdit ? 'Edit Department' : 'New Department'}</h3>
           <button className="modal-close" onClick={onClose}><XIcon /></button>
         </div>
         <div className="modal-body modal-body--scroll">
@@ -51,7 +51,7 @@ export default function ClassFormModal({ mode = 'create', form, errors = {}, onC
 
           <div className="form-2col">
             <div className="form-row">
-              <Label required>Class Name</Label>
+              <Label required>Department Name</Label>
               <input
                 className={`form-input${errors.name ? ' form-input--error' : ''}`}
                 type="text"
@@ -62,7 +62,7 @@ export default function ClassFormModal({ mode = 'create', form, errors = {}, onC
               {err('name')}
             </div>
             <div className="form-row">
-              <Label required>Class Code</Label>
+              <Label required>Department Code</Label>
               <div className="form-code-wrap">
                 <input
                   className={`form-input form-input--code${errors.code ? ' form-input--error' : ''}`}
@@ -137,7 +137,7 @@ export default function ClassFormModal({ mode = 'create', form, errors = {}, onC
         <div className="modal-footer">
           <button className="btn-ghost" onClick={onClose} disabled={saving}>Cancel</button>
           <button className="btn-primary" onClick={onSave} disabled={saving}>
-            {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Create Class'}
+            {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Create Department'}
           </button>
         </div>
       </div>

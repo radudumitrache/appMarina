@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import NavBar from '../../components/admin/NavBar'
 import { getCourses, createCourse, updateCourse, deleteCourse } from '../../api/lessons'
-import { getClasses } from '../../api/classes'
+import { getDepartments } from '../../api/departments'
+import { getTeachers } from '../../api/admin'
 import '../css/admin/Courses.css'
 
-const EMPTY_FORM = { title: '', description: '', classroom_id: '', status: 'draft' }
+const EMPTY_FORM = { title: '', description: '', department_id: '', status: 'draft', author_id: '' }
 
-function CourseFormModal({ mode, form, errors, classes, onChange, onClose, onSave }) {
+function CourseFormModal({ mode, form, errors, departments, teachers, onChange, onClose, onSave }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={e => e.stopPropagation()}>
@@ -46,15 +47,31 @@ function CourseFormModal({ mode, form, errors, classes, onChange, onClose, onSav
           </div>
 
           <div className="form-group">
-            <label className="form-label">Class (optional)</label>
+            <label className="form-label">Department (optional)</label>
             <select
               className="form-input form-select"
-              value={form.classroom_id}
-              onChange={e => onChange('classroom_id', e.target.value)}
+              value={form.department_id}
+              onChange={e => onChange('department_id', e.target.value)}
             >
               <option value="">— Organisation-wide —</option>
-              {classes.map(c => (
+              {departments.map(c => (
                 <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Author</label>
+            <select
+              className="form-input form-select"
+              value={form.author_id}
+              onChange={e => onChange('author_id', e.target.value)}
+            >
+              <option value="">— Assign to me —</option>
+              {teachers.map(t => (
+                <option key={t.id} value={t.id}>
+                  {t.first_name || t.last_name ? `${t.first_name} ${t.last_name}`.trim() : t.username}
+                </option>
               ))}
             </select>
           </div>
@@ -131,13 +148,13 @@ function CourseCard({ course, onEdit, onDelete, onManage, index }) {
       </div>
 
       <div className="course-card-meta">
-        {course.classroom_name
+        {course.department_name
           ? <span className="course-meta-item">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
                 <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
               </svg>
-              {course.classroom_name}
+              {course.department_name}
             </span>
           : <span className="course-meta-item course-meta-item--org">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -171,7 +188,8 @@ export default function Courses() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [courses, setCourses]       = useState([])
-  const [classes, setClasses]       = useState([])
+  const [departments, setDepartments] = useState([])
+  const [teachers, setTeachers]     = useState([])
   const [loading, setLoading]       = useState(true)
   const [search, setSearch]         = useState('')
   const [statusFilter, setStatus]   = useState('all')
@@ -181,10 +199,11 @@ export default function Courses() {
   const [deleteTarget, setDelete]   = useState(null)
 
   useEffect(() => {
-    Promise.all([getCourses(), getClasses()])
-      .then(([cRes, clRes]) => {
+    Promise.all([getCourses(), getDepartments(), getTeachers()])
+      .then(([cRes, clRes, tRes]) => {
         setCourses(cRes.data)
-        setClasses(clRes.data)
+        setDepartments(clRes.data)
+        setTeachers(tRes.data?.results ?? tRes.data ?? [])
       })
       .finally(() => setLoading(false))
   }, [])
@@ -193,7 +212,7 @@ export default function Courses() {
     const q = search.toLowerCase()
     const matchSearch = (c.title || '').toLowerCase().includes(q) ||
       (c.description || '').toLowerCase().includes(q) ||
-      (c.classroom_name || '').toLowerCase().includes(q)
+      (c.department_name || '').toLowerCase().includes(q)
     const matchStatus = statusFilter === 'all' || c.status === statusFilter
     return matchSearch && matchStatus
   })
@@ -209,8 +228,9 @@ export default function Courses() {
     setForm({
       title:        course.title,
       description:  course.description || '',
-      classroom_id: course.classroom_id ?? '',
+      department_id: course.department_id ?? '',
       status:       course.status,
+      author_id:    course.author ?? '',
     })
     setFormErrors({})
     setModal(course)
@@ -230,7 +250,8 @@ export default function Courses() {
       title:        form.title.trim(),
       description:  form.description.trim(),
       status:       form.status,
-      classroom_id: form.classroom_id ? Number(form.classroom_id) : null,
+      department_id: form.department_id ? Number(form.department_id) : null,
+      ...(form.author_id ? { author_id: Number(form.author_id) } : {}),
     }
     try {
       if (modal === 'create') {
@@ -350,7 +371,8 @@ export default function Courses() {
           mode={modal === 'create' ? 'create' : 'edit'}
           form={form}
           errors={formErrors}
-          classes={classes}
+          departments={departments}
+          teachers={teachers}
           onChange={handleFormChange}
           onClose={() => { setModal(null); setFormErrors({}) }}
           onSave={handleSave}

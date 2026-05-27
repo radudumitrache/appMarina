@@ -3,7 +3,7 @@ import '../css/teacher/NavBar.css'
 
 const LINKS = [
   { label: 'Dashboard',        slug: 'dashboard'   },
-  { label: 'My Classes',       slug: 'classes'     },
+  { label: 'My Departments',   slug: 'departments' },
   { label: 'Course Builder',   slug: 'builder'     },
   { label: 'Student Progress', slug: 'progress'    },
   { label: 'Test Builder',     slug: 'assignments' },

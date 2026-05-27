@@ -97,7 +97,7 @@ export default function SecurityPanel({ onChangePassword }) {
       <div className="tp-security-danger">
         <span className="tp-security-danger-title">Danger Zone</span>
         <p className="tp-security-danger-body">
-          Deleting your account is permanent and cannot be undone. All classes, courses, and test records linked to this account will be permanently removed.
+          Deleting your account is permanent and cannot be undone. All departments, courses, and test records linked to this account will be permanently removed.
         </p>
         <button className="tp-btn-danger-ghost">Delete account</button>
       </div>

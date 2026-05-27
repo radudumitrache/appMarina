@@ -159,7 +159,7 @@ export default function EditDrawer({
   panel, editor,
   showHtml, rawHtml, onRawHtmlChange, onToggleHtml,
   onDrawerWidthChange,
-  onSave, onClose, saving, lessonId, classroomId, classroomLabel, panels,
+  onSave, onClose, saving, lessonId, departmentId, departmentLabel, panels,
   onAnchorsChange, focusAnchor, onEnterPlacement,
   newAnchorPlacement, onNewAnchorSaved,
   newPolyPlacement, onNewPolySaved,
@@ -377,7 +377,7 @@ export default function EditDrawer({
             onDelete={handleDocDelete}
             uploading={docUploading}
             isAdmin={isAdmin}
-            classroomId={classroomId}
+            departmentId={departmentId}
           />
         )}
 
@@ -388,7 +388,7 @@ export default function EditDrawer({
             lessonId={lessonId}
             panelId={panel.id}
             panels={panels}
-            classroomId={classroomId}
+            departmentId={departmentId}
             initialTextAnchors={panel.vr_tour?.text_anchors ?? []}
             initialNavAnchors={panel.vr_tour?.navigator_anchors ?? []}
             initialPolyAnchors={panel.vr_tour?.polygon_anchors ?? []}
@@ -434,7 +434,7 @@ export default function EditDrawer({
               <ScenePicker
                 value={mediaFileId}
                 onChange={(id, url) => { setMediaFileId(id); setPreviewUrl(url); setScenePickerOpen(false) }}
-                classroomId={classroomId}
+                departmentId={departmentId}
               />
             </div>
           </div>
@@ -445,8 +445,8 @@ export default function EditDrawer({
       {mediaMode && (
         <MediaInsertModal
           initialMode={mediaMode}
-          classroomId={classroomId}
-          folderLabel={classroomLabel}
+          departmentId={departmentId}
+          folderLabel={departmentLabel}
           onInsert={handleMediaInsert}
           onClose={() => setMediaMode(null)}
         />

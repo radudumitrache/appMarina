@@ -5,10 +5,10 @@ import '../../css/teacher/lesson-panel-editor/ScenePicker.css'
 
 function folderLabel(scene) {
   if (scene.folder === 'public' || scene.folder === 'vr_scenes') return 'Public'
-  return scene.class_name || 'Class'
+  return scene.department_name || 'Department'
 }
 
-export default function ScenePicker({ value, onChange, classroomId, folderName }) {
+export default function ScenePicker({ value, onChange, departmentId, folderName }) {
   const [scenes,    setScenes]    = useState([])
   const [loading,   setLoading]   = useState(true)
   const [uploading, setUploading] = useState(false)
@@ -16,18 +16,18 @@ export default function ScenePicker({ value, onChange, classroomId, folderName }
   const [previewScene, setPreviewScene] = useState(null)
   const fileRef = useRef()
 
-  const folderParams = classroomId
-    ? { folder: 'class', classroom_id: classroomId }
+  const folderParams = departmentId
+    ? { folder: 'class', department_id: departmentId }
     : { folder: 'public' }
 
-  const uploadDestLabel = folderName ?? (classroomId ? 'the class folder' : 'Public')
+  const uploadDestLabel = folderName ?? (departmentId ? 'the class folder' : 'Public')
 
   useEffect(() => {
     getMediaFiles(folderParams)
       .then(({ data }) => setScenes(data.filter(f => f.file_type === 'image' && f.is_vr_scene)))
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [classroomId])
+  }, [departmentId])
 
   const handleFileChange = async e => {
     const file = e.target.files?.[0]

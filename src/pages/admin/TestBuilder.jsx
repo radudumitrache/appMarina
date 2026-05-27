@@ -6,7 +6,7 @@ import {
   getTests, createTest, updateTest, publishTest, getTest,
   createTestPanel, deleteTest,
 } from '../../api/tests'
-import { getClasses } from '../../api/classes'
+import { getDepartments } from '../../api/departments'
 import { getOrganisations } from '../../api/organisations'
 import { useAuth } from '../../auth/AuthContext'
 import '../css/teacher/TestBuilder.css'
@@ -14,7 +14,7 @@ import '../css/teacher/TestBuilder.css'
 export default function AdminTestBuilder() {
   const { user } = useAuth()
   const [tests,         setTests]         = useState([])
-  const [classes,       setClasses]       = useState([])
+  const [departments,   setDepartments]   = useState([])
   const [organisations, setOrganisations] = useState([])
   const [selectedId,    setSelectedId]    = useState(null)
   const [testDetail,    setTestDetail]    = useState(null)
@@ -27,11 +27,11 @@ export default function AdminTestBuilder() {
   const [newPanelTitle,   setNewPanelTitle]   = useState('')
 
   useEffect(() => {
-    const fetches = [getTests({}), getClasses()]
+    const fetches = [getTests({}), getDepartments()]
     Promise.all(fetches)
       .then(([testsRes, classesRes]) => {
         setTests(testsRes.data)
-        setClasses(classesRes.data)
+        setDepartments(classesRes.data)
       })
       .finally(() => setLoading(false))
     if (user?.is_staff) {
@@ -137,7 +137,7 @@ export default function AdminTestBuilder() {
   }
 
   const panels   = testDetail?.panels ?? []
-  const hasClass = Boolean(testDetail?.classroom)
+  const hasClass = Boolean(testDetail?.department)
 
   return (
     <div className="tb-page">
@@ -160,7 +160,7 @@ export default function AdminTestBuilder() {
               selectedId={selectedId}
               panels={panels}
               hasClass={hasClass}
-              classes={classes}
+              classes={departments}
               organisations={organisations}
               expandedPanelId={expandedPanelId}
               saving={saving}

@@ -53,7 +53,7 @@ export default function RenameModal({ file, files = [], onClose, onSave }) {
   const [conflict, setConflict]   = useState(null)
 
   const scopedFiles = files.filter(f =>
-    f.folder === file.folder && f.classroom === file.classroom
+    f.folder === file.folder && f.department === file.department
   )
 
   const handleSave = async () => {

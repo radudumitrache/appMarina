@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getClass, getClassStudents, getClassLessons, getAnnouncements } from '../../../api/classes'
+import { getDepartment, getClassStudents, getClassLessons, getAnnouncements } from '../../../api/departments'
 import { getTests } from '../../../api/tests'
 
 export function useClassData(id) {
@@ -12,7 +12,7 @@ export function useClassData(id) {
 
   useEffect(() => {
     Promise.all([
-      getClass(id),
+      getDepartment(id),
       getClassStudents(id),
       getClassLessons(id),
       getTests({ class: id }),
@@ -34,11 +34,10 @@ export function useClassData(id) {
       })))
 
       setLessons(lesRes.data.map((cl, i) => ({
-        id:             cl.lesson,
-        num:            String(i + 1).padStart(2, '0'),
-        title:          cl.lesson_detail?.title     ?? '—',
-        department_ids: cl.lesson_detail?.department_ids ?? [],
-        duration:       cl.lesson_detail?.duration_minutes ? `${cl.lesson_detail.duration_minutes} min` : '—',
+        id:       cl.lesson,
+        num:      String(i + 1).padStart(2, '0'),
+        title:    cl.lesson_detail?.title ?? '—',
+        duration: cl.lesson_detail?.duration_minutes ? `${cl.lesson_detail.duration_minutes} min` : '—',
         completed:      Math.round((cl.completion_pct / 100) * (clsRes.data.student_count || 0)),
         total:          clsRes.data.student_count || 0,
       })))
@@ -50,9 +49,8 @@ export function useClassData(id) {
   function handleClassLessonUpdate(lessonId, data) {
     setLessons(prev => prev.map(l => l.id !== lessonId ? l : {
       ...l,
-      title:          data.title          ?? l.title,
-      department_ids: data.department_ids ?? l.department_ids,
-      duration:       data.duration_minutes != null ? `${data.duration_minutes} min` : l.duration,
+      title:    data.title ?? l.title,
+      duration: data.duration_minutes != null ? `${data.duration_minutes} min` : l.duration,
     }))
   }
 

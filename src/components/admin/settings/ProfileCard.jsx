@@ -53,7 +53,7 @@ export default function ProfileCard({ profile, stats, onSignOut }) {
             </div>
             <div className="as-summary-stat">
               <span className="as-summary-value">{stats?.total_classes ?? '—'}</span>
-              <span className="as-summary-key">Classes</span>
+              <span className="as-summary-key">Departments</span>
             </div>
             <div className="as-summary-stat">
               <span className="as-summary-value">{stats?.active_students_last_7_days ?? '—'}</span>

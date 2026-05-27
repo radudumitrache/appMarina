@@ -14,10 +14,10 @@ function computeNewName(existingNames, originalName) {
 
 function fileFolderLabel(file) {
   if (file.folder === 'public' || file.folder === 'vr_scenes') return 'Public'
-  return file.class_name || 'Class'
+  return file.department_name || 'Department'
 }
 
-export default function MediaInsertModal({ initialMode = 'image', imageOnly = false, vrScene = false, classroomId, folderLabel, onInsert, onClose }) {
+export default function MediaInsertModal({ initialMode = 'image', imageOnly = false, vrScene = false, departmentId, folderLabel, onInsert, onClose }) {
   const [mode,          setMode]          = useState(imageOnly ? 'image' : initialMode)
   const [files,         setFiles]         = useState([])
   const [loading,       setLoading]       = useState(true)
@@ -27,18 +27,18 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
   const [previewFile,   setPreviewFile]   = useState(null)
   const fileRef = useRef()
 
-  const folderParams = classroomId
-    ? { folder: 'class', classroom_id: classroomId }
+  const folderParams = departmentId
+    ? { folder: 'class', department_id: departmentId }
     : { folder: 'public' }
 
-  const displayFolder = folderLabel ?? (classroomId ? 'Class folder' : 'Public')
+  const displayFolder = folderLabel ?? (departmentId ? 'Class folder' : 'Public')
 
   useEffect(() => {
     getMediaFiles(folderParams)
       .then(({ data }) => setFiles(data))
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [classroomId])
+  }, [departmentId])
 
   const displayed = vrScene
     ? files.filter(f => f.file_type === mode && f.is_vr_scene)

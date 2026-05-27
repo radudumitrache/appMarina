@@ -8,9 +8,6 @@ import { useAuth } from '../../auth/AuthContext'
 import {
   getOrganisations, createOrganisation, updateOrganisation, deleteOrganisation,
 } from '../../api/organisations'
-import {
-  getDepartments, createDepartment, updateDepartment, deleteDepartment,
-} from '../../api/departments'
 import '../css/admin/Organisations.css'
 
 function BuildingIcon() {
@@ -18,19 +15,6 @@ function BuildingIcon() {
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2"/>
       <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
-    </svg>
-  )
-}
-
-function DeptIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="3" width="6" height="4" rx="1"/>
-      <rect x="9" y="3" width="6" height="4" rx="1"/>
-      <rect x="16" y="3" width="6" height="4" rx="1"/>
-      <path d="M5 7v3m7-3v3m7-3v3"/>
-      <path d="M5 10h14"/>
-      <rect x="8" y="13" width="8" height="4" rx="1"/>
     </svg>
   )
 }
@@ -59,18 +43,12 @@ export default function Organisations() {
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  // Redirect non-superadmins away from this page
   useEffect(() => {
     if (user && !user.is_staff) navigate('/admin/dashboard', { replace: true })
   }, [user, navigate])
 
-  const [tab, setTab] = useState('organisations')
-
   const [orgs, setOrgs]           = useState([])
-  const [orgsLoading, setOrgsLoading] = useState(true)
-  const [depts, setDepts]         = useState([])
-  const [deptsLoading, setDeptsLoading] = useState(true)
-
+  const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')
   const [modal, setModal]         = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -80,23 +58,15 @@ export default function Organisations() {
   const [deleting, setDeleting]   = useState(false)
 
   useEffect(() => {
-    getOrganisations().then(r => setOrgs(r.data)).finally(() => setOrgsLoading(false))
-    getDepartments().then(r => setDepts(r.data)).finally(() => setDeptsLoading(false))
+    getOrganisations().then(r => setOrgs(r.data)).finally(() => setLoading(false))
   }, [])
-
-  const isOrgs      = tab === 'organisations'
-  const items       = isOrgs ? orgs : depts
-  const loading     = isOrgs ? orgsLoading : deptsLoading
-  const entityLabel = isOrgs ? 'Organisation' : 'Department'
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    return q ? items.filter(o => o.name.toLowerCase().includes(q)) : items
-  }, [items, search])
+    return q ? orgs.filter(o => o.name.toLowerCase().includes(q)) : orgs
+  }, [orgs, search])
 
-  const totalMembers = useMemo(() => items.reduce((s, o) => s + (o.member_count ?? 0), 0), [items])
-
-  const switchTab = t => { setTab(t); setSearch('') }
+  const totalMembers = useMemo(() => orgs.reduce((s, o) => s + (o.member_count ?? 0), 0), [orgs])
 
   const openCreate = () => { setFormName(''); setFormError(''); setModal('create') }
   const openEdit   = item => { setFormName(item.name); setFormError(''); setModal(item) }
@@ -106,22 +76,12 @@ export default function Organisations() {
     setSaving(true)
     setFormError('')
     try {
-      if (isOrgs) {
-        if (modal === 'create') {
-          const { data } = await createOrganisation({ name: formName.trim() })
-          setOrgs(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)))
-        } else {
-          const { data } = await updateOrganisation(modal.id, { name: formName.trim() })
-          setOrgs(prev => prev.map(o => o.id === modal.id ? data : o))
-        }
+      if (modal === 'create') {
+        const { data } = await createOrganisation({ name: formName.trim() })
+        setOrgs(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)))
       } else {
-        if (modal === 'create') {
-          const { data } = await createDepartment({ name: formName.trim() })
-          setDepts(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)))
-        } else {
-          const { data } = await updateDepartment(modal.id, { name: formName.trim() })
-          setDepts(prev => prev.map(o => o.id === modal.id ? data : o))
-        }
+        const { data } = await updateOrganisation(modal.id, { name: formName.trim() })
+        setOrgs(prev => prev.map(o => o.id === modal.id ? data : o))
       }
       setModal(null)
     } catch (err) {
@@ -137,13 +97,8 @@ export default function Organisations() {
   const handleDelete = async () => {
     setDeleting(true)
     try {
-      if (isOrgs) {
-        await deleteOrganisation(deleteTarget.id)
-        setOrgs(prev => prev.filter(o => o.id !== deleteTarget.id))
-      } else {
-        await deleteDepartment(deleteTarget.id)
-        setDepts(prev => prev.filter(o => o.id !== deleteTarget.id))
-      }
+      await deleteOrganisation(deleteTarget.id)
+      setOrgs(prev => prev.filter(o => o.id !== deleteTarget.id))
       setDeleteTarget(null)
     } catch {
       setDeleting(false)
@@ -158,8 +113,8 @@ export default function Organisations() {
         {/* ── Header ── */}
         <div className="org-header">
           <div className="org-header-left">
-            <h1 className="org-page-title">{isOrgs ? 'Organisations' : 'Departments'}</h1>
-            <span className="org-count-badge">{items.length}</span>
+            <h1 className="org-page-title">Organisations</h1>
+            <span className="org-count-badge">{orgs.length}</span>
           </div>
           <div className="org-header-right">
             <div className="org-search-wrap">
@@ -168,7 +123,7 @@ export default function Organisations() {
               </svg>
               <input
                 className="org-search-input"
-                placeholder={`Search ${isOrgs ? 'organisations' : 'departments'}…`}
+                placeholder="Search organisations…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
@@ -177,32 +132,16 @@ export default function Organisations() {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
-              New {entityLabel}
+              New Organisation
             </button>
           </div>
-        </div>
-
-        {/* ── Tabs ── */}
-        <div className="org-tabs">
-          <button
-            className={`org-tab${tab === 'organisations' ? ' org-tab--active' : ''}`}
-            onClick={() => switchTab('organisations')}
-          >
-            Organisations
-          </button>
-          <button
-            className={`org-tab${tab === 'departments' ? ' org-tab--active' : ''}`}
-            onClick={() => switchTab('departments')}
-          >
-            Departments
-          </button>
         </div>
 
         {/* ── Stats ── */}
         <div className="org-stats">
           <div className="org-stat-card">
-            <span className="org-stat-value">{loading ? '—' : items.length}</span>
-            <span className="org-stat-label">Total {isOrgs ? 'Organisations' : 'Departments'}</span>
+            <span className="org-stat-value">{loading ? '—' : orgs.length}</span>
+            <span className="org-stat-label">Total Organisations</span>
           </div>
           <div className="org-stat-card">
             <span className="org-stat-value">{loading ? '—' : totalMembers}</span>
@@ -214,7 +153,7 @@ export default function Organisations() {
         <div className="org-main">
           <div className="org-table">
             <div className="org-table-head">
-              <span className="org-col org-col--name">{entityLabel}</span>
+              <span className="org-col org-col--name">Organisation</span>
               <span className="org-col org-col--members">Members</span>
               <span className="org-col org-col--date">Created</span>
               <span className="org-col org-col--actions" />
@@ -235,8 +174,8 @@ export default function Organisations() {
             ) : filtered.length === 0 ? (
               <div className="org-empty">
                 {search
-                  ? `No ${isOrgs ? 'organisations' : 'departments'} match "${search}".`
-                  : `No ${isOrgs ? 'organisations' : 'departments'} yet. Create one to get started.`}
+                  ? `No organisations match "${search}".`
+                  : 'No organisations yet. Create one to get started.'}
               </div>
             ) : (
               filtered.map((item, i) => (
@@ -246,7 +185,7 @@ export default function Organisations() {
                   style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
                 >
                   <div className="org-col org-col--name">
-                    <span className="org-icon">{isOrgs ? <BuildingIcon /> : <DeptIcon />}</span>
+                    <span className="org-icon"><BuildingIcon /></span>
                     <span className="org-name">{item.name}</span>
                   </div>
                   <div className="org-col org-col--members">
@@ -283,7 +222,7 @@ export default function Organisations() {
       {modal !== null && (
         <OrgFormModal
           mode={modal === 'create' ? 'create' : 'edit'}
-          entityLabel={entityLabel}
+          entityLabel="Organisation"
           name={formName}
           error={formError}
           onChange={setFormName}
@@ -296,7 +235,7 @@ export default function Organisations() {
       {deleteTarget && (
         <OrgDeleteModal
           target={deleteTarget}
-          entityLabel={entityLabel}
+          entityLabel="Organisation"
           onClose={() => setDeleteTarget(null)}
           onConfirm={handleDelete}
           deleting={deleting}

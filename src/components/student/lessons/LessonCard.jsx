@@ -45,7 +45,7 @@ export default function LessonCard({ lesson, index, viewMode = 'grid', onToggleC
         <span className="lesson-duration">{lesson.duration}</span>
 
         <span className={`lesson-badge lesson-badge--vis-${lesson.visibility}`}>
-          {lesson.visibility === 'class' ? 'My Class' : 'Public'}
+          {lesson.visibility === 'class' ? 'My Department' : 'Public'}
         </span>
 
         <span className={`lesson-badge lesson-badge--${lesson.complete ? 'complete' : 'pending'}`}>

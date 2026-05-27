@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { updateClass, deleteClass } from '../../../api/classes'
+import { updateDepartment as updateClass, deleteDepartment as deleteClass } from '../../../api/departments'
 
 export function useClassEdit(id, cls, setCls) {
   const [showEditModal, setShowEditModal] = useState(false)
@@ -56,7 +56,7 @@ export function useClassEdit(id, cls, setCls) {
   async function handleDelete() {
     try {
       await deleteClass(id)
-      window.location.href = '/teacher/classes'
+      window.location.href = '/teacher/departments'
     } catch {}
     setDeleteTarget(null)
   }

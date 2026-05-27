@@ -38,7 +38,7 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
       <td className="file-row-location">
         {file.folder === 'public' || file.folder === 'vr_scenes'
           ? <span className="location-badge location-badge--public">Public</span>
-          : <span className="location-badge location-badge--class">{file.class_name || '—'}</span>
+          : <span className="location-badge location-badge--class">{file.department_name || '—'}</span>
         }
       </td>
       <td className="file-row-type">

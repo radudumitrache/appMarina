@@ -7,13 +7,13 @@ import {
   getTests, createTest, updateTest, publishTest, getTest,
   createTestPanel, deleteTest,
 } from '../../api/tests'
-import { getClasses } from '../../api/classes'
+import { getDepartments } from '../../api/departments'
 import '../css/teacher/TestBuilder.css'
 
 export default function TestBuilder() {
   const [searchParams] = useSearchParams()
-  const [tests,      setTests]      = useState([])
-  const [classes,    setClasses]    = useState([])
+  const [tests,       setTests]       = useState([])
+  const [departments, setDepartments] = useState([])
   const [selectedId, setSelectedId] = useState(() => {
     const p = searchParams.get('test')
     return p ? Number(p) : null
@@ -28,10 +28,10 @@ export default function TestBuilder() {
   const [newPanelTitle,   setNewPanelTitle]   = useState('')
 
   useEffect(() => {
-    Promise.all([getTests({}), getClasses()])
+    Promise.all([getTests({}), getDepartments()])
       .then(([testsRes, classesRes]) => {
         setTests(testsRes.data)
-        setClasses(classesRes.data)
+        setDepartments(classesRes.data)
       })
       .finally(() => setLoading(false))
   }, [])
@@ -134,7 +134,7 @@ export default function TestBuilder() {
   }
 
   const panels   = testDetail?.panels ?? []
-  const hasClass = Boolean(testDetail?.classroom)
+  const hasClass = Boolean(testDetail?.department)
 
   return (
     <div className="tb-page">
@@ -157,7 +157,7 @@ export default function TestBuilder() {
               selectedId={selectedId}
               panels={panels}
               hasClass={hasClass}
-              classes={classes}
+              classes={departments}
               expandedPanelId={expandedPanelId}
               saving={saving}
               addingPanel={addingPanel}

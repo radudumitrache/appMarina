@@ -7,10 +7,9 @@ import CsvImportModal from '../../components/admin/users/CsvImportModal'
 import UsersTable from '../../components/admin/users/UsersTable'
 import { getUsers, createUser, bulkCreateUsers, updateUser, deleteUser } from '../../api/admin'
 import { getOrganisations } from '../../api/organisations'
-import { getDepartments } from '../../api/departments'
 import '../css/admin/Users.css'
 
-const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '', organisation_id: null, department_ids: [], crew_id: '' }
+const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '', organisation_id: null, crew_id: '' }
 
 function mapUser(u) {
   const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username
@@ -24,7 +23,6 @@ function mapUser(u) {
     status: u.profile?.account_status === 'suspended' ? 'inactive' : 'active',
     organisation_id: u.profile?.organisation_id ?? null,
     organisation_name: u.profile?.organisation_name ?? null,
-    department_ids: u.profile?.department_ids ?? [],
     crew_id: u.profile?.crew_id ?? '',
   }
 }
@@ -59,7 +57,6 @@ export default function Users() {
   const [loadError, setLoadError]   = useState('')
   const [importing, setImporting]   = useState(false)
   const [organisations, setOrganisations] = useState([])
-  const [departments, setDepartments]     = useState([])
   const [sortKey, setSortKey]             = useState('id')
   const [sortDir, setSortDir]             = useState('desc')
 
@@ -72,7 +69,6 @@ export default function Users() {
       })
       .finally(() => setLoading(false))
     getOrganisations().then(r => setOrganisations(r.data)).catch(() => {})
-    getDepartments().then(r => setDepartments(r.data)).catch(() => {})
   }, [])
 
   const counts = {
@@ -121,7 +117,6 @@ export default function Users() {
       role: user.role,
       password: '',
       organisation_id: user.organisation_id ?? null,
-      department_ids: user.department_ids ?? [],
       crew_id: user.crew_id ?? '',
     })
     setModal('edit')
@@ -145,7 +140,6 @@ export default function Users() {
       role: form.role,
       ...(form.password && { password: form.password }),
       organisation_id: form.organisation_id,
-      department_ids: form.department_ids,
       ...(['student', 'teacher'].includes(form.role) && { crew_id: form.crew_id || null }),
     }
     setSaving(true)
@@ -280,7 +274,6 @@ export default function Users() {
           saving={saving}
           error={formError}
           organisations={organisations}
-          departments={departments}
         />
       )}
 

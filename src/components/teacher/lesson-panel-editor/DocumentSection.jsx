@@ -28,7 +28,7 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-export default function DocumentSection({ documents, onUpload, onDelete, uploading, isAdmin = false, classroomId = null }) {
+export default function DocumentSection({ documents, onUpload, onDelete, uploading, isAdmin = false, departmentId = null }) {
   const [showPicker, setShowPicker] = useState(false)
 
   return (
@@ -114,7 +114,7 @@ export default function DocumentSection({ documents, onUpload, onDelete, uploadi
 
       {showPicker && (
         <DocumentPickerModal
-          classroomId={classroomId}
+          departmentId={departmentId}
           onConfirm={onUpload}
           onClose={() => setShowPicker(false)}
         />

@@ -6,12 +6,12 @@ import FileRow          from '../../components/shared/media/FileRow'
 import RenameModal      from '../../components/shared/media/RenameModal'
 import UploadModal      from '../../components/shared/media/UploadModal'
 import { getMediaFiles, deleteMediaFile, patchMediaFile } from '../../api/media'
-import { getClasses }   from '../../api/classes'
+import { getDepartments }   from '../../api/departments'
 import '../css/teacher/Media.css'
 
 export default function TeacherMedia() {
-  const [files, setFiles]         = useState([])
-  const [classes, setClasses]     = useState([])
+  const [files, setFiles]             = useState([])
+  const [departments, setDepartments] = useState([])
   const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')
   const [activeFolder, setActiveFolder] = useState('all')
@@ -19,10 +19,10 @@ export default function TeacherMedia() {
   const [showUpload, setShowUpload]     = useState(false)
 
   useEffect(() => {
-    Promise.all([getMediaFiles(), getClasses()])
+    Promise.all([getMediaFiles(), getDepartments()])
       .then(([filesRes, classRes]) => {
         setFiles(filesRes.data.filter(f => f.folder !== 'public'))
-        setClasses(classRes.data)
+        setDepartments(classRes.data)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -32,19 +32,19 @@ export default function TeacherMedia() {
     const countFor = (pred) => files.filter(pred).length
     return [
       { id: 'all', label: 'All Files', count: files.length },
-      ...classes.map(c => ({
+      ...departments.map(c => ({
         id:          `class-${c.id}`,
         label:       c.name,
-        count:       countFor(f => f.classroom === c.id),
-        classroomId: c.id,
+        count:       countFor(f => f.department === c.id),
+        departmentId: c.id,
         folder:      'class',
       })),
     ]
-  }, [files, classes])
+  }, [files, departments])
 
   // Folders the teacher can upload to (their own classes only)
   const uploadableFolders = useMemo(
-    () => folders.filter(f => f.classroomId),
+    () => folders.filter(f => f.departmentId),
     [folders]
   )
 
@@ -52,7 +52,7 @@ export default function TeacherMedia() {
     let list = files
     if (activeFolder.startsWith('class-')) {
       const cid = parseInt(activeFolder.replace('class-', ''), 10)
-      list = list.filter(f => f.classroom === cid)
+      list = list.filter(f => f.department === cid)
     }
     if (search) {
       const q = search.toLowerCase()
@@ -61,8 +61,8 @@ export default function TeacherMedia() {
     return list
   }, [files, activeFolder, search])
 
-  const ownClassIds = useMemo(() => new Set(classes.map(c => c.id)), [classes])
-  const canWrite = (file) => file.folder !== 'public' && ownClassIds.has(file.classroom)
+  const ownClassIds = useMemo(() => new Set(departments.map(c => c.id)), [departments])
+  const canWrite = (file) => file.folder !== 'public' && ownClassIds.has(file.department)
 
   const handleRename = async (id, name, isVrScene) => {
     const { data } = await patchMediaFile(id, { name, is_vr_scene: isVrScene })

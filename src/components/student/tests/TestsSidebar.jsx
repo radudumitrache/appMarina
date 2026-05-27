@@ -1,10 +1,10 @@
 import '../../css/student/tests/TestsSidebar.css'
 
-function getClassStats(tests, classId) {
+function getClassStats(tests, departmentId) {
   const subset =
-    classId === 'all'  ? tests :
-    classId === 'open' ? tests.filter(t => !t.class_id) :
-    tests.filter(t => t.class_id === classId)
+    departmentId === 'all'  ? tests :
+    departmentId === 'open' ? tests.filter(t => !t.department_id) :
+    tests.filter(t => t.department_id === departmentId)
   return {
     total:   subset.length,
     pending: subset.filter(t => !t.completed).length,
@@ -12,10 +12,10 @@ function getClassStats(tests, classId) {
   }
 }
 
-export default function TestsSidebar({ tests, classes, activeClass, onClassChange, overall, avg }) {
+export default function TestsSidebar({ tests, departments, activeDepartment, onDepartmentChange, overall, avg }) {
   const navItems = [
     { id: 'all',  label: 'All Tests'   },
-    ...classes.map(c => ({ id: c.code, label: c.name })),
+    ...departments.map(c => ({ id: c.id, label: c.name })),
     { id: 'open', label: 'Open Access' },
   ]
 
@@ -27,8 +27,8 @@ export default function TestsSidebar({ tests, classes, activeClass, onClassChang
           return (
             <button
               key={cls.id}
-              className={`tests-sidebar-btn ${activeClass === cls.id ? 'tests-sidebar-btn--active' : ''}`}
-              onClick={() => onClassChange(cls.id)}
+              className={`tests-sidebar-btn ${activeDepartment === cls.id ? 'tests-sidebar-btn--active' : ''}`}
+              onClick={() => onDepartmentChange(cls.id)}
             >
               <div className="tests-sidebar-row">
                 <span className="tests-sidebar-label">{cls.label}</span>

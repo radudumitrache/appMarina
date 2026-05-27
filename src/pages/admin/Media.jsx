@@ -6,7 +6,7 @@ import FileRow          from '../../components/shared/media/FileRow'
 import RenameModal      from '../../components/shared/media/RenameModal'
 import UploadModal      from '../../components/shared/media/UploadModal'
 import { getMediaFiles, deleteMediaFile, patchMediaFile } from '../../api/media'
-import { getClasses }   from '../../api/classes'
+import { getDepartments }   from '../../api/departments'
 import '../css/admin/Media.css'
 
 const TABLE_HEAD = (
@@ -63,7 +63,7 @@ function FolderGroup({ group, collapsed, onToggle, onRename, onDelete, onToggleV
 
 export default function AdminMedia() {
   const [files, setFiles]         = useState([])
-  const [classes, setClasses]     = useState([])
+  const [departments, setDepartments] = useState([])
   const [loading, setLoading]     = useState(true)
   const [search, setSearch]       = useState('')
   const [activeFolder, setActiveFolder] = useState('all')
@@ -86,10 +86,10 @@ export default function AdminMedia() {
   }, [])
 
   useEffect(() => {
-    Promise.all([getMediaFiles(), getClasses()])
+    Promise.all([getMediaFiles(), getDepartments()])
       .then(([filesRes, classRes]) => {
         setFiles(filesRes.data)
-        setClasses(classRes.data)
+        setDepartments(classRes.data)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -101,25 +101,25 @@ export default function AdminMedia() {
     return [
       { id: 'all',    label: 'All Files', count: files.length },
       { id: 'public', label: 'Public',    count: countFor(f => f.folder === 'public' || f.folder === 'vr_scenes') },
-      ...classes.map(c => ({
+      ...departments.map(c => ({
         id:          `class-${c.id}`,
         label:       c.name,
-        count:       countFor(f => f.classroom === c.id),
-        classroomId: c.id,
+        count:       countFor(f => f.department === c.id),
+        departmentId: c.id,
         folder:      'class',
       })),
     ]
-  }, [files, classes])
+  }, [files, departments])
 
   const uploadableFolders = useMemo(() => [
     { id: 'public', label: 'Public', folder: 'public' },
-    ...classes.map(c => ({
+    ...departments.map(c => ({
       id:          `class-${c.id}`,
       label:       c.name,
       folder:      'class',
-      classroomId: c.id,
+      departmentId: c.id,
     })),
-  ], [classes])
+  ], [departments])
 
   const filtered = useMemo(() => {
     let list = files
@@ -128,7 +128,7 @@ export default function AdminMedia() {
       list = list.filter(f => f.folder === 'public' || f.folder === 'vr_scenes')
     } else if (activeFolder.startsWith('class-')) {
       const cid = parseInt(activeFolder.replace('class-', ''), 10)
-      list = list.filter(f => f.classroom === cid)
+      list = list.filter(f => f.department === cid)
     }
     // Type filter
     if (filterType !== 'all') {
@@ -150,16 +150,16 @@ export default function AdminMedia() {
   const groups = useMemo(() => {
     if (activeFolder !== 'all') return null
     const publicFiles  = filtered.filter(f => f.folder === 'public' || f.folder === 'vr_scenes')
-    const orphanDocs   = filtered.filter(f => f.folder === 'documents' && !f.classroom)
-    const classGroups  = classes
-      .map(c => ({ id: `class-${c.id}`, label: c.name, code: c.code, files: filtered.filter(f => f.classroom === c.id) }))
+    const orphanDocs   = filtered.filter(f => f.folder === 'documents' && !f.department)
+    const classGroups  = departments
+      .map(c => ({ id: `class-${c.id}`, label: c.name, code: c.code, files: filtered.filter(f => f.department === c.id) }))
       .filter(g => g.files.length > 0)
     return [
       ...(publicFiles.length  ? [{ id: 'public',    label: 'Public',            files: publicFiles }]  : []),
       ...(orphanDocs.length   ? [{ id: 'documents',  label: 'Lesson Documents',  files: orphanDocs }]   : []),
       ...classGroups,
     ]
-  }, [filtered, activeFolder, classes])
+  }, [filtered, activeFolder, departments])
 
   const handleRename = async (id, name, isVrScene) => {
     const { data } = await patchMediaFile(id, { name, is_vr_scene: isVrScene })

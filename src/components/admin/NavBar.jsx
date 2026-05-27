@@ -8,7 +8,7 @@ const ALL_LINKS = [
   { label: 'Organisations', slug: 'organisations', superadminOnly: true  },
   { label: 'Lessons',       slug: 'lessons',       superadminOnly: false },
   { label: 'Tests',         slug: 'tests',         superadminOnly: false },
-  { label: 'Classes',       slug: 'classes',       superadminOnly: false },
+  { label: 'Departments',   slug: 'departments',   superadminOnly: false },
   { label: 'Courses',       slug: 'courses',       superadminOnly: false },
   { label: 'Media',         slug: 'media',         superadminOnly: false },
   { label: 'Support',       slug: 'support',       superadminOnly: false },

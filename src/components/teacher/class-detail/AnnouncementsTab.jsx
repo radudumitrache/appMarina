@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createAnnouncement, updateAnnouncement, deleteAnnouncement } from '../../../api/classes'
+import { createAnnouncement, updateAnnouncement, deleteAnnouncement } from '../../../api/departments'
 import '../../css/teacher/class-detail/AnnouncementsTab.css'
 
 function PinIcon() {
@@ -15,7 +15,7 @@ function fmtDate(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-export default function AnnouncementsTab({ classId, announcements, onAdd, onUpdate, onRemove }) {
+export default function AnnouncementsTab({ departmentId, announcements, onAdd, onUpdate, onRemove }) {
   const [composing,  setComposing]  = useState(false)
   const [title,      setTitle]      = useState('')
   const [body,       setBody]       = useState('')
@@ -58,7 +58,7 @@ export default function AnnouncementsTab({ classId, announcements, onAdd, onUpda
     if (!body.trim())  { setFormError('Body is required.'); return }
     setSubmitting(true); setFormError(null)
     try {
-      const { data } = await createAnnouncement(classId, { title: title.trim(), body: body.trim(), pinned })
+      const { data } = await createAnnouncement(departmentId, { title: title.trim(), body: body.trim(), pinned })
       onAdd(data)
       setComposing(false)
     } catch {
@@ -74,7 +74,7 @@ export default function AnnouncementsTab({ classId, announcements, onAdd, onUpda
     if (!editBody.trim())  { setEditError('Body is required.'); return }
     setSaving(true); setEditError(null)
     try {
-      const { data } = await updateAnnouncement(classId, editId, {
+      const { data } = await updateAnnouncement(departmentId, editId, {
         title: editTitle.trim(), body: editBody.trim(), pinned: editPinned,
       })
       onUpdate(data)
@@ -90,7 +90,7 @@ export default function AnnouncementsTab({ classId, announcements, onAdd, onUpda
     if (!confirmId) return
     setDeleting(true)
     try {
-      await deleteAnnouncement(classId, confirmId)
+      await deleteAnnouncement(departmentId, confirmId)
       onRemove(confirmId)
       setConfirmId(null)
     } catch {

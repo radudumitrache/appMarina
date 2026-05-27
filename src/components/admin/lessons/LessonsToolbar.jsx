@@ -43,7 +43,7 @@ export default function LessonsToolbar({ title, filteredCount, search, onSearchC
           {[
             { id: 'all',    label: 'All'        },
             { id: 'public', label: 'Public'     },
-            { id: 'class',  label: 'Class only' },
+            { id: 'class',  label: 'Department only' },
           ].map(s => (
             <button
               key={s.id}

@@ -9,7 +9,7 @@ import TestResults        from '../../components/student/progress/TestResults'
 import ActivityFeed       from '../../components/student/progress/ActivityFeed'
 import DiplomasSection    from '../../components/student/progress/DiplomasSection'
 import { getProgress, getLessonProgress, getTestResults, getActivity } from '../../api/progress'
-import { getMyDiplomas } from '../../api/classes'
+import { getMyDiplomas } from '../../api/departments'
 import { getMe }         from '../../api/users'
 import '../css/student/Progress.css'
 

@@ -16,7 +16,7 @@ export default function ClassStats({ totalStudents, activeStudents, avgProgress,
       <div className="cd-stat-card">
         <span className="cd-stat-label">Lessons Complete</span>
         <span className="cd-stat-value">{lessonsComplete}/{lessonsCount}</span>
-        <span className="cd-stat-sub">by the whole class</span>
+        <span className="cd-stat-sub">by the whole department</span>
       </div>
       <div className="cd-stat-card">
         <span className="cd-stat-label">Subject</span>

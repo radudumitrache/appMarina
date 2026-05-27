@@ -1,8 +1,7 @@
 import '../../css/admin/lessons/LessonRow.css'
 
-export default function LessonRow({ lesson, departments, classes = [], index, canEdit = true, onView, onEdit, onDelete }) {
-  const deptName       = id => departments.find(d => d.id === id)?.name ?? id
-  const className      = classes.find(c => c.id === lesson.classroom_id)?.name ?? null
+export default function LessonRow({ lesson, departments = [], index, canEdit = true, onView, onEdit, onDelete }) {
+  const className = departments.find(c => c.id === lesson.department_id)?.name ?? null
 
   return (
     <div
@@ -12,13 +11,6 @@ export default function LessonRow({ lesson, departments, classes = [], index, ca
       <div className="lesson-row-main">
         <div className="lesson-row-title">{lesson.title}</div>
         <div className="lesson-row-meta">
-          {lesson.department_ids.length > 0
-            ? lesson.department_ids.map(id => (
-                <span key={id} className="lesson-dept-badge">{deptName(id)}</span>
-              ))
-            : <span className="lesson-no-dept">No department</span>
-          }
-          <span className="lesson-meta-sep">·</span>
           <span className="lesson-duration">{lesson.duration}</span>
           <span className="lesson-meta-sep">·</span>
           <span className={`lesson-difficulty lesson-difficulty--${lesson.difficulty}`}>
@@ -32,8 +24,8 @@ export default function LessonRow({ lesson, departments, classes = [], index, ca
       <div className="lesson-row-right">
         <span className={`lesson-status-badge lesson-status-badge--${lesson.visibility}`}>
           {lesson.visibility === 'class' && className
-            ? <>{lesson.visibility}<span className="lesson-status-class-name"> · {className}</span></>
-            : lesson.visibility
+            ? <>Department<span className="lesson-status-class-name"> · {className}</span></>
+            : lesson.visibility === 'class' ? 'Department' : lesson.visibility
           }
         </span>
         <div className="lesson-row-actions">

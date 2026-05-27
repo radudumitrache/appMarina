@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   createDiploma, updateDiploma, deleteDiploma, awardDiploma, revokeDiploma,
   createCourseDiploma, updateCourseDiploma, deleteCourseDiploma, awardCourseDiploma, revokeCourseDiploma,
-} from '../../../api/classes'
+} from '../../../api/departments'
 import '../../css/teacher/class-detail/DiplomasTab.css'
 
 function fmtDate(iso) {
@@ -264,7 +264,7 @@ function AwardModal({ courseId, classId, diploma, students, completedStudentIds,
 
         <div className="dip-award-body">
           {students.length === 0 ? (
-            <p className="dip-award-empty">No enrolled students in this class.</p>
+            <p className="dip-award-empty">No enrolled students in this department.</p>
           ) : filtered.length === 0 ? (
             <p className="dip-award-empty">No students match your search.</p>
           ) : (
