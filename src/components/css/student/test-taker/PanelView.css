@@ -754,3 +754,10 @@
   opacity: 0.88;
   color: #000;
 }
+
+@media (max-width: 768px) {
+  .tt-panel-content { padding: 16px; }
+  .tt-mcq-option { width: 100%; }
+  .tt-panel-footer { flex-direction: column; gap: 8px; padding: 12px 16px; }
+  .tt-nav-btn { width: 100%; justify-content: center; }
+}

@@ -196,3 +196,84 @@
 }
 [data-theme="light"] .ctrl-btn         { color: rgba(180, 215, 240, 0.75); }
 [data-theme="light"] .ctrl-btn:hover   { color: #e4edf6; background: rgba(255, 255, 255, 0.07); }
+
+/* ─── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .dashboard-page {
+    height: 100vh;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    padding-top: 72px;
+    box-sizing: border-box;
+  }
+
+  .dashboard-bg {
+    position: fixed;
+  }
+
+  .dashboard-overlay {
+    position: fixed;
+    background: linear-gradient(
+      to top,
+      rgba(8, 9, 15, 0.96) 0%,
+      rgba(8, 9, 15, 0.78) 38%,
+      rgba(8, 9, 15, 0.22) 65%,
+      transparent 100%
+    );
+  }
+
+  .dash-controls {
+    top: 16px;
+    left: 16px;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .ctrl-btn {
+    padding: 7px 10px;
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .dash-role-badge {
+    top: 16px;
+    right: 16px;
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .dash-nav {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 36px);
+    gap: 10px;
+    grid-template-columns: unset;
+    grid-template-rows: unset;
+  }
+
+  .dash-nav > :nth-child(4),
+  .dash-nav > :nth-child(5) {
+    grid-column: unset;
+  }
+
+  .dash-btn {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    height: 72px;
+    padding: 0 24px;
+    gap: 18px;
+    border-radius: 12px;
+    transform: none !important;
+  }
+
+  .dash-btn-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .dash-btn-label {
+    font-size: 15px;
+  }
+}

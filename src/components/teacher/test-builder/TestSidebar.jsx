@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { STATUS_META } from '../../../pages/teacher/testBuilderMock'
 import '../../css/teacher/test-builder/TestSidebar.css'
 
-export default function TestSidebar({ tests, selectedId, onSelect, onNew, onDelete, loading }) {
+export default function TestSidebar({ tests, selectedId, onSelect, onNew, onDelete, loading, className = '' }) {
   const [search,        setSearch]        = useState('')
   const [confirmingId,  setConfirmingId]  = useState(null)
   const [deleting,      setDeleting]      = useState(false)
@@ -23,7 +23,7 @@ export default function TestSidebar({ tests, selectedId, onSelect, onNew, onDele
   }
 
   return (
-    <aside className="tb-sidebar">
+    <aside className={`tb-sidebar${className ? ` ${className}` : ''}`}>
       <div className="tb-sidebar-top">
         <div className="tb-sidebar-search-wrap">
           <svg className="tb-sidebar-search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -222,3 +222,62 @@
 }
 
 .section-link:hover { opacity: 1; }
+
+@media (max-width: 768px) {
+  /* Page becomes naturally scrollable — no fixed height clipping */
+  .progress-page {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* Header padding */
+  .progress-header {
+    padding: 0 16px;
+    height: 56px;
+  }
+
+  /* Disable scroll-snap: let all sections flow in one continuous column */
+  .progress-content {
+    overflow-y: visible;
+    scroll-snap-type: none;
+  }
+
+  /* Screens: auto height, reduced padding, allow content to flow */
+  .progress-screen {
+    height: auto;
+    scroll-snap-align: none;
+    padding: 16px;
+    overflow: visible;
+    gap: 14px;
+  }
+
+  /* Stat cards: 2 per row */
+  .progress-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-card { padding: 14px 16px; }
+  .stat-value { font-size: 28px; }
+
+  /* Lessons + test results: single column */
+  .progress-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    flex: none;
+    min-height: unset;
+  }
+
+  /* Section panels: clip horizontal overflow, let height be natural */
+  .progress-section {
+    overflow-x: hidden;
+    overflow-y: visible;
+    min-height: unset;
+    padding: 16px;
+  }
+
+  .progress-screen--activity .progress-section {
+    flex: none;
+  }
+}

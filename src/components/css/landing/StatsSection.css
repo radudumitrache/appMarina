@@ -44,10 +44,16 @@
 }
 
 @media (max-width: 768px) {
+  .stats-section { padding: 48px 16px; }
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 48px 0;
+    gap: 40px 0;
   }
+
+  .stat-item { padding: 0 16px; }
+
+  .stat-value { font-size: 38px; }
 
   .stat-item:not(:last-child) {
     border-right: none;
@@ -56,7 +62,7 @@
   .stat-item:nth-child(1),
   .stat-item:nth-child(2) {
     border-bottom: 1px solid var(--border);
-    padding-bottom: 48px;
+    padding-bottom: 40px;
   }
 
   .stat-item:nth-child(1),

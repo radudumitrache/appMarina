@@ -74,3 +74,9 @@
   color: var(--text-3);
   border: 1px solid var(--border);
 }
+
+/* ─── Mobile sidebar ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .tb-body { flex-direction: column; overflow-y: auto; }
+  .tb-main  { flex: none; padding: 16px; }
+}

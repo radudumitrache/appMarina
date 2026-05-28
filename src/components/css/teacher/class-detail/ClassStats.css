@@ -48,3 +48,14 @@
   color: var(--gold);
   margin-top: 4px;
 }
+
+@media (max-width: 768px) {
+  .cd-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 100%;
+  }
+
+  .cd-stat-card { padding: 14px 16px; }
+  .cd-stat-value { font-size: 22px; }
+}

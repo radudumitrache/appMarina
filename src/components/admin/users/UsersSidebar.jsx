@@ -8,12 +8,12 @@ const BASE_ROLES = [
 ]
 const ADMIN_ROLE = { id: 'admin', label: 'Admins' }
 
-export default function UsersSidebar({ roleFilter, onRoleFilterChange, counts }) {
+export default function UsersSidebar({ roleFilter, onRoleFilterChange, counts, className = '' }) {
   const { user } = useAuth()
   const roles = user?.is_staff ? [...BASE_ROLES, ADMIN_ROLE] : BASE_ROLES
 
   return (
-    <aside className="users-sidebar">
+    <aside className={`users-sidebar${className ? ` ${className}` : ''}`}>
       <nav className="users-sidebar-nav">
         {roles.map(r => (
           <button

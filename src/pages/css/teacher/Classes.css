@@ -39,3 +39,32 @@
   padding: 48px 0;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .classes-page {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  .classes-layout { height: auto; }
+
+  .classes-layout {
+    height: auto;
+    overflow: hidden;
+  }
+
+  .classes-content {
+    padding: 16px;
+    gap: 16px;
+    overflow: visible;
+    max-width: 100%;
+  }
+
+  .classes-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+}

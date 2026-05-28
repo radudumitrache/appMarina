@@ -70,3 +70,66 @@
 .landing-nav-cta:hover {
   background: var(--accent-hover);
 }
+
+/* ─── Hamburger (hidden on desktop) ─────────────────────── */
+.landing-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 120ms, color 120ms;
+}
+.landing-hamburger:hover { border-color: rgba(255,255,255,0.35); color: var(--text); }
+
+/* CTA inside mobile menu — hidden on desktop */
+.landing-nav-cta--mobile { display: none; }
+
+@media (max-width: 768px) {
+  .landing-nav { padding: 0 20px; gap: 0; }
+
+  /* Hide desktop CTA and show hamburger */
+  .landing-nav > .landing-nav-cta:not(.landing-nav-cta--mobile) { display: none; }
+  .landing-hamburger { display: flex; margin-left: auto; }
+
+  /* Dropdown menu */
+  .landing-nav-links {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: rgba(6, 11, 20, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 0 16px;
+    gap: 0;
+    z-index: 99;
+  }
+  .landing-nav-links--open { display: flex; }
+
+  .landing-nav-links a {
+    padding: 13px 24px;
+    font-size: 15px;
+    width: 100%;
+    border-radius: 0;
+  }
+
+  /* CTA button inside menu */
+  .landing-nav-cta--mobile {
+    display: block;
+    margin: 8px 20px 0;
+    width: calc(100% - 40px);
+    padding: 11px 0;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+}

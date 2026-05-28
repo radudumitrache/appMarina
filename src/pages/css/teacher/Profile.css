@@ -219,3 +219,57 @@
   background: rgba(217, 160, 48, 0.12);
   color: var(--gold);
 }
+
+@media (max-width: 768px) {
+  .tp-page {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .tp-header {
+    height: auto;
+    min-height: 56px;
+    padding: 12px 16px;
+  }
+
+  .tp-page-title { font-size: 16px; }
+
+  .tp-body {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .tp-main {
+    padding: 16px;
+    gap: 16px;
+    overflow: visible;
+  }
+
+  .tp-tabs {
+    align-self: stretch;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+  }
+
+  .tp-tab {
+    flex: 1;
+    text-align: center;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .tp-panel { padding: 16px; gap: 16px; }
+
+  .tp-appearance-panel {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .tp-theme-toggle { flex-wrap: wrap; width: 100%; }
+  .tp-theme-btn { flex: 1; justify-content: center; }
+}

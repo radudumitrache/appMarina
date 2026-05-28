@@ -97,3 +97,25 @@
   font-weight: 600;
   color: var(--accent);
 }
+
+@media (max-width: 768px) {
+  /* Page scrolls naturally */
+  .myclass-page {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .myclass-body  { overflow: visible; flex: none; }
+  .myclass-main  { overflow: visible; }
+  .myclass-content {
+    padding: 16px;
+    gap: 16px;
+    min-height: unset;
+    overflow: visible;
+  }
+  /* Stack roster + announcements vertically */
+  .myclass-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}

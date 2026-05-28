@@ -305,3 +305,45 @@
   color: #333;
   font-weight: 500;
 }
+
+@media (max-width: 600px) {
+  /* Overlay: scrollable, padded, content centered */
+  .ds-overlay {
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 32px 16px 32px;
+  }
+
+  /* Wrap must be constrained to the overlay's padded width */
+  .ds-wrap {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Actions bar: keep download + dismiss on one row */
+  .ds-actions {
+    margin-bottom: 8px;
+    justify-content: space-between;
+  }
+
+  /* Dismiss: reset absolute positioning — stay in flow */
+  .ds-dismiss {
+    position: static;
+  }
+
+  /* Compact cert card */
+  .ds-cert {
+    padding: 20px 16px;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ds-cert-title     { font-size: 15px; }
+  .ds-cert-recipient { font-size: 16px; min-width: 100px; }
+  .ds-cert-desc      { font-size: 11px; }
+  .ds-cert-footer    { flex-direction: column; gap: 8px; }
+  .ds-cert-footer-col:last-child { align-items: flex-start; }
+}

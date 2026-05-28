@@ -10,6 +10,7 @@ import '../css/teacher/CourseBuilder.css'
 
 export default function CourseBuilder() {
   const [showCreate,  setShowCreate]  = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [newTitle,    setNewTitle]    = useState('')
   const [newDesc,     setNewDesc]     = useState('')
   const [newStatus,   setNewStatus]   = useState('draft')
@@ -83,6 +84,13 @@ export default function CourseBuilder() {
         <div className="cb-layout">
           <NavBar />
           <div className="cb-body">
+            {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
+            <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+              Courses
+            </button>
             <CourseSidebar
               loading={loading}
               error={error}
@@ -91,14 +99,15 @@ export default function CourseBuilder() {
               courseLessonsMap={courseLessonsMap}
               search={search}
               setSearch={setSearch}
-              onSelect={switchToCourse}
+              onSelect={(id) => { switchToCourse(id); setSidebarOpen(false) }}
               onNew={openCreate}
               totalCount={courses.length}
               publishedCount={courses.filter(c => c.status === 'published').length}
               lessonBankCount={lessonBank.length}
-              onShowAllLessons={switchToAllLessons}
+              onShowAllLessons={() => { switchToAllLessons(); setSidebarOpen(false) }}
               showingAllLessons={activeTab === 'lessons'}
               classes={departments}
+              className={sidebarOpen ? 'sidebar--open' : ''}
             />
 
             {activeTab === 'courses' ? (

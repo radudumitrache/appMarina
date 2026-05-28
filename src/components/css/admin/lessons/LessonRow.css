@@ -1,18 +1,34 @@
 .lesson-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   padding: 14px 16px;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  gap: 16px;
+  gap: 0;
   animation: fadeUp 0.3s var(--ease-default) both;
   transition: border-color var(--duration-fast), background var(--duration-fast);
 }
 .lesson-row:hover {
   border-color: var(--border-hover);
   background: var(--surface-2);
+}
+
+/* Department-only lesson with no department assigned */
+.lesson-row--warn {
+  border-color: rgba(217, 160, 23, 0.35);
+  background: rgba(217, 160, 23, 0.04);
+}
+.lesson-row--warn:hover {
+  border-color: rgba(217, 160, 23, 0.6);
+  background: rgba(217, 160, 23, 0.08);
+}
+
+.lesson-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .lesson-row-main {
@@ -100,6 +116,13 @@
 }
 .lesson-status-badge--public { color: var(--success); background: rgba(46, 199, 122, 0.12); }
 .lesson-status-badge--class  { color: var(--text-3);  background: rgba(255,255,255,0.06);   }
+.lesson-status-badge--warn   {
+  display: inline-flex;
+  align-items: center;
+  color: var(--gold, #d4a017);
+  background: rgba(217, 160, 23, 0.12);
+  border: 1px solid rgba(217, 160, 23, 0.3);
+}
 
 .lesson-status-class-name {
   font-weight: 500;
@@ -135,3 +158,70 @@
 .row-btn--ok:hover      { color: var(--success); }
 .row-btn--delete:hover  { color: var(--error); }
 .row-btn--panels:hover  { color: var(--accent); }
+
+/* ── mobile expand button — hidden on desktop ── */
+.lesson-expand-btn { display: none; }
+
+@media (max-width: 600px) {
+  /* hide desktop meta and actions; show chevron */
+  .lesson-row-meta--desktop { display: none; }
+  .lesson-row-actions       { display: none; }
+  .lesson-expand-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: color var(--duration-fast);
+  }
+  .lesson-expand-btn svg            { transition: transform 0.2s ease; }
+  .lesson-expand-btn .expand-icon--open { transform: rotate(180deg); }
+  .lesson-row--expanded .lesson-expand-btn { color: var(--text); }
+
+  /* collapsible section */
+  .lesson-row-collapse {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .lesson-collapse-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .lesson-collapse-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .action-bar-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  }
+  .action-bar-btn:hover            { background: rgba(255,255,255,0.07); color: var(--text); }
+  .action-bar-btn--delete          { color: var(--error); border-color: rgba(224,82,82,0.25); }
+  .action-bar-btn--delete:hover    { background: rgba(224,82,82,0.08); }
+}

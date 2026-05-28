@@ -28,6 +28,7 @@ export default function TestTaker() {
   const [timeLeft,   setTimeLeft]   = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [result,     setResult]     = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const timerRef = useRef(null)
 
@@ -185,14 +186,22 @@ export default function TestTaker() {
       />
 
       <div className="tt-body">
+        {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
         <TestSidebar
           panels={panels}
           panelIdx={panelIdx}
           answers={answers}
-          onSelect={setPanelIdx}
+          onSelect={(i) => { setPanelIdx(i); setSidebarOpen(false) }}
+          className={sidebarOpen ? 'sidebar--open' : ''}
         />
 
         <main className="tt-main">
+          <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Questions
+          </button>
           {panels[panelIdx] && (
             <PanelView
               panel={panels[panelIdx]}

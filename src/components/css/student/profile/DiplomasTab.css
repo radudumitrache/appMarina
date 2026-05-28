@@ -329,3 +329,44 @@
   color: #333;
   font-weight: 500;
 }
+
+@media (max-width: 600px) {
+  .sdip-overlay {
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 32px 16px 32px;
+  }
+
+  /* Constrain wrap to overlay padded width */
+  .sdip-wrap {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Actions: download + dismiss side by side */
+  .sdip-actions {
+    margin-bottom: 8px;
+    justify-content: space-between;
+  }
+
+  /* Dismiss: back in normal flow */
+  .sdip-dismiss {
+    position: static;
+  }
+
+  /* Compact cert */
+  .sdip-cert {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px 16px;
+    gap: 10px;
+  }
+
+  .sdip-title     { font-size: 15px; }
+  .sdip-recipient { font-size: 16px; min-width: 100px; }
+  .sdip-desc      { font-size: 11px; }
+  .sdip-footer    { flex-direction: column; gap: 8px; }
+  .sdip-footer-col:last-child { align-items: flex-start; }
+}

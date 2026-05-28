@@ -136,3 +136,30 @@
   animation: slideOutLeft 0.38s var(--ease-out) both;
   pointer-events: none;
 }
+
+@media (max-width: 480px) {
+  /* Center card vertically */
+  .login-page {
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Uniform dark overlay across the full screen */
+  .login-overlay {
+    background: rgba(6, 11, 20, 0.72);
+  }
+
+  .login-card {
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    padding: 40px 28px;
+    animation: none !important;
+  }
+
+  .login-card--leaving {
+    animation: none !important;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+}

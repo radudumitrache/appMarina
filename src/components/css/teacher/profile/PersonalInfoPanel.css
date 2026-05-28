@@ -131,3 +131,9 @@
   background: rgba(224, 82, 82, 0.08);
   border-color: var(--error);
 }
+
+@media (max-width: 768px) {
+  .tp-form-grid { grid-template-columns: 1fr; gap: 12px; }
+  .tp-btn-primary,
+  .tp-btn-secondary { width: 100%; justify-content: center; box-sizing: border-box; }
+}

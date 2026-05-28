@@ -493,3 +493,41 @@
   color: var(--text-2);
   line-height: 1.6;
 }
+
+@media (max-width: 768px) {
+  .courses-adm-main { padding: 16px; }
+  .courses-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .courses-adm-header {
+    height: auto;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .courses-adm-header-right {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .courses-adm-header .search-wrap-inline { width: 100%; }
+
+  .courses-adm-header .search-input-inline {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .courses-status-filter {
+    width: 100%;
+  }
+
+  .courses-status-filter .status-filter-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .courses-adm-main { padding: 12px; padding-bottom: 32px; }
+}

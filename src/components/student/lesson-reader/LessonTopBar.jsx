@@ -53,7 +53,7 @@ export default function LessonTopBar({ lessonTitle, panelIdx, panelCount, comple
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 6L9 17l-5-5"/>
             </svg>
-            {completing ? '…' : completed ? 'Completed' : 'Mark Complete'}
+            <span>{completing ? '…' : completed ? 'Completed' : 'Mark Complete'}</span>
           </button>
         )}
       </div>

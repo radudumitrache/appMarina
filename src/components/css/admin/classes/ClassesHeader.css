@@ -1,7 +1,7 @@
 .classes-adm-header {
-  height: 68px;
   flex-shrink: 0;
   padding: 0 40px;
+  height: 68px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -93,4 +93,38 @@
 .status-filter-btn--active {
   background: rgba(224, 82, 82, 0.12);
   color: var(--error);
+}
+
+@media (max-width: 600px) {
+  .classes-adm-header {
+    height: auto;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .classes-adm-header-left { gap: 6px; }
+
+  .classes-adm-header-right {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .search-wrap-inline { width: 100%; }
+
+  .search-input-inline {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .classes-status-filter {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .classes-status-filter .status-filter-btn {
+    flex: 1;
+    text-align: center;
+  }
 }

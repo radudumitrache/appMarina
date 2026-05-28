@@ -401,3 +401,42 @@
   color: rgba(255, 255, 255, 0.35);
   letter-spacing: 0.05em;
 }
+
+/* ─── Gyroscope toggle button ────────────────────────────────────────────── */
+.vr-gyro-btn {
+  position: absolute;
+  bottom: 64px;
+  right: 14px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.vr-gyro-btn:hover {
+  background: rgba(0, 0, 0, 0.65);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.vr-gyro-btn--active {
+  background: rgba(11, 189, 164, 0.18);
+  border-color: rgba(11, 189, 164, 0.55);
+  color: var(--accent, #0bbda4);
+  animation: vr-gyro-pulse 2s ease-in-out infinite;
+}
+
+@keyframes vr-gyro-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(11, 189, 164, 0.3); }
+  50%       { box-shadow: 0 0 0 6px rgba(11, 189, 164, 0); }
+}

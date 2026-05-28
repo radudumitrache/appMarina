@@ -334,3 +334,63 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+@media (max-width: 768px) {
+  .settings-page {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .settings-layout {
+    height: auto;
+    min-height: 100vh;
+  }
+  .settings-header {
+    padding: 0 16px;
+    height: 56px;
+  }
+  .settings-body {
+    flex-direction: column;
+    overflow: visible;
+  }
+  .settings-main {
+    padding: 14px 14px 32px;
+    gap: 14px;
+  }
+  .settings-panel {
+    padding: 14px;
+  }
+  .settings-tabs {
+    align-self: stretch;
+  }
+  .settings-tab {
+    flex: 1;
+    text-align: center;
+    padding: 7px 6px;
+  }
+  .settings-grid,
+  .settings-pwd-grid {
+    grid-template-columns: 1fr;
+  }
+  .settings-pwd-grid .s-form-row:first-child {
+    grid-column: 1;
+  }
+  .settings-panel-head {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .settings-save-row {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .s-appearance-row {
+    flex-wrap: wrap;
+  }
+  .s-theme-toggle {
+    flex: 1;
+  }
+  .s-theme-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

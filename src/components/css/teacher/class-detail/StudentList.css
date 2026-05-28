@@ -335,3 +335,33 @@
   padding: 48px 16px;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  /* Hide lower-priority columns */
+  .cd-col--last,
+  .cd-col--status,
+  .cd-col--cat,
+  .cd-col--dur,
+  .cd-col--test-time,
+  .cd-col--test-q,
+  .cd-col--num,
+  .cd-col--course-lessons { display: none; }
+
+  /* Compact progress bar */
+  .cd-col--progress { width: 110px; }
+  .cd-col--completion { min-width: 90px; }
+  .cd-progress-cell,
+  .cd-completion-cell { padding-right: 8px; gap: 6px; }
+
+  /* Compact course/test action columns */
+  .cd-col--actions3 { width: 36px; }
+  .cd-col--course-status { width: 72px; }
+  .cd-col--test-status { width: 72px; }
+
+  /* Row padding */
+  .cd-row { padding: 10px 12px; }
+  .cd-list-header { padding: 0 12px 8px; }
+
+  /* Avatar smaller */
+  .cd-avatar { width: 28px; height: 28px; font-size: 10px; }
+}

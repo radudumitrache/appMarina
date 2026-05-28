@@ -7,9 +7,9 @@ const FILTERS = [
   { id: 'resolved', label: 'Resolved'    },
 ]
 
-export default function TicketsSidebar({ statusFilter, onFilter, counts }) {
+export default function TicketsSidebar({ statusFilter, onFilter, counts, className = '' }) {
   return (
-    <aside className="as-sidebar">
+    <aside className={`as-sidebar${className ? ` ${className}` : ''}`}>
       <div className="as-sidebar-head">
         <span className="as-sidebar-label">Filter</span>
       </div>

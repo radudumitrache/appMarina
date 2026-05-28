@@ -249,3 +249,70 @@
 }
 [data-theme="light"] .nav-tile-label         { color: rgba(190, 220, 245, 0.80); }
 [data-theme="light"] .nav-tile:hover .nav-tile-label { color: #e4edf6; }
+
+/* ─── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  /* Background pinned; only the content layer scrolls if needed */
+  .dashboard-bg,
+  .dashboard-overlay { position: fixed; }
+
+  /* Overlay: heavy dark at the bottom, fades to transparent at top */
+  .dashboard-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(6, 11, 20, 0.96) 0%,
+      rgba(6, 11, 20, 0.78) 38%,
+      rgba(6, 11, 20, 0.22) 65%,
+      transparent 100%
+    );
+  }
+
+  /* Tighter role badge */
+  .dash-role-badge {
+    top: 16px;
+    left: 16px;
+    font-size: 10px;
+    padding: 5px 10px;
+    gap: 6px;
+  }
+
+  /* Tighter controls pill */
+  .dash-controls { top: 16px; right: 16px; }
+  .ctrl-btn { padding: 7px 10px; font-size: 12px; }
+
+  /* Push everything to the bottom */
+  .dash-main {
+    justify-content: flex-end;
+    padding: 0 18px 44px;
+    gap: 0.5vh;
+  }
+
+  /* Compact brand block — margin-bottom pushes it up away from the tiles */
+  .dash-brand    { gap: 6px; margin-bottom: 6vh; }
+  .dash-wordmark { font-size: 22px; letter-spacing: 0.18em; }
+  .dash-greeting { font-size: 12px; }
+
+  /* Single-column stack */
+  .dash-grid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Remove row wrappers from layout flow */
+  .dash-row { display: contents; }
+
+  /* Tiles: full width, horizontal layout */
+  .nav-tile {
+    width: 100%;
+    height: 100px;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 0 28px;
+    gap: 20px;
+  }
+
+  .nav-tile-icon svg { width: 26px; height: 26px; }
+  .nav-tile-label { font-size: 16px; font-weight: 500; }
+}

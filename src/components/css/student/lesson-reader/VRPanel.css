@@ -378,3 +378,36 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+@media (max-width: 768px) {
+  /* Anchor popup becomes a bottom sheet */
+  .lr-anchor-popup {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 55vh;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    z-index: 20;
+    animation: lr-sheet-in 0.22s ease both;
+  }
+
+  @keyframes lr-sheet-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* VR panel docs overlay: move down from top (to clear topbar hints) */
+  .lr-vr-panel-docs { max-width: calc(100% - 32px); }
+
+  /* Shift the strip up a bit more for thumb reach */
+  .lr-vr-strip { padding: 12px 12px 20px; gap: 6px; }
+  .lr-strip-btn { padding: 6px 10px; font-size: 11px; }
+
+  .lr-vr-label { top: 12px; left: 14px; font-size: 13px; }
+  .lr-anchor-counter { top: 10px; right: 10px; }
+  .lr-vr-hint { display: none; }
+}

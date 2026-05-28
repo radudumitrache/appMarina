@@ -43,3 +43,8 @@
   align-self: stretch;
   background: var(--border);
 }
+
+@media (max-width: 768px) {
+  .tp-snapshot-value { font-size: 22px; }
+  .tp-snapshot-item { padding: 12px 8px; }
+}

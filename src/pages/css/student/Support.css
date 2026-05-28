@@ -106,3 +106,27 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+@media (max-width: 768px) {
+  /* Page scrolls naturally */
+  .support-page {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* Header */
+  .support-header { padding: 0 16px; height: 56px; }
+
+  /* Content */
+  .support-content { padding: 16px; }
+
+  /* Stack left + right columns vertically */
+  .support-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Section card padding */
+  .support-section { padding: 16px; }
+}

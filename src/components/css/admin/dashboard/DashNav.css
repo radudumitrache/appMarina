@@ -55,6 +55,35 @@
   letter-spacing: 0.01em;
 }
 
+/* ─── Mobile: single column, full-width tiles ────────────────────────────── */
+@media (max-width: 600px) {
+  .dash-nav--4col,
+  .dash-nav--3col {
+    grid-template-columns: calc(100vw - 48px);
+    grid-template-rows: none;
+    gap: 12px;
+  }
+
+  /* icon above, label below — ~3.5 tiles visible per screen */
+  .dash-btn {
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 0;
+    height: calc((100vh - 88px - 32px) / 3.5);
+    min-height: 90px;
+  }
+
+  .dash-btn-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .dash-btn-label {
+    font-size: 13px;
+  }
+}
+
 /* ─── Light theme — blue-glass tiles ─────────────────────────────────────── */
 [data-theme="light"] .admin-dashboard .dash-btn {
   background: rgba(15, 45, 95, 0.62);

@@ -297,3 +297,67 @@
   background: rgba(11, 189, 164, 0.14);
   border-color: var(--accent);
 }
+
+@media (max-width: 768px) {
+  /* Stack sidebar above content */
+  .lr-text-layout { flex-direction: column; }
+
+  /* Sidebar becomes a compact horizontal scrollable strip */
+  .lr-text-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 0 0;
+    overflow-y: visible;
+    overflow-x: hidden;
+  }
+
+  .lr-sidebar-label { padding: 0 14px 8px; }
+
+  .lr-sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 8px 12px;
+    gap: 6px;
+  }
+
+  /* Each panel becomes a horizontal chip card */
+  .lr-sidebar-btn {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    width: auto;
+    max-width: 160px;
+    padding: 6px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    gap: 8px;
+  }
+
+  .lr-sidebar-btn--active {
+    border-color: var(--accent-rim);
+  }
+
+  .lr-sidebar-meta { flex-direction: row; align-items: center; gap: 6px; }
+
+  .lr-sidebar-name {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+  }
+
+  .lr-sidebar-kind { display: none; }
+
+  /* Main content */
+  .lr-text-main { padding: 20px 16px; }
+  .lr-text-heading { font-size: 18px; margin-bottom: 16px; }
+  .lr-text-body { font-size: 14px; }
+
+  /* Document attachment row wraps on small screens */
+  .lr-panel-doc-item { flex-wrap: wrap; gap: 8px; }
+  .lr-panel-doc-name { min-width: 100%; }
+}

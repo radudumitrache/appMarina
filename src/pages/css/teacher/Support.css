@@ -136,3 +136,33 @@
 }
 
 .ts-retry-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+@media (max-width: 768px) {
+  .ts-page {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .ts-header {
+    height: auto;
+    min-height: 56px;
+    padding: 12px 16px;
+  }
+
+  .ts-title { font-size: 18px; }
+
+  .ts-content {
+    padding: 16px;
+    overflow: visible;
+  }
+
+  .ts-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .ts-section { padding: 16px; }
+}

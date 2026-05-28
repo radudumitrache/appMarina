@@ -3148,3 +3148,118 @@
 }
 .ise-margin-input:focus { outline: none; border-color: var(--gold, #d4a017); }
 .ise-margin-input::placeholder { color: var(--text-3); }
+
+/* ─── Mobile / narrow-screen ─────────────────────────────────────────────── */
+/* Separate keyframe so we can reference it inside the @media block           */
+@keyframes lpe-drawer-in-mob {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  /* Page — avoid 100vw horizontal bleed */
+  .lpe-page { width: 100%; }
+
+  /* ── Topbar ──────────────────────────────────────────────────────────── */
+  .lpe-topbar { padding: 0 12px; gap: 8px; }
+  .lpe-lesson-title { font-size: 13px; max-width: 110px; }
+  .lpe-teacher-badge { display: none; }
+
+  /* ── Text panel preview ──────────────────────────────────────────────── */
+  .lpe-text-wrap { padding: 68px 16px 24px; }
+
+  /* ── Float action buttons: compact column at top-right below topbar ─── */
+  /* Moved to top so they stay visible when the drawer bottom sheet is open */
+  .lpe-float-actions {
+    top: 58px;
+    right: 12px;
+    bottom: auto;
+    transform: none;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* All float buttons become icon-only squares on mobile */
+  .lpe-float-btn {
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+  }
+  .lpe-float-btn span { display: none; }
+
+  /* ── Add-panel trigger: bottom-left above the panel strip ────────────── */
+  .lpe-add-wrap { bottom: 68px; left: 12px; }
+  .lpe-add-trigger { padding: 0 12px; font-size: 12px; }
+
+  /* ── Edit drawer: bottom sheet so VR scene is visible above it ───────── */
+  /* All overrides need !important to beat the inline style={{ width }} */
+  .lpe-drawer {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    top: auto !important;
+    height: 55vh !important;
+    bottom: 60px !important;
+    animation: lpe-drawer-in-mob 0.22s ease;
+  }
+
+  /* Resize handle makes no sense on touch */
+  .lpe-drawer-resize-handle { display: none; }
+
+  /* Tighter internal spacing */
+  .lpe-drawer-header { padding: 14px 16px 12px; }
+  .lpe-drawer-body   { padding: 12px 12px 0; gap: 12px; }
+  .lpe-drawer-footer { padding: 12px 16px; }
+
+  /* Toolbar buttons */
+  .lpe-tbtn { min-width: 44px; height: 44px; }
+
+  /* ── VR panel overlay labels ─────────────────────────────────────────── */
+  /* Keep the scene label at top-left so it isn't hidden behind the drawer */
+  .lpe-vr-label {
+    bottom: auto;
+    top: 60px;
+    left: 12px;
+    transform: none;
+  }
+  /* Hide drag hint on mobile — it overlaps the top-right buttons */
+  .lpe-vr-hint { display: none; }
+
+  /* ── Gyroscope button: reposition inside the editor context ──────────── */
+  /* Moves it to top area (right of topbar, left of float-actions) so it  */
+  /* stays accessible even when the bottom-sheet drawer is open.          */
+  .lpe-vr-wrap .vr-gyro-btn {
+    bottom: auto;
+    top: 58px;
+    right: 60px; /* offset left of the float-actions column at right: 12px */
+    left: auto;
+  }
+
+  /* ── Placement mode hint bar ─────────────────────────────────────────── */
+  .lpe-placement-hint {
+    left: 12px;
+    right: 12px;
+    transform: none;
+    white-space: normal;
+    text-align: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+    justify-content: center;
+  }
+
+  /* ── Error toast ─────────────────────────────────────────────────────── */
+  .lpe-toast {
+    left: 16px;
+    right: 16px;
+    transform: none;
+    white-space: normal;
+    text-align: center;
+  }
+
+  /* ── Delete confirmation dialog ──────────────────────────────────────── */
+  .lpe-dialog { width: calc(100vw - 32px); }
+}

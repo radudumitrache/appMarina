@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import '../../css/student/my-class/ClassSidebar.css'
 
-export default function ClassSidebar({ classes, selectedId, onSelect, onJoin }) {
+export default function ClassSidebar({ classes, selectedId, onSelect, onJoin, className = '' }) {
   const [open,      setOpen]      = useState(false)
   const [joinCode,  setJoinCode]  = useState('')
   const [joining,   setJoining]   = useState(false)
@@ -39,7 +39,7 @@ export default function ClassSidebar({ classes, selectedId, onSelect, onJoin }) 
   }
 
   return (
-    <aside className="cls-sidebar">
+    <aside className={`cls-sidebar${className ? ` ${className}` : ''}`}>
       <div className="cls-sidebar-head">
         <span className="cls-sidebar-label">My Departments</span>
         <span className="cls-sidebar-count">{classes.length}</span>

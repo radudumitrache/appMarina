@@ -28,9 +28,9 @@ function isPanelDone(panel, answers) {
   })
 }
 
-export default function TestSidebar({ panels, panelIdx, answers, onSelect }) {
+export default function TestSidebar({ panels, panelIdx, answers, onSelect, className = '' }) {
   return (
-    <nav className="tt-sidebar">
+    <nav className={`tt-sidebar${className ? ` ${className}` : ''}`}>
       {panels.map((panel, idx) => {
         const done   = isPanelDone(panel, answers)
         const active = idx === panelIdx

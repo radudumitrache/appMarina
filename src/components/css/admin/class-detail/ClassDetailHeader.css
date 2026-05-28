@@ -133,3 +133,23 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+@media (max-width: 600px) {
+  .cd-header {
+    flex-direction: column;
+    padding: 16px 12px 14px;
+    gap: 14px;
+  }
+
+  /* stats row stretches full width below the text */
+  .cd-header-stats {
+    width: 100%;
+  }
+
+  .cd-stat {
+    flex: 1;
+    padding: 12px 8px;
+  }
+
+  .cd-stat-value { font-size: 20px; }
+}

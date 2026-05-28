@@ -25,6 +25,12 @@ export default function AdminTestBuilder() {
   const [addingPanel,     setAddingPanel]     = useState(false)
   const [newPanelType,    setNewPanelType]    = useState('exercise')
   const [newPanelTitle,   setNewPanelTitle]   = useState('')
+  const [sidebarOpen,     setSidebarOpen]     = useState(false)
+
+  // on mobile, auto-open the sidebar when no test is selected
+  useEffect(() => {
+    if (!selectedId && window.innerWidth <= 768) setSidebarOpen(true)
+  }, [selectedId])
 
   useEffect(() => {
     const fetches = [getTests({}), getDepartments()]
@@ -145,13 +151,21 @@ export default function AdminTestBuilder() {
         <NavBar />
 
         <div className="tb-body">
+          {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
+          <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Tests
+          </button>
           <TestSidebar
             tests={tests}
             selectedId={selectedId}
-            onSelect={handleSelectTest}
+            onSelect={(id) => { handleSelectTest(id); setSidebarOpen(false) }}
             onNew={handleNewTest}
             onDelete={handleDeleteTest}
             loading={loading}
+            className={sidebarOpen ? 'sidebar--open' : ''}
           />
 
           {selectedId && testDetail ? (

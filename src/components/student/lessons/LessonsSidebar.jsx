@@ -6,12 +6,12 @@ function getCatStats(lessons, catId) {
   return { total: subset.length, done: subset.filter(l => l.complete).length }
 }
 
-export default function LessonsSidebar({ lessons, activeCategory, onCategoryChange }) {
+export default function LessonsSidebar({ lessons, activeCategory, onCategoryChange, className = '' }) {
   const overall    = getCatStats(lessons, 'all')
   const overallPct = overall.total > 0 ? (overall.done / overall.total) * 100 : 0
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${className ? ` ${className}` : ''}`}>
       <nav className="sidebar-nav">
         {CATEGORIES.map((cat) => {
           const stats = getCatStats(lessons, cat.id)

@@ -273,3 +273,23 @@
   padding: 48px 20px;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  /* Hide less-critical columns */
+  .tp-col--class,
+  .tp-col--lessons,
+  .tp-col--score   { display: none; }
+
+  /* Compact progress column */
+  .tp-col--progress { flex: 1; min-width: 80px; }
+
+  /* Row padding */
+  .tp-row        { padding: 10px 12px; }
+  .tp-table-head { padding: 8px 12px; }
+
+  /* Avatar smaller */
+  .tp-avatar { width: 26px; height: 26px; font-size: 10px; }
+
+  /* Footer stacks */
+  .tp-table-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+}

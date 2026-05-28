@@ -138,3 +138,10 @@
   font-size: 12px;
   color: var(--text-3);
 }
+
+@media (max-width: 768px) {
+  .as-table-wrap { overflow-x: auto; }
+  .as-table th:nth-child(4), .as-table td:nth-child(4),
+  .as-table th:nth-child(6), .as-table td:nth-child(6),
+  .as-table th:nth-child(7), .as-table td:nth-child(7) { display: none; }
+}

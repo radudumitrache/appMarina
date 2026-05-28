@@ -92,3 +92,8 @@
   color: var(--text-3);
   margin: 0;
 }
+
+@media (max-width: 768px) {
+  .tp-pw-form { max-width: 100%; }
+  .tp-security-info-row { flex-wrap: wrap; gap: 4px; }
+}

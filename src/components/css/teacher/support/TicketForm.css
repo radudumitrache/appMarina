@@ -158,3 +158,9 @@
   background: var(--surface-2);
   border-color: var(--border-hover);
 }
+
+@media (max-width: 768px) {
+  .ts-submit-btn { align-self: stretch; justify-content: center; }
+  .ts-success { flex-wrap: wrap; }
+  .ts-success-reset { align-self: flex-start; }
+}

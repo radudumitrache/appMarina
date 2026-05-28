@@ -82,12 +82,22 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
   const onSceneClickRef = useRef(onSceneClick)
   const pickSphereRef   = useRef(null)
   const [loading, setLoading] = useState(false)
+  const [gyroAvailable, setGyroAvailable] = useState(false)
+  const [gyroOn, setGyroOn]         = useState(false)
+  const gyroOnRef                   = useRef(false)
 
   useEffect(() => { hotspotsRef.current    = hotspots        }, [hotspots])
   useEffect(() => { onReadyRef.current     = onSceneReady    }, [onSceneReady])
   useEffect(() => { polyAnchorsRef.current = polygonAnchors  }, [polygonAnchors])
   useEffect(() => { editModeRef.current    = editMode        }, [editMode])
   useEffect(() => { onSceneClickRef.current = onSceneClick   }, [onSceneClick])
+
+  // Detect gyroscope availability (DeviceOrientationEvent present = mobile with sensor)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
+      setGyroAvailable(true)
+    }
+  }, [])
 
   // Toggle edit-mode CSS class and freeze auto-rotate when entering edit mode
   useEffect(() => {
@@ -160,6 +170,29 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     stateRef.current.setAutoRotate = (v) => { autoRotate = v }
     stateRef.current.setCameraDir  = (newLon, newLat) => { lon = newLon; lat = newLat }
     stateRef.current.getCameraDir  = () => ({ lon, lat })
+
+    // Gyroscope — shared between the event listener and the RAF tick
+    const gyroData  = { alpha: null, beta: null }
+    const gyroCalib = { alpha: null, lonAtRef: 0 }
+
+    const onDeviceOrientation = (e) => {
+      if (e.alpha === null || e.beta === null) return
+      gyroData.alpha = e.alpha
+      gyroData.beta  = e.beta
+      // Calibrate on the first reading after enabling
+      if (gyroCalib.alpha === null) {
+        gyroCalib.alpha    = e.alpha
+        gyroCalib.lonAtRef = lon
+      }
+    }
+
+    stateRef.current.enableGyro = () => {
+      gyroCalib.alpha = null  // force recalibration from current lon on next reading
+      window.addEventListener('deviceorientation', onDeviceOrientation, true)
+    }
+    stateRef.current.disableGyro = () => {
+      window.removeEventListener('deviceorientation', onDeviceOrientation, true)
+    }
 
     // Mouse
     const onMouseDown = (e) => {
@@ -292,6 +325,12 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       const wasDrag = Math.sqrt(dx * dx + dy * dy) > 10
       isDragging = false
 
+      // Recalibrate so gyro resumes from where the drag left off
+      if (gyroOnRef.current && gyroData.alpha !== null) {
+        gyroCalib.alpha    = gyroData.alpha
+        gyroCalib.lonAtRef = lon
+      }
+
       if (!wasDrag && !e.target.closest('.vr-hotspot')) {
         if (editModeRef.current && onSceneClickRef.current) {
           getNDC(t.clientX, t.clientY)
@@ -363,7 +402,17 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     const tick = () => {
       animId = requestAnimationFrame(tick)
 
-      if (autoRotate && !editModeRef.current) lon += AUTO_ROTATE_SPEED
+      if (gyroOnRef.current && !isDragging && gyroData.alpha !== null && gyroCalib.alpha !== null) {
+        // Compass delta → lon offset (alpha increases clockwise = look right = lon increases)
+        let dAlpha = gyroData.alpha - gyroCalib.alpha
+        if (dAlpha >  180) dAlpha -= 360
+        if (dAlpha < -180) dAlpha += 360
+        lon = gyroCalib.lonAtRef + dAlpha
+        // beta 90° = phone upright = looking at horizon → lat = 0
+        lat = 90 - gyroData.beta
+      } else if (autoRotate && !editModeRef.current) {
+        lon += AUTO_ROTATE_SPEED
+      }
       lat = Math.max(-LAT_MAX, Math.min(LAT_MAX, lat))
 
       const phi   = THREE.MathUtils.degToRad(90 - lat)
@@ -424,6 +473,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       container.removeEventListener('touchmove',  onTouchMove)
       container.removeEventListener('touchend',   onTouchEnd)
       container.removeEventListener('wheel',      onWheel)
+      window.removeEventListener('deviceorientation', onDeviceOrientation, true)
       if (typeof sceneCleanup === 'function') sceneCleanup()
       renderer.dispose()
       material.dispose()
@@ -557,6 +607,30 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     }
   }, [src])
 
+  /* ── Gyroscope toggle ───────────────────────────────────────────────────── */
+  const handleGyroToggle = async () => {
+    if (gyroOn) {
+      gyroOnRef.current = false
+      setGyroOn(false)
+      stateRef.current.disableGyro?.()
+    } else {
+      // iOS 13+ requires an explicit user-gesture permission request
+      if (typeof DeviceOrientationEvent !== 'undefined' &&
+          typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+          const perm = await DeviceOrientationEvent.requestPermission()
+          if (perm !== 'granted') return
+        } catch {
+          return
+        }
+      }
+      gyroOnRef.current = true
+      setGyroOn(true)
+      stateRef.current.setAutoRotate?.(false)
+      stateRef.current.enableGyro?.()
+    }
+  }
+
   /* ── Render ─────────────────────────────────────────────────────────────── */
   return (
     <div ref={containerRef} className="vr-viewer">
@@ -566,6 +640,22 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
           <div className="vr-loader-ring" />
           <span className="vr-loader-label">Loading scene…</span>
         </div>
+      )}
+
+      {gyroAvailable && (
+        <button
+          className={`vr-gyro-btn${gyroOn ? ' vr-gyro-btn--active' : ''}`}
+          onClick={handleGyroToggle}
+          title={gyroOn ? 'Disable gyroscope' : 'Enable gyroscope'}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2a10 10 0 0 1 10 10"/>
+            <path d="M12 2v4M12 2l3 3M12 2l-3 3"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 22a10 10 0 0 1-10-10"/>
+            <path d="M12 22v-4M12 22l3-3M12 22l-3-3"/>
+          </svg>
+        </button>
       )}
 
       <div className="vr-hotspots-layer">

@@ -782,6 +782,55 @@
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+@media (max-width: 768px) {
+  /* New-course inline form stays within bounds */
+  .lct-new-course-row {
+    flex-wrap: wrap;
+    gap: 6px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .lct-course-input { width: 100%; min-width: 0; }
+
+  .lct-confirm-btn { flex: 1; }
+
+  /* Course row: let info + actions wrap to two lines */
+  .lct-course-row {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 10px;
+  }
+
+  /* Hide classroom select — not useful on mobile */
+  .lct-classroom-select { display: none; }
+
+  /* Course actions wrap below the info */
+  .lct-course-actions {
+    width: 100%;
+    padding-left: 30px; /* align with title after toggle btn */
+    gap: 6px;
+  }
+
+  /* Manage / lessons button: shrink slightly */
+  .lct-manage-btn {
+    font-size: 11px;
+    padding: 0 9px;
+    height: 26px;
+  }
+
+  /* Hide duration & category in lesson rows */
+  .lct-dur,
+  .lct-cat-tag { display: none; }
+
+  /* Lesson actions always visible on mobile (no hover) */
+  .lct-lesson-actions { opacity: 1; }
+  .lct-cl-actions     { opacity: 1; }
+
+  /* Section header */
+  .lct-section-hd { padding: 6px 0 10px; }
+}
+
 /* ── Empty ───────────────────────────────────────────────────────────────── */
 .lct-empty {
   font-family: var(--font-ui);

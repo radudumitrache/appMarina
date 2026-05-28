@@ -99,3 +99,26 @@
   color: var(--text-3);
   letter-spacing: 0.02em;
 }
+
+@media (max-width: 768px) {
+  .myclass-header {
+    padding: 0 16px;
+    min-height: 60px;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  /* Title + code badge: allow wrapping */
+  .myclass-header-title-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .myclass-page-title {
+    font-size: 15px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  /* Teacher info: hide on mobile to save space */
+  .myclass-header-right { display: none; }
+}

@@ -1,6 +1,6 @@
 import '../../css/admin/lessons/LessonsSidebar.css'
 
-export default function LessonsSidebar({ lessons, departments, activeDepartment, onDepartmentChange }) {
+export default function LessonsSidebar({ lessons, departments, activeDepartment, onDepartmentChange, className = '' }) {
   const published = lessons.filter(l => l.visibility === 'public').length
   const total = lessons.length
   const pct = total ? (published / total) * 100 : 0
@@ -11,7 +11,7 @@ export default function LessonsSidebar({ lessons, departments, activeDepartment,
       : lessons.filter(l => l.department_id === departmentId).length
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${className ? ` ${className}` : ''}`}>
       <nav className="sidebar-nav">
         <button
           className={`sidebar-btn${activeDepartment === 'all' ? ' sidebar-btn--active' : ''}`}

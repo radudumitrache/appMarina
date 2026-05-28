@@ -373,3 +373,9 @@
 .cb-create-submit:disabled { opacity: 0.5; cursor: default; }
 
 @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+/* ─── Mobile sidebar ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .cb-body { flex-direction: column; overflow-y: auto; }
+  .cb-main  { flex: none; padding: 16px; }
+}

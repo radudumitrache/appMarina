@@ -121,3 +121,15 @@
   opacity: 0.5;
   cursor: default;
 }
+
+@media (max-width: 768px) {
+  .lr-topbar { padding: 0 12px; gap: 8px; }
+
+  .lr-back-btn { padding: 0 8px; font-size: 12px; gap: 4px; }
+
+  .lr-lesson-title { font-size: 13px; max-width: 120px; }
+
+  /* Hide "Mark complete" / "Completed" text — keep only the icon */
+  .lr-complete-btn span { display: none; }
+  .lr-complete-btn { padding: 0 8px; }
+}

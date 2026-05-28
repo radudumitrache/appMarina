@@ -139,3 +139,106 @@
   background: color-mix(in srgb, var(--accent) 22%, transparent);
   color: var(--accent);
 }
+
+/* Chevron in name row (mobile only — hidden on desktop) */
+.file-row-chevron {
+  display: none;
+  flex-shrink: 0;
+  color: var(--text-3);
+  margin-left: auto;
+  transition: transform 0.22s ease, color 0.15s;
+}
+
+@media (max-width: 768px) {
+  /* ── Card container ───────────────────────────────────────────────── */
+  .file-row.file-row {
+    display: block !important;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color var(--duration-fast);
+  }
+
+  .file-row.file-row:hover { border-color: var(--border-hover); }
+
+  /* ── Hide all cells by default (higher specificity than class !important) */
+  .file-row.file-row td {
+    display: none !important;
+    border: none !important;
+    padding: 0 !important;
+    white-space: normal !important;
+  }
+
+  /* ── Name row — tap to expand ─────────────────────────────────────── */
+  .file-row.file-row td.file-row-name {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    max-width: 100% !important;
+  }
+
+  /* Bigger icon */
+  .file-row.file-row td.file-row-name .file-type-badge {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: var(--radius-sm) !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Filename prominent */
+  .file-row.file-row td.file-row-name .file-name-text {
+    flex: 1 !important;
+    min-width: 0 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    max-width: none !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Chevron indicator */
+  .file-row-chevron { display: block; }
+  .file-row--expanded .file-row-chevron {
+    transform: rotate(180deg);
+    color: var(--text-2);
+  }
+
+  /* ── Type + VR badges row ─────────────────────────────────────────── */
+  .file-row.file-row td.file-row-type {
+    display: flex !important;
+    gap: 6px !important;
+    padding: 0 16px 14px 68px !important;
+  }
+
+  /* ── Actions — expand from bottom on tap ─────────────────────────── */
+  .file-row.file-row td.file-row-actions {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    max-height: 0 !important;
+    padding: 0 16px !important;
+    transition: max-height 0.25s ease, padding 0.25s ease, border-color 0.25s !important;
+    border-top: 1px solid transparent !important;
+    justify-content: flex-start !important;
+  }
+
+  .file-row.file-row.file-row--expanded td.file-row-actions {
+    max-height: 72px !important;
+    padding: 12px 16px !important;
+    border-top-color: var(--border) !important;
+  }
+
+  /* Bigger touch targets */
+  .file-row.file-row td.file-row-actions .file-action-btn {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: var(--radius-sm) !important;
+    background: var(--surface-2) !important;
+    border: 1px solid var(--border) !important;
+  }
+}

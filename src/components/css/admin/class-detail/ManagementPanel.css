@@ -214,3 +214,7 @@
 }
 .cd-member-row:hover .cd-remove-btn { opacity: 1; }
 .cd-remove-btn:hover { background: rgba(224, 82, 82, 0.1); color: var(--error); }
+
+@media (max-width: 600px) {
+  .cd-remove-btn { opacity: 1; }
+}

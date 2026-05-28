@@ -32,3 +32,21 @@
   font-size: 15px;
   color: var(--text-3);
 }
+
+@media (max-width: 768px) {
+  .cd-page {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .cd-layout { height: auto; }
+
+  .cd-content {
+    padding: 16px;
+    gap: 16px;
+    overflow: visible;
+  }
+}

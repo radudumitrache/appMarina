@@ -1,8 +1,8 @@
 import '../../css/shared/media/MediaSidebar.css'
 
-export default function MediaSidebar({ folders, activeId, onSelect }) {
+export default function MediaSidebar({ folders, activeId, onSelect, className = '' }) {
   return (
-    <aside className="media-sidebar">
+    <aside className={`media-sidebar${className ? ` ${className}` : ''}`}>
       <p className="media-sidebar-heading">Location</p>
       <ul className="media-sidebar-list">
         {folders.map(f => (

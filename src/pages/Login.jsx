@@ -31,6 +31,11 @@ export default function Login() {
     try {
       const userRole = await login(username, password)
       setError('')
+      // On mobile skip the transition video entirely — navigate immediately
+      if (window.innerWidth <= 600) {
+        navigate(`/${userRole}/dashboard`)
+        return
+      }
       setRole(userRole)
       setPhase('leaving')
       // 380ms slide-out + ~1000ms bg-only hold before transition video

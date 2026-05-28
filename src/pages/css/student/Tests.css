@@ -41,3 +41,7 @@
   gap: 16px;
   animation: fadeUp var(--duration-enter) var(--ease-default) 0.05s both;
 }
+
+@media (max-width: 768px) {
+  .tests-main { padding: 16px 16px 0; }
+}

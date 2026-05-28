@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import '../../css/admin/lessons/LessonsToolbar.css'
 
 export default function LessonsToolbar({ title, filteredCount, search, onSearchChange, statusFilter, onStatusFilterChange, onCreateNew }) {
+  const [searchFocused, setSearchFocused] = useState(false)
+
   return (
     <>
       <div className="lessons-adm-head">
@@ -17,7 +20,7 @@ export default function LessonsToolbar({ title, filteredCount, search, onSearchC
         </div>
       </div>
 
-      <div className="lessons-adm-toolbar">
+      <div className={`lessons-adm-toolbar${searchFocused ? ' toolbar--search-expanded' : ''}`}>
         <div className="search-wrap">
           <svg className="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/>
@@ -29,6 +32,8 @@ export default function LessonsToolbar({ title, filteredCount, search, onSearchC
             placeholder="Search lessons…"
             value={search}
             onChange={e => onSearchChange(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
           />
           {search && (
             <button className="search-clear" onClick={() => onSearchChange('')}>

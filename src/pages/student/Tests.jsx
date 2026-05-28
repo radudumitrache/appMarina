@@ -33,6 +33,7 @@ export default function Tests() {
   const [activeDepartment,  setActiveDepartment]  = useState('all')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [searchQuery,  setSearchQuery]  = useState('')
+  const [sidebarOpen,  setSidebarOpen]  = useState(false)
 
   useEffect(() => {
     Promise.all([getTests({}), getDepartments()])
@@ -86,6 +87,7 @@ export default function Tests() {
         <NavBar />
 
         <div className="tests-body">
+          {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
           <TestsSidebar
             tests={tests}
             departments={departments}
@@ -93,9 +95,16 @@ export default function Tests() {
             onDepartmentChange={setActiveDepartment}
             overall={overall}
             avg={avg}
+            className={sidebarOpen ? 'sidebar--open' : ''}
           />
 
           <main className="tests-main">
+            <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+              Filters
+            </button>
             <div className="tests-head">
               <h2 className="tests-title">{activeLabel}</h2>
               <span className="tests-count">

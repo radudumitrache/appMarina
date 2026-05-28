@@ -127,3 +127,13 @@
   border-color: rgba(224, 82, 82, 0.3);
   color: var(--error);
 }
+
+@media (max-width: 768px) {
+  .class-card-top { min-width: 0; }
+  .class-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

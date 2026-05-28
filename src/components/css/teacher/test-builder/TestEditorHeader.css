@@ -86,3 +86,13 @@
   color: var(--text-3);
   margin-left: 4px;
 }
+
+@media (max-width: 600px) {
+  .tb-editor-header { flex-wrap: wrap; }
+
+  .tb-editor-header-right {
+    padding-top: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

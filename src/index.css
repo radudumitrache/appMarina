@@ -169,3 +169,33 @@ body {
   height: 100%;
   object-fit: cover;
 }
+
+/* ─── Mobile sidebar utilities (shared across all sidebar pages) ─────────── */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 14;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-toggle-btn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: border-color var(--duration-fast), color var(--duration-fast);
+}
+.sidebar-toggle-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+@media (max-width: 768px) {
+  .sidebar-toggle-btn { display: flex; }
+}

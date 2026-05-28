@@ -405,3 +405,15 @@
 .tr-option-tag--correct {
   color: #22c55e;
 }
+
+@media (max-width: 768px) {
+  .tr-header  { padding: 16px 16px 14px; }
+  .tr-content { padding: 20px 16px; }
+
+  /* Break long test names across lines instead of overflowing */
+  .tr-title {
+    font-size: 18px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}

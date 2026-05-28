@@ -120,3 +120,14 @@
 .test-result-badge.grade--warn    { background: var(--gold-dim);            border: 1px solid rgba(217, 160, 48, 0.25); }
 .test-result-badge.grade--fail    { background: rgba(224, 82, 82, 0.10);   border: 1px solid rgba(224, 82, 82, 0.25); }
 .test-result-badge.grade--pending { background: var(--surface-2);          border: 1px solid var(--border); }
+
+@media (max-width: 768px) {
+  /* Let the list grow naturally — no fixed-height scroll container */
+  .test-results-list { overflow-y: visible; flex: none; padding-right: 0; }
+  /* Hide pass/fail badge — grade colour already communicates result */
+  .test-result-badge { display: none; }
+  /* Hide chevron to save space */
+  .test-result-chevron { display: none; }
+  /* Smaller gap so row fits cleanly */
+  .test-result-row { gap: 10px; }
+}

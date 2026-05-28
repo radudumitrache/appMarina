@@ -105,3 +105,18 @@
 }
 
 .classes-search-clear:hover { color: var(--text); }
+
+@media (max-width: 768px) {
+  .classes-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  .classes-tabs { overflow-x: auto; }
+
+  .classes-search-wrap { margin-left: 0; }
+
+  .classes-search-input { width: 100%; }
+}

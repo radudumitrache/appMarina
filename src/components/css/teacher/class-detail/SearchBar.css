@@ -44,3 +44,8 @@
 }
 
 .cd-search-clear:hover { color: var(--text); }
+
+@media (max-width: 768px) {
+  .cd-search-wrap { width: 100%; }
+  .cd-search-input { width: 100%; }
+}

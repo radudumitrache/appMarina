@@ -154,3 +154,12 @@
   font-size: 11px;
   color: var(--text-3);
 }
+
+@media (max-width: 768px) {
+  /* Let the body grow naturally — no fixed-height scroll container */
+  .lp-body { overflow-y: visible; flex: none; }
+  /* Drop duration to save space; difficulty badge stays */
+  .lp-duration { display: none; }
+  /* Allow meta to shrink if needed */
+  .lp-meta { flex-shrink: 1; }
+}

@@ -84,3 +84,26 @@
   flex-direction: column;
   gap: 16px;
 }
+
+@media (max-width: 768px) {
+  .tp-header {
+    height: auto;
+    min-height: 56px;
+    padding: 10px 16px;
+    top: 60px;
+  }
+
+  .tp-title { font-size: 18px; }
+
+  .tp-content {
+    padding: 20px 16px;
+    gap: 20px;
+  }
+
+  .tp-body {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .tp-main { gap: 20px; }
+}

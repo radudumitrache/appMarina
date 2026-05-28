@@ -227,3 +227,9 @@
   color: var(--text-3);
   padding: 8px 0;
 }
+
+@media (max-width: 768px) {
+  .ts-section-head { flex-wrap: wrap; gap: 8px; }
+  .ts-filter { margin-left: 0; width: 100%; justify-content: stretch; }
+  .ts-filter-btn { flex: 1; text-align: center; }
+}

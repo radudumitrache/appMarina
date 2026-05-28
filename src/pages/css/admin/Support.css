@@ -110,3 +110,27 @@
 
 .as-search::placeholder { color: var(--text-3); }
 .as-search:focus { border-color: rgba(224, 82, 82, 0.35); width: 280px; }
+
+@media (max-width: 768px) {
+  .as-main { padding: 16px; }
+}
+
+@media (max-width: 600px) {
+  .as-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .as-toolbar-right {
+    width: 100%;
+  }
+
+  .as-search-wrap { flex: 1; }
+
+  .as-search {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .as-search:focus { width: 100%; }
+}

@@ -99,3 +99,19 @@
   color: var(--gold, #d9a030);
   vertical-align: middle;
 }
+
+@media (max-width: 600px) {
+  .tb-meta-row {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .tb-meta-field { flex: 1 1 calc(50% - 8px); }
+
+  .tb-meta-input,
+  .tb-meta-select { width: 100%; }
+
+  .tb-meta-input--mono { width: 100%; }
+
+  .tb-meta-stat { margin-left: 0; }
+}

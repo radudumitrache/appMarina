@@ -17,6 +17,7 @@ export default function TeacherMedia() {
   const [activeFolder, setActiveFolder] = useState('all')
   const [renameTarget, setRenameTarget] = useState(null)
   const [showUpload, setShowUpload]     = useState(false)
+  const [sidebarOpen, setSidebarOpen]   = useState(false)
 
   useEffect(() => {
     Promise.all([getMediaFiles(), getDepartments()])
@@ -89,9 +90,21 @@ export default function TeacherMedia() {
     <div className="media-page">
       <NavBar />
       <div className="media-layout">
-        <MediaSidebar folders={folders} activeId={activeFolder} onSelect={setActiveFolder} />
+        {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
+        <MediaSidebar
+          folders={folders}
+          activeId={activeFolder}
+          onSelect={(id) => { setActiveFolder(id); setSidebarOpen(false) }}
+          className={sidebarOpen ? 'sidebar--open' : ''}
+        />
 
         <main className="media-main">
+          <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Location
+          </button>
           <MediaToolbar
             title={activeLabel}
             count={filtered.length}

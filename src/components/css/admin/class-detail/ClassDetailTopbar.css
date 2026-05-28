@@ -61,3 +61,10 @@
   transition: opacity var(--duration-fast);
 }
 .btn-primary-sm:hover { opacity: 0.88; }
+
+@media (max-width: 600px) {
+  .cd-topbar {
+    padding: 0 12px;
+    height: 48px;
+  }
+}

@@ -31,3 +31,13 @@
   letter-spacing: 0.05em;
   font-weight: 500;
 }
+
+@media (max-width: 600px) {
+  .stat-pill {
+    flex: 1;
+    padding: 10px 8px;
+  }
+
+  .stat-pill-value { font-size: 18px; }
+  .stat-pill-label { font-size: 9px; letter-spacing: 0.04em; }
+}

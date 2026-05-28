@@ -51,6 +51,7 @@ export default function Lessons() {
   const [editTarget, setEditTarget]         = useState(null)
   const [deleteTarget, setDeleteTarget]     = useState(null)
   const [departments, setDepartments]       = useState([])
+  const [sidebarOpen, setSidebarOpen]       = useState(false)
 
   useEffect(() => {
     getLessons()
@@ -116,15 +117,22 @@ export default function Lessons() {
       <div className="lessons-adm-layout">
         <NavBar />
         <div className="lessons-adm-body">
-
+          {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
           <LessonsSidebar
             lessons={lessons}
             departments={departments}
             activeDepartment={activeDepartment}
-            onDepartmentChange={setActiveDepartment}
+            onDepartmentChange={(d) => { setActiveDepartment(d); setSidebarOpen(false) }}
+            className={sidebarOpen ? 'sidebar--open' : ''}
           />
 
           <main className="lessons-adm-main">
+            <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+              Filter
+            </button>
             <LessonsToolbar
               title={activeDepartment === 'all' ? 'All Lessons' : activeDepartment === null ? 'Unassigned Lessons' : (departments.find(c => c.id === activeDepartment)?.name ?? 'Lessons')}
               filteredCount={filtered.length}

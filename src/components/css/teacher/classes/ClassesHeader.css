@@ -54,3 +54,15 @@
 
 .classes-new-btn:hover  { background: var(--color-gold-400, #f0b84a); }
 .classes-new-btn:active { transform: scale(0.98); }
+
+@media (max-width: 768px) {
+  .classes-header {
+    height: auto;
+    min-height: 56px;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .classes-title { font-size: 18px; }
+}

@@ -31,3 +31,31 @@
   font-size: 14px;
   color: var(--text-3);
 }
+
+@media (max-width: 600px) {
+  /* let the whole page scroll instead of clipping */
+  .cd-page {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* panels stack vertically, each auto-height */
+  .cd-panels {
+    grid-template-columns: 1fr;
+    overflow: visible;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  /* each panel shows all its content (no internal scroll clip) */
+  .cd-panel {
+    overflow: visible;
+  }
+
+  .cd-member-list {
+    overflow: visible;
+    max-height: none;
+  }
+}

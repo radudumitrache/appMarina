@@ -13,6 +13,7 @@ export default function Support() {
   const [search, setSearch]             = useState('')
   const [selected, setSelected]         = useState(null)
   const [loading, setLoading]           = useState(true)
+  const [sidebarOpen, setSidebarOpen]   = useState(false)
 
   useEffect(() => {
     getTickets()
@@ -58,13 +59,21 @@ export default function Support() {
       <div className="as-layout">
         <NavBar />
         <div className="as-body">
+          {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
           <TicketsSidebar
             statusFilter={statusFilter}
-            onFilter={setStatusFilter}
+            onFilter={(f) => { setStatusFilter(f); setSidebarOpen(false) }}
             counts={counts}
+            className={sidebarOpen ? 'sidebar--open' : ''}
           />
 
           <main className="as-main">
+            <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+              Filter
+            </button>
             <div className="as-toolbar">
               <div className="as-toolbar-left">
                 <h2 className="as-toolbar-title">

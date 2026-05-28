@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import '../../css/shared/media/FileRow.css'
 
 function formatBytes(bytes) {
@@ -10,10 +11,29 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
+const ChevronIcon = ({ open }) => (
+  <svg
+    className={`file-row-chevron${open ? ' file-row-chevron--open' : ''}`}
+    width="14" height="14" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" strokeWidth="2"
+    strokeLinecap="round" strokeLinejoin="round"
+  >
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+)
+
 export default function FileRow({ file, index, canWrite, onRename, onDelete, onToggleVrScene }) {
+  const [expanded, setExpanded] = useState(false)
+
+  const stopProp = (e) => e.stopPropagation()
+
   return (
-    <tr className="file-row" style={{ animationDelay: `${Math.min(index, 6) * 0.04}s` }}>
-      <td className="file-row-name">
+    <tr
+      className={`file-row${expanded ? ' file-row--expanded' : ''}`}
+      style={{ animationDelay: `${Math.min(index, 6) * 0.04}s` }}
+    >
+      {/* ── Name cell (tap to expand on mobile) ── */}
+      <td className="file-row-name" onClick={() => setExpanded(e => !e)}>
         <span className={`file-type-badge file-type-badge--${file.file_type}`}>
           {file.file_type === 'image' ? (
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -34,13 +54,16 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
           )}
         </span>
         <span className="file-name-text">{file.name}</span>
+        <ChevronIcon open={expanded} />
       </td>
+
       <td className="file-row-location">
         {file.folder === 'public' || file.folder === 'vr_scenes'
           ? <span className="location-badge location-badge--public">Public</span>
           : <span className="location-badge location-badge--class">{file.department_name || '—'}</span>
         }
       </td>
+
       <td className="file-row-type">
         <span className={`file-type-text file-type-text--${file.file_type}`}>
           {file.file_type === 'image' ? 'Image' : file.file_type === 'video' ? 'Video' : 'Doc'}
@@ -49,19 +72,17 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
           <span className="file-vr-badge" title="VR Scene">360°</span>
         )}
       </td>
+
       <td className="file-row-size">{formatBytes(file.size_bytes)}</td>
       <td className="file-row-uploader">{file.uploader_name || '—'}</td>
       <td className="file-row-date">{formatDate(file.uploaded_at)}</td>
-      <td className="file-row-actions">
+
+      {/* ── Actions (always visible on desktop, expand on mobile) ── */}
+      <td className="file-row-actions" onClick={stopProp}>
         {file.download_url && (
           file.file_type !== 'document' || file.mime_type === 'application/pdf' ? (
-            <a
-              className="file-action-btn"
-              href={file.download_url}
-              target="_blank"
-              rel="noreferrer"
-              title={file.file_type === 'document' ? 'Open' : 'Download'}
-            >
+            <a className="file-action-btn" href={file.download_url} target="_blank" rel="noreferrer"
+               title={file.file_type === 'document' ? 'Open' : 'Download'}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
@@ -69,12 +90,7 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
               </svg>
             </a>
           ) : (
-            <a
-              className="file-action-btn"
-              href={file.download_url}
-              download={file.name}
-              title="Download"
-            >
+            <a className="file-action-btn" href={file.download_url} download={file.name} title="Download">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>

@@ -129,3 +129,23 @@
   background: rgba(224, 82, 82, 0.12);
   color: var(--error);
 }
+
+@media (max-width: 600px) {
+  .lessons-adm-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    max-width: 100%;
+    transition: flex 0.2s ease;
+  }
+
+  /* when search is focused, hide the filter pills and stretch search to full width */
+  .toolbar--search-expanded .search-wrap {
+    flex: 1 1 100%;
+  }
+
+  .toolbar--search-expanded .status-filter {
+    display: none;
+  }
+}

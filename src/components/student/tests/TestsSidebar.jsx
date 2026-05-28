@@ -12,7 +12,7 @@ function getClassStats(tests, departmentId) {
   }
 }
 
-export default function TestsSidebar({ tests, departments, activeDepartment, onDepartmentChange, overall, avg }) {
+export default function TestsSidebar({ tests, departments, activeDepartment, onDepartmentChange, overall, avg, className = '' }) {
   const navItems = [
     { id: 'all',  label: 'All Tests'   },
     ...departments.map(c => ({ id: c.id, label: c.name })),
@@ -20,7 +20,7 @@ export default function TestsSidebar({ tests, departments, activeDepartment, onD
   ]
 
   return (
-    <aside className="tests-sidebar">
+    <aside className={`tests-sidebar${className ? ` ${className}` : ''}`}>
       <nav className="tests-sidebar-nav">
         {navItems.map((cls) => {
           const stats = getClassStats(tests, cls.id)

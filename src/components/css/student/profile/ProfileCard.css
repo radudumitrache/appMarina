@@ -164,3 +164,54 @@
   border-color: rgba(224, 82, 82, 0.30);
   color: var(--error);
 }
+
+@media (max-width: 768px) {
+  /* Sidebar becomes a horizontal strip */
+  .profile-aside {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    overflow-y: visible;
+  }
+
+  .profile-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Compact avatar */
+  .profile-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  /* Name + badge inline on the left */
+  .profile-id-block {
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .profile-full-name { font-size: 13px; }
+
+  /* Hide secondary info and achievements */
+  .profile-meta-list,
+  .profile-card-divider,
+  .achievements-block { display: none; }
+
+  /* Logout button compact */
+  .logout-btn {
+    width: auto;
+    padding: 8px 14px;
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+}

@@ -91,6 +91,41 @@
   color: var(--gold);
 }
 
+@media (max-width: 768px) {
+  .tp-class-sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+
+  /* Hide the "DEPARTMENTS" label — implied by context */
+  .tp-class-sidebar-title { display: none; }
+
+  .tp-class-card {
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    white-space: nowrap;
+    width: auto;
+  }
+
+  /* In row mode the "all" card already has row layout — no override needed */
+  .tp-class-card--all { flex-direction: row; }
+
+  /* Hide department name — show only code + count */
+  .tp-class-card-name { display: none; }
+
+  .tp-class-card--all .tp-class-card-name {
+    display: block;
+    font-size: 12px;
+  }
+}
+
 .tp-class-card-count {
   font-family: var(--font-mono);
   font-size: 11px;

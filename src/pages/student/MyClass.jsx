@@ -31,6 +31,8 @@ export default function MyClass() {
   const [loading,       setLoading]       = useState(true)
   const [detailLoading, setDetailLoading] = useState(false)
 
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   // used only for the unenrolled "first join" card
   const [joinCode,  setJoinCode]  = useState('')
   const [joining,   setJoining]   = useState(false)
@@ -195,14 +197,22 @@ export default function MyClass() {
       <NavBar />
 
       <div className="myclass-body">
+        {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
         <ClassSidebar
           classes={departments}
           selectedId={selectedId}
           onSelect={setSelectedId}
           onJoin={handleSidebarJoin}
+          className={sidebarOpen ? 'sidebar--open' : ''}
         />
 
         <div className="myclass-main">
+          <button className="sidebar-toggle-btn" onClick={() => setSidebarOpen(true)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+            Filters
+          </button>
           <MyClassHeader
             classInfo={classInfo}
             onBack={() => navigate('/student/dashboard')}

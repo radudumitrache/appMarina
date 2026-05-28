@@ -30,6 +30,7 @@ export default function TeacherLessonReader() {
   const [error,        setError]        = useState(null)
   const [interactions, setInteractions] = useState(new Set())
   const [lookDir,      setLookDir]      = useState({ lon: 0, lat: 0 })
+  const [navConfirm,   setNavConfirm]   = useState(null)
 
   useEffect(() => {
     setLoading(true)
@@ -102,9 +103,14 @@ export default function TeacherLessonReader() {
         onClick: () => {
           recordInteraction(currentPanelId, 'navigator', na.id)
           if (idx !== -1) {
-            setLookDir({ lon: na.target_lon ?? 0, lat: na.target_lat ?? 0 })
-            setAnchor(null)
-            setPanelIdx(idx)
+            const targetPanel = panels[idx]
+            setNavConfirm({
+              idx,
+              label: targetPanel?.title || na.title || 'next panel',
+              description: na.description ?? null,
+              targetLon: na.target_lon ?? 0,
+              targetLat: na.target_lat ?? 0,
+            })
           }
         },
       })
@@ -140,8 +146,42 @@ export default function TeacherLessonReader() {
     )
   }
 
+  const confirmNav = () => {
+    if (!navConfirm) return
+    setLookDir({ lon: navConfirm.targetLon, lat: navConfirm.targetLat })
+    setAnchor(null)
+    setPanelIdx(navConfirm.idx)
+    setNavConfirm(null)
+  }
+
   return (
     <div className="lr-page">
+      {navConfirm && (
+        <div className="lr-nav-backdrop">
+          <div className="lr-nav-dialog">
+            <div className="lr-nav-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </div>
+            <h4 className="lr-nav-title">Navigate to next panel?</h4>
+            <p className="lr-nav-body">
+              You are about to leave the current scene and go to <strong>{navConfirm.label}</strong>.
+            </p>
+            {navConfirm.description && (
+              <div
+                className="lr-nav-body lr-prose"
+                style={{ marginTop: -4, textAlign: 'left' }}
+                dangerouslySetInnerHTML={{ __html: navConfirm.description }}
+              />
+            )}
+            <div className="lr-nav-actions">
+              <button className="lr-nav-btn lr-nav-btn--cancel" onClick={() => setNavConfirm(null)}>Stay here</button>
+              <button className="lr-nav-btn lr-nav-btn--confirm" onClick={confirmNav}>Continue</button>
+            </div>
+          </div>
+        </div>
+      )}
       <LessonTopBar
         lessonTitle={lesson?.title ?? `Lesson ${id}`}
         panelIdx={panelIdx}

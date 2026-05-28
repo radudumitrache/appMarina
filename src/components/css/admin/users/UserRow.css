@@ -67,7 +67,12 @@
 .user-row:hover { background: rgba(255,255,255,0.02); }
 .user-row:last-child td { border-bottom: none; }
 
-.user-name  { font-weight: 500 !important; color: var(--text) !important; }
+.user-name-cell { display: flex; flex-direction: column; gap: 2px; }
+.user-name  { font-weight: 500; color: var(--text); }
+.user-email-sub { display: none; }
+.user-name-role { display: none; }
+.user-row-actions-mobile { display: none; }
+.role-badge--mobile-inline { display: none; }
 
 .user-email {
   font-family: var(--font-mono) !important;
@@ -152,4 +157,94 @@
   color: var(--text-3);
   padding: 40px 16px;
   text-align: center;
+}
+
+@media (max-width: 600px) {
+  /* hide Role, Crew ID, Email, Organisation, Status, desktop-actions columns */
+  .users-table th:nth-child(2), .users-table td:nth-child(2),
+  .users-table th:nth-child(3), .users-table td:nth-child(3),
+  .users-table th:nth-child(4), .users-table td:nth-child(4),
+  .users-table th:nth-child(5), .users-table td:nth-child(5),
+  .users-table th:nth-child(6), .users-table td:nth-child(6),
+  .users-table th:nth-child(7), .users-table td:nth-child(7) { display: none; }
+
+  /* show mobile toggle column */
+  .user-row-actions-mobile {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: right;
+    padding-right: 12px;
+    width: 40px;
+  }
+
+  /* name + role badge on the same line, email below */
+  .user-name-role { display: flex; align-items: center; gap: 8px; }
+  .role-badge--mobile-inline { display: inline-flex; }
+
+  .user-email-sub {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 55vw;
+  }
+
+  .users-table td { padding: 10px 10px; }
+  .users-table tbody tr:last-child td { padding-bottom: 24px; }
+
+  /* chevron toggle button */
+  .row-expand-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: color var(--duration-fast);
+  }
+  .row-expand-btn svg { transition: transform 0.2s ease; }
+  .row-expand-btn .expand-icon--open { transform: rotate(180deg); }
+  .user-row--expanded .row-expand-btn { color: var(--text); }
+
+  /* expanded actions row */
+  .user-row-actions-expanded td {
+    padding: 0 12px 10px;
+    border-bottom: 1px solid rgba(37, 53, 80, 0.5);
+  }
+
+  .user-actions-bar {
+    display: flex;
+    gap: 8px;
+  }
+
+  .action-bar-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  }
+  .action-bar-btn:hover               { background: rgba(255,255,255,0.07); color: var(--text); }
+  .action-bar-btn--warn               { color: var(--gold);    border-color: rgba(212,175,55,0.25); }
+  .action-bar-btn--warn:hover         { background: rgba(212,175,55,0.08); }
+  .action-bar-btn--ok                 { color: var(--success); border-color: rgba(34,197,94,0.25); }
+  .action-bar-btn--ok:hover           { background: rgba(34,197,94,0.08); }
+  .action-bar-btn--delete             { color: var(--error);   border-color: rgba(224,82,82,0.25); }
+  .action-bar-btn--delete:hover       { background: rgba(224,82,82,0.08); }
 }

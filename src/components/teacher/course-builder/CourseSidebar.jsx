@@ -40,6 +40,7 @@ export default function CourseSidebar({
   onShowAllLessons,
   showingAllLessons,
   classes = [],
+  className = '',
 }) {
   const groups = (() => {
     const result = []
@@ -53,7 +54,7 @@ export default function CourseSidebar({
   })()
 
   return (
-    <aside className="cb-sidebar">
+    <aside className={`cb-sidebar${className ? ` ${className}` : ''}`}>
       <div className="cb-sidebar-top">
         <div className="cb-sidebar-search-wrap">
           <svg className="cb-sidebar-search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
