@@ -70,7 +70,7 @@
 .user-name-cell { display: flex; flex-direction: column; gap: 2px; }
 .user-name  { font-weight: 500; color: var(--text); }
 .user-email-sub { display: none; }
-.user-name-role { display: none; }
+.user-name-role { display: flex; align-items: center; gap: 8px; }
 .user-row-actions-mobile { display: none; }
 .role-badge--mobile-inline { display: none; }
 

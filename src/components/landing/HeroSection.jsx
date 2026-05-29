@@ -104,7 +104,6 @@ export default function HeroSection() {
       <div className="hero-overlay" />
       {/* z:4 — text */}
       <div className="hero-content">
-        <span className="hero-label">VR MARITIME TRAINING</span>
         <h1 className="hero-headline">
           Maritime Training,<br />Reimagined in VR
         </h1>

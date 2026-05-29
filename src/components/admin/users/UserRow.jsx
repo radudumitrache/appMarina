@@ -12,7 +12,7 @@ export default function UserRow({ user, index, onEdit, onToggleStatus, onDelete 
       >
         <td className="user-name-cell">
           <div className="user-name-role">
-            <span className="user-name">{user.name}</span>
+            <span className="user-name">{user.username}</span>
             <span className={`role-badge role-badge--${user.role} role-badge--mobile-inline`}>{user.role}</span>
           </div>
           <span className="user-email-sub">{user.email}</span>
