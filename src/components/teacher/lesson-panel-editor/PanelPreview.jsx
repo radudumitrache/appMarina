@@ -45,7 +45,7 @@ export default function PanelPreview({
     const nav = (panel.vr_tour.navigator_anchors ?? []).map(a => {
       const { lon, lat } = posToLonLat(a.pos_x, a.pos_y, a.pos_z)
       return {
-        id: `nav-${a.id}`, lon, lat, label: a.title || `→ Panel #${a.target_panel}`,
+        id: `nav-${a.id}`, lon, lat, label: a.title || '→',
         className: 'vr-hotspot--anchor vr-hotspot--nav',
         show_title: a.show_title,
         title_size: a.title_size,

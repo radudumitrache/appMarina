@@ -15,7 +15,7 @@ import { IconEdit, IconTrash } from './LPEIcons'
  */
 export default function AnchorContextMenu({ anchor, anchorType, x, y, onEdit, onDelete, onClose }) {
   const label = anchorType === 'nav'
-    ? (anchor.title || `→ Panel #${anchor.target_panel}`)
+    ? (anchor.title || '→')
     : (anchor.title || 'Untitled')
   const typeLabel = anchorType === 'nav' ? 'Navigator Anchor'
     : anchorType === 'poly' ? 'Polygon Anchor'

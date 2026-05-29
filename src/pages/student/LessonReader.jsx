@@ -117,7 +117,7 @@ export default function LessonReader() {
     for (const na of activeTour.navigator_anchors ?? []) {
       const { lon, lat } = vec3ToLonLat(na.pos_x, na.pos_y, na.pos_z)
       out.push({
-        id: `na-${na.id}`, lon, lat, label: na.title || 'Go →',
+        id: `na-${na.id}`, lon, lat, label: na.title || panels.find(p => p.id === na.target_panel)?.title || '→',
         show_title: na.show_title, title_size: na.title_size, title_text_color: na.title_text_color,
         className: 'vr-hotspot--anchor vr-hotspot--nav',
         visited: interactions.has(`${currentPanelId}:navigator:${na.id}`),
