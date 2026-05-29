@@ -138,19 +138,23 @@
   100% { box-shadow: 0 0 0 0    rgba(11, 189, 164, 0),    0 2px 8px rgba(0,0,0,0.45); }
 }
 
-/* ── Navigator anchor — diamond marker (gold) ────────────────────────────
+/* ── Navigator anchor — arrow icon (gold circle) ─────────────────────────
  * Overrides the teal circle from --anchor::before.
- * Rotated square gives a clear "waypoint/nav" visual distinct from text anchors.
+ * Gold circle with a right-pointing chevron arrow clearly signals navigation.
  */
 .vr-hotspot--nav::before {
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-  background: rgba(245, 158, 11, 0.95);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(245, 158, 11, 0.95);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
   border: 2px solid rgba(255, 255, 255, 0.7);
   box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.65), 0 2px 8px rgba(0,0,0,0.45);
   animation: vr-pulse-nav 2.4s ease-out infinite;
-  transform: rotate(45deg);
+  transform: none;
 }
 
 @keyframes vr-pulse-nav {
@@ -179,8 +183,14 @@
 }
 
 .vr-hotspot--visited.vr-hotspot--nav::before {
-  background: #16a34a;
+  border-radius: 50%;
+  background-color: #16a34a;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
   border: 2.5px solid #86efac;
+  transform: none;
   animation: vr-visited-breathe 2.4s ease-in-out infinite;
 }
 
