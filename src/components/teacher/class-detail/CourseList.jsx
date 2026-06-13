@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import '../../css/teacher/class-detail/StudentList.css'
 
 const STATUS_MAP = {
@@ -14,7 +14,7 @@ export default function CourseList({ courses }) {
       <div className="cd-list-header">
         <span className="cd-col cd-col--course-title">Course</span>
         <span className="cd-col cd-col--course-status">Status</span>
-        <span className="cd-col cd-col--course-lessons">Lessons</span>
+        <span className="cd-col cd-col--course-modules">Modules</span>
         <span className="cd-col cd-col--action" />
       </div>
 
@@ -30,7 +30,7 @@ export default function CourseList({ courses }) {
               style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
             >
               <div className="cd-col cd-col--course-title">
-                <span className="cd-lesson-title">{c.title}</span>
+                <span className="cd-module-title">{c.title}</span>
                 {c.description && (
                   <span className="cd-course-desc">{c.description}</span>
                 )}
@@ -38,8 +38,8 @@ export default function CourseList({ courses }) {
               <div className="cd-col cd-col--course-status">
                 <span className={`cd-badge ${sm.cls}`}>{sm.label}</span>
               </div>
-              <div className="cd-col cd-col--course-lessons">
-                <span className="cd-mono cd-muted">{c.lesson_count ?? 0}</span>
+              <div className="cd-col cd-col--course-modules">
+                <span className="cd-mono cd-muted">{c.module_count ?? 0}</span>
               </div>
               <div className="cd-col cd-col--action">
                 <button

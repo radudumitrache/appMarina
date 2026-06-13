@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NavBar            from '../../components/teacher/NavBar'
 import ProgressStats     from '../../components/teacher/progress/ProgressStats'
@@ -34,8 +34,8 @@ function mapStudent(s) {
     initials:     initials(s.student_name),
     departmentId:   s.department_id,
     className:      s.department_name,
-    lessonsDone:  s.lessons_done,
-    lessonsTotal: s.lessons_total,
+    modulesDone:  s.modules_done,
+    modulesTotal: s.modules_total,
     lastActive:   relativeTime(s.last_active),
     status:       s.status,
   }
@@ -75,7 +75,7 @@ export default function Progress() {
       )
       .sort((a, b) => {
         if (sortBy === 'name')     return a.name.localeCompare(b.name)
-        if (sortBy === 'progress') return (b.lessonsDone / (b.lessonsTotal || 1)) - (a.lessonsDone / (a.lessonsTotal || 1))
+        if (sortBy === 'progress') return (b.modulesDone / (b.modulesTotal || 1)) - (a.modulesDone / (a.modulesTotal || 1))
         return 0
       })
   }, [students, departmentFilter, search, sortBy])
@@ -84,7 +84,7 @@ export default function Progress() {
   const paginated  = visible.slice((page - 1) * pageSize, page * pageSize)
 
   const avgPct = students.length
-    ? Math.round(students.reduce((sum, s) => sum + (s.lessonsDone / (s.lessonsTotal || 1)) * 100, 0) / students.length)
+    ? Math.round(students.reduce((sum, s) => sum + (s.modulesDone / (s.modulesTotal || 1)) * 100, 0) / students.length)
     : 0
 
 

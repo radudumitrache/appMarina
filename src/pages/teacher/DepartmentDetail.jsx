@@ -1,11 +1,11 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import NavBar from '../../components/teacher/NavBar'
 import ClassHeader from '../../components/teacher/class-detail/ClassHeader'
 import ClassStats from '../../components/teacher/class-detail/ClassStats'
 import ClassTabBar from '../../components/teacher/class-detail/ClassTabBar'
 import StudentList from '../../components/teacher/class-detail/StudentList'
-import LessonsCoursesTab from '../../components/teacher/class-detail/LessonsCoursesTab'
+import ModulesCoursesTab from '../../components/teacher/class-detail/ModulesCoursesTab'
 import TestList from '../../components/teacher/class-detail/TestList'
 import AnnouncementsTab from '../../components/teacher/class-detail/AnnouncementsTab'
 import CreateTestModal from '../../components/teacher/class-detail/CreateTestModal'
@@ -24,9 +24,9 @@ export default function DepartmentDetail() {
 
   const {
     cls, setCls,
-    students, lessons, tests, announcements,
+    students, modules, tests, announcements,
     loading,
-    handleClassLessonUpdate,
+    handleModuleUpdate,
     handleTestCreated,
     handleAnnouncementAdded,
     handleAnnouncementUpdated,
@@ -55,9 +55,9 @@ export default function DepartmentDetail() {
 
   const totalStudents   = students.length
   const activeStudents  = students.filter(s => s.status === 'active').length
-  const lessonsComplete = lessons.filter(l => l.total > 0 && l.completed === l.total).length
+  const modulesComplete = modules.filter(l => l.total > 0 && l.completed === l.total).length
   const testsTotal      = tests.length
-  const totalItems      = lessons.length + testsTotal
+  const totalItems      = modules.length + testsTotal
   const avgProgress     = totalStudents > 0 && totalItems > 0
     ? Math.round(
         students.reduce((sum, s) => sum + ((s.done || 0) + (s.testsDone || 0)), 0)
@@ -88,8 +88,8 @@ export default function DepartmentDetail() {
               totalStudents={totalStudents}
               activeStudents={activeStudents}
               avgProgress={avgProgress}
-              lessonsComplete={lessonsComplete}
-              lessonsCount={lessons.length}
+              modulesComplete={modulesComplete}
+              modulesCount={modules.length}
               subject={cls.subject}
             />
 
@@ -103,13 +103,13 @@ export default function DepartmentDetail() {
 
             <div className="cd-tab-content">
               {tab === 'students' && (
-                <StudentList students={filteredStudents} lessonsTotal={lessons.length} testsTotal={testsTotal} />
+                <StudentList students={filteredStudents} modulesTotal={modules.length} testsTotal={testsTotal} />
               )}
-              {tab === 'lessons' && (
-                <LessonsCoursesTab
+              {tab === 'modules' && (
+                <ModulesCoursesTab
                   departmentId={id}
-                  classLessons={lessons}
-                  onClassLessonUpdate={handleClassLessonUpdate}
+                  classModules={modules}
+                  onModuleUpdate={handleModuleUpdate}
                 />
               )}
               {tab === 'tests' && <TestList tests={tests} />}

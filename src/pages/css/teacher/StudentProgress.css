@@ -1,13 +1,13 @@
-@import '../admin/StudentProgress.css';
+﻿@import '../admin/StudentProgress.css';
 
-/* ─── Teacher overrides: gold accent instead of teal ─── */
+/* â”€â”€â”€ Teacher overrides: gold accent instead of teal â”€â”€â”€ */
 .sp-page--teacher .sp-avatar {
   background: var(--gold-dim);
   border-color: rgba(217, 160, 48, 0.2);
   color: var(--gold);
 }
 
-.sp-page--teacher .sp-lesson-icon {
+.sp-page--teacher .sp-module-icon {
   background: var(--gold-dim);
   border-color: rgba(217, 160, 48, 0.2);
   color: var(--gold);

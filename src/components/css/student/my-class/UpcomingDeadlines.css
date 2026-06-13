@@ -35,7 +35,7 @@
   color: var(--success);
 }
 
-.deadline-type-icon--lesson {
+.deadline-type-icon--module {
   background: var(--accent-dim);
   border-color: var(--accent-rim);
   color: var(--accent);

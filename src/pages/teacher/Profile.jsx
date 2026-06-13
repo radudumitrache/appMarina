@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
@@ -10,7 +10,7 @@ import SecurityPanel       from '../../components/teacher/profile/SecurityPanel'
 import { getMe, updateMe } from '../../api/users'
 import { changePassword }  from '../../api/auth'
 import { getDepartments } from '../../api/departments'
-import { getLessons }      from '../../api/lessons'
+import { getModules }      from '../../api/modules'
 import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/Profile.css'
 
@@ -48,12 +48,12 @@ export default function Profile() {
   const { theme, setTheme } = useTheme()
 
   const [profile, setProfile] = useState(null)
-  const [stats,   setStats]   = useState({ activeClasses: 0, totalStudents: 0, publishedLessons: 0 })
+  const [stats,   setStats]   = useState({ activeClasses: 0, totalStudents: 0, publishedModules: 0 })
   const [loading, setLoading] = useState(true)
   const [activeTab, setTab]   = useState('personal')
 
   useEffect(() => {
-    Promise.all([getMe(), getDepartments(), getLessons()])
+    Promise.all([getMe(), getDepartments(), getModules()])
       .then(([meRes, clsRes, lesRes]) => {
         setProfile(mapProfile(meRes.data))
         const classes = clsRes.data
@@ -63,7 +63,7 @@ export default function Profile() {
         setStats({
           activeClasses:    classes.filter(c => c.status === 'active').length,
           totalStudents:    classes.reduce((sum, c) => sum + (c.student_count || 0), 0),
-          publishedLessons: lessons.filter(l => l.visibility === 'public' && l.author_name === fullName).length,
+          publishedModules: lessons.filter(l => l.visibility === 'public' && l.author_name === fullName).length,
         })
       })
       .finally(() => setLoading(false))

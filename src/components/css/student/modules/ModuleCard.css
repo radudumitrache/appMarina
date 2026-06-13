@@ -1,0 +1,169 @@
+﻿/* â”€â”€â”€ Base card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.module-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+  transition: background var(--duration-default) var(--ease-default),
+              border-color var(--duration-default) var(--ease-default),
+              transform var(--duration-default) var(--ease-default);
+}
+
+.module-card:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+.module-card--locked {
+  opacity: 0.38;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* â”€â”€â”€ Grid card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.module-card--grid {
+  padding: 14px 16px;
+}
+
+/* â”€â”€â”€ List card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.module-card--list {
+  padding: 12px 16px;
+}
+
+/* â”€â”€â”€ Lesson number â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.module-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+/* â”€â”€â”€ Body (title + subtitle) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.module-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.module-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* In grid mode the second line is duration; in list mode it's author */
+.module-duration,
+.module-author {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Duration shown inline in list mode (separate column) */
+.module-card--list .module-duration {
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+/* â”€â”€â”€ Badges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.module-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Visibility badges */
+.module-badge--vis-class {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.module-badge--vis-public {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-3);
+}
+
+/* Status badges */
+.module-badge--complete {
+  background: rgba(46, 199, 122, 0.10);
+  color: var(--success);
+}
+
+.module-badge--pending {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-3);
+}
+
+/* â”€â”€â”€ Completion toggle button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.module-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: none;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background var(--duration-fast),
+              border-color var(--duration-fast),
+              color var(--duration-fast);
+}
+
+.module-toggle:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent-rim);
+  color: var(--accent);
+}
+
+.module-toggle--done {
+  background: rgba(46, 199, 122, 0.12);
+  border-color: rgba(46, 199, 122, 0.28);
+  color: var(--success);
+}
+
+.module-toggle--done:hover {
+  background: rgba(46, 199, 122, 0.06);
+  border-color: rgba(46, 199, 122, 0.14);
+  color: var(--text-3);
+}
+
+/* â”€â”€â”€ Lock icon â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.module-lock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  color: var(--text-3);
+  opacity: 0.5;
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import '../css/admin/NavBar.css'
@@ -7,7 +7,6 @@ const ALL_LINKS = [
   { label: 'Dashboard',     slug: 'dashboard',     superadminOnly: false },
   { label: 'Users',         slug: 'users',         superadminOnly: false },
   { label: 'Organisations', slug: 'organisations', superadminOnly: true  },
-  { label: 'Lessons',       slug: 'lessons',       superadminOnly: false },
   { label: 'Tests',         slug: 'tests',         superadminOnly: false },
   { label: 'Departments',   slug: 'departments',   superadminOnly: false },
   { label: 'Courses',       slug: 'courses',       superadminOnly: false },

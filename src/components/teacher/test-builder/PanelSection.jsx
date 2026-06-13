@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QuestionHtmlEditor from './QuestionHtmlEditor'
-import DocumentSection from '../lesson-panel-editor/DocumentSection'
+import DocumentSection from '../module-panel-editor/DocumentSection'
 import { useAuth } from '../../../auth/AuthContext'
 import {
   deleteTestPanel, updateTestPanel,
@@ -33,7 +33,7 @@ function TrashIcon() {
   )
 }
 
-// ── MCQ Options ───────────────────────────────────────────────────────────────
+// â”€â”€ MCQ Options â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function MCQOptions({ exercise, panelId, testId, onExerciseUpdate }) {
   const [localOpts, setLocalOpts] = useState(exercise.options?.map(o => o.text) ?? [])
@@ -89,10 +89,10 @@ function MCQOptions({ exercise, panelId, testId, onExerciseUpdate }) {
             defaultValue={opt}
             key={`${exercise.id}-opt-${oi}`}
             onBlur={e => handleBlur(oi, e.target.value)}
-            placeholder={`Option ${oi + 1}…`}
+            placeholder={`Option ${oi + 1}â€¦`}
           />
           <button type="button" className="tb-opt-del" onClick={() => handleDelete(oi)} title="Remove option">
-            ×
+            Ã—
           </button>
         </label>
       ))}
@@ -104,7 +104,7 @@ function MCQOptions({ exercise, panelId, testId, onExerciseUpdate }) {
   )
 }
 
-// ── Arrange Items ─────────────────────────────────────────────────────────────
+// â”€â”€ Arrange Items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function ArrangeItems({ exercise, panelId, testId, onExerciseUpdate }) {
   const items = exercise.arrange_items ?? []
@@ -141,10 +141,10 @@ function ArrangeItems({ exercise, panelId, testId, onExerciseUpdate }) {
             defaultValue={item.text}
             key={`arr-${item.id}`}
             onBlur={e => handleTextBlur(item.id, e.target.value)}
-            placeholder={`Item ${ii + 1} text…`}
+            placeholder={`Item ${ii + 1} textâ€¦`}
           />
           <button type="button" className="tb-opt-del" onClick={() => handleDelete(item.id)} title="Remove item">
-            ×
+            Ã—
           </button>
         </div>
       ))}
@@ -153,7 +153,7 @@ function ArrangeItems({ exercise, panelId, testId, onExerciseUpdate }) {
   )
 }
 
-// ── Gap Fill Editor ───────────────────────────────────────────────────────────
+// â”€â”€ Gap Fill Editor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function GapFillEditor({ exercise, panelId, testId, onExerciseUpdate }) {
   const [wordLocal, setWordLocal] = useState(exercise.correct_word ?? '')
@@ -178,14 +178,14 @@ function GapFillEditor({ exercise, panelId, testId, onExerciseUpdate }) {
           value={wordLocal}
           onChange={e => setWordLocal(e.target.value)}
           onBlur={handleWordBlur}
-          placeholder="Expected word or phrase…"
+          placeholder="Expected word or phraseâ€¦"
         />
       </div>
     </div>
   )
 }
 
-// ── Exercise Card ─────────────────────────────────────────────────────────────
+// â”€â”€ Exercise Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function ExerciseCard({ exercise, panelId, testId, departmentId, index, onUpdate, onDelete, canWrite }) {
   const [docs,         setDocs]         = useState(exercise.documents ?? [])
@@ -240,7 +240,7 @@ function ExerciseCard({ exercise, panelId, testId, departmentId, index, onUpdate
         value={exercise.text}
         departmentId={departmentId}
         onBlur={handleTextBlur}
-        placeholder="Question text…"
+        placeholder="Question textâ€¦"
       />
 
       {exercise.type === 'mcq' && (
@@ -293,7 +293,7 @@ function ExerciseCard({ exercise, panelId, testId, departmentId, index, onUpdate
   )
 }
 
-// ── VR Anchor Cards ───────────────────────────────────────────────────────────
+// â”€â”€ VR Anchor Cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWrite }) {
   const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
@@ -378,21 +378,21 @@ function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWri
         value={titleLocal}
         onChange={e => setTitleLocal(e.target.value)}
         onBlur={handleTitleBlur}
-        placeholder="Anchor title…"
+        placeholder="Anchor titleâ€¦"
         style={{ width: '100%', marginBottom: 8 }}
       />
       <QuestionHtmlEditor
         value={anchor.text}
         departmentId={departmentId}
         onBlur={handleTextBlur}
-        placeholder="Question text…"
+        placeholder="Question textâ€¦"
       />
       <div className="tb-mcq-options">
         {localOpts.map((opt, oi) => (
           <label key={oi} className={`tb-mcq-option ${anchor.correct_mcq_index === oi ? 'tb-mcq-option--correct' : ''}`}>
             <input type="radio" name={`anc-${anchor.id}-correct`} checked={anchor.correct_mcq_index === oi} onChange={() => handleCorrect(oi)} />
-            <input className="tb-option-input" type="text" defaultValue={opt} key={`anc-${anchor.id}-opt-${oi}`} onBlur={e => handleOptBlur(oi, e.target.value)} placeholder={`Option ${oi + 1}…`} />
-            <button type="button" className="tb-opt-del" onClick={() => handleDelOpt(oi)}>×</button>
+            <input className="tb-option-input" type="text" defaultValue={opt} key={`anc-${anchor.id}-opt-${oi}`} onBlur={e => handleOptBlur(oi, e.target.value)} placeholder={`Option ${oi + 1}â€¦`} />
+            <button type="button" className="tb-opt-del" onClick={() => handleDelOpt(oi)}>Ã—</button>
           </label>
         ))}
         <div className="tb-mcq-footer">
@@ -469,14 +469,14 @@ function WordCompletionCard({ anchor, panelId, testId, departmentId, onReload, c
         value={titleLocal}
         onChange={e => setTitleLocal(e.target.value)}
         onBlur={handleTitleBlur}
-        placeholder="Anchor title…"
+        placeholder="Anchor titleâ€¦"
         style={{ width: '100%', marginBottom: 8 }}
       />
       <QuestionHtmlEditor
         value={anchor.text}
         departmentId={departmentId}
         onBlur={handleTextBlur}
-        placeholder="Sentence with ___ for the blank…"
+        placeholder="Sentence with ___ for the blankâ€¦"
       />
       <div className="tb-anchor-field-row">
         <label className="tb-meta-label">Correct word</label>
@@ -485,7 +485,7 @@ function WordCompletionCard({ anchor, panelId, testId, departmentId, onReload, c
           value={wordLocal}
           onChange={e => setWordLocal(e.target.value)}
           onBlur={handleWordBlur}
-          placeholder="Expected answer…"
+          placeholder="Expected answerâ€¦"
         />
       </div>
       <DocumentSection
@@ -562,14 +562,14 @@ function LocalizationCard({ anchor, panelId, testId, departmentId, onReload, can
         value={titleLocal}
         onChange={e => setTitleLocal(e.target.value)}
         onBlur={handleTitleBlur}
-        placeholder="Anchor title…"
+        placeholder="Anchor titleâ€¦"
         style={{ width: '100%', marginBottom: 8 }}
       />
       <QuestionHtmlEditor
         value={anchor.text}
         departmentId={departmentId}
         onBlur={handleTextBlur}
-        placeholder="What should the student locate?…"
+        placeholder="What should the student locate?â€¦"
       />
       <div className="tb-anchor-points">
         <span className="tb-anchor-points-label">Polygon points ({points.length})</span>
@@ -578,7 +578,7 @@ function LocalizationCard({ anchor, panelId, testId, departmentId, onReload, can
             <div key={pt.id} className="tb-anchor-point-row">
               <span className="tb-arrange-order">{pi + 1}</span>
               <span className="tb-anchor-point-coords">({pt.x}, {pt.y}, {pt.z})</span>
-              <button type="button" className="tb-opt-del" onClick={() => handleDeletePoint(pt.id)}>×</button>
+              <button type="button" className="tb-opt-del" onClick={() => handleDeletePoint(pt.id)}>Ã—</button>
             </div>
           ))}
         </div>
@@ -596,7 +596,7 @@ function LocalizationCard({ anchor, panelId, testId, departmentId, onReload, can
   )
 }
 
-// ── VR Panel Section (inline in test builder) ─────────────────────────────────
+// â”€â”€ VR Panel Section (inline in test builder) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function VRPanelSection({ vr, panelId, testId, departmentId, panelTitle, vrBasePath, onReload, canWrite }) {
   const navigate   = useNavigate()
@@ -629,7 +629,7 @@ function VRPanelSection({ vr, panelId, testId, departmentId, panelTitle, vrBaseP
         <div className="tb-vr-anchors-section">
           <div className="tb-vr-section-header">
             <span className="tb-vr-section-title">Placed Anchors ({allCount})</span>
-            <span className="tb-vr-section-hint">Edit content below — use the VR Scene Editor to add, move or delete anchors.</span>
+            <span className="tb-vr-section-hint">Edit content below â€” use the VR Scene Editor to add, move or delete anchors.</span>
           </div>
           {mcqAnchors.map(a => <MCQAnchorCard key={a.id} anchor={a} panelId={panelId} testId={testId} departmentId={departmentId} onReload={onReload} canWrite={canWrite} />)}
           {wcAnchors.map(a => <WordCompletionCard key={a.id} anchor={a} panelId={panelId} testId={testId} departmentId={departmentId} onReload={onReload} canWrite={canWrite} />)}
@@ -641,14 +641,14 @@ function VRPanelSection({ vr, panelId, testId, departmentId, panelTitle, vrBaseP
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 8l-4 8h8z" fill="currentColor" stroke="none"/>
           </svg>
-          No anchors placed yet. Open the VR Scene Editor to add anchors directly onto the 360° scene.
+          No anchors placed yet. Open the VR Scene Editor to add anchors directly onto the 360Â° scene.
         </div>
       )}
     </div>
   )
 }
 
-// ── Panel Section (main export) ───────────────────────────────────────────────
+// â”€â”€ Panel Section (main export) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function PanelSection({ panel, testId, departmentId, vrBasePath, index, expanded, onExpand, onReload }) {
   const { user } = useAuth()

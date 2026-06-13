@@ -1,6 +1,6 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { createTest } from '../../../api/tests'
-import '../../css/teacher/class-detail/AssignLessonModal.css'
+import '../../css/teacher/class-detail/AssignModuleModal.css'
 
 const EMPTY = { title: '', time_limit_minutes: '30' }
 
@@ -88,7 +88,7 @@ export default function CreateTestModal({ departmentId, onClose, onCreated }) {
         <div className="alm-footer">
           <button className="alm-btn-ghost" onClick={onClose}>Cancel</button>
           <button className="alm-btn-primary" onClick={handleSave} disabled={saving}>
-            {saving ? 'Creating…' : 'Create Test'}
+            {saving ? 'Creatingâ€¦' : 'Create Test'}
           </button>
         </div>
       </div>

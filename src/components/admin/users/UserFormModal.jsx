@@ -2,7 +2,7 @@ import '../../css/admin/users/UserFormModal.css'
 import Dropdown from '../../shared/Dropdown'
 import { useAuth } from '../../../auth/AuthContext'
 
-export default function UserFormModal({ mode, form, onChange, onClose, onSave, saving, error, organisations }) {
+export default function UserFormModal({ mode, form, onChange, onClose, onSave, saving, error, organisations, departments = [] }) {
   const { user } = useAuth()
   const isSuperAdmin = user?.is_staff
 
@@ -116,6 +116,25 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
                   ...organisations.map(o => ({ value: o.id, label: o.name })),
                 ]}
               />
+            </div>
+          )}
+
+          {/* ── Departments (edit mode only, read-only) ── */}
+          {mode === 'edit' && (
+            <div className="form-row">
+              <label className="form-label">Departments</label>
+              {departments.length === 0 ? (
+                <p className="form-empty-note">Not enrolled in any department.</p>
+              ) : (
+                <div className="form-check-list">
+                  {departments.map(d => (
+                    <div key={d.id} className="form-dept-item">
+                      {d.code && <span className="form-dept-code">{d.code}</span>}
+                      <span className="form-dept-name">{d.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

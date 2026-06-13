@@ -7,6 +7,7 @@ import CsvImportModal from '../../components/admin/users/CsvImportModal'
 import UsersTable from '../../components/admin/users/UsersTable'
 import { getUsers, createUser, bulkCreateUsers, updateUser, deleteUser } from '../../api/admin'
 import { getOrganisations } from '../../api/organisations'
+import { getDepartments } from '../../api/departments'
 import '../css/admin/Users.css'
 
 const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '', organisation_id: null, crew_id: '' }
@@ -24,6 +25,7 @@ function mapUser(u) {
     organisation_id: u.profile?.organisation_id ?? null,
     organisation_name: u.profile?.organisation_name ?? null,
     crew_id: u.profile?.crew_id ?? '',
+    departments: u.departments ?? [],
   }
 }
 
@@ -57,9 +59,12 @@ export default function Users() {
   const [loadError, setLoadError]   = useState('')
   const [importing, setImporting]   = useState(false)
   const [organisations, setOrganisations] = useState([])
+  const [departments, setDepartments]     = useState([])
   const [sortKey, setSortKey]             = useState('id')
   const [sidebarOpen, setSidebarOpen]     = useState(false)
   const [sortDir, setSortDir]             = useState('desc')
+  const [orgFilter, setOrgFilter]         = useState(null)
+  const [deptFilter, setDeptFilter]       = useState(null)
 
   useEffect(() => {
     getUsers()
@@ -70,6 +75,7 @@ export default function Users() {
       })
       .finally(() => setLoading(false))
     getOrganisations().then(r => setOrganisations(r.data)).catch(() => {})
+    getDepartments().then(r => setDepartments(r.data)).catch(() => {})
   }, [])
 
   const counts = {
@@ -78,6 +84,16 @@ export default function Users() {
     teacher: users.filter(u => u.role === 'teacher').length,
     admin:   users.filter(u => u.role === 'admin').length,
   }
+
+  const orgCounts = organisations.reduce((acc, o) => {
+    acc[o.id] = users.filter(u => u.organisation_id === o.id).length
+    return acc
+  }, {})
+
+  const deptCounts = departments.reduce((acc, d) => {
+    acc[d.id] = users.filter(u => u.departments.some(ud => ud.id === d.id)).length
+    return acc
+  }, {})
 
   const handleSort = (key) => {
     if (key === sortKey) {
@@ -90,6 +106,8 @@ export default function Users() {
 
   const filtered = users
     .filter(u => roleFilter === 'all' || u.role === roleFilter)
+    .filter(u => orgFilter === null || u.organisation_id === orgFilter)
+    .filter(u => deptFilter === null || u.departments.some(d => d.id === deptFilter))
     .filter(u => {
       const q = search.toLowerCase()
       return (
@@ -237,6 +255,14 @@ export default function Users() {
             onRoleFilterChange={(r) => { setRoleFilter(r); setSidebarOpen(false) }}
             counts={counts}
             className={sidebarOpen ? 'sidebar--open' : ''}
+            organisations={organisations}
+            orgFilter={orgFilter}
+            onOrgFilterChange={(id) => { setOrgFilter(id); setSidebarOpen(false) }}
+            orgCounts={orgCounts}
+            departments={departments}
+            deptFilter={deptFilter}
+            onDeptFilterChange={(id) => { setDeptFilter(id); setSidebarOpen(false) }}
+            deptCounts={deptCounts}
           />
 
           <main className="users-main">
@@ -282,6 +308,7 @@ export default function Users() {
           saving={saving}
           error={formError}
           organisations={organisations}
+          departments={editTarget?.departments ?? []}
         />
       )}
 

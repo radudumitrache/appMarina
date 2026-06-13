@@ -1,4 +1,4 @@
-import '../../css/teacher/profile/TeachingPanel.css'
+﻿import '../../css/teacher/profile/TeachingPanel.css'
 
 const InfoIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -38,17 +38,17 @@ export default function TeachingPanel({ profile, stats = {} }) {
 
       <div className="tp-snapshot">
         <div className="tp-snapshot-item">
-          <span className="tp-snapshot-value">{stats.totalStudents ?? '—'}</span>
+          <span className="tp-snapshot-value">{stats.totalStudents ?? 'â€”'}</span>
           <span className="tp-snapshot-label">Total students</span>
         </div>
         <div className="tp-snapshot-sep" />
         <div className="tp-snapshot-item">
-          <span className="tp-snapshot-value">{stats.publishedLessons ?? '—'}</span>
+          <span className="tp-snapshot-value">{stats.publishedModules ?? 'â€”'}</span>
           <span className="tp-snapshot-label">Courses published</span>
         </div>
         <div className="tp-snapshot-sep" />
         <div className="tp-snapshot-item">
-          <span className="tp-snapshot-value">{stats.activeClasses ?? '—'}</span>
+          <span className="tp-snapshot-value">{stats.activeClasses ?? 'â€”'}</span>
           <span className="tp-snapshot-label">Active departments</span>
         </div>
       </div>

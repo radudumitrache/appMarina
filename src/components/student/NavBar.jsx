@@ -1,10 +1,10 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import '../css/student/NavBar.css'
 
 const LINKS = [
   { label: 'Dashboard', slug: 'dashboard' },
-  { label: 'Lessons',   slug: 'lessons'   },
+  { label: 'Courses',   slug: 'modules'   },
   { label: 'Tests',     slug: 'tests'     },
   { label: 'Progress',  slug: 'progress'  },
   { label: 'My Department', slug: 'my-class'  },

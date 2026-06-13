@@ -1,4 +1,4 @@
-import '../../css/teacher/profile/ProfileCard.css'
+﻿import '../../css/teacher/profile/ProfileCard.css'
 
 export default function ProfileCard({ profile, stats = {}, onSignOut }) {
   const initials = `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase()
@@ -44,15 +44,15 @@ export default function ProfileCard({ profile, stats = {}, onSignOut }) {
           <span className="tp-summary-label">Teaching Overview</span>
           <div className="tp-summary-stats">
             <div className="tp-summary-stat">
-              <span className="tp-summary-value">{stats.activeClasses ?? '—'}</span>
+              <span className="tp-summary-value">{stats.activeClasses ?? 'â€”'}</span>
               <span className="tp-summary-key">Active departments</span>
             </div>
             <div className="tp-summary-stat">
-              <span className="tp-summary-value">{stats.totalStudents ?? '—'}</span>
+              <span className="tp-summary-value">{stats.totalStudents ?? 'â€”'}</span>
               <span className="tp-summary-key">Total students</span>
             </div>
             <div className="tp-summary-stat">
-              <span className="tp-summary-value">{stats.publishedLessons ?? '—'}</span>
+              <span className="tp-summary-value">{stats.publishedModules ?? 'â€”'}</span>
               <span className="tp-summary-key">Courses published</span>
             </div>
           </div>

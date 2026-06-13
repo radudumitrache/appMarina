@@ -7,7 +7,7 @@ function formatDate(iso) {
 
 export default function ClassCard({ cls, index, onManage, onEdit, onDelete }) {
   const studentCount = cls.student_count ?? 0
-  const lessonCount  = cls.lesson_count  ?? 0
+  const courseCount  = cls.course_count  ?? 0
   const startFmt     = formatDate(cls.start_date)
   const endFmt       = formatDate(cls.end_date)
   const dateRange    = startFmt && endFmt ? `${startFmt} — ${endFmt}` : startFmt || endFmt || null
@@ -59,11 +59,11 @@ export default function ClassCard({ cls, index, onManage, onEdit, onDelete }) {
         <div className="class-count-divider" />
         <button className="class-count-btn" onClick={onManage}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
-          <span className="class-count-num">{lessonCount}</span>
-          <span className="class-count-label">lessons</span>
+          <span className="class-count-num">{courseCount}</span>
+          <span className="class-count-label">courses</span>
         </button>
       </div>
 

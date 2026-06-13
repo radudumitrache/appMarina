@@ -1,4 +1,4 @@
-import '../../css/student/my-class/ClassRoster.css'
+﻿import '../../css/student/my-class/ClassRoster.css'
 
 function gradeColor(g) {
   if (g == null) return 'var(--text-3)'
@@ -23,7 +23,7 @@ export default function ClassRoster({ classmates, myRank }) {
 
       <div className="roster-list">
         {classmates.map((student, i) => {
-          const pct  = student.totalLessons > 0 ? (student.lessonsComplete / student.totalLessons) * 100 : 0
+          const pct  = student.totalModules > 0 ? (student.modulesComplete / student.totalModules) * 100 : 0
           const rank = i + 1
           return (
             <div
@@ -40,7 +40,7 @@ export default function ClassRoster({ classmates, myRank }) {
                     {student.isMe && <span className="roster-you-tag">you</span>}
                   </span>
                   <span className="roster-grade" style={{ color: gradeColor(student.avgGrade) }}>
-                    {student.avgGrade != null ? `${student.avgGrade}%` : '—'}
+                    {student.avgGrade != null ? `${student.avgGrade}%` : 'â€”'}
                   </span>
                 </div>
                 <div className="roster-bar-track">
@@ -51,7 +51,7 @@ export default function ClassRoster({ classmates, myRank }) {
                 </div>
               </div>
               <span className="roster-fraction">
-                {student.lessonsComplete}/{student.totalLessons}
+                {student.modulesComplete}/{student.totalModules}
               </span>
             </div>
           )

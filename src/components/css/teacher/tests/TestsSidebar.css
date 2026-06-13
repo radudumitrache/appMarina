@@ -1,0 +1,95 @@
+.ttests-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
+  padding: 28px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+}
+
+.ttests-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.ttests-sidebar-btn {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background var(--duration-fast);
+}
+
+.ttests-sidebar-btn:hover   { background: rgba(255,255,255,0.04); }
+.ttests-sidebar-btn--active { background: rgba(217,160,48,0.1); }
+
+.ttests-sidebar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ttests-sidebar-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: color var(--duration-fast);
+}
+
+.ttests-sidebar-btn:hover .ttests-sidebar-label  { color: var(--text); }
+.ttests-sidebar-btn--active .ttests-sidebar-label { color: var(--gold); }
+
+.ttests-sidebar-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.ttests-sidebar-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ttests-sidebar-stat {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.ttests-sidebar-stat-num {
+  font-family: var(--font-mono);
+  color: var(--text-2);
+}
+
+/* ─── Mobile collapse ────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ttests-sidebar {
+    position: fixed;
+    top: 60px; left: 0;
+    height: calc(100vh - 60px);
+    width: 280px;
+    z-index: 15;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+  }
+  .ttests-sidebar.sidebar--open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+  }
+}

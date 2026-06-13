@@ -11,10 +11,10 @@ export const getClassStudents    = (id)             => api.get(`/departments/${i
 export const enrollStudent       = (id, identifier) => api.post(`/departments/${id}/students/`, identifier)
 export const removeStudent       = (id, uid)        => api.delete(`/departments/${id}/students/${uid}/`)
 
-export const getClassLessons     = (id)             => api.get(`/departments/${id}/lessons/`)
-export const assignLesson        = (id, data)       => api.post(`/departments/${id}/lessons/`, data)
-export const updateClassLesson   = (id, lid, data)  => api.patch(`/departments/${id}/lessons/${lid}/`, data)
-export const unassignLesson      = (id, lid)        => api.delete(`/departments/${id}/lessons/${lid}/`)
+export const getClassModules     = (id)             => api.get(`/departments/${id}/modules/`)
+export const assignModule        = (id, data)       => api.post(`/departments/${id}/modules/`, data)
+export const updateClassModule   = (id, lid, data)  => api.patch(`/departments/${id}/modules/${lid}/`, data)
+export const unassignModule      = (id, lid)        => api.delete(`/departments/${id}/modules/${lid}/`)
 
 export const getClassTests       = (id)             => api.get(`/departments/${id}/assignments/`)
 export const getClassAssignments = getClassTests

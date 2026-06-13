@@ -1,14 +1,18 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+﻿import { useState, useEffect, useRef, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   getCourses, createCourse, updateCourse as apiUpdateCourse, deleteCourse as apiDeleteCourse,
-  getCourse, addCourseLesson, removeCourseLesson, reorderCourseLesson,
-  getLessons, createLesson as apiCreateLesson, updateLesson as apiUpdateLesson, deleteLesson as apiDeleteLesson,
-} from '../../api/lessons'
+  getCourse, addCourseModule, removeCourseModule, reorderCourseModule,
+  getModules, createModule as apiCreateModule, updateModule as apiUpdateModule, deleteModule as apiDeleteModule,
+} from '../../api/modules'
+import { getTests } from '../../api/tests'
 
 export function useCourseBuilder() {
+  const [searchParams] = useSearchParams()
   const [courses, setCourses]                   = useState([])
-  const [courseLessonsMap, setCourseLessonsMap] = useState({})
-  const [lessonBank, setLessonBank]             = useState([])
+  const [courseModulesMap, setCourseModulesMap] = useState({})
+  const [moduleBank, setModuleBank]             = useState([])
+  const [allTests, setAllTests]                 = useState([])
   const [selectedId, setSelected]               = useState(null)
   const [search, setSearch]                     = useState('')
   const [bankSearch, setBankSearch]             = useState('')
@@ -23,97 +27,124 @@ export function useCourseBuilder() {
   const descDebounceRef  = useRef(null)
 
   const selected        = courses.find(c => c.id === selectedId) ?? null
-  const selectedLessons = selectedId != null ? (courseLessonsMap[selectedId] ?? null) : null
+  const selectedModules = selectedId != null ? (courseModulesMap[selectedId] ?? null) : null
 
   const visible = courses.filter(c =>
     c.title.toLowerCase().includes(search.toLowerCase().trim())
   )
 
-  const bankFiltered = lessonBank.filter(l => {
+  const bankFiltered = moduleBank.filter(l => {
     const q = bankSearch.toLowerCase().trim()
     return l.title.toLowerCase().includes(q)
   })
 
-  const lessonCourseMap = useMemo(() => {
+  const moduleCourseMap = useMemo(() => {
     const map = {}
-    for (const [courseId, lessons] of Object.entries(courseLessonsMap)) {
+    for (const [courseId, modules] of Object.entries(courseModulesMap)) {
       const course = courses.find(c => c.id === Number(courseId))
-      if (!course || !lessons) continue
-      for (const l of lessons) {
-        if (!map[l.id]) map[l.id] = []
-        map[l.id].push(course)
+      if (!course || !modules) continue
+      for (const l of modules) {
+        // Only index lesson entries by their module ID (tests are not in the bank)
+        const moduleId = l._type === 'test' ? null : (l.moduleId ?? l.id)
+        if (!moduleId) continue
+        if (!map[moduleId]) map[moduleId] = []
+        map[moduleId].push(course)
       }
     }
     return map
-  }, [courseLessonsMap, courses])
+  }, [courseModulesMap, courses])
 
-  /* ── Load courses + lesson bank on mount ──────────────────────────────── */
+  /* â”€â”€ Load courses + module bank on mount â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   useEffect(() => {
     setLoading(true)
     const safe = p => p.catch(() => null)
-    Promise.all([safe(getCourses()), safe(getLessons())])
-      .then(([cRes, lRes]) => {
+    Promise.all([safe(getCourses()), safe(getModules()), safe(getTests())])
+      .then(([cRes, lRes, tRes]) => {
         if (!cRes) { setError('Could not load courses.'); return }
         const list = cRes.data
         setCourses(list)
-        if (lRes) setLessonBank(lRes.data)
-        if (list.length > 0) setSelected(list[0].id)
+        if (lRes) setModuleBank(lRes.data)
+        if (tRes) setAllTests(tRes.data)
+        const selectParam = searchParams.get('select')
+        const preselect = selectParam ? list.find(c => c.id === Number(selectParam)) : null
+        if (preselect) setSelected(preselect.id)
+        else if (list.length > 0) setSelected(list[0].id)
       })
       .finally(() => setLoading(false))
   }, [])
 
-  /* ── Load course detail when selection changes ────────────────────────── */
+  /* â”€â”€ Load course detail when selection changes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   useEffect(() => {
     if (selectedId == null) return
-    if (courseLessonsMap[selectedId] !== undefined) return
+    if (courseModulesMap[selectedId] !== undefined) return
 
     setLoadingDetail(true)
     getCourse(selectedId)
       .then(res => {
-        const lessons = (res.data.lessons ?? []).map(cl => cl.lesson_detail ?? cl)
-        setCourseLessonsMap(prev => ({ ...prev, [selectedId]: lessons }))
+        setCourseModulesMap(prev => ({ ...prev, [selectedId]: normalizeModules(res.data.modules) }))
       })
       .catch(() => {})
       .finally(() => setLoadingDetail(false))
   }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* ── Helpers ──────────────────────────────────────────────────────────── */
-  function setLessonsFor(courseId, updater) {
-    setCourseLessonsMap(prev => ({
+  /* â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  function setModulesFor(courseId, updater) {
+    setCourseModulesMap(prev => ({
       ...prev,
       [courseId]: typeof updater === 'function' ? updater(prev[courseId] ?? []) : updater,
     }))
   }
 
+  function normalizeModules(apiModules) {
+    return (apiModules ?? []).map(cl => {
+      if (cl.test_detail) {
+        return {
+          _courseModuleId: cl.id,
+          _type: 'test',
+          id: cl.id,
+          moduleId: null,
+          testId: cl.test,
+          title: cl.test_detail.title,
+          time_limit_minutes: cl.test_detail.time_limit_minutes,
+          status: cl.test_detail.status,
+        }
+      }
+      return {
+        ...(cl.module_detail ?? cl),
+        _courseModuleId: cl.id,
+        _type: 'lesson',
+        moduleId: (cl.module_detail ?? cl).id,
+      }
+    })
+  }
+
   function reloadDetail(courseId) {
     getCourse(courseId)
       .then(res => {
-        const lessons = (res.data.lessons ?? []).map(cl => cl.lesson_detail ?? cl)
-        setCourseLessonsMap(prev => ({ ...prev, [courseId]: lessons }))
+        setCourseModulesMap(prev => ({ ...prev, [courseId]: normalizeModules(res.data.modules) }))
       })
       .catch(() => {})
   }
 
   function ensureAllCoursesLoaded() {
-    const unloaded = courses.filter(c => courseLessonsMap[c.id] === undefined)
+    const unloaded = courses.filter(c => courseModulesMap[c.id] === undefined)
     for (const c of unloaded) {
       getCourse(c.id)
         .then(res => {
-          const lessons = (res.data.lessons ?? []).map(cl => cl.lesson_detail ?? cl)
-          setCourseLessonsMap(prev => ({ ...prev, [c.id]: lessons }))
+          setCourseModulesMap(prev => ({ ...prev, [c.id]: normalizeModules(res.data.modules) }))
         })
         .catch(() => {})
     }
   }
 
-  /* ── Course mutations ─────────────────────────────────────────────────── */
-  async function handleNewCourse({ title, description = '', status = 'draft', department_id = null } = {}) {
-    const res = await createCourse({ title: title?.trim() || 'Untitled Course', description, status, department_id })
+  /* â”€â”€ Course mutations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  async function handleNewCourse({ title, description = '', status = 'draft', department_ids = [] } = {}) {
+    const res = await createCourse({ title: title?.trim() || 'Untitled Course', description, status, department_ids })
     const course = res.data
     setCourses(prev => [course, ...prev])
     setSelected(course.id)
     setActiveTab('courses')
-    setLessonsFor(course.id, [])
+    setModulesFor(course.id, [])
     return course
   }
 
@@ -133,14 +164,15 @@ export function useCourseBuilder() {
     }, 700)
   }
 
-  async function handleClassroomChange(id, departmentId) {
+  async function handleDepartmentsChange(id, departmentIds) {
     const prev = courses.find(c => c.id === id)
-    const prevDepartmentId = prev?.department_id ?? null
-    setCourses(list => list.map(c => c.id === id ? { ...c, department_id: departmentId ? Number(departmentId) : null } : c))
+    const prevDepartmentIds = prev?.department_ids ?? []
+    const nextIds = departmentIds.map(Number)
+    setCourses(list => list.map(c => c.id === id ? { ...c, department_ids: nextIds } : c))
     try {
-      await apiUpdateCourse(id, { department_id: departmentId ? Number(departmentId) : null })
+      await apiUpdateCourse(id, { department_ids: nextIds })
     } catch {
-      setCourses(list => list.map(c => c.id === id ? { ...c, department_id: prevDepartmentId } : c))
+      setCourses(list => list.map(c => c.id === id ? { ...c, department_ids: prevDepartmentIds } : c))
     }
   }
 
@@ -161,7 +193,7 @@ export function useCourseBuilder() {
       await apiDeleteCourse(id)
       const remaining = courses.filter(c => c.id !== id)
       setCourses(remaining)
-      setCourseLessonsMap(prev => {
+      setCourseModulesMap(prev => {
         const next = { ...prev }
         delete next[id]
         return next
@@ -172,16 +204,16 @@ export function useCourseBuilder() {
     }
   }
 
-  /* ── Lesson mutations ─────────────────────────────────────────────────── */
-  async function handleAddLesson(lessonId) {
+  /* â”€â”€ Lesson mutations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  async function handleAddModule(moduleId) {
     if (!selectedId) return
-    const lesson = lessonBank.find(l => l.id === lessonId)
-    if (!lesson) return
+    const mod = moduleBank.find(l => l.id === moduleId)
+    if (!mod) return
 
-    setLessonsFor(selectedId, prev => [...prev, lesson])
+    setModulesFor(selectedId, prev => [...prev, mod])
     setSaving(true)
     try {
-      await addCourseLesson(selectedId, { lesson: lessonId })
+      await addCourseModule(selectedId, { module: moduleId })
       reloadDetail(selectedId)
     } catch {
       reloadDetail(selectedId)
@@ -190,44 +222,74 @@ export function useCourseBuilder() {
     }
   }
 
-  async function handleRemoveLesson(lessonId) {
+  async function handleAddTest(testId) {
     if (!selectedId) return
-    setLessonsFor(selectedId, prev => prev.filter(l => l.id !== lessonId))
+    const test = allTests.find(t => t.id === testId)
+    if (!test) return
+
+    setModulesFor(selectedId, prev => [...prev, {
+      _courseModuleId: `temp-test-${testId}`,
+      _type: 'test',
+      id: `temp-test-${testId}`,
+      moduleId: null,
+      testId: test.id,
+      title: test.title,
+      time_limit_minutes: test.time_limit_minutes,
+      status: test.status,
+    }])
+    setSaving(true)
     try {
-      await removeCourseLesson(selectedId, lessonId)
+      await addCourseModule(selectedId, { test: testId })
+      reloadDetail(selectedId)
+    } catch {
+      reloadDetail(selectedId)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function handleRemoveModule(courseModuleId) {
+    if (!selectedId) return
+    setModulesFor(selectedId, prev => prev.filter(l => (l._courseModuleId ?? l.id) !== courseModuleId))
+    try {
+      await removeCourseModule(selectedId, courseModuleId)
     } catch {
       reloadDetail(selectedId)
     }
   }
 
-  async function handleMoveLesson(index, direction) {
-    if (!selectedLessons) return
+  async function handleMoveModule(index, direction) {
+    if (!selectedModules) return
     const toIdx = index + direction
-    if (toIdx < 0 || toIdx >= selectedLessons.length) return
+    if (toIdx < 0 || toIdx >= selectedModules.length) return
 
-    const next = [...selectedLessons]
+    const next = [...selectedModules]
     ;[next[index], next[toIdx]] = [next[toIdx], next[index]]
-    setLessonsFor(selectedId, next)
+    setModulesFor(selectedId, next)
 
     try {
-      await reorderCourseLesson(selectedId, { lesson_id: next[toIdx].id, new_order: toIdx })
+      const movedItem = next[toIdx]
+      await reorderCourseModule(selectedId, {
+        coursemodule_id: movedItem._courseModuleId ?? movedItem.id,
+        new_order: toIdx,
+      })
     } catch {
       reloadDetail(selectedId)
     }
   }
 
-  async function handleCreateLesson(data) {
-    const res = await apiCreateLesson(data)
-    const lesson = res.data
-    setLessonBank(prev => [lesson, ...prev])
-    return lesson
+  async function handleCreateModule(data) {
+    const res = await apiCreateModule(data)
+    const module = res.data
+    setModuleBank(prev => [module, ...prev])
+    return module
   }
 
-  async function handleUpdateLesson(lessonId, data) {
-    await apiUpdateLesson(lessonId, data)
-    const updateFn = l => l.id === lessonId ? { ...l, ...data } : l
-    setLessonBank(prev => prev.map(updateFn))
-    setCourseLessonsMap(prev => {
+  async function handleUpdateModule(moduleId, data) {
+    await apiUpdateModule(moduleId, data)
+    const updateFn = l => l.id === moduleId ? { ...l, ...data } : l
+    setModuleBank(prev => prev.map(updateFn))
+    setCourseModulesMap(prev => {
       const next = { ...prev }
       for (const id of Object.keys(next)) {
         if (next[id]) next[id] = next[id].map(updateFn)
@@ -236,13 +298,13 @@ export function useCourseBuilder() {
     })
   }
 
-  async function handleDeleteLesson(lessonId) {
-    await apiDeleteLesson(lessonId)
-    setLessonBank(prev => prev.filter(l => l.id !== lessonId))
-    setCourseLessonsMap(prev => {
+  async function handleDeleteModule(moduleId) {
+    await apiDeleteModule(moduleId)
+    setModuleBank(prev => prev.filter(l => l.id !== moduleId))
+    setCourseModulesMap(prev => {
       const next = { ...prev }
       for (const id of Object.keys(next)) {
-        if (next[id]) next[id] = next[id].filter(l => l.id !== lessonId)
+        if (next[id]) next[id] = next[id].filter(l => l.id !== moduleId)
       }
       return next
     })
@@ -255,13 +317,14 @@ export function useCourseBuilder() {
     bankSearch, setBankSearch,
     bankOpen, setBankOpen,
     saving, loadingDetail,
-    selected, selectedLessons,
-    visible, bankFiltered, lessonBank, courseLessonsMap, lessonCourseMap,
+    selected, selectedModules,
+    visible, bankFiltered, moduleBank, courseModulesMap, moduleCourseMap,
+    allTests,
     activeTab, setActiveTab,
     handleNewCourse,
-    handleTitleChange, handleDescChange, handleClassroomChange, handleToggleStatus, handleDeleteCourse,
-    handleAddLesson, handleRemoveLesson, handleMoveLesson,
-    handleCreateLesson, handleUpdateLesson, handleDeleteLesson,
+    handleTitleChange, handleDescChange, handleDepartmentsChange, handleToggleStatus, handleDeleteCourse,
+    handleAddModule, handleAddTest, handleRemoveModule, handleMoveModule,
+    handleCreateModule, handleUpdateModule, handleDeleteModule,
     ensureAllCoursesLoaded,
   }
 }

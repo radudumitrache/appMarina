@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import NavBar from '../../components/teacher/NavBar'
 import StudentProgressHeader from '../../components/admin/student-progress/StudentProgressHeader'
 import TestResultsSection from '../../components/admin/student-progress/TestResultsSection'
-import LessonsSection from '../../components/admin/student-progress/LessonsSection'
+import ModulesSection from '../../components/admin/student-progress/ModulesSection'
 import { getTeacherStudentProgress } from '../../api/teacher'
 import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/StudentProgress.css'
@@ -86,7 +86,7 @@ export default function TeacherStudentProgress() {
           studentName={data.student_name}
           email={data.email}
           testCount={data.test_results.length}
-          lessonCount={data.lessons_done.length}
+          moduleCount={data.modules_done.length}
         />
 
         <div className="sp-grid">
@@ -94,7 +94,7 @@ export default function TeacherStudentProgress() {
             results={data.test_results}
             onSelect={t => navigate(`/teacher/submissions/${t.id}`)}
           />
-          <LessonsSection lessons={data.lessons_done} />
+          <ModulesSection modules={data.modules_done} />
         </div>
       </div>
     </div>

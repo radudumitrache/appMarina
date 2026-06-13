@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 
 const SPRING = [0.16, 1, 0.3, 1]
@@ -15,7 +15,7 @@ const tileVariants = {
 
 const NAV_TILES = [
   {
-    id: 'lessons', label: 'Lessons', path: '/student/lessons',
+    id: 'modules', label: 'Courses', path: '/student/modules',
     icon: (
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>

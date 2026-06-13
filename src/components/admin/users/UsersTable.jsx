@@ -2,7 +2,7 @@ import Sk from '../../shared/Skeleton'
 import UserRow from './UserRow'
 
 const COLUMNS = [
-  { label: 'Name',         key: 'name' },
+  { label: 'Username',      key: 'name' },
   { label: 'Role',         key: 'role' },
   { label: 'Crew ID',      key: 'crew_id' },
   { label: 'Email',        key: 'email' },
@@ -43,6 +43,7 @@ export default function UsersTable({ loading, users, sortKey, sortDir, onSort, o
             <SortIcon active={sortKey === key} dir={sortDir} />
           </th>
         ))}
+        <th>Departments</th>
         <th></th>
       </tr>
     </thead>
@@ -64,6 +65,7 @@ export default function UsersTable({ loading, users, sortKey, sortDir, onSort, o
               <td><Sk w={150} h={13} /></td>
               <td><Sk w={70}  h={13} /></td>
               <td><Sk w={55}  h={20} r={10} /></td>
+              <td><div style={{ display: 'flex', gap: 4 }}><Sk w={52} h={20} r={4} /><Sk w={44} h={20} r={4} /></div></td>
               <td><div style={{ display: 'flex', gap: 4 }}>
                 <Sk w={28} h={28} r={6} /><Sk w={28} h={28} r={6} />
               </div></td>
@@ -79,7 +81,7 @@ export default function UsersTable({ loading, users, sortKey, sortDir, onSort, o
       {thead}
       <tbody>
         {users.length === 0 ? (
-          <tr><td colSpan={7} className="users-empty">No users found.</td></tr>
+          <tr><td colSpan={8} className="users-empty">No users found.</td></tr>
         ) : (
           users.map((user, i) => (
             <UserRow

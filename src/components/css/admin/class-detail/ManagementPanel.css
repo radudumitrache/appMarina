@@ -168,7 +168,7 @@
   flex-shrink: 0;
 }
 
-.cd-lesson-icon {
+.cd-module-icon {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
@@ -181,10 +181,16 @@
   flex-shrink: 0;
 }
 
-.cd-lesson-icon--test {
+.cd-module-icon--test {
   background: rgba(212, 160, 23, 0.07);
   border-color: rgba(212, 160, 23, 0.2);
   color: var(--gold, #d4a017);
+}
+
+.cd-module-icon--course {
+  background: rgba(99, 148, 255, 0.07);
+  border-color: rgba(99, 148, 255, 0.2);
+  color: #6394ff;
 }
 
 .cd-member-name {

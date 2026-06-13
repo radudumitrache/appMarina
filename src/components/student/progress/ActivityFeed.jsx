@@ -9,7 +9,7 @@ export default function ActivityFeed({ items, onSelect }) {
 
       <div className="activity-list">
         {items.map((item, i) => {
-          const clickable = item.type === 'lesson' || (item.type === 'test' && item.refId)
+          const clickable = item.type === 'module' || (item.type === 'test' && item.refId)
           return (
             <div
               key={item.id}
@@ -18,7 +18,7 @@ export default function ActivityFeed({ items, onSelect }) {
               onClick={clickable && onSelect ? () => onSelect(item) : undefined}
             >
               <div className={`activity-icon activity-icon--${item.type}`}>
-                {item.type === 'lesson' ? (
+                {item.type === 'module' ? (
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>

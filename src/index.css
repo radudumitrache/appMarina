@@ -1,47 +1,47 @@
-/* ─── Reset ──────────────────────────────────────────────────────────────── */
+﻿/* â”€â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* ── Surfaces ─────────────────────────────────────────────────────────── */
+  /* â”€â”€ Surfaces â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --bg         : #060b14;
   --surface-1  : #0b1220;
   --surface-2  : #111b2e;
   --surface-3  : #1a2740;
 
-  /* ── Borders ──────────────────────────────────────────────────────────── */
+  /* â”€â”€ Borders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --border     : #253550;
   --border-hover: #3a4f6a;
 
-  /* ── Text ─────────────────────────────────────────────────────────────── */
+  /* â”€â”€ Text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --text       : #e4edf6;
   --text-2     : #9db0c5;
   --text-3     : #6b83a0;
 
-  /* ── Accent — Seafoam Teal ────────────────────────────────────────────── */
+  /* â”€â”€ Accent â€” Seafoam Teal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --accent     : #0bbda4;
   --accent-hover: #0fd4b8;
   --accent-dim : rgba(11, 189, 164, 0.12);
   --accent-rim : rgba(11, 189, 164, 0.22);
 
-  /* ── Secondary — Brass Gold ───────────────────────────────────────────── */
+  /* â”€â”€ Secondary â€” Brass Gold â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --gold       : #d9a030;
   --gold-dim   : rgba(217, 160, 48, 0.12);
 
-  /* ── Semantic ─────────────────────────────────────────────────────────── */
+  /* â”€â”€ Semantic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --success    : #2ec77a;
   --error      : #e05252;
 
-  /* ── Typography ───────────────────────────────────────────────────────── */
+  /* â”€â”€ Typography â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --font-brand : 'Orbitron', monospace;
   --font-ui    : 'Plus Jakarta Sans', sans-serif;
   --font-mono  : 'IBM Plex Mono', monospace;
 
-  /* ── Shape ────────────────────────────────────────────────────────────── */
+  /* â”€â”€ Shape â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --radius-sm  : 6px;
   --radius-md  : 10px;
   --radius-lg  : 14px;
 
-  /* ── Motion ───────────────────────────────────────────────────────────── */
+  /* â”€â”€ Motion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --ease             : cubic-bezier(0.16, 1, 0.3, 1);
   --ease-default     : cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out         : cubic-bezier(0.0, 0, 0.2, 1);
@@ -51,16 +51,16 @@
   --duration-exit    : 200ms;
   --duration-page    : 480ms;
 
-  /* ── Legacy aliases (kept for unmigrated components) ─────────────────── */
+  /* â”€â”€ Legacy aliases (kept for unmigrated components) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   --muted      : #9db0c5;
   --surface    : #0b1220;
 }
 
-/* ─── Light Theme — Nautical Chart ───────────────────────────────────────── */
+/* â”€â”€â”€ Light Theme â€” Nautical Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 [data-theme="light"] {
   /* Surfaces */
   --bg         : #f2f7fc;   /* sea-mist white */
-  --surface-1  : #ffffff;   /* card — nautical chart paper */
+  --surface-1  : #ffffff;   /* card â€” nautical chart paper */
   --surface-2  : #e4eef8;   /* hover fill */
   --surface-3  : #d4e6f0;   /* input backgrounds */
 
@@ -69,21 +69,21 @@
   --border-hover: #7aaac4;
 
   /* Text */
-  --text       : #0d1b2c;   /* deep navy — primary */
-  --text-2     : #2c4968;   /* medium navy — secondary */
-  --text-3     : #587898;   /* steel blue — placeholders */
+  --text       : #0d1b2c;   /* deep navy â€” primary */
+  --text-2     : #2c4968;   /* medium navy â€” secondary */
+  --text-3     : #587898;   /* steel blue â€” placeholders */
 
-  /* Accent teal — unchanged, used for borders/icons/highlights */
+  /* Accent teal â€” unchanged, used for borders/icons/highlights */
   --accent     : #0bbda4;
   --accent-hover: #0fd4b8;
   --accent-dim : rgba(11, 189, 164, 0.10);
   --accent-rim : rgba(11, 189, 164, 0.25);
 
-  /* Gold — darkened for legibility on light surfaces */
+  /* Gold â€” darkened for legibility on light surfaces */
   --gold       : #9e6e10;
   --gold-dim   : rgba(158, 110, 16, 0.12);
 
-  /* Semantic — deepened for light background contrast */
+  /* Semantic â€” deepened for light background contrast */
   --success    : #1a8a4e;
   --error      : #c03030;
 
@@ -92,7 +92,7 @@
   --surface    : #ffffff;
 }
 
-/* Glass recipe — light variant (login card, dashboard control pill) */
+/* Glass recipe â€” light variant (login card, dashboard control pill) */
 [data-theme="light"] .glass {
   background: rgba(242, 247, 252, 0.82);
 }
@@ -106,13 +106,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Dashboard/lesson pages lock scroll at the page level */
+/* Dashboard/module pages lock scroll at the page level */
 .page-no-scroll {
   overflow: hidden;
   height: 100%;
 }
 
-/* ─── Page transition curtain ────────────────────────────────────────────── */
+/* â”€â”€â”€ Page transition curtain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .page-transition-curtain {
   position: fixed;
   inset: 0;
@@ -124,7 +124,7 @@ body {
   will-change: transform;
 }
 
-/* Suspense fallback — invisible dark screen while chunks load */
+/* Suspense fallback â€” invisible dark screen while chunks load */
 .page-suspense-fallback {
   width: 100vw;
   height: 100vh;
@@ -155,7 +155,7 @@ body {
   to   { opacity: 0; transform: translateX(-30px); }
 }
 
-/* ─── Shared full-screen transition overlay ──────────────────────────────── */
+/* â”€â”€â”€ Shared full-screen transition overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .page-transition {
   position: fixed;
   inset: 0;
@@ -170,7 +170,7 @@ body {
   object-fit: cover;
 }
 
-/* ─── Mobile sidebar utilities (shared across all sidebar pages) ─────────── */
+/* â”€â”€â”€ Mobile sidebar utilities (shared across all sidebar pages) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .sidebar-backdrop {
   position: fixed;
   inset: 0;

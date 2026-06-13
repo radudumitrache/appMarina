@@ -1,0 +1,135 @@
+.lr-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 52px;
+  padding: 0 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.lr-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.lr-back-btn:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.lr-topbar-center {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.lr-module-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+}
+
+.lr-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lr-panel-counter {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+  user-select: none;
+}
+.lr-panel-cur,
+.lr-panel-tot {
+  color: var(--text);
+}
+
+.lr-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.lr-nav-btn:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.lr-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.lr-complete-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.lr-complete-btn:hover:not(:disabled) {
+  color: var(--accent, #0bbda4);
+  border-color: rgba(11, 189, 164, 0.4);
+  background: rgba(11, 189, 164, 0.06);
+}
+.lr-complete-btn--done {
+  color: var(--accent, #0bbda4);
+  border-color: rgba(11, 189, 164, 0.35);
+  background: rgba(11, 189, 164, 0.07);
+}
+.lr-complete-btn--done:hover:not(:disabled) {
+  color: var(--error, #e05252);
+  border-color: rgba(224, 82, 82, 0.35);
+  background: rgba(224, 82, 82, 0.06);
+}
+.lr-complete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .lr-topbar { padding: 0 12px; gap: 8px; }
+
+  .lr-back-btn { padding: 0 8px; font-size: 12px; gap: 4px; }
+
+  .lr-module-title { font-size: 13px; max-width: 120px; }
+
+  /* Hide "Mark complete" / "Completed" text — keep only the icon */
+  .lr-complete-btn span { display: none; }
+  .lr-complete-btn { padding: 0 8px; }
+}

@@ -1,4 +1,4 @@
-.cd-tab-content {
+﻿.cd-tab-content {
   flex: 1;
   animation: fadeUp var(--duration-enter) var(--ease-default) 0.1s both;
 }
@@ -44,15 +44,15 @@
   cursor: pointer;
 }
 
-/* Column widths — Students tab */
+/* Column widths â€” Students tab */
 .cd-col--student    { flex: 2; min-width: 0; }
 .cd-col--progress   { width: 240px; flex-shrink: 0; }
 .cd-col--last       { width: 110px; flex-shrink: 0; }
 .cd-col--status     { width: 80px; flex-shrink: 0; }
 
-/* Column widths — Lessons tab */
+/* Column widths â€” Lessons tab */
 .cd-col--num        { width: 40px; flex-shrink: 0; }
-.cd-col--lesson     { flex: 2; min-width: 0; }
+.cd-col--module     { flex: 2; min-width: 0; }
 .cd-col--cat        { width: 110px; flex-shrink: 0; }
 .cd-col--dur        { width: 80px; flex-shrink: 0; }
 .cd-col--completion { flex: 1; min-width: 140px; }
@@ -99,7 +99,7 @@
 /* Course list columns */
 .cd-col--course-title   { flex: 2; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .cd-col--course-status  { width: 90px; flex-shrink: 0; }
-.cd-col--course-lessons { width: 80px; flex-shrink: 0; }
+.cd-col--course-modules { width: 80px; flex-shrink: 0; }
 
 .cd-course-desc {
   font-family: var(--font-ui);
@@ -114,7 +114,7 @@
 .cd-badge--draft     { background: rgba(255,255,255,0.05); color: var(--text-3); border: 1px solid var(--border); }
 .cd-badge--published { background: rgba(46,199,122,0.10); color: var(--success); border: 1px solid rgba(46,199,122,0.2); }
 
-/* Column widths — Tests tab */
+/* Column widths â€” Tests tab */
 .cd-col--test-title  { flex: 2; min-width: 0; display: flex; align-items: center; gap: 8px; }
 .cd-col--test-status { width: 90px; flex-shrink: 0; }
 .cd-col--test-time   { width: 80px; flex-shrink: 0; }
@@ -243,7 +243,7 @@
 .cd-badge--active   { background: rgba(46,199,122,0.10); color: var(--success); }
 .cd-badge--inactive { background: rgba(255,255,255,0.04); color: var(--text-3); }
 
-.cd-lesson-num {
+.cd-module-num {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 500;
@@ -251,7 +251,7 @@
   letter-spacing: 0.04em;
 }
 
-.cd-lesson-title {
+.cd-module-title {
   font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 500;
@@ -345,7 +345,7 @@
   .cd-col--test-time,
   .cd-col--test-q,
   .cd-col--num,
-  .cd-col--course-lessons { display: none; }
+  .cd-col--course-modules { display: none; }
 
   /* Compact progress bar */
   .cd-col--progress { width: 110px; }

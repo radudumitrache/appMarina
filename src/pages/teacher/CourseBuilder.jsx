@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
-import Dropdown        from '../../components/shared/Dropdown'
+﻿import { useState, useRef, useEffect } from 'react'
+import MultiSelectDropdown from '../../components/shared/MultiSelectDropdown'
 import NavBar          from '../../components/teacher/NavBar'
 import CourseSidebar   from '../../components/teacher/course-builder/CourseSidebar'
 import CourseEditor    from '../../components/teacher/course-builder/CourseEditor'
-import LessonsManager  from '../../components/teacher/course-builder/LessonsManager'
+import ModulesManager  from '../../components/teacher/course-builder/ModulesManager'
 import { useCourseBuilder } from './useCourseBuilder'
 import { getDepartments } from '../../api/departments'
 import '../css/teacher/CourseBuilder.css'
@@ -14,7 +14,7 @@ export default function CourseBuilder() {
   const [newTitle,    setNewTitle]    = useState('')
   const [newDesc,     setNewDesc]     = useState('')
   const [newStatus,   setNewStatus]   = useState('draft')
-  const [newClassId,  setNewClassId]  = useState('')
+  const [newClassIds, setNewClassIds] = useState([])
   const [creating,    setCreating]    = useState(false)
   const [createErr,   setCreateErr]   = useState(null)
   const [departments, setDepartments] = useState([])
@@ -31,14 +31,15 @@ export default function CourseBuilder() {
     bankSearch, setBankSearch,
     bankOpen, setBankOpen,
     saving, loadingDetail,
-    selected, selectedLessons,
-    visible, bankFiltered, lessonBank, courseLessonsMap, lessonCourseMap,
+    selected, selectedModules,
+    visible, bankFiltered, moduleBank, courseModulesMap, moduleCourseMap,
+    allTests,
     activeTab, setActiveTab,
     handleNewCourse,
-    handleTitleChange, handleDescChange, handleClassroomChange, handleToggleStatus, handleDeleteCourse,
-    handleAddLesson, handleRemoveLesson, handleMoveLesson,
-    // handleCreateLesson,
-    handleUpdateLesson, handleDeleteLesson,
+    handleTitleChange, handleDescChange, handleDepartmentsChange, handleToggleStatus, handleDeleteCourse,
+    handleAddModule, handleAddTest, handleRemoveModule, handleMoveModule,
+    // handleCreateModule,
+    handleUpdateModule, handleDeleteModule,
     ensureAllCoursesLoaded,
   } = useCourseBuilder()
 
@@ -47,8 +48,8 @@ export default function CourseBuilder() {
     setActiveTab('courses')
   }
 
-  function switchToAllLessons() {
-    setActiveTab('lessons')
+  function switchToAllModules() {
+    setActiveTab('modules')
     ensureAllCoursesLoaded()
   }
 
@@ -56,7 +57,7 @@ export default function CourseBuilder() {
     setNewTitle('')
     setNewDesc('')
     setNewStatus('draft')
-    setNewClassId(departments[0]?.id ?? null)
+    setNewClassIds(departments[0]?.id != null ? [departments[0].id] : [])
     setCreateErr(null)
     setShowCreate(true)
     setTimeout(() => titleRef.current?.focus(), 40)
@@ -65,11 +66,11 @@ export default function CourseBuilder() {
   async function handleCreate(e) {
     e.preventDefault()
     if (!newTitle.trim()) { setCreateErr('Title is required.'); return }
-    if (!newClassId) { setCreateErr('Please select a department.'); return }
+    if (!newClassIds.length) { setCreateErr('Please select at least one department.'); return }
     setCreating(true)
     setCreateErr(null)
     try {
-      await handleNewCourse({ title: newTitle, description: newDesc, status: newStatus, department_id: newClassId })
+      await handleNewCourse({ title: newTitle, description: newDesc, status: newStatus, department_ids: newClassIds.map(Number) })
       setShowCreate(false)
     } catch {
       setCreateErr('Could not create course. Please try again.')
@@ -96,16 +97,16 @@ export default function CourseBuilder() {
               error={error}
               visible={visible}
               selectedId={activeTab === 'courses' ? selectedId : null}
-              courseLessonsMap={courseLessonsMap}
+              courseModulesMap={courseModulesMap}
               search={search}
               setSearch={setSearch}
               onSelect={(id) => { switchToCourse(id); setSidebarOpen(false) }}
               onNew={openCreate}
               totalCount={courses.length}
               publishedCount={courses.filter(c => c.status === 'published').length}
-              lessonBankCount={lessonBank.length}
-              onShowAllLessons={() => { switchToAllLessons(); setSidebarOpen(false) }}
-              showingAllLessons={activeTab === 'lessons'}
+              moduleBankCount={moduleBank.length}
+              onShowAllModules={() => { switchToAllModules(); setSidebarOpen(false) }}
+              showingAllModules={activeTab === 'modules'}
               classes={departments}
               className={sidebarOpen ? 'sidebar--open' : ''}
             />
@@ -114,7 +115,7 @@ export default function CourseBuilder() {
               selected ? (
                 <CourseEditor
                   selected={selected}
-                  selectedLessons={selectedLessons}
+                  selectedModules={selectedModules}
                   loadingDetail={loadingDetail}
                   saving={saving}
                   bankOpen={bankOpen}
@@ -122,17 +123,19 @@ export default function CourseBuilder() {
                   bankFiltered={bankFiltered}
                   bankSearch={bankSearch}
                   setBankSearch={setBankSearch}
-                  lessonBankCount={lessonBank.length}
+                  moduleBankCount={moduleBank.length}
                   classes={departments}
                   onTitleChange={handleTitleChange}
                   onDescChange={handleDescChange}
-                  onClassroomChange={handleClassroomChange}
+                  onClassroomChange={handleDepartmentsChange}
                   onToggleStatus={handleToggleStatus}
                   onDeleteCourse={handleDeleteCourse}
-                  onRemoveLesson={handleRemoveLesson}
-                  onMoveLesson={handleMoveLesson}
-                  onAddLesson={handleAddLesson}
-                  // onCreateLesson={handleCreateLesson}
+                  onRemoveModule={handleRemoveModule}
+                  onMoveModule={handleMoveModule}
+                  onAddModule={handleAddModule}
+                  onAddTest={handleAddTest}
+                  allTests={allTests}
+                  // onCreateModule={handleCreateModule}
                 />
               ) : !loading ? (
                 <main className="cb-main cb-main--empty">
@@ -144,13 +147,13 @@ export default function CourseBuilder() {
                 </main>
               ) : null
             ) : (
-              <LessonsManager
-                lessonBank={lessonBank}
-                lessonCourseMap={lessonCourseMap}
+              <ModulesManager
+                moduleBank={moduleBank}
+                moduleCourseMap={moduleCourseMap}
                 saving={saving}
-                // onCreateLesson={handleCreateLesson}
-                onUpdateLesson={handleUpdateLesson}
-                onDeleteLesson={handleDeleteLesson}
+                // onCreateModule={handleCreateModule}
+                onUpdateLesson={handleUpdateModule}
+                onDeleteLesson={handleDeleteModule}
               />
             )}
           </div>
@@ -171,11 +174,11 @@ export default function CourseBuilder() {
 
             <form className="cb-create-form" onSubmit={handleCreate}>
               <div className="cb-create-field">
-                <label className="cb-create-label">Department <span className="cb-create-required">*</span></label>
-                <Dropdown
-                  value={newClassId}
-                  onChange={v => setNewClassId(v)}
-                  placeholder="— select a department —"
+                <label className="cb-create-label">Departments <span className="cb-create-required">*</span></label>
+                <MultiSelectDropdown
+                  value={newClassIds}
+                  onChange={v => setNewClassIds(v)}
+                  placeholder="— select departments —"
                   options={departments.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}
                 />
               </div>
@@ -197,7 +200,7 @@ export default function CourseBuilder() {
                 <input
                   className="cb-create-input"
                   type="text"
-                  placeholder="Short description…"
+                  placeholder="Short descriptionâ€¦"
                   value={newDesc}
                   onChange={e => setNewDesc(e.target.value)}
                 />
@@ -230,7 +233,7 @@ export default function CourseBuilder() {
                   Cancel
                 </button>
                 <button type="submit" className="cb-create-submit" disabled={creating}>
-                  {creating ? 'Creating…' : 'Create Course'}
+                  {creating ? 'Creatingâ€¦' : 'Create Course'}
                 </button>
               </div>
             </form>

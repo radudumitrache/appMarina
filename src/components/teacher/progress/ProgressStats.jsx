@@ -1,4 +1,4 @@
-import '../../css/teacher/progress/ProgressStats.css'
+﻿import '../../css/teacher/progress/ProgressStats.css'
 
 export default function ProgressStats({ totalStudents, classCount, avgPct }) {
   return (
@@ -11,7 +11,7 @@ export default function ProgressStats({ totalStudents, classCount, avgPct }) {
       <div className="tp-stat-card">
         <span className="tp-stat-label">Avg. Progress</span>
         <span className="tp-stat-value">{avgPct}%</span>
-        <span className="tp-stat-sub">lesson completion</span>
+        <span className="tp-stat-sub">module completion</span>
       </div>
     </div>
   )

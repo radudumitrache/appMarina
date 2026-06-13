@@ -1,4 +1,4 @@
-export default function StudentProgressHeader({ studentName, email, testCount, lessonCount }) {
+﻿export default function StudentProgressHeader({ studentName, email, testCount, moduleCount }) {
   return (
     <div className="sp-header">
       <div className="sp-avatar">{studentName.charAt(0)}</div>
@@ -14,8 +14,8 @@ export default function StudentProgressHeader({ studentName, email, testCount, l
           <span className="sp-stat-label">Tests taken</span>
         </div>
         <div className="sp-stat">
-          <span className="sp-stat-value">{lessonCount}</span>
-          <span className="sp-stat-label">Lessons done</span>
+          <span className="sp-stat-value">{moduleCount}</span>
+          <span className="sp-stat-label">Modules done</span>
         </div>
       </div>
     </div>

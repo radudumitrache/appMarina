@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { useNavigate }    from 'react-router-dom'
 import { useAuth }        from '../../auth/AuthContext'
 import NavBar             from '../../components/student/NavBar'
@@ -9,7 +9,7 @@ import JoinClassCard      from '../../components/student/my-class/JoinClassCard'
 import ClassSidebar       from '../../components/student/my-class/ClassSidebar'
 import ClassStatCards     from '../../components/student/my-class/ClassStatCards'
 import {
-  getDepartments, getClassStudents, getClassLessons,
+  getDepartments, getClassStudents, getClassModules,
   getClassAssignments, getAnnouncements, joinClass,
 } from '../../api/departments'
 import '../css/student/MyClass.css'
@@ -25,7 +25,7 @@ export default function MyClass() {
   const [departments,   setDepartments]   = useState([])
   const [selectedId,    setSelectedId]    = useState(null)
   const [enrollments,   setEnrollments]   = useState([])
-  const [lessons,       setLessons]       = useState([])
+  const [modules,       setModules]       = useState([])
   const [assignments,   setAssignments]   = useState([])
   const [announcements, setAnnouncements] = useState([])
   const [loading,       setLoading]       = useState(true)
@@ -57,14 +57,14 @@ export default function MyClass() {
   async function loadClassDetail(departmentId) {
     setDetailLoading(true)
     try {
-      const [enrollRes, lessonRes, assignRes, announceRes] = await Promise.all([
+      const [enrollRes, moduleRes, assignRes, announceRes] = await Promise.all([
         getClassStudents(departmentId),
-        getClassLessons(departmentId),
+        getClassModules(departmentId),
         getClassAssignments(departmentId),
         getAnnouncements(departmentId),
       ])
       setEnrollments(enrollRes.data)
-      setLessons(lessonRes.data)
+      setModules(moduleRes.data)
       setAssignments(assignRes.data)
       setAnnouncements(announceRes.data)
     } catch {
@@ -73,7 +73,7 @@ export default function MyClass() {
     }
   }
 
-  // Called by JoinClassCard (unenrolled state) — throws on error so the card can show it
+  // Called by JoinClassCard (unenrolled state) â€” throws on error so the card can show it
   async function handleFirstJoin(e) {
     e.preventDefault()
     if (!joinCode.trim()) return
@@ -93,7 +93,7 @@ export default function MyClass() {
     }
   }
 
-  // Called by ClassSidebar — throws on error so the sidebar can show it
+  // Called by ClassSidebar â€” throws on error so the sidebar can show it
   async function handleSidebarJoin(code) {
     await joinClass(code)
     const { data: updated } = await getDepartments()
@@ -106,7 +106,7 @@ export default function MyClass() {
     return (
       <div className="myclass-page">
         <NavBar />
-        <div className="myclass-loading"><span>Loading…</span></div>
+        <div className="myclass-loading"><span>Loadingâ€¦</span></div>
       </div>
     )
   }
@@ -127,7 +127,7 @@ export default function MyClass() {
     )
   }
 
-  // ── Enrolled in at least one class ────────────────────────────────────────
+  // â”€â”€ Enrolled in at least one class â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const classroom = departments.find(c => c.id === selectedId) ?? departments[0]
 
   const classmates = enrollments
@@ -135,13 +135,13 @@ export default function MyClass() {
       id:              e.student,
       name:            e.student_name,
       avatar:          initials(e.student_name),
-      lessonsComplete: e.lessons_done,
-      totalLessons:    e.lessons_total,
+      modulesComplete: e.modules_done,
+      totalModules:    e.modules_total,
       avgGrade:        e.avg_grade,
       isMe:            e.student === user?.id,
     }))
     .sort((a, b) => {
-      if (b.lessonsComplete !== a.lessonsComplete) return b.lessonsComplete - a.lessonsComplete
+      if (b.modulesComplete !== a.modulesComplete) return b.modulesComplete - a.modulesComplete
       return (b.avgGrade ?? -1) - (a.avgGrade ?? -1)
     })
 
@@ -175,9 +175,9 @@ export default function MyClass() {
       sub:   'in your department',
     },
     {
-      label: 'Lessons Assigned',
-      value: String(lessons.length),
-      sub:   me ? `${me.lessonsComplete} of ${me.totalLessons} complete` : 'in your department',
+      label: 'Modules Assigned',
+      value: String(modules.length),
+      sub:   me ? `${me.modulesComplete} of ${me.totalModules} complete` : 'in your department',
     },
     {
       label: 'Tests Assigned',
@@ -186,7 +186,7 @@ export default function MyClass() {
     },
     {
       label:  'Class Avg Grade',
-      value:  classAvg != null ? String(Math.round(classAvg)) : '—',
+      value:  classAvg != null ? String(Math.round(classAvg)) : 'â€”',
       suffix: classAvg != null ? '%' : '',
       sub:    'across all tests',
     },
@@ -220,7 +220,7 @@ export default function MyClass() {
 
           <div className="myclass-content">
             {detailLoading ? (
-              <div className="myclass-loading"><span>Loading…</span></div>
+              <div className="myclass-loading"><span>Loadingâ€¦</span></div>
             ) : (
               <>
                 <ClassStatCards statCards={statCards} />

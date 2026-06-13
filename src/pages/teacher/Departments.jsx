@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NavBar from '../../components/teacher/NavBar'
 import ClassesHeader from '../../components/teacher/classes/ClassesHeader'
@@ -32,8 +32,8 @@ export default function Departments() {
       .then(({ data }) => setDepartments(data.map(dep => ({
         ...dep,
         students:     dep.student_count,
-        lessonsTotal: dep.lesson_count,
-        lessonsDone:  0,
+        modulesTotal: dep.module_count,
+        modulesDone:  0,
       }))))
       .finally(() => setLoading(false))
   }, [])
@@ -80,7 +80,7 @@ export default function Departments() {
     setSaving(true)
     try {
       const { data } = await createDepartment(form)
-      setDepartments(prev => [{ ...data, students: data.student_count, lessonsTotal: data.lesson_count, lessonsDone: 0 }, ...prev])
+      setDepartments(prev => [{ ...data, students: data.student_count, modulesTotal: data.module_count, modulesDone: 0 }, ...prev])
       closeModal()
     } catch (err) {
       const d = err?.response?.data

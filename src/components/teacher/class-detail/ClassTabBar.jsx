@@ -3,7 +3,7 @@ import '../../css/teacher/class-detail/ClassTabBar.css'
 
 const TABS = [
   { id: 'students',      label: 'Students'      },
-  { id: 'lessons',       label: 'Lessons'       },
+  { id: 'modules',       label: 'Courses'       },
   { id: 'tests',         label: 'Tests'         },
   { id: 'announcements', label: 'Announcements' },
 ]

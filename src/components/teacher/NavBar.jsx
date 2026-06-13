@@ -7,6 +7,7 @@ const LINKS = [
   { label: 'My Departments',   slug: 'departments' },
   { label: 'Course Builder',   slug: 'builder'     },
   { label: 'Student Progress', slug: 'progress'    },
+  { label: 'Tests',            slug: 'tests'       },
   { label: 'Test Builder',     slug: 'assignments' },
   { label: 'Media',            slug: 'media'       },
   { label: 'Support',          slug: 'support'     },

@@ -10,12 +10,14 @@ export default function UserRow({ user, index, onEdit, onToggleStatus, onDelete 
         className={`user-row${expanded ? ' user-row--expanded' : ''}`}
         style={{ animationDelay: `${Math.min(index, 6) * 0.04}s` }}
       >
-        <td className="user-name-cell">
-          <div className="user-name-role">
-            <span className="user-name">{user.username}</span>
-            <span className={`role-badge role-badge--${user.role} role-badge--mobile-inline`}>{user.role}</span>
+        <td>
+          <div className="user-name-cell">
+            <div className="user-name-role">
+              <span className="user-name">{user.username}</span>
+              <span className={`role-badge role-badge--${user.role} role-badge--mobile-inline`}>{user.role}</span>
+            </div>
+            <span className="user-email-sub">{user.email}</span>
           </div>
-          <span className="user-email-sub">{user.email}</span>
         </td>
         <td className="user-role-col">
           <span className={`role-badge role-badge--${user.role}`}>{user.role}</span>
@@ -26,6 +28,22 @@ export default function UserRow({ user, index, onEdit, onToggleStatus, onDelete 
         <td>
           <span className={`status-dot status-dot--${user.status}`} />
           <span className="status-label">{user.status}</span>
+        </td>
+        <td className="user-departments">
+          {(user.departments ?? []).length === 0 ? (
+            <span className="user-dept-empty">—</span>
+          ) : (
+            <div className="dept-tags">
+              {user.departments.slice(0, 3).map(d => (
+                <span key={d.id} className="dept-tag" title={d.name}>
+                  {d.code || d.name}
+                </span>
+              ))}
+              {user.departments.length > 3 && (
+                <span className="dept-tag dept-tag--more">+{user.departments.length - 3}</span>
+              )}
+            </div>
+          )}
         </td>
         <td className="user-row-actions">
           <button className="row-btn" onClick={onEdit} title="Edit user">
@@ -74,7 +92,7 @@ export default function UserRow({ user, index, onEdit, onToggleStatus, onDelete 
 
       {expanded && (
         <tr className="user-row-actions-expanded">
-          <td colSpan={8}>
+          <td colSpan={9}>
             <div className="user-actions-bar">
               <button className="action-bar-btn" onClick={() => { onEdit(); setExpanded(false) }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">

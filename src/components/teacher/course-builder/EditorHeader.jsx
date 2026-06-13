@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import '../../css/teacher/course-builder/EditorHeader.css'
-import Dropdown from '../../shared/Dropdown'
+import MultiSelectDropdown from '../../shared/MultiSelectDropdown'
 
 export default function EditorHeader({
   selected,
@@ -31,9 +31,9 @@ export default function EditorHeader({
         {classes.length > 0 && (
           <div className="cb-classroom-row">
             <span className="cb-classroom-label">Class</span>
-            <Dropdown
-              value={selected.department_id ?? null}
-              onChange={v => onClassroomChange?.(selected.id, v)}
+            <MultiSelectDropdown
+              value={selected.department_ids ?? []}
+              onChange={ids => onClassroomChange?.(selected.id, ids)}
               placeholder="— unassigned —"
               options={classes.map(c => ({ value: c.id, label: `${c.name} (${c.code})` }))}
             />

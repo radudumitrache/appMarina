@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
-import Video from '../teacher/lesson-panel-editor/VideoExtension'
-import MediaInsertModal from '../teacher/lesson-panel-editor/MediaInsertModal'
+import Video from '../teacher/module-panel-editor/VideoExtension'
+import MediaInsertModal from '../teacher/module-panel-editor/MediaInsertModal'
 import '../css/shared/RichTextEditor.css'
 
 const TOOLBAR_GROUPS = [
@@ -14,7 +14,7 @@ const TOOLBAR_GROUPS = [
       { key: 'h1', title: 'Heading 1',  glyph: 'H1', shortLabel: 'Large',  act: e => e.chain().focus().toggleHeading({ level: 1 }).run(), on: e => e.isActive('heading', { level: 1 }) },
       { key: 'h2', title: 'Heading 2',  glyph: 'H2', shortLabel: 'Medium', act: e => e.chain().focus().toggleHeading({ level: 2 }).run(), on: e => e.isActive('heading', { level: 2 }) },
       { key: 'h3', title: 'Heading 3',  glyph: 'H3', shortLabel: 'Small',  act: e => e.chain().focus().toggleHeading({ level: 3 }).run(), on: e => e.isActive('heading', { level: 3 }) },
-      { key: 'p',  title: 'Normal text — clears all formatting', glyph: '¶', shortLabel: 'Normal',
+      { key: 'p',  title: 'Normal text â€” clears all formatting', glyph: 'Â¶', shortLabel: 'Normal',
         act: e => {
           const { empty } = e.state.selection
           const chain = e.chain().focus()
@@ -152,7 +152,7 @@ const TOOLBAR_GROUPS = [
   },
 ]
 
-/* ── Props ───────────────────────────────────────────────────────────────────
+/* â”€â”€ Props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * value       {string}    Initial HTML content. Loaded once on mount.
  * onChange     {Function}  Called with HTML on every editor update (optional).
  * onBlur      {Function}  Called with HTML when editor loses focus (optional).
@@ -218,7 +218,7 @@ export default function RichTextEditor({ value = '', onChange, onBlur, departmen
         >{'</>'}</button>
       </div>
 
-      {/* Toolbar groups — hidden in HTML mode */}
+      {/* Toolbar groups â€” hidden in HTML mode */}
       {!showHtml && (
         <div className="rte-toolbar-groups">
           {TOOLBAR_GROUPS.map(group => (
@@ -261,7 +261,7 @@ export default function RichTextEditor({ value = '', onChange, onBlur, departmen
       ) : (
         <div
           className="rte-editor-area"
-          style={{ '--rte-placeholder': `"${placeholder || 'Write here…'}"` }}
+          style={{ '--rte-placeholder': `"${placeholder || 'Write hereâ€¦'}"` }}
         >
           <EditorContent editor={editor} />
         </div>

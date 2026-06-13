@@ -1,4 +1,4 @@
-.tp-table-wrap {
+﻿.tp-table-wrap {
   display: flex;
   flex-direction: column;
   background: var(--surface-1);
@@ -28,7 +28,7 @@
 .tp-col--student  { flex: 2;   min-width: 0; }
 .tp-col--class    { flex: 1.5; min-width: 0; }
 .tp-col--progress { flex: 1.5; min-width: 120px; }
-.tp-col--lessons  { width: 80px;  flex-shrink: 0; padding-left: 12px; }
+.tp-col--modules  { width: 80px;  flex-shrink: 0; padding-left: 12px; }
 .tp-col--score    { width: 84px;  flex-shrink: 0; }
 .tp-col--status   { width: 90px;  flex-shrink: 0; }
 
@@ -277,7 +277,7 @@
 @media (max-width: 768px) {
   /* Hide less-critical columns */
   .tp-col--class,
-  .tp-col--lessons,
+  .tp-col--modules,
   .tp-col--score   { display: none; }
 
   /* Compact progress column */

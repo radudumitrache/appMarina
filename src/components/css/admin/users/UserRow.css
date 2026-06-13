@@ -72,7 +72,6 @@
 .user-email-sub { display: none; }
 .user-name-role { display: flex; align-items: center; gap: 8px; }
 .user-row-actions-mobile { display: none; }
-.role-badge--mobile-inline { display: none; }
 
 .user-email {
   font-family: var(--font-mono) !important;
@@ -101,6 +100,10 @@
 
 .role-badge--student { color: var(--accent); background: var(--accent-dim); }
 .role-badge--teacher { color: var(--gold);   background: var(--gold-dim);   }
+.role-badge--admin   { color: var(--error);  background: rgba(224, 82, 82, 0.12); }
+
+/* Hidden on desktop — only shown inside the name cell on mobile via the media query below */
+.role-badge--mobile-inline { display: none; }
 
 .status-dot {
   display: inline-block;
@@ -159,14 +162,46 @@
   text-align: center;
 }
 
+.dept-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.dept-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.dept-tag--more {
+  color: var(--text-3);
+  background: none;
+  border-color: transparent;
+  padding-left: 2px;
+}
+
+.user-dept-empty { color: var(--text-3); }
+
 @media (max-width: 600px) {
-  /* hide Role, Crew ID, Email, Organisation, Status, desktop-actions columns */
+  /* hide Role, Crew ID, Email, Organisation, Status, Departments, desktop-actions columns */
   .users-table th:nth-child(2), .users-table td:nth-child(2),
   .users-table th:nth-child(3), .users-table td:nth-child(3),
   .users-table th:nth-child(4), .users-table td:nth-child(4),
   .users-table th:nth-child(5), .users-table td:nth-child(5),
   .users-table th:nth-child(6), .users-table td:nth-child(6),
-  .users-table th:nth-child(7), .users-table td:nth-child(7) { display: none; }
+  .users-table th:nth-child(7), .users-table td:nth-child(7),
+  .users-table th:nth-child(8), .users-table td:nth-child(8) { display: none; }
 
   /* show mobile toggle column */
   .user-row-actions-mobile {

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../auth/AuthContext'
 import '../../css/admin/dashboard/DashNav.css'
 
@@ -13,17 +13,6 @@ const ACTIONS = [
         <circle cx="9" cy="7" r="4"/>
         <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-    ),
-  },
-  {
-    id: 'lessons',
-    label: 'Lessons',
-    path: '/admin/lessons',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
       </svg>
     ),
   },
@@ -116,9 +105,9 @@ export default function DashNav() {
   const actions = ACTIONS.filter(a => !a.superadminOnly || user?.is_staff)
 
   // Choose columns so tiles fill the grid evenly:
-  //   9 tiles → 3 columns (3×3)
-  //   8 tiles → 4 columns (4×2)
-  //   anything else → 3 columns as safe fallback
+  //   9 tiles â†’ 3 columns (3Ã—3)
+  //   8 tiles â†’ 4 columns (4Ã—2)
+  //   anything else â†’ 3 columns as safe fallback
   const cols = actions.length % 4 === 0 ? 4 : 3
 
   return (

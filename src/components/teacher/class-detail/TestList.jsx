@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+﻿import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../../auth/AuthContext'
 import '../../css/teacher/class-detail/StudentList.css'
 
@@ -36,7 +36,7 @@ export default function TestList({ tests }) {
               onClick={isOwner ? () => navigate(`/teacher/assignments?test=${t.id}`) : undefined}
             >
               <div className="cd-col cd-col--test-title">
-                <span className="cd-lesson-title">{t.title}</span>
+                <span className="cd-module-title">{t.title}</span>
                 {!isOwner && (
                   <span className="cd-readonly-badge" title={`Created by ${t.author_name}`}>
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

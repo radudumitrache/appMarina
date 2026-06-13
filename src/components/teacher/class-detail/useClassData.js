@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
-import { getDepartment, getClassStudents, getClassLessons, getAnnouncements } from '../../../api/departments'
+﻿import { useState, useEffect } from 'react'
+import { getDepartment, getClassStudents, getClassModules, getAnnouncements } from '../../../api/departments'
 import { getTests } from '../../../api/tests'
 
 export function useClassData(id) {
   const [cls,           setCls]           = useState(null)
   const [students,      setStudents]      = useState([])
-  const [lessons,       setLessons]       = useState([])
+  const [modules,       setModules]       = useState([])
   const [tests,         setTests]         = useState([])
   const [announcements, setAnnouncements] = useState([])
   const [loading,       setLoading]       = useState(true)
@@ -14,10 +14,10 @@ export function useClassData(id) {
     Promise.all([
       getDepartment(id),
       getClassStudents(id),
-      getClassLessons(id),
+      getClassModules(id),
       getTests({ class: id }),
       getAnnouncements(id),
-    ]).then(([clsRes, stuRes, lesRes, testRes, annRes]) => {
+    ]).then(([clsRes, stuRes, modRes, testRes, annRes]) => {
       setCls(clsRes.data)
       setAnnouncements(annRes.data)
 
@@ -26,18 +26,18 @@ export function useClassData(id) {
         initials:   (e.student_name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
         name:       e.student_name,
         email:      e.student_email,
-        done:       e.lessons_done ?? 0,
+        done:       e.modules_done ?? 0,
         testsTotal: e.tests_total  ?? 0,
         testsDone:  e.tests_done   ?? 0,
-        lastActive: e.last_active ? new Date(e.last_active).toLocaleDateString() : '—',
+        lastActive: e.last_active ? new Date(e.last_active).toLocaleDateString() : 'â€”',
         status:     e.status,
       })))
 
-      setLessons(lesRes.data.map((cl, i) => ({
-        id:       cl.lesson,
+      setModules(modRes.data.map((cl, i) => ({
+        id:       cl.module,
         num:      String(i + 1).padStart(2, '0'),
-        title:    cl.lesson_detail?.title ?? '—',
-        duration: cl.lesson_detail?.duration_minutes ? `${cl.lesson_detail.duration_minutes} min` : '—',
+        title:    cl.module_detail?.title ?? 'â€”',
+        duration: cl.module_detail?.duration_minutes ? `${cl.module_detail.duration_minutes} min` : 'â€”',
         completed:      Math.round((cl.completion_pct / 100) * (clsRes.data.student_count || 0)),
         total:          clsRes.data.student_count || 0,
       })))
@@ -46,8 +46,8 @@ export function useClassData(id) {
     }).finally(() => setLoading(false))
   }, [id])
 
-  function handleClassLessonUpdate(lessonId, data) {
-    setLessons(prev => prev.map(l => l.id !== lessonId ? l : {
+  function handleModuleUpdate(moduleId, data) {
+    setModules(prev => prev.map(l => l.id !== moduleId ? l : {
       ...l,
       title:    data.title ?? l.title,
       duration: data.duration_minutes != null ? `${data.duration_minutes} min` : l.duration,
@@ -77,9 +77,9 @@ export function useClassData(id) {
 
   return {
     cls, setCls,
-    students, lessons, tests, announcements,
+    students, modules, tests, announcements,
     loading,
-    handleClassLessonUpdate,
+    handleModuleUpdate,
     handleTestCreated,
     handleAnnouncementAdded,
     handleAnnouncementUpdated,

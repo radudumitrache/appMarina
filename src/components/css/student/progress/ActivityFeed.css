@@ -1,4 +1,4 @@
-.activity-list {
+﻿.activity-list {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -32,7 +32,7 @@
   border: 1px solid var(--border);
 }
 
-.activity-icon--lesson {
+.activity-icon--module {
   background: var(--accent-dim);
   border-color: var(--accent-rim);
   color: var(--accent);

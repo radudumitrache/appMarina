@@ -1,22 +1,23 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import EditorHeader        from './EditorHeader'
-import LessonList          from './LessonList'
-import LessonBank          from './LessonBank'
+import ModuleList          from './ModuleList'
+import ModuleBank          from './ModuleBank'
 import CourseDiplomasSection from './CourseDiplomasSection'
 
 export default function CourseEditor({
-  selected, selectedLessons, loadingDetail, saving,
+  selected, selectedModules, loadingDetail, saving,
   bankOpen, setBankOpen,
-  bankFiltered, bankSearch, setBankSearch, lessonBankCount,
+  bankFiltered, bankSearch, setBankSearch, moduleBankCount,
   classes = [],
   onTitleChange, onDescChange, onClassroomChange, onToggleStatus, onDeleteCourse,
-  onRemoveLesson, onMoveLesson, onAddLesson, onCreateLesson,
-  panelsBasePath = '/teacher/lessons',
+  onRemoveModule, onMoveModule, onAddModule, onCreateModule,
+  onAddTest, allTests = [],
+  panelsBasePath = '/teacher/modules',
   builderPath    = '/teacher/builder',
 }) {
   const navigate = useNavigate()
-  const [section,          setSection]          = useState('lessons')
+  const [section,          setSection]          = useState('modules')
   const [composingDiploma, setComposingDiploma] = useState(false)
 
   function handleSectionChange(s) {
@@ -37,28 +38,28 @@ export default function CourseEditor({
         onDeleteCourse={onDeleteCourse}
       />
 
-      {!selected.department_id && (
+      {!selected.department_ids?.length && (
         <div className="cb-warn-banner">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
             <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
-          Assign this course to a department to enable image and video uploads in lessons.
+          Assign this course to a department to enable image and video uploads in modules.
         </div>
       )}
 
       <div className="cb-divider" />
 
-      {/* ── Section tab bar ───────────────────────────────────────── */}
+      {/* â”€â”€ Section tab bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="cb-section-tabs">
         <div className="cb-section-tab-pills">
           <button
-            className={`cb-section-pill${section === 'lessons' ? ' cb-section-pill--active' : ''}`}
-            onClick={() => handleSectionChange('lessons')}
+            className={`cb-section-pill${section === 'modules' ? ' cb-section-pill--active' : ''}`}
+            onClick={() => handleSectionChange('modules')}
           >
-            Lessons
-            {selectedLessons?.length > 0 && (
-              <span className="cb-section-pill-count">{selectedLessons.length}</span>
+            Modules
+            {selectedModules?.length > 0 && (
+              <span className="cb-section-pill-count">{selectedModules.length}</span>
             )}
           </button>
           <button
@@ -69,17 +70,17 @@ export default function CourseEditor({
           </button>
         </div>
 
-        {section === 'lessons' && (
-          <button className="cb-add-lesson-btn" onClick={() => setBankOpen(true)}>
+        {section === 'modules' && (
+          <button className="cb-add-module-btn" onClick={() => setBankOpen(true)}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Add Lesson
+            Add Items
           </button>
         )}
 
-        {section === 'diplomas' && selected.department_id && (
-          <button className="cb-add-lesson-btn" onClick={() => setComposingDiploma(true)}>
+        {section === 'diplomas' && selected.department_ids?.length > 0 && (
+          <button className="cb-add-module-btn" onClick={() => setComposingDiploma(true)}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
@@ -88,41 +89,43 @@ export default function CourseEditor({
         )}
       </div>
 
-      {/* ── Sections ─────────────────────────────────────────────── */}
-      {section === 'lessons' && (
-        <LessonList
-          selectedLessons={selectedLessons}
+      {/* â”€â”€ Sections â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {section === 'modules' && (
+        <ModuleList
+          selectedModules={selectedModules}
 
           loadingDetail={loadingDetail}
-          onRemove={onRemoveLesson}
-          onMove={onMoveLesson}
-          onNavigatePanels={id => navigate(`${panelsBasePath}/${id}/panels`, { state: { backPath: builderPath, departmentId: selected.department_id ?? null } })}
-          onViewLesson={lesson => navigate(`${panelsBasePath}/${lesson.id}`, { state: { lesson } })}
+          onRemove={onRemoveModule}
+          onMove={onMoveModule}
+          onNavigatePanels={id => navigate(`${panelsBasePath}/${id}/panels`, { state: { backPath: builderPath, departmentId: selected.department_ids?.[0] ?? null } })}
+          onViewModule={module => navigate(`${panelsBasePath}/${module.moduleId ?? module.id}`, { state: { module } })}
         />
       )}
 
       {section === 'diplomas' && (
         <CourseDiplomasSection
           courseId={selected.id}
-          departmentId={selected.department_id ?? null}
+          departmentIds={selected.department_ids ?? []}
           composing={composingDiploma}
           onComposeDone={() => setComposingDiploma(false)}
         />
       )}
 
       {bankOpen && (
-        <LessonBank
+        <ModuleBank
           bankOpen={bankOpen}
           setBankOpen={setBankOpen}
-          lessonBankCount={lessonBankCount}
+          moduleBankCount={moduleBankCount}
           bankFiltered={bankFiltered}
           bankSearch={bankSearch}
           setBankSearch={setBankSearch}
-          selectedLessons={selectedLessons}
+          selectedModules={selectedModules}
 
           saving={saving}
-          onAdd={onAddLesson}
-          onCreateLesson={onCreateLesson}
+          onAdd={onAddModule}
+          onCreateModule={onCreateModule}
+          onAddTest={onAddTest}
+          allTests={allTests}
         />
       )}
 

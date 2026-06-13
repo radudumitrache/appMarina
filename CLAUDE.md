@@ -35,14 +35,14 @@ src/
       Login.css
       student/
         Dashboard.css
-        Lessons.css
+        Modules.css
       teacher/
         Dashboard.css
       admin/
         Dashboard.css
     student/
       Dashboard.jsx
-      Lessons.jsx
+      Modules.jsx
     teacher/
       Dashboard.jsx
     admin/
@@ -51,16 +51,16 @@ src/
     shared/
       NavBar.jsx             # Shared across roles — top bar for sidebar-layout pages
     student/
-      lessons/
-        LessonCard.jsx
+      modules/
+        ModuleCard.jsx
     teacher/                 # Role-specific components go here
     admin/                   # Role-specific components go here
     css/
       shared/
         NavBar.css
       student/
-        lessons/
-          LessonCard.css
+        modules/
+          ModuleCard.css
       teacher/
       admin/
 ```
@@ -132,7 +132,7 @@ The `design-system/` folder is the **authoritative spec**. Read the relevant fil
 
 Each role has its own dashboard with role-specific navigation tiles and accent color treatment:
 
-- **Student** — teal accent, tiles: Lessons, Tests, My Progress, My Class, Support
+- **Student** — teal accent, tiles: Modules, Tests, My Progress, My Class, Support
 - **Teacher** — gold accent, different tile set
 - **Admin** — red accent, different tile set
 
@@ -146,7 +146,7 @@ When building components that appear in multiple role contexts, accept a `role` 
 
 **Dashboard:** Full-screen background image (0.22–0.25 opacity) → control pill (glass) top-left → centered nav-tile grid (3+2 layout, `200×160px` tiles, `12px` gap).
 
-**Sidebar pages (e.g. Lessons):** `NavBar` (60px) → `.page-body` flex row → `aside.sidebar` (220px fixed) + `main.content` (flex 1, `28px 40px` padding).
+**Sidebar pages (e.g. Modules):** `NavBar` (60px) → `.page-body` flex row → `aside.sidebar` (220px fixed) + `main.content` (flex 1, `28px 40px` padding).
 
 ---
 

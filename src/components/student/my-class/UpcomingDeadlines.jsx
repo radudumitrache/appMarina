@@ -1,4 +1,4 @@
-import '../../css/student/my-class/UpcomingDeadlines.css'
+﻿import '../../css/student/my-class/UpcomingDeadlines.css'
 
 function daysUntil(iso) {
   return Math.ceil((new Date(iso) - new Date()) / (1000 * 60 * 60 * 24))
@@ -48,14 +48,14 @@ export default function UpcomingDeadlines({ items }) {
                     <line x1="3"  y1="10" x2="21" y2="10"/>
                   </svg>
                   {overdue
-                    ? `Overdue · ${formatDue(item.due)}`
+                    ? `Overdue Â· ${formatDue(item.due)}`
                     : soon
-                    ? `Due soon · ${formatDue(item.due)}`
+                    ? `Due soon Â· ${formatDue(item.due)}`
                     : `Due ${formatDue(item.due)}`}
                 </span>
               </div>
               <span className="deadline-type-tag">
-                {item.type === 'test' ? 'Test' : 'Lesson'}
+                {item.type === 'test' ? 'Test' : 'Module'}
               </span>
             </div>
           )

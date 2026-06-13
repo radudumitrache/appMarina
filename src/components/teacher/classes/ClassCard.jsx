@@ -1,4 +1,4 @@
-import '../../css/teacher/classes/ClassCard.css'
+﻿import '../../css/teacher/classes/ClassCard.css'
 
 const STATUS_LABELS = {
   active:   'Active',
@@ -30,14 +30,14 @@ export default function ClassCard({ cls, index, onView, onDelete }) {
           <span className="class-meta-value">{cls.students ?? 0}</span>
           <span className="class-meta-label">students</span>
         </div>
-        <span className="class-meta-sep">·</span>
+        <span className="class-meta-sep">Â·</span>
         <div className="class-meta-item">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
-          <span className="class-meta-value">{cls.lessonsTotal ?? 0}</span>
-          <span className="class-meta-label">lessons</span>
+          <span className="class-meta-value">{cls.modulesTotal ?? 0}</span>
+          <span className="class-meta-label">modules</span>
         </div>
       </div>
 

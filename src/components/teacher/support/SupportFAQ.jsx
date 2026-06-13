@@ -1,11 +1,11 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import '../../css/teacher/support/SupportFAQ.css'
 
 const FAQ = [
   { id: 1, q: 'How do I add students to my department?', a: 'Go to Departments, open the department detail, and use the student search field to enroll students by name or email.' },
-  { id: 2, q: 'How do I assign a lesson to a department?', a: 'Inside a department detail page, use the lesson search field to find and assign any available lesson.' },
-  { id: 3, q: 'Can students see lessons before I assign them?', a: 'Only public lessons are visible to all students. Department-visibility lessons are only accessible to students enrolled in a department they are assigned to.' },
-  { id: 4, q: 'How long does it take to get a support reply?', a: 'Our support team typically responds within 1–2 business days.' },
+  { id: 2, q: 'How do I assign a module to a department?', a: 'Inside a department detail page, use the module search field to find and assign any available module.' },
+  { id: 3, q: 'Can students see modules before I assign them?', a: 'Only public modules are visible to all students. Department-visibility modules are only accessible to students enrolled in a department they are assigned to.' },
+  { id: 4, q: 'How long does it take to get a support reply?', a: 'Our support team typically responds within 1â€“2 business days.' },
   { id: 5, q: 'Who do I contact for urgent technical issues?', a: 'Use the contact form below or email support@seafarer.edu for urgent matters.' },
 ]
 

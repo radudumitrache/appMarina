@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useParams, useNavigate } from 'react-router-dom'
 import NavBar from '../../components/admin/NavBar'
-import { getCourse, getCourses, getLessons, addCourseLesson, removeCourseLesson, reorderCourseLesson, updateCourse } from '../../api/lessons'
+import { getCourse, getCourses, getModules, addCourseModule, removeCourseModule, reorderCourseModule, updateCourse } from '../../api/modules'
+import { getTests } from '../../api/tests'
 import {
   getCourseDiplomas, createCourseDiploma, updateCourseDiploma,
   deleteCourseDiploma, awardCourseDiploma, revokeCourseDiploma,
@@ -11,7 +12,7 @@ import {
 import { getUsers } from '../../api/admin'
 import '../css/admin/CourseDetail.css'
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
   return (
@@ -33,22 +34,18 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
         </button>
 
         <div className="crd-cert">
-          {/* corner ornaments */}
           <span className="crd-cert-corner crd-cert-corner--tl" aria-hidden="true"/>
           <span className="crd-cert-corner crd-cert-corner--tr" aria-hidden="true"/>
           <span className="crd-cert-corner crd-cert-corner--bl" aria-hidden="true"/>
           <span className="crd-cert-corner crd-cert-corner--br" aria-hidden="true"/>
 
-          {/* logo */}
           <div className="crd-cert-logo">HANSA360</div>
           <div className="crd-cert-logo-sub">Maritime Training Platform</div>
 
-          {/* top rule */}
           <div className="crd-cert-rule" aria-hidden="true">
             <span className="crd-cert-rule-line"/><span className="crd-cert-rule-diamond"/><span className="crd-cert-rule-line"/>
           </div>
 
-          {/* anchor ornament */}
           <svg className="crd-cert-anchor" viewBox="0 0 64 64" fill="none" aria-hidden="true">
             <circle cx="32" cy="14" r="6" stroke="currentColor" strokeWidth="2"/>
             <line x1="32" y1="20" x2="32" y2="52" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -59,7 +56,6 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
             <line x1="44" y1="36" x2="48" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
 
-          {/* course selector */}
           {courses.length > 0 && (
             <div className="crd-cert-course-row">
               <label className="crd-cert-course-label">Course</label>
@@ -76,7 +72,6 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
             </div>
           )}
 
-          {/* title field */}
           <input
             className={`crd-cert-title-input${errors.title ? ' crd-cert-title-input--err' : ''}`}
             type="text"
@@ -89,7 +84,6 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
           />
           {errors.title && <p className="crd-cert-error">{errors.title}</p>}
 
-          {/* bottom rule */}
           <div className="crd-cert-rule" aria-hidden="true">
             <span className="crd-cert-rule-line"/><span className="crd-cert-rule-diamond"/><span className="crd-cert-rule-line"/>
           </div>
@@ -148,7 +142,7 @@ function AwardDiplomaModal({ diploma, students, onClose, onAward }) {
     <div className="crd-modal-backdrop" onClick={onClose}>
       <div className="crd-modal-card crd-modal-card--lg" onClick={e => e.stopPropagation()}>
         <div className="crd-modal-header">
-          <span className="crd-modal-title">Award — {diploma.title}</span>
+          <span className="crd-modal-title">Award – {diploma.title}</span>
           <button className="crd-modal-close" onClick={onClose}>✕</button>
         </div>
         <div className="crd-modal-body">
@@ -237,13 +231,18 @@ function DiplomaCard({ diploma, onEdit, onDelete, onAward }) {
   )
 }
 
-// ── Lesson Row ────────────────────────────────────────────────────────────────
+// ── Course Item Row (lesson or test) ─────────────────────────────────────────
 
-function LessonRow({ entry, index, dragOverIndex, onRemove, onDragStart, onDragOver, onDrop, onDragEnd }) {
+function CourseItemRow({ entry, index, dragOverIndex, onRemove, onNavigate, onDragStart, onDragOver, onDrop, onDragEnd }) {
   const isTarget = dragOverIndex === index
+  const isTest = !!entry.test
+  const title = isTest
+    ? (entry.test_detail?.title ?? `Test #${entry.test}`)
+    : (entry.module_detail?.title ?? `Module #${entry.module}`)
+
   return (
     <div
-      className={`crd-lesson-row${isTarget ? ' crd-lesson-row--drag-over' : ''}`}
+      className={`crd-module-row${isTarget ? ' crd-module-row--drag-over' : ''}`}
       draggable
       onDragStart={() => onDragStart(index)}
       onDragOver={e => { e.preventDefault(); onDragOver(index) }}
@@ -257,9 +256,20 @@ function LessonRow({ entry, index, dragOverIndex, onRemove, onDragStart, onDragO
           <line x1="8" y1="18" x2="16" y2="18"/>
         </svg>
       </span>
-      <span className="crd-lesson-order">{entry.order}</span>
-      <span className="crd-lesson-title">{entry.lesson_detail?.title ?? `Lesson #${entry.lesson}`}</span>
-      <button className="crd-lesson-remove" onClick={() => onRemove(entry)}>
+      <span className="crd-module-order">{entry.order}</span>
+      {isTest && <span className="crd-module-badge crd-module-badge--test">Test</span>}
+      <span className="crd-module-title">{title}</span>
+      {!isTest && (
+        <button className="crd-module-goto" onClick={() => onNavigate(entry)} title="Go to module">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Go to module
+        </button>
+      )}
+      <button className="crd-module-remove" onClick={() => onRemove(entry)}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -274,39 +284,42 @@ export default function CourseDetail() {
   const { id }   = useParams()
   const navigate = useNavigate()
 
-  const [course, setCourse]       = useState(null)
-  const [diplomas, setDiplomas]   = useState([])
-  const [students, setStudents]   = useState([])
-  const [allLessons, setAllLessons] = useState([])
+  const [course, setCourse]         = useState(null)
+  const [diplomas, setDiplomas]     = useState([])
+  const [students, setStudents]     = useState([])
+  const [allModules, setAllModules] = useState([])
+  const [allTests, setAllTests]     = useState([])
   const [allCourses, setAllCourses] = useState([])
-  const [loading, setLoading]     = useState(true)
+  const [loading, setLoading]       = useState(true)
 
-  const [diplomaModal, setDiplomaModal]   = useState(null) // null | 'create' | diploma obj
-  const [awardModal, setAwardModal]       = useState(null) // diploma obj
+  const [diplomaModal, setDiplomaModal]   = useState(null)
+  const [awardModal, setAwardModal]       = useState(null)
   const [deleteTarget, setDeleteTarget]   = useState(null)
   const [diplomaForm, setDiplomaForm]     = useState({ title: '', description: '', courseId: Number(id) })
   const [diplomaErrors, setDiplomaErrors] = useState({})
   const [diplomaSaving, setDiplomaSaving] = useState(false)
 
-  const [lessonSearch, setLessonSearch] = useState('')
-  const [lessonFocus, setLessonFocus]   = useState(false)
-  const [addingLesson, setAddingLesson] = useState(false)
-  const [dragIdx,     setDragIdx]      = useState(null)
-  const [dragOverIdx, setDragOverIdx]  = useState(null)
+  const [addMode, setAddMode]         = useState('lesson') // 'lesson' | 'test'
+  const [moduleSearch, setModuleSearch] = useState('')
+  const [moduleFocus, setModuleFocus]   = useState(false)
+  const [testSearch, setTestSearch]     = useState('')
+  const [testFocus, setTestFocus]       = useState(false)
+  const [dragIdx,     setDragIdx]       = useState(null)
+  const [dragOverIdx, setDragOverIdx]   = useState(null)
 
   useEffect(() => {
     getCourses().then(r => setAllCourses(r.data.map(c => ({ id: c.id, title: c.title })))).catch(() => {})
   }, [])
 
   useEffect(() => {
-    Promise.all([getCourse(id), getCourseDiplomas(id), getLessons()])
-      .then(([cRes, dRes, lRes]) => {
+    Promise.all([getCourse(id), getCourseDiplomas(id), getModules(), getTests()])
+      .then(([cRes, dRes, lRes, tRes]) => {
         const courseData = cRes.data
         setCourse(courseData)
         setDiplomas(dRes.data)
-        setAllLessons(lRes.data)
+        setAllModules(lRes.data)
+        setAllTests(tRes.data)
 
-        // Load students: from department enrollment if department-tied, else all students
         const departmentId = courseData.department_id
         if (departmentId) {
           return getClassStudents(departmentId).then(sRes => {
@@ -329,7 +342,7 @@ export default function CourseDetail() {
       .finally(() => setLoading(false))
   }, [id])
 
-  // ── Course status toggle ──────────────────────────────────────────────────
+  // ── Course status toggle ───────────────────────────────────────────────────
 
   const togglePublish = async () => {
     if (!course) return
@@ -340,7 +353,7 @@ export default function CourseDetail() {
     } catch {}
   }
 
-  // ── Diploma CRUD ──────────────────────────────────────────────────────────
+  // ── Diploma CRUD ───────────────────────────────────────────────────────────
 
   const openCreateDiploma = () => {
     setDiplomaForm({ title: '', description: '', courseId: Number(id) })
@@ -401,7 +414,7 @@ export default function CourseDetail() {
     setDeleteTarget(null)
   }
 
-  // ── Award / Revoke ────────────────────────────────────────────────────────
+  // ── Award / Revoke ─────────────────────────────────────────────────────────
 
   const handleAward = async (diploma, selectedSet, previousRecipients) => {
     const prevIds = new Set(previousRecipients.map(r => r.id))
@@ -423,44 +436,54 @@ export default function CourseDetail() {
     setAwardModal(null)
   }
 
-  // ── Add Lesson ────────────────────────────────────────────────────────────
+  // ── Add Lesson / Test ──────────────────────────────────────────────────────
 
-  const courseLessonIds = course?.lessons?.map(cl => cl.lesson) ?? []
+  const addedModuleIds = course?.modules?.filter(cl => cl.module).map(cl => cl.module) ?? []
+  const addedTestIds   = course?.modules?.filter(cl => cl.test).map(cl => cl.test) ?? []
 
-  // Only surface: public lessons OR lessons assigned to this course's classroom
-  const q = lessonSearch.trim().toLowerCase()
-  const availableLessons = allLessons.filter(l => {
-    if (courseLessonIds.includes(l.id)) return false
+  const qLesson = moduleSearch.trim().toLowerCase()
+  const availableModules = allModules.filter(l => {
+    if (addedModuleIds.includes(l.id)) return false
     const isPublic   = l.visibility === 'public'
     const isForClass = course?.department_id && l.department_id === course.department_id
     return isPublic || isForClass
   })
-  const filteredLessons = q
-    ? availableLessons.filter(l => (l.title || '').toLowerCase().includes(q))
-    : availableLessons
+  const filteredModules = qLesson
+    ? availableModules.filter(l => (l.title || '').toLowerCase().includes(qLesson))
+    : availableModules
+  const classSpecificModules = filteredModules.filter(l => l.department_id === course?.department_id)
+  const publicModules        = filteredModules.filter(l => l.visibility === 'public')
 
-  // Group: department-specific lessons first, then public
-  const classSpecificLessons = filteredLessons.filter(l => l.department_id === course?.department_id)
-  const publicLessons        = filteredLessons.filter(l => l.visibility === 'public')
+  const qTest = testSearch.trim().toLowerCase()
+  const availableTests = allTests.filter(t => !addedTestIds.includes(t.id))
+  const filteredTests  = qTest
+    ? availableTests.filter(t => (t.title || '').toLowerCase().includes(qTest))
+    : availableTests
 
-  const handleAddLesson = async lesson => {
+  const handleAddModule = async mod => {
     try {
-      const { data } = await addCourseLesson(id, { lesson: lesson.id })
-      setCourse(prev => ({
-        ...prev,
-        lessons: [...(prev.lessons ?? []), data],
-      }))
+      const { data } = await addCourseModule(id, { module: mod.id })
+      setCourse(prev => ({ ...prev, modules: [...(prev.modules ?? []), data] }))
     } catch {}
-    setLessonSearch('')
-    setLessonFocus(false)
+    setModuleSearch('')
+    setModuleFocus(false)
   }
 
-  const handleRemoveLesson = async entry => {
+  const handleAddTest = async test => {
     try {
-      await removeCourseLesson(id, entry.lesson)
+      const { data } = await addCourseModule(id, { test: test.id })
+      setCourse(prev => ({ ...prev, modules: [...(prev.modules ?? []), data] }))
+    } catch {}
+    setTestSearch('')
+    setTestFocus(false)
+  }
+
+  const handleRemoveModule = async entry => {
+    try {
+      await removeCourseModule(id, entry.id)
       setCourse(prev => ({
         ...prev,
-        lessons: (prev.lessons ?? []).filter(cl => cl.id !== entry.id),
+        modules: (prev.modules ?? []).filter(cl => cl.id !== entry.id),
       }))
     } catch {}
   }
@@ -471,26 +494,23 @@ export default function CourseDetail() {
     setDragOverIdx(null)
     if (fromIdx == null || fromIdx === toIdx) return
 
-    const lessons = [...(course.lessons ?? [])]
-    const [moved] = lessons.splice(fromIdx, 1)
-    lessons.splice(toIdx, 0, moved)
-    const reordered = lessons.map((l, i) => ({ ...l, order: i + 1 }))
+    const items = [...(course.modules ?? [])]
+    const [moved] = items.splice(fromIdx, 1)
+    items.splice(toIdx, 0, moved)
+    const reordered = items.map((l, i) => ({ ...l, order: i + 1 }))
 
-    // Optimistic update
-    setCourse(prev => ({ ...prev, lessons: reordered }))
+    setCourse(prev => ({ ...prev, modules: reordered }))
 
-    // Persist changed positions in parallel
     try {
       await Promise.all(
-        reordered.map(l => reorderCourseLesson(id, { lesson_id: l.lesson, new_order: l.order }))
+        reordered.map(l => reorderCourseModule(id, { coursemodule_id: l.id, new_order: l.order }))
       )
     } catch {
-      // Revert on failure
-      setCourse(prev => ({ ...prev, lessons: course.lessons }))
+      setCourse(prev => ({ ...prev, modules: course.modules }))
     }
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -541,81 +561,136 @@ export default function CourseDetail() {
       </div>
 
       <div className="crd-body">
-        {/* Left column: Lessons */}
-        <section className="crd-section crd-section--lessons">
+        {/* Left column: Modules */}
+        <section className="crd-section crd-section--modules">
           <div className="crd-section-header">
-            <h2 className="crd-section-title">Lessons</h2>
-            <span className="crd-section-count">{course.lessons?.length ?? 0}</span>
+            <h2 className="crd-section-title">Modules</h2>
+            <span className="crd-section-count">{course.modules?.length ?? 0}</span>
           </div>
 
-          <div className="crd-lesson-search-wrap" ref={null}>
-            <input
-              className="crd-form-input"
-              placeholder="Search lessons to add…"
-              value={lessonSearch}
-              onChange={e => setLessonSearch(e.target.value)}
-              onFocus={() => setLessonFocus(true)}
-              onBlur={() => setTimeout(() => setLessonFocus(false), 150)}
-            />
-            {lessonFocus && (
-              <div className="crd-lesson-dropdown">
-                {filteredLessons.length === 0 ? (
-                  <p className="crd-lesson-no-results">
-                    {q ? 'No lessons match your search.' : 'No lessons available to add.'}
-                  </p>
-                ) : (
-                  <>
-                    {classSpecificLessons.length > 0 && (
-                      <>
-                        <div className="crd-lesson-group-label">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-                          </svg>
-                          Department lessons
-                        </div>
-                        {classSpecificLessons.slice(0, 6).map(l => (
-                          <button key={l.id} className="crd-lesson-option" onMouseDown={() => handleAddLesson(l)}>
-                            <span className="crd-lesson-option-title">{l.title}</span>
-                            <span className="crd-lesson-badge crd-lesson-badge--class">Department</span>
-                          </button>
-                        ))}
-                      </>
-                    )}
-                    {publicLessons.length > 0 && (
-                      <>
-                        <div className="crd-lesson-group-label">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                          </svg>
-                          Public lessons
-                        </div>
-                        {publicLessons.slice(0, 6).map(l => (
-                          <button key={l.id} className="crd-lesson-option" onMouseDown={() => handleAddLesson(l)}>
-                            <span className="crd-lesson-option-title">{l.title}</span>
-                            <span className="crd-lesson-badge crd-lesson-badge--public">Public</span>
-                          </button>
-                        ))}
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
+          {/* Add-type tabs */}
+          <div className="crd-add-tabs">
+            <button
+              className={`crd-add-tab${addMode === 'lesson' ? ' crd-add-tab--active' : ''}`}
+              onClick={() => { setAddMode('lesson'); setModuleSearch(''); setTestSearch('') }}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              Add Lesson
+            </button>
+            <button
+              className={`crd-add-tab${addMode === 'test' ? ' crd-add-tab--active' : ''}`}
+              onClick={() => { setAddMode('test'); setModuleSearch(''); setTestSearch('') }}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+              Add Test
+            </button>
           </div>
 
-          <div className="crd-lessons-list">
-            {(course.lessons?.length ?? 0) === 0 ? (
-              <p className="crd-empty-msg">No lessons added yet.</p>
+          {/* Search dropdown */}
+          {addMode === 'lesson' ? (
+            <div className="crd-module-search-wrap">
+              <input
+                className="crd-form-input"
+                placeholder="Search lessons to add…"
+                value={moduleSearch}
+                onChange={e => setModuleSearch(e.target.value)}
+                onFocus={() => setModuleFocus(true)}
+                onBlur={() => setTimeout(() => setModuleFocus(false), 150)}
+              />
+              {moduleFocus && (
+                <div className="crd-module-dropdown">
+                  {filteredModules.length === 0 ? (
+                    <p className="crd-module-no-results">
+                      {qLesson ? 'No lessons match your search.' : 'No lessons available to add.'}
+                    </p>
+                  ) : (
+                    <>
+                      {classSpecificModules.length > 0 && (
+                        <>
+                          <div className="crd-module-group-label">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                            </svg>
+                            Department lessons
+                          </div>
+                          {classSpecificModules.slice(0, 6).map(l => (
+                            <button key={l.id} className="crd-module-option" onMouseDown={() => handleAddModule(l)}>
+                              <span className="crd-module-option-title">{l.title}</span>
+                              <span className="crd-module-badge crd-module-badge--class">Department</span>
+                            </button>
+                          ))}
+                        </>
+                      )}
+                      {publicModules.length > 0 && (
+                        <>
+                          <div className="crd-module-group-label">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                            </svg>
+                            Public modules
+                          </div>
+                          {publicModules.slice(0, 6).map(l => (
+                            <button key={l.id} className="crd-module-option" onMouseDown={() => handleAddModule(l)}>
+                              <span className="crd-module-option-title">{l.title}</span>
+                              <span className="crd-module-badge crd-module-badge--public">Public</span>
+                            </button>
+                          ))}
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="crd-module-search-wrap">
+              <input
+                className="crd-form-input"
+                placeholder="Search tests to add…"
+                value={testSearch}
+                onChange={e => setTestSearch(e.target.value)}
+                onFocus={() => setTestFocus(true)}
+                onBlur={() => setTimeout(() => setTestFocus(false), 150)}
+              />
+              {testFocus && (
+                <div className="crd-module-dropdown">
+                  {filteredTests.length === 0 ? (
+                    <p className="crd-module-no-results">
+                      {qTest ? 'No tests match your search.' : 'No tests available to add.'}
+                    </p>
+                  ) : (
+                    filteredTests.slice(0, 10).map(t => (
+                      <button key={t.id} className="crd-module-option" onMouseDown={() => handleAddTest(t)}>
+                        <span className="crd-module-option-title">{t.title}</span>
+                        <span className="crd-module-badge crd-module-badge--test">{t.status}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="crd-modules-list">
+            {(course.modules?.length ?? 0) === 0 ? (
+              <p className="crd-empty-msg">No modules added yet.</p>
             ) : (
-              course.lessons.map((entry, index) => (
-                <LessonRow
+              course.modules.map((entry, index) => (
+                <CourseItemRow
                   key={entry.id}
                   entry={entry}
                   index={index}
                   dragOverIndex={dragOverIdx}
-                  onRemove={handleRemoveLesson}
+                  onRemove={handleRemoveModule}
+                  onNavigate={e => navigate(`/admin/modules/${e.module}/panels`)}
                   onDragStart={i => setDragIdx(i)}
                   onDragOver={i => setDragOverIdx(i)}
                   onDrop={handleDrop}
@@ -657,7 +732,6 @@ export default function CourseDetail() {
         </section>
       </div>
 
-      {/* Diploma create/edit modal */}
       {diplomaModal !== null && (
         <DiplomaFormModal
           mode={diplomaModal === 'create' ? 'create' : 'edit'}
@@ -671,7 +745,6 @@ export default function CourseDetail() {
         />
       )}
 
-      {/* Award modal */}
       {awardModal && (
         <AwardDiplomaModal
           diploma={awardModal}
@@ -681,7 +754,6 @@ export default function CourseDetail() {
         />
       )}
 
-      {/* Delete confirm */}
       {deleteTarget && (
         <div className="crd-modal-backdrop" onClick={() => setDeleteTarget(null)}>
           <div className="crd-modal-card crd-modal-card--sm" onClick={e => e.stopPropagation()}>

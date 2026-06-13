@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NavBar             from '../../components/student/NavBar'
 import ProgressHeader     from '../../components/student/progress/ProgressHeader'
 import ProgressSkeleton   from '../../components/student/progress/ProgressSkeleton'
 import ProgressStatCards  from '../../components/student/progress/ProgressStatCards'
-import LessonsProgress    from '../../components/student/progress/LessonsProgress'
+import ModulesProgress    from '../../components/student/progress/ModulesProgress'
 import TestResults        from '../../components/student/progress/TestResults'
 import ActivityFeed       from '../../components/student/progress/ActivityFeed'
 import DiplomasSection    from '../../components/student/progress/DiplomasSection'
-import { getProgress, getLessonProgress, getTestResults, getActivity } from '../../api/progress'
+import { getProgress, getModuleProgress, getTestResults, getActivity } from '../../api/progress'
 import { getMyDiplomas } from '../../api/departments'
 import { getMe }         from '../../api/users'
 import '../css/student/Progress.css'
@@ -21,7 +21,7 @@ export default function Progress() {
   const navigate = useNavigate()
 
   const [summary,     setSummary]     = useState(null)
-  const [lessons,     setLessons]     = useState([])
+  const [modules,     setModules]     = useState([])
   const [testResults, setTestResults] = useState([])
   const [activity,    setActivity]    = useState([])
   const [diplomas,    setDiplomas]    = useState([])
@@ -29,10 +29,10 @@ export default function Progress() {
   const [loading,     setLoading]     = useState(true)
 
   useEffect(() => {
-    Promise.all([getProgress(), getLessonProgress(), getTestResults(), getActivity(), getMyDiplomas(), getMe()])
-      .then(([progRes, lessonsRes, testsRes, actRes, dipRes, meRes]) => {
+    Promise.all([getProgress(), getModuleProgress(), getTestResults(), getActivity(), getMyDiplomas(), getMe()])
+      .then(([progRes, modulesRes, testsRes, actRes, dipRes, meRes]) => {
         setSummary(progRes.data)
-        setLessons(lessonsRes.data ?? [])
+        setModules(modulesRes.data ?? [])
         setTestResults(testsRes.data.map(s => ({
           id:      s.id,
           testId:  s.test,
@@ -71,9 +71,9 @@ export default function Progress() {
   const statCards = [
     {
       label:  'Lessons Complete',
-      value:  String(summary.lessons_complete),
-      suffix: `/${summary.lessons_total}`,
-      sub:    `${summary.lessons_total > 0 ? Math.round((summary.lessons_complete / summary.lessons_total) * 100) : 0}% of curriculum`,
+      value:  String(summary.modules_complete),
+      suffix: `/${summary.modules_total}`,
+      sub:    `${summary.modules_total > 0 ? Math.round((summary.modules_complete / summary.modules_total) * 100) : 0}% of curriculum`,
     },
     {
       label:  'Avg Test Grade',
@@ -105,7 +105,7 @@ export default function Progress() {
           <ProgressStatCards cards={statCards} />
 
           <div className="progress-grid">
-            <LessonsProgress lessons={lessons} />
+            <ModulesProgress modules={modules} />
             <TestResults
               results={testResults}
               onViewAll={() => navigate('/student/tests')}
@@ -118,7 +118,7 @@ export default function Progress() {
           <ActivityFeed
             items={activity}
             onSelect={item => {
-              if (item.type === 'lesson') navigate('/student/lessons')
+              if (item.type === 'module') navigate('/student/modules')
               else if (item.type === 'test' && item.refId) navigate(`/student/submissions/${item.refId}/review`)
             }}
           />

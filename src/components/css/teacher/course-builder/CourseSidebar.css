@@ -1,4 +1,4 @@
-.cb-sidebar {
+﻿.cb-sidebar {
   width: 240px;
   flex-shrink: 0;
   background: var(--surface-1);
@@ -141,7 +141,7 @@
   color: var(--text-3);
 }
 
-/* ── Course groups ───────────────────────────────────────────────────────── */
+/* â”€â”€ Course groups â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .cb-course-group {
   display: flex;
   flex-direction: column;
@@ -176,13 +176,13 @@
   flex-shrink: 0;
 }
 
-/* ── Bottom ─────────────────────────────────────────────────────────────── */
+/* â”€â”€ Bottom â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .cb-sidebar-bottom {
   flex-shrink: 0;
   border-top: 1px solid var(--border);
 }
 
-.cb-all-lessons-btn {
+.cb-all-modules-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -197,10 +197,10 @@
   cursor: pointer;
   transition: background var(--duration-fast), color var(--duration-fast);
 }
-.cb-all-lessons-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-2); }
-.cb-all-lessons-btn--active { color: var(--gold); background: var(--gold-dim); }
+.cb-all-modules-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-2); }
+.cb-all-modules-btn--active { color: var(--gold); background: var(--gold-dim); }
 
-.cb-all-lessons-count {
+.cb-all-modules-count {
   margin-left: auto;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -209,7 +209,7 @@
   padding: 1px 6px;
   border-radius: 99px;
 }
-.cb-all-lessons-btn--active .cb-all-lessons-count { background: rgba(217,160,48,0.15); color: var(--gold); }
+.cb-all-modules-btn--active .cb-all-modules-count { background: rgba(217,160,48,0.15); color: var(--gold); }
 
 .cb-sidebar-footer {
   padding: 10px 16px;
@@ -225,7 +225,7 @@
 }
 
 
-/* ─── Mobile collapse ────────────────────────────────────────────────────── */
+/* â”€â”€â”€ Mobile collapse â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (max-width: 768px) {
   .cb-sidebar {
     position: fixed;

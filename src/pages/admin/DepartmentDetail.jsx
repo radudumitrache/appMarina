@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import NavBar from '../../components/admin/NavBar'
 import ClassDetailTopbar from '../../components/admin/class-detail/ClassDetailTopbar'
@@ -8,11 +8,10 @@ import EditDetailsModal from '../../components/admin/class-detail/EditDetailsMod
 import {
   getDepartment, updateDepartment,
   getClassStudents, enrollStudent, removeStudent,
-  getClassLessons, assignLesson, unassignLesson,
   getClassTests,
 } from '../../api/departments'
 import { getUsers, getTeachers } from '../../api/admin'
-import { getLessons } from '../../api/lessons'
+import { getCourses } from '../../api/modules'
 import { getTests, updateTest } from '../../api/tests'
 import Sk from '../../components/shared/Skeleton'
 import '../css/admin/ClassDetail.css'
@@ -23,39 +22,35 @@ export default function AdminDepartmentDetail() {
 
   const [cls, setCls]                   = useState(null)
   const [students, setStudents]         = useState([])
-  const [lessons, setLessons]           = useState([])
+  const [courses, setCourses]           = useState([])
   const [tests, setTests]               = useState([])
   const [allStudents, setAllStudents]   = useState([])
-  const [allLessons, setAllLessons]     = useState([])
   const [allTests, setAllTests]         = useState([])
   const [teachers, setTeachers]         = useState([])
   const [loading, setLoading]           = useState(true)
   const [editMode, setEditMode]         = useState(false)
   const [editForm, setEditForm]         = useState(null)
   const [studentSearch, setStudentSearch] = useState('')
-  const [lessonSearch,  setLessonSearch]  = useState('')
   const [testSearch,    setTestSearch]    = useState('')
   const [studentFocus,  setStudentFocus]  = useState(false)
-  const [lessonFocus,   setLessonFocus]   = useState(false)
   const [testFocus,     setTestFocus]     = useState(false)
 
   useEffect(() => {
     Promise.all([
       getDepartment(id),
       getClassStudents(id),
-      getClassLessons(id),
+      getCourses(),
       getClassTests(id),
       getUsers({ 'userprofile__role': 'student' }),
-      getLessons(),
       getTests(),
       getTeachers(),
-    ]).then(([clsRes, stuRes, lesRes, tstRes, allStuRes, allLesRes, allTstRes, tchRes]) => {
+    ]).then(([clsRes, stuRes, coursesRes, tstRes, allStuRes, allTstRes, tchRes]) => {
+      const deptId = Number(id)
       setCls(clsRes.data)
       setStudents(stuRes.data.map(e => ({ id: e.student, name: e.student_name, email: e.student_email })))
-      setLessons(lesRes.data.map(cl => ({ id: cl.lesson, title: cl.lesson_detail.title })))
+      setCourses(coursesRes.data.filter(c => c.department_id === deptId).map(c => ({ id: c.id, title: c.title, status: c.status })))
       setTests(tstRes.data.map(t => ({ id: t.id, title: t.title })))
       setAllStudents(allStuRes.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })))
-      setAllLessons(allLesRes.data.map(l => ({ id: l.id, title: l.title })))
       setAllTests(allTstRes.data.map(t => ({ id: t.id, title: t.title })))
       setTeachers(tchRes.data)
     }).finally(() => setLoading(false))
@@ -86,7 +81,6 @@ export default function AdminDepartmentDetail() {
   const handleEditChange = (field, value) => setEditForm(f => ({ ...f, [field]: value }))
 
   const enrolledIds     = useMemo(() => new Set(students.map(s => s.id)), [students])
-  const assignedIds     = useMemo(() => new Set(lessons.map(l => l.id)),  [lessons])
   const assignedTestIds = useMemo(() => new Set(tests.map(t => t.id)),    [tests])
 
   const studentSuggestions = useMemo(() => {
@@ -94,12 +88,6 @@ export default function AdminDepartmentDetail() {
     if (!q) return []
     return allStudents.filter(s => !enrolledIds.has(s.id) && (s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)))
   }, [studentSearch, allStudents, enrolledIds])
-
-  const lessonSuggestions = useMemo(() => {
-    const q = lessonSearch.trim().toLowerCase()
-    if (!q) return []
-    return allLessons.filter(l => !assignedIds.has(l.id) && l.title.toLowerCase().includes(q))
-  }, [lessonSearch, allLessons, assignedIds])
 
   const testSuggestions = useMemo(() => {
     const q = testSearch.trim().toLowerCase()
@@ -121,23 +109,6 @@ export default function AdminDepartmentDetail() {
       await removeStudent(id, uid)
     } catch {
       setStudents(prev => [...prev])
-    }
-  }
-
-  const addLesson = async l => {
-    setLessonSearch('')
-    try {
-      await assignLesson(id, { lesson: l.id })
-      setLessons(prev => [...prev, l])
-    } catch {}
-  }
-
-  const handleRemoveLesson = async lid => {
-    setLessons(prev => prev.filter(l => l.id !== lid))
-    try {
-      await unassignLesson(id, lid)
-    } catch {
-      setLessons(prev => [...prev])
     }
   }
 
@@ -222,7 +193,7 @@ export default function AdminDepartmentDetail() {
         onEdit={openEdit}
       />
 
-      <ClassDetailHeader cls={cls} studentCount={students.length} lessonCount={lessons.length} testCount={tests.length} />
+      <ClassDetailHeader cls={cls} studentCount={students.length} courseCount={courses.length} testCount={tests.length} />
 
       <div className="cd-panels">
         <ManagementPanel
@@ -231,7 +202,7 @@ export default function AdminDepartmentDetail() {
           items={students}
           searchValue={studentSearch}
           onSearchChange={setStudentSearch}
-          searchPlaceholder="Search students to add…"
+          searchPlaceholder="Search students to addâ€¦"
           suggestions={studentSuggestions}
           isFocused={studentFocus}
           onFocus={() => setStudentFocus(true)}
@@ -241,18 +212,11 @@ export default function AdminDepartmentDetail() {
           onSelectItem={s => navigate(`/admin/students/${s.id}/progress`)}
         />
         <ManagementPanel
-          title="Lessons"
-          type="lesson"
-          items={lessons}
-          searchValue={lessonSearch}
-          onSearchChange={setLessonSearch}
-          searchPlaceholder="Search lessons to assign…"
-          suggestions={lessonSuggestions}
-          isFocused={lessonFocus}
-          onFocus={() => setLessonFocus(true)}
-          onBlur={() => setTimeout(() => setLessonFocus(false), 150)}
-          onAdd={addLesson}
-          onRemove={handleRemoveLesson}
+          title="Courses"
+          type="course"
+          items={courses}
+          readOnly
+          onSelectItem={c => navigate(`/admin/courses/${c.id}`)}
         />
         <ManagementPanel
           title="Tests"
@@ -260,7 +224,7 @@ export default function AdminDepartmentDetail() {
           items={tests}
           searchValue={testSearch}
           onSearchChange={setTestSearch}
-          searchPlaceholder="Search tests to assign…"
+          searchPlaceholder="Search tests to assignâ€¦"
           suggestions={testSuggestions}
           isFocused={testFocus}
           onFocus={() => setTestFocus(true)}

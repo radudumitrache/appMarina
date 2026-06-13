@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { getClassAssignments } from '../../../api/departments'
 import { getAllSubmissions }    from '../../../api/tests'
 import Sk from '../../shared/Skeleton'
@@ -37,8 +37,8 @@ export default function StudentDrawer({ student, onClose }) {
       .finally(() => setLoadingTests(false))
   }, [student.id, student.departmentId])
 
-  const pct = student.lessonsTotal > 0
-    ? Math.round((student.lessonsDone / student.lessonsTotal) * 100)
+  const pct = student.modulesTotal > 0
+    ? Math.round((student.modulesDone / student.modulesTotal) * 100)
     : 0
 
   return (
@@ -66,9 +66,9 @@ export default function StudentDrawer({ student, onClose }) {
 
         <div className="sd-body">
 
-          {/* ── Lesson Progress ─────────────────────────────── */}
+          {/* â”€â”€ Module Progress â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <section className="sd-section">
-            <span className="sd-section-title">Lesson Progress</span>
+            <span className="sd-section-title">Module Progress</span>
 
             <div className="sd-progress-row">
               <div className="sd-bar-track">
@@ -80,15 +80,15 @@ export default function StudentDrawer({ student, onClose }) {
               <span className="sd-pct">{pct}%</span>
             </div>
 
-            <div className="sd-lesson-count">
-              {student.lessonsDone} of {student.lessonsTotal} lessons completed
+            <div className="sd-module-count">
+              {student.modulesDone} of {student.modulesTotal} modules completed
             </div>
 
           </section>
 
           <div className="sd-divider" />
 
-          {/* ── Tests ───────────────────────────────────────── */}
+          {/* â”€â”€ Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <section className="sd-section">
             <span className="sd-section-title">Tests</span>
 

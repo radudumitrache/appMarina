@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { createCourse, addCourseLesson } from '../../../api/lessons'
-import '../../css/teacher/class-detail/AssignLessonModal.css'
+﻿import { useState } from 'react'
+import { createCourse, addCourseModule } from '../../../api/modules'
+import '../../css/teacher/class-detail/AssignModuleModal.css'
 
-export default function CreateCourseModal({ lessons = [], onClose, onCreated }) {
+export default function CreateCourseModal({ classModules = [], onClose, onCreated }) {
   const [title, setTitle]           = useState('')
   const [desc, setDesc]             = useState('')
   const [selected, setSelected]     = useState(new Set())
@@ -21,7 +21,7 @@ export default function CreateCourseModal({ lessons = [], onClose, onCreated }) 
     setSaving(true)
     try {
       const { data: course } = await createCourse({ title: title.trim(), description: desc.trim() })
-      await Promise.all([...selected].map(lessonId => addCourseLesson(course.id, { lesson_id: lessonId })))
+      await Promise.all([...selected].map(moduleId => addCourseModule(course.id, { module_id: moduleId })))
       onCreated(course)
       onClose()
     } catch {
@@ -61,18 +61,18 @@ export default function CreateCourseModal({ lessons = [], onClose, onCreated }) 
             <label className="alm-label">Description</label>
             <textarea
               className="alm-input alm-textarea"
-              placeholder="Short description of this course…"
+              placeholder="Short description of this courseâ€¦"
               value={desc}
               onChange={e => setDesc(e.target.value)}
               rows={2}
             />
           </div>
 
-          {lessons.length > 0 && (
+          {classModules.length > 0 && (
             <div className="alm-form-row">
-              <label className="alm-label">Add class lessons to this course</label>
-              <div className="alm-lesson-checklist">
-                {lessons.map(l => (
+              <label className="alm-label">Add class modules to this course</label>
+              <div className="alm-module-checklist">
+                {classModules.map(l => (
                   <label key={l.id} className={`alm-check-row ${selected.has(l.id) ? 'alm-check-row--active' : ''}`}>
                     <input
                       type="checkbox"
@@ -91,7 +91,7 @@ export default function CreateCourseModal({ lessons = [], onClose, onCreated }) 
         <div className="alm-footer">
           <button className="alm-btn-ghost" onClick={onClose}>Cancel</button>
           <button className="alm-btn-primary" onClick={handleSave} disabled={saving}>
-            {saving ? 'Creating…' : 'Create Course'}
+            {saving ? 'Creatingâ€¦' : 'Create Course'}
           </button>
         </div>
       </div>

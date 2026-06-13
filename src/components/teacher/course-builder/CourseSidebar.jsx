@@ -1,9 +1,9 @@
-import { totalDuration } from './courseBuilderUtils'
+﻿import { totalDuration } from './courseBuilderUtils'
 import '../../css/teacher/course-builder/CourseSidebar.css'
 
-function CourseItem({ c, selectedId, courseLessonsMap, onSelect }) {
-  const lessons = courseLessonsMap[c.id]
-  const count   = lessons?.length ?? (c.lesson_count ?? 0)
+function CourseItem({ c, selectedId, courseModulesMap, onSelect }) {
+  const mods = courseModulesMap[c.id]
+  const count   = mods?.length ?? (c.module_count ?? 0)
   return (
     <button
       key={c.id}
@@ -17,8 +17,8 @@ function CourseItem({ c, selectedId, courseLessonsMap, onSelect }) {
         </span>
       </div>
       <div className="cb-course-item-meta">
-        <span>{count} lesson{count !== 1 ? 's' : ''}</span>
-        {lessons && lessons.length > 0 && <span>{totalDuration(lessons)}</span>}
+        <span>{count} module{count !== 1 ? 's' : ''}</span>
+        {mods && mods.length > 0 && <span>{totalDuration(mods)}</span>}
       </div>
     </button>
   )
@@ -29,26 +29,26 @@ export default function CourseSidebar({
   error,
   visible,
   selectedId,
-  courseLessonsMap,
+  courseModulesMap,
   search,
   setSearch,
   onSelect,
   onNew,
   totalCount,
   publishedCount,
-  lessonBankCount,
-  onShowAllLessons,
-  showingAllLessons,
+  moduleBankCount,
+  onShowAllModules,
+  showingAllModules,
   classes = [],
   className = '',
 }) {
   const groups = (() => {
     const result = []
     for (const cls of classes) {
-      const items = visible.filter(c => c.department_id === cls.id)
+      const items = visible.filter(c => c.department_ids?.includes(cls.id))
       if (items.length > 0) result.push({ label: cls.name, code: cls.code, items })
     }
-    const unassigned = visible.filter(c => !c.department_id || !classes.some(cls => cls.id === c.department_id))
+    const unassigned = visible.filter(c => !c.department_ids?.length)
     if (unassigned.length > 0) result.push({ label: 'Unassigned', code: null, items: unassigned })
     return result
   })()
@@ -63,7 +63,7 @@ export default function CourseSidebar({
           <input
             className="cb-sidebar-search"
             type="text"
-            placeholder="Search courses…"
+            placeholder="Search coursesâ€¦"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -77,7 +77,7 @@ export default function CourseSidebar({
       </div>
 
       <nav className="cb-course-nav">
-        {loading && <div className="cb-sidebar-empty">Loading…</div>}
+        {loading && <div className="cb-sidebar-empty">Loadingâ€¦</div>}
         {error && !loading && <div className="cb-sidebar-empty cb-sidebar-empty--error">{error}</div>}
         {!loading && !error && visible.length === 0 && (
           <div className="cb-sidebar-empty">No courses yet</div>
@@ -90,27 +90,27 @@ export default function CourseSidebar({
                   {group.code && <span className="cb-course-group-code">{group.code}</span>}
                 </div>
                 {group.items.map(c => (
-                  <CourseItem key={c.id} c={c} selectedId={selectedId} courseLessonsMap={courseLessonsMap} onSelect={onSelect} />
+                  <CourseItem key={c.id} c={c} selectedId={selectedId} courseModulesMap={courseModulesMap} onSelect={onSelect} />
                 ))}
               </div>
             ))
           : visible.map(c => (
-              <CourseItem key={c.id} c={c} selectedId={selectedId} courseLessonsMap={courseLessonsMap} onSelect={onSelect} />
+              <CourseItem key={c.id} c={c} selectedId={selectedId} courseModulesMap={courseModulesMap} onSelect={onSelect} />
             ))
         }
       </nav>
 
       <div className="cb-sidebar-bottom">
         <button
-          className={`cb-all-lessons-btn ${showingAllLessons ? 'cb-all-lessons-btn--active' : ''}`}
-          onClick={onShowAllLessons}
+          className={`cb-all-modules-btn ${showingAllModules ? 'cb-all-modules-btn--active' : ''}`}
+          onClick={onShowAllModules}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
-          All Lessons
-          <span className="cb-all-lessons-count">{lessonBankCount}</span>
+          All Modules
+          <span className="cb-all-modules-count">{moduleBankCount}</span>
         </button>
         <div className="cb-sidebar-footer">
           <span className="cb-sidebar-footer-num">{publishedCount}</span>

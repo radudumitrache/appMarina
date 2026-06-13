@@ -119,6 +119,9 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setSize(w, h)
+    renderer.outputColorSpace    = THREE.SRGBColorSpace
+    renderer.toneMapping         = THREE.LinearToneMapping
+    renderer.toneMappingExposure = 0.80
     container.appendChild(renderer.domElement)
 
     // Scene + camera
@@ -128,7 +131,8 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
 
     // Panorama sphere — scale(-1,1,1) reverses UV winding so the texture
     // reads left-to-right from inside without mirroring (FrontSide renders correctly after the flip)
-    const geometry = new THREE.SphereGeometry(500, 60, 40)
+    // 128×64 segments is the panorama-viewer standard: smooth curvature with no polygon faceting
+    const geometry = new THREE.SphereGeometry(500, 128, 64)
     geometry.scale(-1, 1, 1)
     const material = new THREE.MeshBasicMaterial()
     scene.add(new THREE.Mesh(geometry, material))
@@ -562,8 +566,19 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
 
     if (!src) { setLoading(false); return }
 
-    const swapTexture = (texture) => {
-      texture.colorSpace = THREE.SRGBColorSpace
+    const swapTexture = (texture, isVideoTexture = false) => {
+      const r = stateRef.current.renderer
+      texture.colorSpace     = THREE.SRGBColorSpace
+      texture.anisotropy     = r ? r.capabilities.getMaxAnisotropy() : 1
+      texture.magFilter      = THREE.LinearFilter
+      if (isVideoTexture) {
+        // VideoTexture never has mipmaps — trilinear filter would silently degrade
+        texture.minFilter      = THREE.LinearFilter
+        texture.generateMipmaps = false
+      } else {
+        texture.generateMipmaps = true
+        texture.minFilter      = THREE.LinearMipmapLinearFilter
+      }
       material.map = texture
       material.needsUpdate = true
       setLoading(false)
@@ -583,7 +598,7 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       const texture = new THREE.VideoTexture(video)
       video.addEventListener('canplay', () => {
         video.play().catch(() => {})
-        swapTexture(texture)
+        swapTexture(texture, true)
       }, { once: true })
       video.addEventListener('error', () => setLoading(false), { once: true })
       video.load()

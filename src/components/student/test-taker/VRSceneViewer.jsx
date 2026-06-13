@@ -129,16 +129,16 @@ function makeMarkerCanvas(type, answered, color) {
     ctx.lineTo(cx - half,   cy)         // left
     ctx.closePath()
     ctx.stroke()
-    // Arrow pointing right inside the diamond
+    // Arrow pointing up (north) inside the diamond
     const aw = d * 0.14
     ctx.lineWidth = d * 0.092
     ctx.beginPath()
-    ctx.moveTo(cx - aw * 0.9, cy)
-    ctx.lineTo(cx + aw * 0.7, cy)
-    ctx.moveTo(cx + aw * 0.7, cy)
-    ctx.lineTo(cx + aw * 0.1, cy - aw * 0.6)
-    ctx.moveTo(cx + aw * 0.7, cy)
-    ctx.lineTo(cx + aw * 0.1, cy + aw * 0.6)
+    ctx.moveTo(cx, cy + aw * 0.9)
+    ctx.lineTo(cx, cy - aw * 0.7)
+    ctx.moveTo(cx, cy - aw * 0.7)
+    ctx.lineTo(cx - aw * 0.6, cy - aw * 0.1)
+    ctx.moveTo(cx, cy - aw * 0.7)
+    ctx.lineTo(cx + aw * 0.6, cy - aw * 0.1)
     ctx.stroke()
   }
 
@@ -214,6 +214,8 @@ export default function VRSceneViewer({
   const lonRef             = useRef(0)
   const latRef             = useRef(0)
   const ptrRef             = useRef({ down: false, x: 0, y: 0, moved: false })
+  const ptrsRef            = useRef(new Map())   // pointerId → {x, y}
+  const prevPinchRef       = useRef(null)        // last pinch distance
 
   useEffect(() => { answersRef.current      = answers           }, [answers])
   useEffect(() => { locAnchorRef.current    = localizingAnchor  }, [localizingAnchor])
@@ -239,6 +241,9 @@ export default function VRSceneViewer({
 
     renderer.setSize(container.clientWidth, container.clientHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.outputColorSpace    = THREE.SRGBColorSpace
+    renderer.toneMapping         = THREE.LinearToneMapping
+    renderer.toneMappingExposure = 0.80
     container.appendChild(renderer.domElement)
 
     sceneRef.current  = scene
@@ -247,9 +252,14 @@ export default function VRSceneViewer({
 
     // 360° sphere — scale(-1,1,1) reverses UV winding so the texture reads
     // left-to-right from inside without mirroring (FrontSide renders correctly after the flip)
-    const geo  = new THREE.SphereGeometry(SPHERE_R, 64, 40)
+    const geo  = new THREE.SphereGeometry(SPHERE_R, 128, 64)
     geo.scale(-1, 1, 1)
     const tex  = new THREE.TextureLoader().load(vr.scene_url)
+    tex.colorSpace      = THREE.SRGBColorSpace
+    tex.anisotropy      = renderer.capabilities.getMaxAnisotropy()
+    tex.generateMipmaps = true
+    tex.minFilter       = THREE.LinearMipmapLinearFilter
+    tex.magFilter       = THREE.LinearFilter
     const mat  = new THREE.MeshBasicMaterial({ map: tex })
     scene.add(new THREE.Mesh(geo, mat))
 
@@ -351,12 +361,38 @@ export default function VRSceneViewer({
   }, [answers]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Pointer handlers ───────────────────────────────────────────────────────
+  const onWheel = useCallback(e => {
+    const camera = cameraRef.current
+    if (!camera) return
+    camera.fov = THREE.MathUtils.clamp(camera.fov + e.deltaY * 0.05, 30, 100)
+    camera.updateProjectionMatrix()
+  }, [])
+
   const onDown = useCallback(e => {
+    ptrsRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
     ptrRef.current = { down: true, x: e.clientX, y: e.clientY, moved: false }
     mountRef.current?.setPointerCapture?.(e.pointerId)
   }, [])
 
   const onMove = useCallback(e => {
+    ptrsRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+    if (ptrsRef.current.size === 2) {
+      const [p1, p2] = [...ptrsRef.current.values()]
+      const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y)
+      if (prevPinchRef.current !== null) {
+        const delta  = prevPinchRef.current - dist
+        const camera = cameraRef.current
+        if (camera) {
+          camera.fov = THREE.MathUtils.clamp(camera.fov + delta * 0.1, 30, 100)
+          camera.updateProjectionMatrix()
+        }
+      }
+      prevPinchRef.current = dist
+      return
+    }
+
+    prevPinchRef.current = null
     const p = ptrRef.current
     if (!p.down) return
     const dx = e.clientX - p.x
@@ -369,6 +405,8 @@ export default function VRSceneViewer({
   }, [])
 
   const onUp = useCallback(e => {
+    ptrsRef.current.delete(e.pointerId)
+    prevPinchRef.current = null
     const p = ptrRef.current
     if (!p.down) return
     p.down = false
@@ -420,6 +458,8 @@ export default function VRSceneViewer({
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={onUp}
+      onPointerCancel={onUp}
+      onWheel={onWheel}
     >
       {!vr.scene_url && (
         <div className="vr-viewer__no-scene">No 360° scene available for this panel.</div>
@@ -431,7 +471,7 @@ export default function VRSceneViewer({
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          Drag to look around · Click markers to answer
+          Drag to look around · Scroll / pinch to zoom · Click markers to answer
         </div>
       )}
       {localizingAnchor && (

@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import VRViewer from '../../components/shared/VRViewer'
-import MediaInsertModal from '../../components/teacher/lesson-panel-editor/MediaInsertModal'
+import MediaInsertModal from '../../components/teacher/module-panel-editor/MediaInsertModal'
 import VRTopBar from '../../components/teacher/vr-panel-editor/VRTopBar'
 import VRBottomControls from '../../components/teacher/vr-panel-editor/VRBottomControls'
 import VRPlacementPanel from '../../components/teacher/vr-panel-editor/VRPlacementPanel'
@@ -20,7 +20,7 @@ import '../../components/css/teacher/test-builder/TestMetaRow.css'
 import '../../components/css/teacher/test-builder/PanelSection.css'
 import '../css/teacher/VRPanelEditor.css'
 
-// ── Coordinate helpers ────────────────────────────────────────────────────────
+// â”€â”€ Coordinate helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function xyzToLonLat(x, y, z) {
   const r = Math.sqrt(x * x + y * y + z * z) || 1
@@ -49,7 +49,7 @@ function AnchorPin({ label }) {
   )
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
+// â”€â”€ Main page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function VRPanelEditor() {
   const { testId, panelId } = useParams()
@@ -291,7 +291,7 @@ export default function VRPanelEditor() {
           <div className="vrpe-loading">
             <div className="vrpe-spinner" />
             <span className="vrpe-loading-label">
-              {sceneApplying ? 'Applying scene…' : ''}
+              {sceneApplying ? 'Applying sceneâ€¦' : ''}
             </span>
           </div>
         ) : sceneUrl ? (
@@ -309,7 +309,7 @@ export default function VRPanelEditor() {
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
               </svg>
-              <span className="vrpe-no-scene-title">No 360° scene selected</span>
+              <span className="vrpe-no-scene-title">No 360Â° scene selected</span>
               {sceneError ? (
                 <span className="vrpe-no-scene-error">{sceneError}</span>
               ) : (

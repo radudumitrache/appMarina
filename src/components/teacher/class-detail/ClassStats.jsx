@@ -1,6 +1,6 @@
-import '../../css/teacher/class-detail/ClassStats.css'
+﻿import '../../css/teacher/class-detail/ClassStats.css'
 
-export default function ClassStats({ totalStudents, activeStudents, avgProgress, lessonsComplete, lessonsCount, subject }) {
+export default function ClassStats({ totalStudents, activeStudents, avgProgress, modulesComplete, modulesCount, subject }) {
   return (
     <div className="cd-stats">
       <div className="cd-stat-card">
@@ -15,7 +15,7 @@ export default function ClassStats({ totalStudents, activeStudents, avgProgress,
       </div>
       <div className="cd-stat-card">
         <span className="cd-stat-label">Lessons Complete</span>
-        <span className="cd-stat-value">{lessonsComplete}/{lessonsCount}</span>
+        <span className="cd-stat-value">{modulesComplete}/{modulesCount}</span>
         <span className="cd-stat-sub">by the whole department</span>
       </div>
       <div className="cd-stat-card">
