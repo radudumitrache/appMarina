@@ -48,7 +48,7 @@ export default function AdminDepartmentDetail() {
       const deptId = Number(id)
       setCls(clsRes.data)
       setStudents(stuRes.data.map(e => ({ id: e.student, name: e.student_name, email: e.student_email })))
-      setCourses(coursesRes.data.filter(c => c.department_id === deptId).map(c => ({ id: c.id, title: c.title, status: c.status })))
+      setCourses(coursesRes.data.filter(c => c.departments?.some(d => d.id === deptId)).map(c => ({ id: c.id, title: c.title, status: c.status })))
       setTests(tstRes.data.map(t => ({ id: t.id, title: t.title })))
       setAllStudents(allStuRes.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })))
       setAllTests(allTstRes.data.map(t => ({ id: t.id, title: t.title })))
@@ -202,7 +202,7 @@ export default function AdminDepartmentDetail() {
           items={students}
           searchValue={studentSearch}
           onSearchChange={setStudentSearch}
-          searchPlaceholder="Search students to addâ€¦"
+          searchPlaceholder="Search students to add..."
           suggestions={studentSuggestions}
           isFocused={studentFocus}
           onFocus={() => setStudentFocus(true)}
@@ -224,7 +224,7 @@ export default function AdminDepartmentDetail() {
           items={tests}
           searchValue={testSearch}
           onSearchChange={setTestSearch}
-          searchPlaceholder="Search tests to assignâ€¦"
+          searchPlaceholder="Search tests to assign..."
           suggestions={testSuggestions}
           isFocused={testFocus}
           onFocus={() => setTestFocus(true)}

@@ -1,14 +1,14 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NavBar             from '../../components/student/NavBar'
 import ProgressHeader     from '../../components/student/progress/ProgressHeader'
 import ProgressSkeleton   from '../../components/student/progress/ProgressSkeleton'
 import ProgressStatCards  from '../../components/student/progress/ProgressStatCards'
-import ModulesProgress    from '../../components/student/progress/ModulesProgress'
+import CoursesProgress    from '../../components/student/progress/CoursesProgress'
 import TestResults        from '../../components/student/progress/TestResults'
 import ActivityFeed       from '../../components/student/progress/ActivityFeed'
 import DiplomasSection    from '../../components/student/progress/DiplomasSection'
-import { getProgress, getModuleProgress, getTestResults, getActivity } from '../../api/progress'
+import { getProgress, getCourseProgress, getTestResults, getActivity } from '../../api/progress'
 import { getMyDiplomas } from '../../api/departments'
 import { getMe }         from '../../api/users'
 import '../css/student/Progress.css'
@@ -21,7 +21,7 @@ export default function Progress() {
   const navigate = useNavigate()
 
   const [summary,     setSummary]     = useState(null)
-  const [modules,     setModules]     = useState([])
+  const [courses,     setCourses]     = useState([])
   const [testResults, setTestResults] = useState([])
   const [activity,    setActivity]    = useState([])
   const [diplomas,    setDiplomas]    = useState([])
@@ -29,11 +29,18 @@ export default function Progress() {
   const [loading,     setLoading]     = useState(true)
 
   useEffect(() => {
-    Promise.all([getProgress(), getModuleProgress(), getTestResults(), getActivity(), getMyDiplomas(), getMe()])
-      .then(([progRes, modulesRes, testsRes, actRes, dipRes, meRes]) => {
-        setSummary(progRes.data)
-        setModules(modulesRes.data ?? [])
-        setTestResults(testsRes.data.map(s => ({
+    Promise.allSettled([
+      getProgress(),
+      getCourseProgress(),
+      getTestResults(),
+      getActivity(),
+      getMyDiplomas(),
+      getMe(),
+    ]).then(([progResult, coursesResult, testsResult, actResult, dipResult, meResult]) => {
+      if (progResult.status === 'fulfilled') setSummary(progResult.value.data)
+      if (coursesResult.status === 'fulfilled') setCourses(coursesResult.value.data ?? [])
+      if (testsResult.status === 'fulfilled') {
+        setTestResults(testsResult.value.data.map(s => ({
           id:      s.id,
           testId:  s.test,
           title:   s.test_title,
@@ -42,7 +49,9 @@ export default function Progress() {
           grade:   s.grade != null ? Math.round(s.grade) : null,
           pending: s.grade == null,
         })))
-        setActivity(actRes.data.map(log => ({
+      }
+      if (actResult.status === 'fulfilled') {
+        setActivity(actResult.value.data.map(log => ({
           id:    log.id,
           type:  log.type,
           text:  log.description,
@@ -50,15 +59,16 @@ export default function Progress() {
           refId: log.ref_id,
           date:  fmtDate(log.created_at),
         })))
-        setDiplomas(dipRes.data ?? [])
-        const me = meRes.data
+      }
+      if (dipResult.status === 'fulfilled') setDiplomas(dipResult.value.data ?? [])
+      if (meResult.status === 'fulfilled') {
+        const me = meResult.value.data
         setStudentName(`${me.first_name ?? ''} ${me.last_name ?? ''}`.trim())
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
+      }
+    }).finally(() => setLoading(false))
   }, [])
 
-  if (loading || !summary) {
+  if (loading) {
     return (
       <div className="progress-page">
         <NavBar />
@@ -68,28 +78,31 @@ export default function Progress() {
     )
   }
 
+  const coursesDone  = summary?.courses_done  ?? 0
+  const coursesTotal = summary?.courses_total ?? 0
+
   const statCards = [
     {
-      label:  'Lessons Complete',
-      value:  String(summary.modules_complete),
-      suffix: `/${summary.modules_total}`,
-      sub:    `${summary.modules_total > 0 ? Math.round((summary.modules_complete / summary.modules_total) * 100) : 0}% of curriculum`,
+      label:  'Courses Complete',
+      value:  String(coursesDone),
+      suffix: `/${coursesTotal}`,
+      sub:    `${coursesTotal > 0 ? Math.round((coursesDone / coursesTotal) * 100) : 0}% of curriculum`,
     },
     {
       label:  'Avg Test Grade',
-      value:  String(summary.avg_grade),
+      value:  String(summary?.avg_grade ?? 0),
       suffix: '%',
-      sub:    `${summary.tests_taken} test${summary.tests_taken !== 1 ? 's' : ''} taken`,
+      sub:    `${summary?.tests_taken ?? 0} test${(summary?.tests_taken ?? 0) !== 1 ? 's' : ''} taken`,
     },
     {
       label:  'Hours Trained',
-      value:  String(summary.hours_trained),
+      value:  String(summary?.hours_trained ?? 0),
       suffix: 'h',
       sub:    'across all modules',
     },
     {
       label:  'Active Streak',
-      value:  String(summary.active_streak_days),
+      value:  String(summary?.active_streak_days ?? 0),
       suffix: 'd',
       sub:    'days in a row',
     },
@@ -105,7 +118,7 @@ export default function Progress() {
           <ProgressStatCards cards={statCards} />
 
           <div className="progress-grid">
-            <ModulesProgress modules={modules} />
+            <CoursesProgress courses={courses} />
             <TestResults
               results={testResults}
               onViewAll={() => navigate('/student/tests')}

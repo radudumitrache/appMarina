@@ -55,13 +55,18 @@ export default function DepartmentDetail() {
 
   const totalStudents   = students.length
   const activeStudents  = students.filter(s => s.status === 'active').length
-  const modulesComplete = modules.filter(l => l.total > 0 && l.completed === l.total).length
   const testsTotal      = tests.length
-  const totalItems      = modules.length + testsTotal
-  const avgProgress     = totalStudents > 0 && totalItems > 0
+  const coursesTotal    = students.length > 0 ? (students[0].coursesTotal ?? 0) : (cls.course_count ?? 0)
+  const coursesDone     = students.length > 0
+    ? Math.min(...students.map(s => s.coursesDone ?? 0))
+    : 0
+  const avgProgress     = totalStudents > 0
     ? Math.round(
-        students.reduce((sum, s) => sum + ((s.done || 0) + (s.testsDone || 0)), 0)
-        / (totalStudents * totalItems) * 100
+        students.reduce((sum, s) => {
+          const total = s.courseLessonsTotal || 0
+          const done  = s.courseLessonsDone  || 0
+          return sum + (total > 0 ? done / total : 0)
+        }, 0) / totalStudents * 100
       )
     : 0
 
@@ -88,8 +93,8 @@ export default function DepartmentDetail() {
               totalStudents={totalStudents}
               activeStudents={activeStudents}
               avgProgress={avgProgress}
-              modulesComplete={modulesComplete}
-              modulesCount={modules.length}
+              coursesDone={coursesDone}
+              coursesTotal={coursesTotal}
               subject={cls.subject}
             />
 
@@ -103,7 +108,7 @@ export default function DepartmentDetail() {
 
             <div className="cd-tab-content">
               {tab === 'students' && (
-                <StudentList students={filteredStudents} modulesTotal={modules.length} testsTotal={testsTotal} />
+                <StudentList students={filteredStudents} />
               )}
               {tab === 'modules' && (
                 <ModulesCoursesTab

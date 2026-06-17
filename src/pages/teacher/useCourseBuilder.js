@@ -5,7 +5,7 @@ import {
   getCourse, addCourseModule, removeCourseModule, reorderCourseModule,
   getModules, createModule as apiCreateModule, updateModule as apiUpdateModule, deleteModule as apiDeleteModule,
 } from '../../api/modules'
-import { getTests } from '../../api/tests'
+import { getTests, createTest as apiCreateTest } from '../../api/tests'
 
 export function useCourseBuilder() {
   const [searchParams] = useSearchParams()
@@ -285,6 +285,34 @@ export function useCourseBuilder() {
     return module
   }
 
+  async function handleCreateTest(data) {
+    const res = await apiCreateTest(data)
+    const test = res.data
+    setAllTests(prev => [test, ...prev])
+    if (selectedId) {
+      setModulesFor(selectedId, prev => [...prev, {
+        _courseModuleId: `temp-test-${test.id}`,
+        _type: 'test',
+        id: `temp-test-${test.id}`,
+        moduleId: null,
+        testId: test.id,
+        title: test.title,
+        time_limit_minutes: test.time_limit_minutes,
+        status: test.status,
+      }])
+      setSaving(true)
+      try {
+        await addCourseModule(selectedId, { test: test.id })
+        reloadDetail(selectedId)
+      } catch {
+        reloadDetail(selectedId)
+      } finally {
+        setSaving(false)
+      }
+    }
+    return test
+  }
+
   async function handleUpdateModule(moduleId, data) {
     await apiUpdateModule(moduleId, data)
     const updateFn = l => l.id === moduleId ? { ...l, ...data } : l
@@ -324,7 +352,7 @@ export function useCourseBuilder() {
     handleNewCourse,
     handleTitleChange, handleDescChange, handleDepartmentsChange, handleToggleStatus, handleDeleteCourse,
     handleAddModule, handleAddTest, handleRemoveModule, handleMoveModule,
-    handleCreateModule, handleUpdateModule, handleDeleteModule,
+    handleCreateModule, handleUpdateModule, handleDeleteModule, handleCreateTest,
     ensureAllCoursesLoaded,
   }
 }

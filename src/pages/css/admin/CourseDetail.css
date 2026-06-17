@@ -294,6 +294,20 @@
   border-color: rgba(224, 82, 82, 0.3);
   color: var(--error);
 }
+.crd-add-tab--create {
+  border-color: rgba(224, 82, 82, 0.25);
+  color: var(--error);
+}
+.crd-add-tab--create:hover {
+  background: rgba(224, 82, 82, 0.08);
+  border-color: rgba(224, 82, 82, 0.4);
+  color: var(--error);
+}
+.crd-add-tabs-create-group {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
 
 /* ─── Test badge ─────────────────────────────────────────────────────────────────── */
 .crd-module-badge--test {

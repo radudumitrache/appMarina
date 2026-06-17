@@ -22,22 +22,26 @@ export function useClassData(id) {
       setAnnouncements(annRes.data)
 
       setStudents(stuRes.data.map(e => ({
-        id:         e.student,
-        initials:   (e.student_name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
-        name:       e.student_name,
-        email:      e.student_email,
-        done:       e.modules_done ?? 0,
-        testsTotal: e.tests_total  ?? 0,
-        testsDone:  e.tests_done   ?? 0,
-        lastActive: e.last_active ? new Date(e.last_active).toLocaleDateString() : 'â€”',
-        status:     e.status,
+        id:                e.student,
+        initials:          (e.student_name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+        name:              e.student_name,
+        email:             e.student_email,
+        done:              e.modules_done ?? 0,
+        testsTotal:        e.tests_total  ?? 0,
+        testsDone:         e.tests_done   ?? 0,
+        courseLessonsDone:  e.course_lessons_done  ?? 0,
+        courseLessonsTotal: e.course_lessons_total ?? 0,
+        coursesDone:        e.courses_done  ?? 0,
+        coursesTotal:       e.courses_total ?? 0,
+        lastActive:        e.last_active ? new Date(e.last_active).toLocaleDateString() : '--',
+        status:            e.status,
       })))
 
       setModules(modRes.data.map((cl, i) => ({
         id:       cl.module,
         num:      String(i + 1).padStart(2, '0'),
-        title:    cl.module_detail?.title ?? 'â€”',
-        duration: cl.module_detail?.duration_minutes ? `${cl.module_detail.duration_minutes} min` : 'â€”',
+        title:    cl.module_detail?.title ?? '--',
+        duration: cl.module_detail?.duration_minutes ? `${cl.module_detail.duration_minutes} min` : '--',
         completed:      Math.round((cl.completion_pct / 100) * (clsRes.data.student_count || 0)),
         total:          clsRes.data.student_count || 0,
       })))

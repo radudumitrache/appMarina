@@ -37,6 +37,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
 }
 
 .tests-sidebar-label {
@@ -45,6 +47,10 @@
   font-weight: 500;
   color: var(--text-2);
   transition: color var(--duration-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .tests-sidebar-btn:hover .tests-sidebar-label  { color: var(--text); }
@@ -55,6 +61,7 @@
   font-size: 11px;
   color: var(--text-3);
   letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
 .tests-sidebar-footer {

@@ -61,8 +61,8 @@
   color: var(--text-secondary);
 }
 
-.file-row-type {
-  display: flex !important;
+.file-row-type-inner {
+  display: flex;
   align-items: center;
   gap: 6px;
 }
@@ -209,8 +209,7 @@
 
   /* ── Type + VR badges row ─────────────────────────────────────────── */
   .file-row.file-row td.file-row-type {
-    display: flex !important;
-    gap: 6px !important;
+    display: table-cell !important;
     padding: 0 16px 14px 68px !important;
   }
 

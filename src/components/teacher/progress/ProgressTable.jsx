@@ -1,4 +1,4 @@
-﻿import '../../css/teacher/progress/ProgressTable.css'
+import '../../css/teacher/progress/ProgressTable.css'
 
 const PAGE_SIZES = [10, 15, 20]
 
@@ -13,14 +13,14 @@ export default function ProgressTable({
           <span className="tp-col tp-col--student">Student</span>
           <span className="tp-col tp-col--class">Class</span>
           <span className="tp-col tp-col--progress">Progress</span>
-          <span className="tp-col tp-col--modules">Modules</span>
+          <span className="tp-col tp-col--modules">Courses</span>
         </div>
 
         {students.length === 0 ? (
           <p className="tp-empty">No students match your filters.</p>
         ) : (
           students.map((s, i) => {
-            const pct = s.modulesTotal > 0 ? Math.round((s.modulesDone / s.modulesTotal) * 100) : 0
+            const pct = s.coursesTotal > 0 ? Math.round((s.coursesDone / s.coursesTotal) * 100) : 0
             return (
               <div
                 key={`${s.id}-${s.departmentId}`}
@@ -45,7 +45,7 @@ export default function ProgressTable({
                   <span className="tp-pct">{pct}%</span>
                 </div>
                 <div className="tp-col tp-col--modules">
-                  <span className="tp-mono">{s.modulesDone}/{s.modulesTotal}</span>
+                  <span className="tp-mono">{s.coursesDone}/{s.coursesTotal}</span>
                 </div>
               </div>
             )
@@ -55,7 +55,9 @@ export default function ProgressTable({
 
       <div className="tp-table-footer">
         <span className="tp-footer-count">
-          Showing <span className="tp-footer-num">{Math.min((page - 1) * pageSize + 1, filteredCount)}â€“{Math.min(page * pageSize, filteredCount)}</span> of <span className="tp-footer-num">{filteredCount}</span>
+          Showing <span className="tp-footer-num">{Math.min((page - 1) * pageSize + 1, filteredCount)}</span>
+          {' '}&ndash;{' '}
+          <span className="tp-footer-num">{Math.min(page * pageSize, filteredCount)}</span> of <span className="tp-footer-num">{filteredCount}</span>
           {filteredCount !== totalCount && <> (filtered from <span className="tp-footer-num">{totalCount}</span>)</>}
         </span>
 

@@ -37,7 +37,7 @@ export default function CourseBuilder() {
     activeTab, setActiveTab,
     handleNewCourse,
     handleTitleChange, handleDescChange, handleDepartmentsChange, handleToggleStatus, handleDeleteCourse,
-    handleAddModule, handleAddTest, handleRemoveModule, handleMoveModule,
+    handleAddModule, handleAddTest, handleRemoveModule, handleMoveModule, handleCreateTest,
     // handleCreateModule,
     handleUpdateModule, handleDeleteModule,
     ensureAllCoursesLoaded,
@@ -134,6 +134,7 @@ export default function CourseBuilder() {
                   onMoveModule={handleMoveModule}
                   onAddModule={handleAddModule}
                   onAddTest={handleAddTest}
+                  onCreateTest={handleCreateTest}
                   allTests={allTests}
                   // onCreateModule={handleCreateModule}
                 />

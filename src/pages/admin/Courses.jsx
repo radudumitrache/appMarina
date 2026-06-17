@@ -5,13 +5,14 @@ import { useAuth } from '../../auth/AuthContext'
 import NavBar from '../../components/admin/NavBar'
 import MultiSelectDropdown from '../../components/shared/MultiSelectDropdown'
 import ModuleFormPanel from '../../components/admin/modules/ModuleFormPanel'
+import TestFormPanel from '../../components/admin/tests/TestFormPanel'
 import ModuleDeleteModal from '../../components/admin/modules/ModuleDeleteModal'
 import {
   getCourses, createCourse, updateCourse, deleteCourse,
   getCourse, getModules, createModule, updateModule, deleteModule,
   addCourseModule, removeCourseModule, reorderCourseModule,
 } from '../../api/modules'
-import { getTests } from '../../api/tests'
+import { getTests, createTest } from '../../api/tests'
 import {
   getDepartments,
   getCourseDiplomas, createCourseDiploma, updateCourseDiploma,
@@ -25,6 +26,7 @@ import '../css/admin/CourseDetail.css'
 
 const EMPTY_COURSE_FORM  = { title: '', description: '', department_ids: [], status: 'draft', author_id: '' }
 const EMPTY_MODULE_FORM  = { title: '', duration_minutes: 60, difficulty: 'intermediate', visibility: 'class', department: null, organisation_id: null }
+const EMPTY_TEST_FORM    = { title: '', time_limit_minutes: 30, department: null }
 const DIFFICULTIES       = ['easy', 'intermediate', 'advanced']
 
 function mapModule(l) {
@@ -381,6 +383,8 @@ export default function Courses() {
   const [modulePanel,       setModulePanel]       = useState(null)
   const [moduleForm,        setModuleForm]        = useState(EMPTY_MODULE_FORM)
   const [moduleDeleteTarget, setModuleDeleteTarget] = useState(null)
+  const [testCreatePanel,   setTestCreatePanel]   = useState(false)
+  const [testCreateForm,    setTestCreateForm]    = useState(EMPTY_TEST_FORM)
 
   // ── Course CRUD UI ─────────────────────────────────────────────────────────
   const [courseModal,      setCourseModal]      = useState(null)
@@ -612,6 +616,20 @@ export default function Courses() {
   async function executeDeleteModule() {
     try { await deleteModule(moduleDeleteTarget.id); setModuleBank(prev => prev.filter(l => l.id !== moduleDeleteTarget.id)) } catch {}
     setModuleDeleteTarget(null)
+  }
+
+  // ── Test creation from courses panel ──────────────────────────────────────
+  function openCreateTestPanel() { setTestCreateForm(EMPTY_TEST_FORM); setTestCreatePanel(true) }
+  function handleTestCreateFormChange(field, value) { setTestCreateForm(f => ({ ...f, [field]: value })) }
+  async function handleCreateTestFromPanel() {
+    if (!testCreateForm.title.trim()) return
+    try {
+      const payload = { title: testCreateForm.title.trim(), time_limit_minutes: testCreateForm.time_limit_minutes || 30 }
+      if (testCreateForm.department) payload.department = testCreateForm.department
+      const { data } = await createTest(payload)
+      setAllTests(prev => [data, ...prev])
+      setTestCreatePanel(false)
+    } catch {}
   }
 
   // ── Diplomas ───────────────────────────────────────────────────────────────
@@ -850,6 +868,28 @@ export default function Courses() {
                           </svg>
                           Add Test
                         </button>
+                        <div className="crd-add-tabs-create-group">
+                          <button
+                            className="crd-add-tab crd-add-tab--create"
+                            onClick={openCreateModule}
+                          >
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="12" y1="5" x2="12" y2="19"/>
+                              <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            New Module
+                          </button>
+                          <button
+                            className="crd-add-tab crd-add-tab--create"
+                            onClick={openCreateTestPanel}
+                          >
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="12" y1="5" x2="12" y2="19"/>
+                              <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            New Test
+                          </button>
+                        </div>
                       </div>
 
                       {/* Search dropdown */}
@@ -1106,6 +1146,17 @@ export default function Courses() {
           difficulties={DIFFICULTIES}
           departments={departments}
           organisations={organisations}
+        />
+      )}
+
+      {/* ── Test create panel ── */}
+      {testCreatePanel && (
+        <TestFormPanel
+          form={testCreateForm}
+          onChange={handleTestCreateFormChange}
+          onClose={() => setTestCreatePanel(false)}
+          onSave={handleCreateTestFromPanel}
+          departments={departments}
         />
       )}
 

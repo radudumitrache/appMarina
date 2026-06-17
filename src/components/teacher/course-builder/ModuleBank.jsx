@@ -1,7 +1,9 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { formatDuration } from './courseBuilderUtils'
 import ModuleEditModal from './ModuleEditModal'
 import '../../css/teacher/course-builder/ModuleBank.css'
+
+const EMPTY_TEST_FORM = { title: '', time_limit_minutes: 30 }
 
 export default function ModuleBank({
   setBankOpen,
@@ -14,12 +16,15 @@ export default function ModuleBank({
   onAdd,
   onCreateModule,
   onAddTest,
+  onCreateTest,
   allTests = [],
 }) {
   const [creatingModule, setCreatingModule] = useState(false)
+  const [creatingTest,   setCreatingTest]   = useState(false)
+  const [testForm,       setTestForm]       = useState(EMPTY_TEST_FORM)
   const [bankTab, setBankTab] = useState('lessons')
 
-  const added = (id) => selectedModules?.some(l => l.id === id) ?? false
+  const added     = (id) => selectedModules?.some(l => l.id === id) ?? false
   const testAdded = (id) => selectedModules?.some(l => l._type === 'test' && l.testId === id) ?? false
 
   const testsFiltered = allTests.filter(t =>
@@ -28,9 +33,15 @@ export default function ModuleBank({
 
   async function handleCreate(data) {
     const module = await onCreateModule(data)
-    setCreatingLesson(false)
-    // auto-add the newly created module to the course
+    setCreatingModule(false)
     if (module?.id) onAdd(module.id)
+  }
+
+  async function handleCreateTest() {
+    if (!testForm.title.trim() || !onCreateTest) return
+    await onCreateTest({ title: testForm.title.trim(), time_limit_minutes: testForm.time_limit_minutes || 30 })
+    setTestForm(EMPTY_TEST_FORM)
+    setCreatingTest(false)
   }
 
   if (creatingModule) {
@@ -40,6 +51,66 @@ export default function ModuleBank({
         onSave={handleCreate}
         onClose={() => setCreatingModule(false)}
       />
+    )
+  }
+
+  if (creatingTest) {
+    return (
+      <>
+        <div className="cb-bank-overlay" onClick={() => setCreatingTest(false)}>
+          <div className="cb-bank-modal" onClick={e => e.stopPropagation()}>
+            <div className="cb-bank-modal-header">
+              <div className="cb-bank-modal-title-row">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                <span className="cb-bank-modal-title">New Test</span>
+              </div>
+              <button className="cb-bank-modal-close" onClick={() => setCreatingTest(false)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div className="cb-bank-create-test-body">
+              <div className="cb-bank-create-test-field">
+                <label className="cb-bank-create-test-label">Title</label>
+                <input
+                  className="cb-bank-create-test-input"
+                  type="text"
+                  placeholder="e.g. Navigation Fundamentals Quiz"
+                  value={testForm.title}
+                  onChange={e => setTestForm(f => ({ ...f, title: e.target.value }))}
+                  autoFocus
+                  onKeyDown={e => { if (e.key === 'Enter') handleCreateTest() }}
+                />
+              </div>
+              <div className="cb-bank-create-test-field">
+                <label className="cb-bank-create-test-label">Time Limit (minutes)</label>
+                <input
+                  className="cb-bank-create-test-input"
+                  type="number"
+                  min="1"
+                  placeholder="e.g. 30"
+                  value={testForm.time_limit_minutes}
+                  onChange={e => setTestForm(f => ({ ...f, time_limit_minutes: parseInt(e.target.value) || '' }))}
+                />
+              </div>
+            </div>
+            <div className="cb-bank-modal-footer">
+              <button className="cb-bank-modal-cancel" onClick={() => setCreatingTest(false)}>Cancel</button>
+              <button
+                className="cb-bank-modal-done"
+                onClick={handleCreateTest}
+                disabled={!testForm.title.trim()}
+              >
+                Create &amp; Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
     )
   }
 
@@ -60,14 +131,15 @@ export default function ModuleBank({
               </span>
             </div>
             <div className="cb-bank-modal-header-actions">
-              {/* New Module button disabled for teachers â€” admins only
-              <button className="cb-bank-new-btn" onClick={() => setCreatingModule(true)}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                New Lesson
-              </button>
-              */}
+              {bankTab === 'tests' && onCreateTest && (
+                <button className="cb-bank-new-btn" onClick={() => setCreatingTest(true)}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  New Test
+                </button>
+              )}
+              {/* New Module button disabled for teachers - admins only */}
               <button className="cb-bank-modal-close" onClick={() => setBankOpen(false)}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -98,7 +170,7 @@ export default function ModuleBank({
             <input
               className="cb-bank-modal-search"
               type="text"
-              placeholder={bankTab === 'lessons' ? 'Filter modulesâ€¦' : 'Filter testsâ€¦'}
+              placeholder={bankTab === 'lessons' ? 'Filter modules...' : 'Filter tests...'}
               value={bankSearch}
               onChange={e => setBankSearch(e.target.value)}
               autoFocus
@@ -157,6 +229,14 @@ export default function ModuleBank({
               testsFiltered.length === 0 ? (
                 <div className="cb-bank-modal-empty">
                   <p>No tests match your search.</p>
+                  {onCreateTest && (
+                    <button className="cb-bank-empty-create" onClick={() => setCreatingTest(true)}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                      Create a new test
+                    </button>
+                  )}
                 </div>
               ) : (
                 testsFiltered.map(test => {

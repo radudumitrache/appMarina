@@ -30,7 +30,7 @@ export default function ClassCard({ cls, index, onView, onDelete }) {
           <span className="class-meta-value">{cls.students ?? 0}</span>
           <span className="class-meta-label">students</span>
         </div>
-        <span className="class-meta-sep">Â·</span>
+        <span className="class-meta-sep">&middot;</span>
         <div className="class-meta-item">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>

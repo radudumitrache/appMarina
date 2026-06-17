@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useParams, useNavigate } from 'react-router-dom'
 import NavBar from '../../components/admin/NavBar'
-import { getCourse, getCourses, getModules, addCourseModule, removeCourseModule, reorderCourseModule, updateCourse } from '../../api/modules'
-import { getTests } from '../../api/tests'
+import { getCourse, getCourses, getModules, createModule, addCourseModule, removeCourseModule, reorderCourseModule, updateCourse } from '../../api/modules'
+import { getTests, createTest } from '../../api/tests'
+import ModuleFormPanel from '../../components/admin/modules/ModuleFormPanel'
+import TestFormPanel from '../../components/admin/tests/TestFormPanel'
 import {
   getCourseDiplomas, createCourseDiploma, updateCourseDiploma,
   deleteCourseDiploma, awardCourseDiploma, revokeCourseDiploma,
@@ -307,6 +309,13 @@ export default function CourseDetail() {
   const [dragIdx,     setDragIdx]       = useState(null)
   const [dragOverIdx, setDragOverIdx]   = useState(null)
 
+  const EMPTY_MODULE_FORM = { title: '', description: '', duration_minutes: 30, difficulty: 'beginner', visibility: 'public' }
+  const EMPTY_TEST_FORM   = { title: '', time_limit_minutes: 30, department: null }
+  const [modulePanel, setModulePanel]   = useState(false)
+  const [moduleForm,  setModuleForm]    = useState(EMPTY_MODULE_FORM)
+  const [testPanel,   setTestPanel]     = useState(false)
+  const [testForm,    setTestForm]      = useState(EMPTY_TEST_FORM)
+
   useEffect(() => {
     getCourses().then(r => setAllCourses(r.data.map(c => ({ id: c.id, title: c.title })))).catch(() => {})
   }, [])
@@ -350,6 +359,32 @@ export default function CourseDetail() {
     try {
       const { data } = await updateCourse(id, { status: newStatus })
       setCourse(data)
+    } catch {}
+  }
+
+  // ── Create & auto-add module ───────────────────────────────────────────────
+
+  const handleCreateModule = async () => {
+    try {
+      const { data: mod } = await createModule(moduleForm)
+      setAllModules(prev => [mod, ...prev])
+      const { data: entry } = await addCourseModule(id, { module: mod.id })
+      setCourse(prev => ({ ...prev, modules: [...(prev.modules ?? []), entry] }))
+      setModulePanel(false)
+      setModuleForm(EMPTY_MODULE_FORM)
+    } catch {}
+  }
+
+  const handleCreateTest = async () => {
+    try {
+      const payload = { title: testForm.title, time_limit_minutes: testForm.time_limit_minutes }
+      if (testForm.department) payload.department = testForm.department
+      const { data: test } = await createTest(payload)
+      setAllTests(prev => [test, ...prev])
+      const { data: entry } = await addCourseModule(id, { test: test.id })
+      setCourse(prev => ({ ...prev, modules: [...(prev.modules ?? []), entry] }))
+      setTestPanel(false)
+      setTestForm(EMPTY_TEST_FORM)
     } catch {}
   }
 
@@ -442,17 +477,10 @@ export default function CourseDetail() {
   const addedTestIds   = course?.modules?.filter(cl => cl.test).map(cl => cl.test) ?? []
 
   const qLesson = moduleSearch.trim().toLowerCase()
-  const availableModules = allModules.filter(l => {
-    if (addedModuleIds.includes(l.id)) return false
-    const isPublic   = l.visibility === 'public'
-    const isForClass = course?.department_id && l.department_id === course.department_id
-    return isPublic || isForClass
-  })
-  const filteredModules = qLesson
+  const availableModules = allModules.filter(l => !addedModuleIds.includes(l.id))
+  const filteredModules  = qLesson
     ? availableModules.filter(l => (l.title || '').toLowerCase().includes(qLesson))
     : availableModules
-  const classSpecificModules = filteredModules.filter(l => l.department_id === course?.department_id)
-  const publicModules        = filteredModules.filter(l => l.visibility === 'public')
 
   const qTest = testSearch.trim().toLowerCase()
   const availableTests = allTests.filter(t => !addedTestIds.includes(t.id))
@@ -590,6 +618,20 @@ export default function CourseDetail() {
               </svg>
               Add Test
             </button>
+            <div className="crd-add-tabs-create-group">
+              <button className="crd-add-tab crd-add-tab--create" onClick={() => setModulePanel(true)}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                New Module
+              </button>
+              <button className="crd-add-tab crd-add-tab--create" onClick={() => setTestPanel(true)}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                New Test
+              </button>
+            </div>
           </div>
 
           {/* Search dropdown */}
@@ -610,42 +652,11 @@ export default function CourseDetail() {
                       {qLesson ? 'No lessons match your search.' : 'No lessons available to add.'}
                     </p>
                   ) : (
-                    <>
-                      {classSpecificModules.length > 0 && (
-                        <>
-                          <div className="crd-module-group-label">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-                            </svg>
-                            Department lessons
-                          </div>
-                          {classSpecificModules.slice(0, 6).map(l => (
-                            <button key={l.id} className="crd-module-option" onMouseDown={() => handleAddModule(l)}>
-                              <span className="crd-module-option-title">{l.title}</span>
-                              <span className="crd-module-badge crd-module-badge--class">Department</span>
-                            </button>
-                          ))}
-                        </>
-                      )}
-                      {publicModules.length > 0 && (
-                        <>
-                          <div className="crd-module-group-label">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-                              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                            </svg>
-                            Public modules
-                          </div>
-                          {publicModules.slice(0, 6).map(l => (
-                            <button key={l.id} className="crd-module-option" onMouseDown={() => handleAddModule(l)}>
-                              <span className="crd-module-option-title">{l.title}</span>
-                              <span className="crd-module-badge crd-module-badge--public">Public</span>
-                            </button>
-                          ))}
-                        </>
-                      )}
-                    </>
+                    filteredModules.slice(0, 10).map(l => (
+                      <button key={l.id} className="crd-module-option" onMouseDown={() => handleAddModule(l)}>
+                        <span className="crd-module-option-title">{l.title}</span>
+                      </button>
+                    ))
                   )}
                 </div>
               )}
@@ -751,6 +762,24 @@ export default function CourseDetail() {
           students={students}
           onClose={() => setAwardModal(null)}
           onAward={handleAward}
+        />
+      )}
+
+      {modulePanel && (
+        <ModuleFormPanel
+          form={moduleForm}
+          onChange={(f, v) => setModuleForm(prev => ({ ...prev, [f]: v }))}
+          onClose={() => { setModulePanel(false); setModuleForm(EMPTY_MODULE_FORM) }}
+          onSave={handleCreateModule}
+        />
+      )}
+
+      {testPanel && (
+        <TestFormPanel
+          form={testForm}
+          onChange={(f, v) => setTestForm(prev => ({ ...prev, [f]: v }))}
+          onClose={() => { setTestPanel(false); setTestForm(EMPTY_TEST_FORM) }}
+          onSave={handleCreateTest}
         />
       )}
 

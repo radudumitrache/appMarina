@@ -65,12 +65,14 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
       </td>
 
       <td className="file-row-type">
-        <span className={`file-type-text file-type-text--${file.file_type}`}>
-          {file.file_type === 'image' ? 'Image' : file.file_type === 'video' ? 'Video' : 'Doc'}
-        </span>
-        {file.is_vr_scene && (
-          <span className="file-vr-badge" title="VR Scene">360°</span>
-        )}
+        <div className="file-row-type-inner">
+          <span className={`file-type-text file-type-text--${file.file_type}`}>
+            {file.file_type === 'image' ? 'Image' : file.file_type === 'video' ? 'Video' : 'Doc'}
+          </span>
+          {file.is_vr_scene && (
+            <span className="file-vr-badge" title="VR Scene">360°</span>
+          )}
+        </div>
       </td>
 
       <td className="file-row-size">{formatBytes(file.size_bytes)}</td>

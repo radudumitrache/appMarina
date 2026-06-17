@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { getCourses, getCourse, createCourse, deleteCourse, updateCourse, removeCourseModule } from '../../../api/modules'
@@ -10,7 +10,7 @@ function initials(name) {
   return (name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
 }
 
-// â”€â”€ Quick diploma award modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Quick diploma award modal
 
 function QuickAwardModal({ classId, student, diplomas, onClose, onDiplomasChange }) {
   const [busy, setBusy] = useState(false)
@@ -87,11 +87,11 @@ function QuickAwardModal({ classId, student, diplomas, onClose, onDiplomasChange
   )
 }
 
-// â”€â”€ Per-course progress view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Per-course progress view
 
 function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
   if (loading || !data) {
-    return <p className="lct-cl-empty">Loading progressâ€¦</p>
+    return <p className="lct-cl-empty">Loading progress...</p>
   }
 
   const { modules, students } = data
@@ -136,7 +136,7 @@ function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
 
               {useDots ? (
                 <div className="lct-progress-dots">
-                  {lessons.map(l => (
+                  {modules.map(l => (
                     <span
                       key={l.id}
                       className={`lct-progress-dot${completedSet.has(l.id) ? ' lct-progress-dot--done' : ''}`}
@@ -178,7 +178,7 @@ function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
   )
 }
 
-// â”€â”€ Main tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Main tab
 
 export default function ModulesCoursesTab({ departmentId, classModules, onNewModule, onModuleUpdate }) {
   const navigate = useNavigate()
@@ -193,15 +193,11 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
   const [expandedCourses, setExpandedCourses] = useState(new Set())
   const [confirmCourseModule, setConfirmCourseModule] = useState(null)
 
-  // per-course view: 'modules' | 'progress'
   const [courseViews, setCourseViews]       = useState({})
-  // per-course progress data fetched from API
   const [progressData, setProgressData]     = useState({})
   const [progressLoading, setProgressLoading] = useState(new Set())
-  // class diplomas (loaded lazily on first progress view)
   const [diplomas, setDiplomas]             = useState([])
   const [diplomasLoaded, setDiplomasLoaded] = useState(false)
-  // quick-award modal target
   const [awardTarget, setAwardTarget]       = useState(null)
 
   const newTitleRef = useRef(null)
@@ -239,7 +235,7 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
 
   const handleRemoveFromCourse = async ({ courseId, moduleId }) => {
     setCourseModules(prev => ({ ...prev, [courseId]: prev[courseId].filter(l => l.id !== moduleId) }))
-    setConfirmCourseLesson(null)
+    setConfirmCourseModule(null)
     try { await removeCourseModule(courseId, moduleId) }
     catch { getCourse(courseId).then(d => setCourseModules(prev => ({ ...prev, [courseId]: (d.data.modules ?? []).map(cl => cl.module_detail ?? cl) }))).catch(() => {}) }
   }
@@ -296,7 +292,6 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
     <>
     <div className="lct">
 
-      {/* â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="lct-section-hd">
         <span className="lct-section-label">Courses</span>
         <button className="lct-btn-add" onClick={openCreate}>
@@ -313,12 +308,12 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
             ref={newTitleRef}
             className="lct-course-input"
             type="text"
-            placeholder="Course titleâ€¦"
+            placeholder="Course title..."
             value={newTitle}
             onChange={e => setNewTitle(e.target.value)}
           />
           <button className="lct-confirm-btn lct-confirm-btn--primary" type="submit" disabled={savingCourse}>
-            {savingCourse ? 'â€¦' : 'Create'}
+            {savingCourse ? '...' : 'Create'}
           </button>
           <button className="lct-confirm-btn" type="button" onClick={() => setCreatingCourse(false)}>
             Cancel
@@ -327,9 +322,9 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
       )}
 
       {loadingCourses ? (
-        <p className="lct-empty">Loadingâ€¦</p>
+        <p className="lct-empty">Loading...</p>
       ) : courses.length === 0 && !creatingCourse ? (
-        <p className="lct-empty">No courses yet â€” create one to group your lessons.</p>
+        <p className="lct-empty">No courses yet -- create one to group your lessons.</p>
       ) : (
         courses.map(course => {
           const isDelConf  = confirmCourse === course.id
@@ -339,7 +334,6 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
 
           return (
             <div key={course.id} className="lct-course-block">
-              {/* â”€â”€ Course header row â”€â”€ */}
               <div className="lct-course-row">
                 <button className="lct-toggle-btn" onClick={() => toggleCourse(course.id)} title={isExpanded ? 'Collapse' : 'Expand'}>
                   <svg
@@ -399,10 +393,8 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                 </div>
               </div>
 
-              {/* â”€â”€ Collapsible body â”€â”€ */}
               {isExpanded && (
                 <>
-                  {/* Sub-tab bar */}
                   <div className="lct-inner-tab-bar">
                     <button
                       className={`lct-inner-tab${view === 'modules' ? ' lct-inner-tab--active' : ''}`}
@@ -422,11 +414,10 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                     </button>
                   </div>
 
-                  {/* Modules view */}
                   {view === 'modules' && (
                     <div className="lct-cl-list">
                       {!cls ? (
-                        <p className="lct-cl-empty">Loadingâ€¦</p>
+                        <p className="lct-cl-empty">Loading...</p>
                       ) : cls.length === 0 ? (
                         <p className="lct-cl-empty">No modules in this course yet.</p>
                       ) : (
@@ -465,7 +456,6 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                     </div>
                   )}
 
-                  {/* Progress view */}
                   {view === 'progress' && (
                     <CourseProgressView
                       data={progressData[course.id]}

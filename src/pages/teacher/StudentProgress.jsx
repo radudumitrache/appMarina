@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import NavBar from '../../components/teacher/NavBar'
 import StudentProgressHeader from '../../components/admin/student-progress/StudentProgressHeader'
 import TestResultsSection from '../../components/admin/student-progress/TestResultsSection'
-import ModulesSection from '../../components/admin/student-progress/ModulesSection'
+import CourseProgressSection from '../../components/teacher/progress/CourseProgressSection'
 import { getTeacherStudentProgress } from '../../api/teacher'
 import Sk from '../../components/shared/Skeleton'
 import '../css/teacher/StudentProgress.css'
@@ -86,15 +86,16 @@ export default function TeacherStudentProgress() {
           studentName={data.student_name}
           email={data.email}
           testCount={data.test_results.length}
-          moduleCount={data.modules_done.length}
+          moduleCount={(data.courses_progress ?? []).filter(c => c.completed).length}
+          moduleLabel="Courses Done"
         />
 
-        <div className="sp-grid">
+        <div className="sp-grid sp-grid--single">
           <TestResultsSection
             results={data.test_results}
             onSelect={t => navigate(`/teacher/submissions/${t.id}`)}
           />
-          <ModulesSection modules={data.modules_done} />
+          <CourseProgressSection courses={data.courses_progress ?? []} />
         </div>
       </div>
     </div>

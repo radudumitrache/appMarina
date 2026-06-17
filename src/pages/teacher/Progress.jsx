@@ -29,15 +29,15 @@ function relativeTime(iso) {
 
 function mapStudent(s) {
   return {
-    id:           s.student_id,
-    name:         s.student_name,
-    initials:     initials(s.student_name),
-    departmentId:   s.department_id,
-    className:      s.department_name,
-    modulesDone:  s.modules_done,
-    modulesTotal: s.modules_total,
-    lastActive:   relativeTime(s.last_active),
-    status:       s.status,
+    id:            s.student_id,
+    name:          s.student_name,
+    initials:      initials(s.student_name),
+    departmentId:  s.department_id,
+    className:     s.department_name,
+    coursesDone:   s.courses_done,
+    coursesTotal:  s.courses_total,
+    lastActive:    relativeTime(s.last_active),
+    status:        s.status,
   }
 }
 
@@ -75,7 +75,7 @@ export default function Progress() {
       )
       .sort((a, b) => {
         if (sortBy === 'name')     return a.name.localeCompare(b.name)
-        if (sortBy === 'progress') return (b.modulesDone / (b.modulesTotal || 1)) - (a.modulesDone / (a.modulesTotal || 1))
+        if (sortBy === 'progress') return (b.coursesDone / (b.coursesTotal || 1)) - (a.coursesDone / (a.coursesTotal || 1))
         return 0
       })
   }, [students, departmentFilter, search, sortBy])
@@ -84,7 +84,7 @@ export default function Progress() {
   const paginated  = visible.slice((page - 1) * pageSize, page * pageSize)
 
   const avgPct = students.length
-    ? Math.round(students.reduce((sum, s) => sum + (s.modulesDone / (s.modulesTotal || 1)) * 100, 0) / students.length)
+    ? Math.round(students.reduce((sum, s) => sum + (s.coursesDone / (s.coursesTotal || 1)) * 100, 0) / students.length)
     : 0
 
 

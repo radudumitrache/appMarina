@@ -12,7 +12,7 @@ export default function CourseEditor({
   classes = [],
   onTitleChange, onDescChange, onClassroomChange, onToggleStatus, onDeleteCourse,
   onRemoveModule, onMoveModule, onAddModule, onCreateModule,
-  onAddTest, allTests = [],
+  onAddTest, onCreateTest, allTests = [],
   panelsBasePath = '/teacher/modules',
   builderPath    = '/teacher/builder',
 }) {
@@ -125,6 +125,7 @@ export default function CourseEditor({
           onAdd={onAddModule}
           onCreateModule={onCreateModule}
           onAddTest={onAddTest}
+          onCreateTest={onCreateTest}
           allTests={allTests}
         />
       )}
