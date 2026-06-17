@@ -11,12 +11,12 @@
  *   onChangePanelIdx {Function}  receives a React state updater (i => i Â± 1)
  *   onBack           {Function}
  */
-export default function TopBar({ moduleTitle, moduleId, panelCount, panelIdx, onChangePanelIdx, onBack }) {
+export default function TopBar({ moduleTitle, moduleId, panelCount, panelIdx, onChangePanelIdx, onBack, backLabel = 'Builder' }) {
   return (
     <header className="lpe-topbar">
       <button className="lpe-back-btn" onClick={onBack}>
         <IconArrowLeft />
-        Builder
+        {backLabel}
       </button>
 
       <div className="lpe-topbar-center">

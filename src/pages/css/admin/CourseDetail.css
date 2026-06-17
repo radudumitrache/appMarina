@@ -409,14 +409,12 @@
   font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 500;
-  color: var(--text-3);
+  color: var(--text-2);
   cursor: pointer;
-  opacity: 0;
-  transition: opacity var(--duration-fast), background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
   flex-shrink: 0;
   white-space: nowrap;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
 }
-.crd-module-row:hover .crd-module-goto { opacity: 1; }
 .crd-module-goto:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: var(--border-hover);

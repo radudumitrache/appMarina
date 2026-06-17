@@ -64,7 +64,7 @@ function PageShell() {
           <Route path="/student/modules"      element={<PrivateRoute allowedRoles={['student']}><StudentModules /></PrivateRoute>} />
           <Route path="/student/modules/:id" element={<PrivateRoute allowedRoles={['student']}><StudentModuleReader /></PrivateRoute>} />
           <Route path="/student/tests/:id" element={<PrivateRoute allowedRoles={['student']}><StudentTestTaker /></PrivateRoute>} />
-          <Route path="/student/tests"     element={<PrivateRoute allowedRoles={['student']}><StudentTests /></PrivateRoute>} />
+          <Route path="/student/tests"     element={<Navigate to="/student/modules" replace />} />
           <Route path="/student/progress"  element={<PrivateRoute allowedRoles={['student']}><StudentProgress /></PrivateRoute>} />
           <Route path="/student/tests/:id/review" element={<PrivateRoute allowedRoles={['student']}><StudentTestReview /></PrivateRoute>} />
           <Route path="/student/submissions/:submissionId/review" element={<PrivateRoute allowedRoles={['student']}><StudentTestReview /></PrivateRoute>} />

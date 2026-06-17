@@ -1,13 +1,16 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { getCourse, getModules, addCourseModule, removeCourseModule } from '../../../api/modules'
+import { getTests } from '../../../api/tests'
 import '../../css/teacher/class-detail/CourseModuleModal.css'
 
-export default function CourseModuleModal({ course, classModules, onClose }) {
-  const [inCourse,  setInCourse]  = useState([])
+export default function CourseModuleModal({ course, classModules, departmentId, onClose }) {
+  const [tab,        setTab]        = useState('modules')
+  const [inCourse,   setInCourse]   = useState([])
   const [allModules, setAllModules] = useState([])
-  const [loading,   setLoading]   = useState(true)
-  const [dragSrc,   setDragSrc]   = useState(null)
+  const [allTests,   setAllTests]   = useState([])
+  const [loading,    setLoading]    = useState(true)
+  const [dragSrc,    setDragSrc]    = useState(null)
   const [overTarget, setOverTarget] = useState(null)
 
   useEffect(() => {
@@ -16,68 +19,91 @@ export default function CourseModuleModal({ course, classModules, onClose }) {
     Promise.all([
       getCourse(course.id),
       getModules({ visibility: 'public' }),
-    ]).then(([courseRes, publicRes]) => {
-      // Build inCourse list
+      departmentId ? getTests({ class: departmentId }) : Promise.resolve({ data: [] }),
+    ]).then(([courseRes, publicRes, testsRes]) => {
       const clMap = new Map(classModules.map(l => [l.id, l]))
       const loaded = (courseRes.data.modules ?? []).map(cl => {
-        const id = cl.module_detail?.id ?? cl.id
-        return clMap.get(id) ?? { id, title: cl.module_detail?.title ?? 'â€”', duration: cl.module_detail?.duration_minutes ? `${cl.module_detail.duration_minutes} min` : 'â€”' }
+        if (cl.test_detail) {
+          return { cmId: cl.id, id: cl.test_detail.id, title: cl.test_detail.title, itemType: 'test' }
+        }
+        if (cl.module_detail) {
+          const fromClass = clMap.get(cl.module_detail.id)
+          return {
+            cmId: cl.id,
+            id: cl.module_detail.id,
+            title: cl.module_detail.title,
+            duration: cl.module_detail.duration_minutes ? `${cl.module_detail.duration_minutes} min` : '',
+            source: fromClass ? 'class' : 'public',
+            itemType: 'module',
+          }
+        }
+        return null
       }).filter(Boolean)
       setInCourse(loaded)
 
-      // Merge class lessons + public lessons, deduped
+      const inCourseModuleIds = new Set(loaded.filter(i => i.itemType === 'module').map(i => i.id))
       const publicModules = (publicRes.data ?? [])
-        .filter(l => !classIds.has(l.id))
-        .map(l => ({ id: l.id, title: l.title, duration: l.duration_minutes ? `${l.duration_minutes} min` : 'â€”', source: 'public' }))
-
+        .filter(l => !classIds.has(l.id) && !inCourseModuleIds.has(l.id))
+        .map(l => ({ id: l.id, title: l.title, duration: l.duration_minutes ? `${l.duration_minutes} min` : '', source: 'public', itemType: 'module' }))
       setAllModules([
-        ...classModules.map(l => ({ ...l, source: 'class' })),
+        ...classModules.map(l => ({ id: l.id, title: l.title, duration: l.duration_minutes ? `${l.duration_minutes} min` : '', source: 'class', itemType: 'module' })),
         ...publicModules,
       ])
+
+      setAllTests((testsRes.data ?? []).map(t => ({ id: t.id, title: t.title, itemType: 'test' })))
     }).finally(() => setLoading(false))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const available = allModules.filter(l => !inCourse.some(c => c.id === l.id))
+  const inCourseModuleIds = new Set(inCourse.filter(i => i.itemType === 'module').map(i => i.id))
+  const inCourseTestIds   = new Set(inCourse.filter(i => i.itemType === 'test').map(i => i.id))
+  const availableModules  = allModules.filter(l => !inCourseModuleIds.has(l.id))
+  const availableTests    = allTests.filter(t => !inCourseTestIds.has(t.id))
 
-  const addModule = async (item) => {
-    if (inCourse.some(l => l.id === item.id)) return
-    setInCourse(prev => [...prev, item])
-    try { await addCourseModule(course.id, { module: item.id }) }
-    catch { setInCourse(prev => prev.filter(l => l.id !== item.id)) }
+  const addItem = async (item) => {
+    const key = item.itemType === 'test' ? 'test' : 'module'
+    const optimistic = { ...item, cmId: null }
+    setInCourse(prev => [...prev, optimistic])
+    try {
+      const res = await addCourseModule(course.id, { [key]: item.id })
+      setInCourse(prev => prev.map(i =>
+        i.id === item.id && i.itemType === item.itemType && i.cmId === null
+          ? { ...i, cmId: res.data.id }
+          : i
+      ))
+    } catch {
+      setInCourse(prev => prev.filter(i => !(i.id === item.id && i.itemType === item.itemType && i.cmId === null)))
+    }
   }
 
-  const removeModule = async (item) => {
-    setInCourse(prev => prev.filter(l => l.id !== item.id))
-    try { await removeCourseModule(course.id, item.id) }
+  const removeItem = async (item) => {
+    if (!item.cmId) return
+    setInCourse(prev => prev.filter(i => i.cmId !== item.cmId))
+    try { await removeCourseModule(course.id, item.cmId) }
     catch { setInCourse(prev => [...prev, item]) }
   }
 
-  // â”€â”€ drag handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- drag handlers -------------------------------------------------------
   const onDragStart = (dragItem, from) => (e) => {
     setDragSrc({ item: dragItem, from })
     e.dataTransfer.effectAllowed = 'move'
   }
-
   const onDragEnd = () => { setDragSrc(null); setOverTarget(null) }
-
   const onDragOver = (target) => (e) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
     setOverTarget(target)
   }
-
   const onDragLeave = () => setOverTarget(null)
-
   const onDrop = (target) => (e) => {
     e.preventDefault()
     setOverTarget(null)
     if (!dragSrc) return
-    if (target === 'course' && dragSrc.from === 'bank') addModule(dragSrc.item)
-    if (target === 'bank'   && dragSrc.from === 'course') removeModule(dragSrc.item)
+    if (target === 'course' && dragSrc.from === 'bank') addItem(dragSrc.item)
+    if (target === 'bank'   && dragSrc.from === 'course') removeItem(dragSrc.item)
     setDragSrc(null)
   }
 
-  const dur = l => l.duration ?? (l.duration_minutes ? `${l.duration_minutes} min` : '')
+  const availableNow = tab === 'modules' ? availableModules : availableTests
 
   return createPortal(
     <div className="clm-backdrop" onClick={onClose}>
@@ -97,14 +123,14 @@ export default function CourseModuleModal({ course, classModules, onClose }) {
           </button>
         </div>
 
-        <p className="clm-hint">Drag modules into the course, or click the <strong>+</strong> / <strong>Ã—</strong> buttons.</p>
+        <p className="clm-hint">Drag items into the course, or click the <strong>+</strong> / <strong>&times;</strong> buttons.</p>
 
         {loading ? (
-          <div className="clm-loading">Loadingâ€¦</div>
+          <div className="clm-loading">Loading...</div>
         ) : (
           <div className="clm-body">
 
-            {/* â”€â”€ Lesson bank (left) â”€â”€ */}
+            {/* -- Item bank (left) -- */}
             <div
               className={`clm-col ${overTarget === 'bank' && dragSrc?.from === 'course' ? 'clm-col--over' : ''}`}
               onDragOver={onDragOver('bank')}
@@ -112,17 +138,32 @@ export default function CourseModuleModal({ course, classModules, onClose }) {
               onDrop={onDrop('bank')}
             >
               <div className="clm-col-hd">
-                <span className="clm-col-title">Available Modules</span>
-                <span className="clm-col-count">{available.length}</span>
+                <div className="clm-tab-bar">
+                  <button
+                    className={`clm-tab${tab === 'modules' ? ' clm-tab--active' : ''}`}
+                    onClick={() => setTab('modules')}
+                  >
+                    Modules
+                  </button>
+                  <button
+                    className={`clm-tab${tab === 'tests' ? ' clm-tab--active' : ''}`}
+                    onClick={() => setTab('tests')}
+                  >
+                    Tests
+                  </button>
+                </div>
+                <span className="clm-col-count">{availableNow.length}</span>
               </div>
               <div className="clm-col-body">
-                {available.length === 0 ? (
-                  <p className="clm-empty">All modules added to course</p>
+                {availableNow.length === 0 ? (
+                  <p className="clm-empty">
+                    {tab === 'modules' ? 'All modules added to course' : 'All tests added to course'}
+                  </p>
                 ) : (
-                  available.map(l => (
+                  availableNow.map(l => (
                     <div
-                      key={l.id}
-                      className={`clm-item ${dragSrc?.item.id === l.id ? 'clm-item--dragging' : ''}`}
+                      key={`${l.itemType}-${l.id}`}
+                      className={`clm-item ${dragSrc?.item.id === l.id && dragSrc?.item.itemType === l.itemType ? 'clm-item--dragging' : ''}`}
                       draggable
                       onDragStart={onDragStart(l, 'bank')}
                       onDragEnd={onDragEnd}
@@ -130,11 +171,11 @@ export default function CourseModuleModal({ course, classModules, onClose }) {
                       <div className="clm-item-info">
                         <span className="clm-item-title">{l.title}</span>
                         <div className="clm-item-meta">
-                          {dur(l) && <span className="clm-dur">{dur(l)}</span>}
+                          {l.duration && <span className="clm-dur">{l.duration}</span>}
                           {l.source === 'public' && <span className="clm-tag clm-tag--public">PUBLIC</span>}
                         </div>
                       </div>
-                      <button className="clm-action clm-action--add" onClick={() => addModule(l)} title="Add to course">
+                      <button className="clm-action clm-action--add" onClick={() => addItem(l)} title="Add to course">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                         </svg>
@@ -145,14 +186,14 @@ export default function CourseModuleModal({ course, classModules, onClose }) {
               </div>
             </div>
 
-            {/* â”€â”€ Arrow â”€â”€ */}
+            {/* -- Arrow -- */}
             <div className="clm-arrow">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
               </svg>
             </div>
 
-            {/* â”€â”€ Course (right) â”€â”€ */}
+            {/* -- Course (right) -- */}
             <div
               className={`clm-col clm-col--course ${overTarget === 'course' && dragSrc?.from === 'bank' ? 'clm-col--over' : ''}`}
               onDragOver={onDragOver('course')}
@@ -169,13 +210,13 @@ export default function CourseModuleModal({ course, classModules, onClose }) {
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.3 }}>
                       <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                     </svg>
-                    <span>Drop modules here</span>
+                    <span>Drop items here</span>
                   </div>
                 ) : (
                   inCourse.map(l => (
                     <div
-                      key={l.id}
-                      className={`clm-item clm-item--in ${dragSrc?.item.id === l.id ? 'clm-item--dragging' : ''}`}
+                      key={`${l.itemType}-${l.id}`}
+                      className={`clm-item clm-item--in ${dragSrc?.item.id === l.id && dragSrc?.item.itemType === l.itemType ? 'clm-item--dragging' : ''}`}
                       draggable
                       onDragStart={onDragStart(l, 'course')}
                       onDragEnd={onDragEnd}
@@ -183,10 +224,16 @@ export default function CourseModuleModal({ course, classModules, onClose }) {
                       <div className="clm-item-info">
                         <span className="clm-item-title">{l.title}</span>
                         <div className="clm-item-meta">
-                          {dur(l) && <span className="clm-dur">{dur(l)}</span>}
+                          {l.duration && <span className="clm-dur">{l.duration}</span>}
+                          {l.itemType === 'test' && <span className="clm-tag clm-tag--test">TEST</span>}
                         </div>
                       </div>
-                      <button className="clm-action clm-action--remove" onClick={() => removeModule(l)} title="Remove from course">
+                      <button
+                        className="clm-action clm-action--remove"
+                        onClick={() => removeItem(l)}
+                        disabled={!l.cmId}
+                        title="Remove from course"
+                      >
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                         </svg>

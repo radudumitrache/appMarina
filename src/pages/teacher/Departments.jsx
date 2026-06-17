@@ -31,9 +31,10 @@ export default function Departments() {
     getDepartments()
       .then(({ data }) => setDepartments(data.map(dep => ({
         ...dep,
-        students:     dep.student_count,
-        modulesTotal: dep.module_count,
-        modulesDone:  0,
+        students:      dep.student_count,
+        coursesTotal:  dep.course_count,
+        modulesTotal:  dep.module_count,
+        modulesDone:   0,
       }))))
       .finally(() => setLoading(false))
   }, [])
@@ -80,7 +81,7 @@ export default function Departments() {
     setSaving(true)
     try {
       const { data } = await createDepartment(form)
-      setDepartments(prev => [{ ...data, students: data.student_count, modulesTotal: data.module_count, modulesDone: 0 }, ...prev])
+      setDepartments(prev => [{ ...data, students: data.student_count, coursesTotal: data.course_count, modulesTotal: data.module_count, modulesDone: 0 }, ...prev])
       closeModal()
     } catch (err) {
       const d = err?.response?.data

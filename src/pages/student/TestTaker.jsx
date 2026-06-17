@@ -157,7 +157,7 @@ export default function TestTaker() {
           test={test}
           panels={panels}
           onStart={handleStart}
-          onBack={() => navigate('/student/tests')}
+          onBack={() => navigate('/student/modules')}
         />
       </div>
     )
@@ -168,7 +168,7 @@ export default function TestTaker() {
       <div className="tt-page">
         <TestResults
           result={result}
-          onBack={() => navigate('/student/tests')}
+          onBack={() => navigate('/student/modules')}
         />
       </div>
     )
@@ -181,7 +181,7 @@ export default function TestTaker() {
         title={test.title}
         timeLeft={timeLeft}
         submitting={submitting}
-        onBack={() => navigate('/student/tests')}
+        onBack={() => navigate('/student/modules')}
         onSubmit={handleSubmit}
       />
 

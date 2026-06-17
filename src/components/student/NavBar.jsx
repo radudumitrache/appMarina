@@ -3,12 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import '../css/student/NavBar.css'
 
 const LINKS = [
-  { label: 'Dashboard', slug: 'dashboard' },
-  { label: 'Courses',   slug: 'modules'   },
-  { label: 'Tests',     slug: 'tests'     },
-  { label: 'Progress',  slug: 'progress'  },
-  { label: 'My Department', slug: 'my-class'  },
-  { label: 'Support',   slug: 'support'   },
+  { label: 'Dashboard',      slug: 'dashboard' },
+  { label: 'Courses',        slug: 'modules'   },
+  { label: 'Progress',       slug: 'progress'  },
+  { label: 'My Department',  slug: 'my-class'  },
+  { label: 'Support',        slug: 'support'   },
 ]
 
 export default function NavBar() {

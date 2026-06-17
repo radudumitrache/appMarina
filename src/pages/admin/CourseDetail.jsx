@@ -261,16 +261,14 @@ function CourseItemRow({ entry, index, dragOverIndex, onRemove, onNavigate, onDr
       <span className="crd-module-order">{entry.order}</span>
       {isTest && <span className="crd-module-badge crd-module-badge--test">Test</span>}
       <span className="crd-module-title">{title}</span>
-      {!isTest && (
-        <button className="crd-module-goto" onClick={() => onNavigate(entry)} title="Go to module">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            <polyline points="15 3 21 3 21 9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
-          </svg>
-          Go to module
-        </button>
-      )}
+      <button className="crd-module-goto" onClick={() => onNavigate(entry)} title={isTest ? 'Go to test' : 'Go to module'}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        {isTest ? 'Go to test' : 'Go to module'}
+      </button>
       <button className="crd-module-remove" onClick={() => onRemove(entry)}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -701,7 +699,7 @@ export default function CourseDetail() {
                   index={index}
                   dragOverIndex={dragOverIdx}
                   onRemove={handleRemoveModule}
-                  onNavigate={e => navigate(`/admin/modules/${e.module}/panels`)}
+                  onNavigate={e => e.test ? navigate(`/admin/tests`, { state: { openTestId: e.test } }) : navigate(`/admin/modules/${e.module}/panels`, { state: { backPath: '/admin/courses', backLabel: 'Courses' } })}
                   onDragStart={i => setDragIdx(i)}
                   onDragOver={i => setDragOverIdx(i)}
                   onDrop={handleDrop}

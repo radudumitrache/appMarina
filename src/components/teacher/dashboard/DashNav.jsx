@@ -16,7 +16,7 @@ const ACTIONS = [
   },
   {
     id: 'builder',
-    label: 'Course Builder',
+    label: 'Courses',
     path: '/teacher/builder',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">

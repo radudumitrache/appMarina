@@ -20,9 +20,11 @@ import '../css/teacher/ModulePanelEditor.css'
 export default function ModulePanelEditor() {
   const { id }    = useParams()
   const navigate  = useNavigate()
-  const { state } = useLocation()
+  const { state, pathname } = useLocation()
 
-  const backPath = state?.backPath ?? '/teacher/builder'
+  const isAdminContext = pathname.startsWith('/admin')
+  const backPath  = state?.backPath  ?? (isAdminContext ? '/admin/courses' : '/teacher/builder')
+  const backLabel = state?.backLabel ?? (isAdminContext ? 'Courses' : 'Builder')
 
   const {
     module, panels, panelIdx, setPanelIdx,
@@ -177,6 +179,7 @@ const [lookDir,          setLookDir]          = useState({ lon: 0, lat: 0 })
         panelIdx={panelIdx}
         onChangePanelIdx={(i) => { setLookDir({ lon: 0, lat: 0 }); setPanelIdx(i) }}
         onBack={() => navigate(backPath)}
+        backLabel={backLabel}
       />
 
       {panel && (

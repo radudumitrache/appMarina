@@ -40,7 +40,7 @@ export default function ClassRoster({ classmates, myRank }) {
                     {student.isMe && <span className="roster-you-tag">you</span>}
                   </span>
                   <span className="roster-grade" style={{ color: gradeColor(student.avgGrade) }}>
-                    {student.avgGrade != null ? `${student.avgGrade}%` : 'â€”'}
+                    {student.avgGrade != null ? `${student.avgGrade}%` : '--'}
                   </span>
                 </div>
                 <div className="roster-bar-track">

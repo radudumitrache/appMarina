@@ -89,90 +89,128 @@ function QuickAwardModal({ classId, student, diplomas, onClose, onDiplomasChange
 
 // Per-course progress view
 
+function gradeColor(grade) {
+  if (grade === null || grade === undefined) return 'pending'
+  if (grade >= 70) return 'pass'
+  if (grade >= 50) return 'warn'
+  return 'fail'
+}
+
 function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
-  if (loading || !data) {
-    return <p className="lct-cl-empty">Loading progress...</p>
+  if (loading) return <p className="lct-cl-empty">Loading progress...</p>
+  if (!data)   return <p className="lct-cl-empty">Could not load progress.</p>
+
+  const { items, students } = data
+
+  if (!students || students.length === 0) {
+    return <p className="lct-cl-empty">No enrolled students in this department.</p>
   }
-
-  const { modules, students } = data
-
-  if (students.length === 0) {
-    return <p className="lct-cl-empty">No enrolled students in this class.</p>
+  if (!items || items.length === 0) {
+    return <p className="lct-cl-empty">This course has no items yet.</p>
   }
-
-  if (modules.length === 0) {
-    return <p className="lct-cl-empty">This course has no modules yet.</p>
-  }
-
-  const useDots = modules.length <= 12
 
   return (
-    <div className="lct-progress-wrap">
-      {useDots && (
-        <div className="lct-progress-legend">
-          {modules.map((l, i) => (
-            <span key={l.id} className="lct-progress-legend-item" title={l.title}>
-              <span className="lct-progress-legend-num">{i + 1}</span>
-              <span className="lct-progress-legend-label">{l.title}</span>
-            </span>
-          ))}
-        </div>
-      )}
+    <div className="lct-ptable-wrap">
+      <div className="lct-ptable-scroll">
+        <table className="lct-ptable">
+          <thead>
+            <tr>
+              <th className="lct-ptable-th lct-ptable-th--student">Student</th>
+              {items.map((item, i) => (
+                <th key={`${item.type}-${item.id}`} className={`lct-ptable-th lct-ptable-th--item${item.type === 'test' ? ' lct-ptable-th--test' : ''}`}>
+                  <span className="lct-ptable-item-num">{i + 1}</span>
+                  <span className="lct-ptable-item-title" title={item.title}>{item.title}</span>
+                  {item.type === 'test'
+                    ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                    : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                  }
+                </th>
+              ))}
+              <th className="lct-ptable-th lct-ptable-th--score">Score</th>
+              <th className="lct-ptable-th lct-ptable-th--actions"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {students.map(s => {
+              const completedModules = new Set(s.module_completed ?? [])
+              const testGrades = s.test_grades ?? {}
 
-      <div className="lct-progress-list">
-        {students.map(s => {
-          const completedSet = new Set(s.completed)
-          const doneCount = s.completed.length
-          const total = modules.length
-          const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0
-          const allDone = total > 0 && doneCount === total
+              let done = 0
+              items.forEach(item => {
+                if (item.type === 'module' && completedModules.has(item.id)) done++
+                else if (item.type === 'test' && String(item.id) in testGrades) done++
+              })
+              const total = items.length
+              const pct = total > 0 ? Math.round((done / total) * 100) : 0
+              const allDone = total > 0 && done === total
 
-          return (
-            <div key={s.id} className="lct-progress-row">
-              <div className={`lct-progress-avatar${allDone ? ' lct-progress-avatar--done' : ''}`}>
-                {initials(s.name)}
-              </div>
-              <span className="lct-progress-name">{s.name}</span>
+              return (
+                <tr key={s.id} className={`lct-ptable-row${allDone ? ' lct-ptable-row--done' : ''}`}>
+                  <td className="lct-ptable-td lct-ptable-td--student">
+                    <div className={`lct-progress-avatar lct-progress-avatar--sm${allDone ? ' lct-progress-avatar--done' : ''}`}>
+                      {initials(s.name)}
+                    </div>
+                    <span className="lct-ptable-name">{s.name}</span>
+                  </td>
 
-              {useDots ? (
-                <div className="lct-progress-dots">
-                  {modules.map(l => (
-                    <span
-                      key={l.id}
-                      className={`lct-progress-dot${completedSet.has(l.id) ? ' lct-progress-dot--done' : ''}`}
-                      title={`${l.title}: ${completedSet.has(l.id) ? 'Completed' : 'Not completed'}`}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="lct-progress-bar-wrap">
-                  <div className="lct-mini-bar">
-                    <div
-                      className={`lct-mini-fill${allDone ? ' lct-mini-fill--done' : ''}`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              )}
+                  {items.map(item => {
+                    if (item.type === 'module') {
+                      const done = completedModules.has(item.id)
+                      return (
+                        <td key={`${item.type}-${item.id}`} className="lct-ptable-td lct-ptable-td--cell">
+                          {done
+                            ? <span className="lct-ptable-check">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                              </span>
+                            : <span className="lct-ptable-empty" />
+                          }
+                        </td>
+                      )
+                    } else {
+                      const key = String(item.id)
+                      const submitted = key in testGrades
+                      const grade = testGrades[key]
+                      const color = submitted ? gradeColor(grade) : 'none'
+                      return (
+                        <td key={`${item.type}-${item.id}`} className="lct-ptable-td lct-ptable-td--cell">
+                          {!submitted
+                            ? <span className="lct-ptable-empty" />
+                            : <span className={`lct-ptable-grade lct-ptable-grade--${color}`}>
+                                {grade !== null && grade !== undefined ? `${Math.round(grade)}%` : 'Pending'}
+                              </span>
+                          }
+                        </td>
+                      )
+                    }
+                  })}
 
-              <span className={`lct-progress-count${allDone ? ' lct-progress-count--done' : ''}`}>
-                {doneCount}/{total}
-              </span>
+                  <td className="lct-ptable-td lct-ptable-td--score">
+                    <div className="lct-ptable-score-wrap">
+                      <div className="lct-ptable-bar">
+                        <div className={`lct-ptable-bar-fill lct-ptable-bar-fill--${allDone ? 'done' : 'default'}`} style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className={`lct-ptable-score-label${allDone ? ' lct-ptable-score-label--done' : ''}`}>{done}/{total}</span>
+                    </div>
+                  </td>
 
-              <button
-                className="lct-progress-award-btn"
-                onClick={() => onAwardStudent(s.id, s.name)}
-                title="Grant diploma"
-              >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="8" r="6"/>
-                  <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
-                </svg>
-                Diploma
-              </button>
-            </div>
-          )
-        })}
+                  <td className="lct-ptable-td lct-ptable-td--actions">
+                    <button
+                      className="lct-progress-award-btn"
+                      onClick={() => onAwardStudent(s.id, s.name)}
+                      title="Grant diploma"
+                    >
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="8" r="6"/>
+                        <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+                      </svg>
+                      Diploma
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   )
@@ -237,17 +275,22 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
     setCourseModules(prev => ({ ...prev, [courseId]: prev[courseId].filter(l => l.id !== moduleId) }))
     setConfirmCourseModule(null)
     try { await removeCourseModule(courseId, moduleId) }
-    catch { getCourse(courseId).then(d => setCourseModules(prev => ({ ...prev, [courseId]: (d.data.modules ?? []).map(cl => cl.module_detail ?? cl) }))).catch(() => {}) }
+    catch { getCourse(courseId).then(d => setCourseModules(prev => ({ ...prev, [courseId]: (d.data.modules ?? []).map(cl => ({ id: cl.id, title: cl.module_detail?.title ?? cl.test_detail?.title ?? '(untitled)', itemType: cl.test_detail ? 'test' : 'module' })) }))).catch(() => {}) }
   }
 
   useEffect(() => {
     getCourses().then(res => {
-      const list = res.data.filter(c => c.department_id === departmentId || c.department_id === Number(departmentId))
+      const deptId = Number(departmentId)
+      const list = res.data.filter(c => c.department_ids?.includes(deptId))
       setCourses(list)
       setLoadingCourses(false)
       list.forEach(c => {
         getCourse(c.id).then(detail => {
-          const mods = (detail.data.modules ?? []).map(cl => cl.module_detail ?? cl)
+          const mods = (detail.data.modules ?? []).map(cl => ({
+            id: cl.id,
+            title: cl.module_detail?.title ?? cl.test_detail?.title ?? '(untitled)',
+            itemType: cl.test_detail ? 'test' : 'module',
+          }))
           setCourseModules(prev => ({ ...prev, [c.id]: mods }))
         }).catch(() => {})
       })
@@ -353,7 +396,7 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                     {course.title}
                   </button>
                   <span className={`lct-status lct-status--${course.status}`}>{course.status}</span>
-                  {cls && <span className="lct-course-count">{cls.length} module{cls.length !== 1 ? 's' : ''}</span>}
+                  {cls && <span className="lct-course-count">{cls.length} item{cls.length !== 1 ? 's' : ''}</span>}
                 </div>
 
                 <div className="lct-course-actions">
@@ -384,11 +427,11 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                     </button>
                   )}
 
-                  <button className="lct-manage-btn" onClick={() => setManagingCourse(course)} title="Manage modules">
+                  <button className="lct-manage-btn" onClick={() => setManagingCourse(course)} title="Manage items">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>
-                    Modules
+                    Add Items
                   </button>
                 </div>
               </div>
@@ -427,6 +470,7 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                             <div key={l.id} className="lct-cl-item">
                               <span className="lct-cl-num">{i + 1}</span>
                               <span className="lct-cl-title">{l.title}</span>
+                              {l.itemType === 'test' && <span className="lct-cl-type-badge">Test</span>}
                               <div className="lct-cl-actions">
                                 {isConf ? (
                                   <div className="lct-inline-confirm">
@@ -477,9 +521,14 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
       <CourseModuleModal
         course={managingCourse}
         classModules={classModules}
+        departmentId={departmentId}
         onClose={() => {
           getCourse(managingCourse.id).then(detail => {
-            const mods = (detail.data.modules ?? []).map(cl => cl.module_detail ?? cl)
+            const mods = (detail.data.modules ?? []).map(cl => ({
+              id: cl.id,
+              title: cl.module_detail?.title ?? cl.test_detail?.title ?? '(untitled)',
+              itemType: cl.test_detail ? 'test' : 'module',
+            }))
             setCourseModules(prev => ({ ...prev, [managingCourse.id]: mods }))
           }).catch(() => {})
           setManagingCourse(null)

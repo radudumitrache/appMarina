@@ -1,6 +1,6 @@
 ﻿import '../../css/student/module-reader/ModuleTopBar.css'
 
-export default function ModuleTopBar({ moduleTitle, panelIdx, panelCount, completed, completing, onBack, onPrev, onNext, onToggleComplete }) {
+export default function ModuleTopBar({ moduleTitle, panelIdx, panelCount, completed, completing, onBack, onPrev, onNext, onToggleComplete, backLabel = 'Lessons' }) {
   return (
     <header className="lr-topbar">
       <button className="lr-back-btn" onClick={onBack}>
@@ -8,7 +8,7 @@ export default function ModuleTopBar({ moduleTitle, panelIdx, panelCount, comple
           <line x1="19" y1="12" x2="5" y2="12"/>
           <polyline points="12 19 5 12 12 5"/>
         </svg>
-        Lessons
+        {backLabel}
       </button>
 
       <div className="lr-topbar-center">
@@ -53,7 +53,7 @@ export default function ModuleTopBar({ moduleTitle, panelIdx, panelCount, comple
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 6L9 17l-5-5"/>
             </svg>
-            <span>{completing ? 'â€¦' : completed ? 'Completed' : 'Mark Complete'}</span>
+            <span>{completing ? '...' : completed ? 'Completed' : 'Mark Complete'}</span>
           </button>
         )}
       </div>

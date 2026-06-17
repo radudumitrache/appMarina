@@ -6,9 +6,7 @@ import ClassStats from '../../components/teacher/class-detail/ClassStats'
 import ClassTabBar from '../../components/teacher/class-detail/ClassTabBar'
 import StudentList from '../../components/teacher/class-detail/StudentList'
 import ModulesCoursesTab from '../../components/teacher/class-detail/ModulesCoursesTab'
-import TestList from '../../components/teacher/class-detail/TestList'
 import AnnouncementsTab from '../../components/teacher/class-detail/AnnouncementsTab'
-import CreateTestModal from '../../components/teacher/class-detail/CreateTestModal'
 import ClassFormModal from '../../components/teacher/classes/ClassFormModal'
 import DeleteConfirmModal from '../../components/admin/classes/DeleteConfirmModal'
 import ClassDetailSkeleton from '../../components/teacher/class-detail/ClassDetailSkeleton'
@@ -20,14 +18,12 @@ export default function DepartmentDetail() {
   const { id } = useParams()
   const [tab,    setTab]    = useState('students')
   const [search, setSearch] = useState('')
-  const [showTestModal, setShowTestModal] = useState(false)
 
   const {
     cls, setCls,
-    students, modules, tests, announcements,
+    students, modules, announcements,
     loading,
     handleModuleUpdate,
-    handleTestCreated,
     handleAnnouncementAdded,
     handleAnnouncementUpdated,
     handleAnnouncementRemoved,
@@ -55,7 +51,6 @@ export default function DepartmentDetail() {
 
   const totalStudents   = students.length
   const activeStudents  = students.filter(s => s.status === 'active').length
-  const testsTotal      = tests.length
   const coursesTotal    = students.length > 0 ? (students[0].coursesTotal ?? 0) : (cls.course_count ?? 0)
   const coursesDone     = students.length > 0
     ? Math.min(...students.map(s => s.coursesDone ?? 0))
@@ -103,7 +98,6 @@ export default function DepartmentDetail() {
               onTabChange={handleTabChange}
               search={search}
               onSearchChange={setSearch}
-              onNewTest={() => setShowTestModal(true)}
             />
 
             <div className="cd-tab-content">
@@ -117,7 +111,6 @@ export default function DepartmentDetail() {
                   onModuleUpdate={handleModuleUpdate}
                 />
               )}
-              {tab === 'tests' && <TestList tests={tests} />}
               {tab === 'announcements' && (
                 <AnnouncementsTab
                   departmentId={id}
@@ -132,13 +125,6 @@ export default function DepartmentDetail() {
         </div>
       </div>
 
-      {showTestModal && (
-        <CreateTestModal
-          departmentId={id}
-          onClose={() => setShowTestModal(false)}
-          onCreated={handleTestCreated}
-        />
-      )}
       {showEditModal && (
         <ClassFormModal
           mode="edit"

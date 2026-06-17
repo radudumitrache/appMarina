@@ -65,7 +65,7 @@ export default function TestIntro({ test, panels, onStart, onBack }) {
 
         <div className="tt-intro-actions">
           <button className="tt-start-btn" onClick={onStart}>Start Test</button>
-          <button className="tt-back-btn" onClick={onBack}>Back to Tests</button>
+          <button className="tt-back-btn" onClick={onBack}>Back to Courses</button>
         </div>
       </div>
     </div>

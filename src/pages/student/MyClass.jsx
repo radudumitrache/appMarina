@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate }    from 'react-router-dom'
 import { useAuth }        from '../../auth/AuthContext'
 import NavBar             from '../../components/student/NavBar'
@@ -33,7 +33,6 @@ export default function MyClass() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // used only for the unenrolled "first join" card
   const [joinCode,  setJoinCode]  = useState('')
   const [joining,   setJoining]   = useState(false)
   const [joinError, setJoinError] = useState(null)
@@ -73,7 +72,6 @@ export default function MyClass() {
     }
   }
 
-  // Called by JoinClassCard (unenrolled state) â€” throws on error so the card can show it
   async function handleFirstJoin(e) {
     e.preventDefault()
     if (!joinCode.trim()) return
@@ -93,7 +91,6 @@ export default function MyClass() {
     }
   }
 
-  // Called by ClassSidebar â€” throws on error so the sidebar can show it
   async function handleSidebarJoin(code) {
     await joinClass(code)
     const { data: updated } = await getDepartments()
@@ -106,7 +103,7 @@ export default function MyClass() {
     return (
       <div className="myclass-page">
         <NavBar />
-        <div className="myclass-loading"><span>Loadingâ€¦</span></div>
+        <div className="myclass-loading"><span>Loading...</span></div>
       </div>
     )
   }
@@ -127,7 +124,6 @@ export default function MyClass() {
     )
   }
 
-  // â”€â”€ Enrolled in at least one class â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const classroom = departments.find(c => c.id === selectedId) ?? departments[0]
 
   const classmates = enrollments
@@ -186,7 +182,7 @@ export default function MyClass() {
     },
     {
       label:  'Class Avg Grade',
-      value:  classAvg != null ? String(Math.round(classAvg)) : 'â€”',
+      value:  classAvg != null ? String(Math.round(classAvg)) : '--',
       suffix: classAvg != null ? '%' : '',
       sub:    'across all tests',
     },
@@ -220,7 +216,7 @@ export default function MyClass() {
 
           <div className="myclass-content">
             {detailLoading ? (
-              <div className="myclass-loading"><span>Loadingâ€¦</span></div>
+              <div className="myclass-loading"><span>Loading...</span></div>
             ) : (
               <>
                 <ClassStatCards statCards={statCards} />

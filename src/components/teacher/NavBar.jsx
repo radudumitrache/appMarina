@@ -5,7 +5,7 @@ import '../css/teacher/NavBar.css'
 const LINKS = [
   { label: 'Dashboard',        slug: 'dashboard'   },
   { label: 'My Departments',   slug: 'departments' },
-  { label: 'Course Builder',   slug: 'builder'     },
+  { label: 'Courses',          slug: 'builder'     },
   { label: 'Student Progress', slug: 'progress'    },
   { label: 'Tests',            slug: 'tests'       },
   { label: 'Test Builder',     slug: 'assignments' },

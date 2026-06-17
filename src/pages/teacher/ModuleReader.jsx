@@ -146,6 +146,7 @@ export default function TeacherModuleReader() {
         moduleTitle={module?.title ?? `Module ${id}`}
         panelIdx={panelIdx}
         panelCount={panels.length}
+        backLabel="Modules"
         onBack={() => navigate(-1)}
         onPrev={() => { setLookDir({ lon: 0, lat: 0 }); setPanelIdx(i => i - 1) }}
         onNext={() => { setLookDir({ lon: 0, lat: 0 }); setPanelIdx(i => i + 1) }}

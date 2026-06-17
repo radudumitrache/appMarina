@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import NavBar         from '../../components/admin/NavBar'
 import TestSidebar    from '../../components/teacher/test-builder/TestSidebar'
 import TestEditorMain from '../../components/teacher/test-builder/TestEditorMain'
@@ -13,6 +14,7 @@ import '../css/teacher/TestBuilder.css'
 
 export default function AdminTestBuilder() {
   const { user } = useAuth()
+  const { state: locationState } = useLocation()
   const [tests,         setTests]         = useState([])
   const [departments,   setDepartments]   = useState([])
   const [organisations, setOrganisations] = useState([])
@@ -38,6 +40,9 @@ export default function AdminTestBuilder() {
       .then(([testsRes, classesRes]) => {
         setTests(testsRes.data)
         setDepartments(classesRes.data)
+        if (locationState?.openTestId) {
+          setSelectedId(locationState.openTestId)
+        }
       })
       .finally(() => setLoading(false))
     if (user?.is_staff) {

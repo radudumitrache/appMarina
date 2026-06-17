@@ -32,7 +32,7 @@ export default function TestResults({ result, onBack }) {
           </>
         )}
 
-        <button className="tt-results-back" onClick={onBack}>Back to Tests</button>
+        <button className="tt-results-back" onClick={onBack}>Back to Courses</button>
       </div>
     </div>
   )
