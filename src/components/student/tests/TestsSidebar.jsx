@@ -3,8 +3,8 @@ import '../../css/student/tests/TestsSidebar.css'
 function getClassStats(tests, departmentId) {
   const subset =
     departmentId === 'all'  ? tests :
-    departmentId === 'open' ? tests.filter(t => !t.department_id) :
-    tests.filter(t => t.department_id === departmentId)
+    departmentId === 'open' ? tests.filter(t => !t.departments?.length) :
+    tests.filter(t => t.departments?.some(d => d.id === departmentId))
   return {
     total:   subset.length,
     pending: subset.filter(t => !t.completed).length,

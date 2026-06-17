@@ -310,7 +310,7 @@ export default function CourseDetail() {
   const [dragOverIdx, setDragOverIdx]   = useState(null)
 
   const EMPTY_MODULE_FORM = { title: '', description: '', duration_minutes: 30, difficulty: 'beginner', visibility: 'public' }
-  const EMPTY_TEST_FORM   = { title: '', time_limit_minutes: 30, department: null }
+  const EMPTY_TEST_FORM   = { title: '', time_limit_minutes: 30, department_ids: [] }
   const [modulePanel, setModulePanel]   = useState(false)
   const [moduleForm,  setModuleForm]    = useState(EMPTY_MODULE_FORM)
   const [testPanel,   setTestPanel]     = useState(false)
@@ -378,7 +378,7 @@ export default function CourseDetail() {
   const handleCreateTest = async () => {
     try {
       const payload = { title: testForm.title, time_limit_minutes: testForm.time_limit_minutes }
-      if (testForm.department) payload.department = testForm.department
+      if (testForm.department_ids?.length) payload.department_ids = testForm.department_ids
       const { data: test } = await createTest(payload)
       setAllTests(prev => [test, ...prev])
       const { data: entry } = await addCourseModule(id, { test: test.id })

@@ -43,8 +43,8 @@ export default function Tests() {
 
   const byDepartment =
     activeDepartment === 'all'  ? tests :
-    activeDepartment === 'open' ? tests.filter(t => !t.department_id) :
-    tests.filter(t => t.department_id === activeDepartment)
+    activeDepartment === 'open' ? tests.filter(t => !t.departments?.length) :
+    tests.filter(t => t.departments?.some(d => d.id === activeDepartment))
 
   const byStatus =
     statusFilter === 'all' ? byDepartment : byDepartment.filter(t => t.status === statusFilter)

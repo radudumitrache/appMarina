@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import '../../css/teacher/test-builder/TestMetaRow.css'
+import MultiSelectDropdown from '../../shared/MultiSelectDropdown'
 import { useAuth } from '../../../auth/AuthContext'
 
 export default function TestMetaRow({ selected, panelCount, classes = [], organisations = [], onUpdate, allowPublic = false }) {
@@ -18,35 +19,24 @@ export default function TestMetaRow({ selected, panelCount, classes = [], organi
     }
   }
 
-  function handleClassChange(e) {
-    const val = e.target.value
-    onUpdate({ department: val ? Number(val) : null })
-  }
-
-  const noClassSelected = !selected.department
+  const selectedDeptIds = (selected.departments ?? []).map(d => d.id)
+  const noClassSelected = !selectedDeptIds.length
 
   return (
     <div className="tb-meta-row">
-      <div className="tb-meta-field">
+      <div className="tb-meta-field tb-meta-field--wide">
         <label className="tb-meta-label">
-          Department
+          Departments
           {!allowPublic && noClassSelected && (
             <span className="tb-meta-required">Required</span>
           )}
         </label>
-        <select
-          className={`tb-meta-input tb-meta-select${!allowPublic && noClassSelected ? ' tb-meta-select--required' : ''}`}
-          value={selected.department ?? ''}
-          onChange={handleClassChange}
-        >
-          {allowPublic
-            ? <option value="">— Public —</option>
-            : <option value="" disabled>— Select a department —</option>
-          }
-          {classes.map(c => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
+        <MultiSelectDropdown
+          value={selectedDeptIds}
+          onChange={ids => onUpdate({ department_ids: ids })}
+          placeholder={allowPublic ? '-- Public --' : '-- Select departments --'}
+          options={classes.map(c => ({ value: c.id, label: c.name }))}
+        />
       </div>
       <div className="tb-meta-field">
         <label className="tb-meta-label">Time Limit (min)</label>
@@ -68,7 +58,7 @@ export default function TestMetaRow({ selected, panelCount, classes = [], organi
             value={selected.organisation ?? ''}
             onChange={e => onUpdate({ organisation: e.target.value ? Number(e.target.value) : null })}
           >
-            <option value="">— None —</option>
+            <option value="">-- None --</option>
             {organisations.map(o => (
               <option key={o.id} value={o.id}>{o.name}</option>
             ))}

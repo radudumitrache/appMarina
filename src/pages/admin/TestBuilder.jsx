@@ -143,7 +143,7 @@ export default function AdminTestBuilder() {
   }
 
   const panels   = testDetail?.panels ?? []
-  const hasClass = Boolean(testDetail?.department)
+  const hasClass = Boolean(testDetail?.departments?.length)
 
   return (
     <div className="tb-page">

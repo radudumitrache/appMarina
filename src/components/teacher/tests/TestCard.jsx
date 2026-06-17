@@ -5,7 +5,9 @@ export default function TestCard({ test, index }) {
   const navigate   = useNavigate()
   const delay      = `${Math.min(index, 6) * 0.04}s`
   const num        = String(test.id).padStart(2, '0')
-  const classLabel = test.department_name ?? 'Open Access'
+  const classLabel = test.departments?.length
+    ? test.departments.map(d => d.name).join(', ')
+    : 'Open Access'
   const isPublished = test.status === 'published'
 
   return (

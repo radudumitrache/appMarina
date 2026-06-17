@@ -274,7 +274,7 @@ export default function EditDrawer({
       <div className="lpe-drawer-header">
         <div className="lpe-drawer-title-row">
           <span className={`lpe-type-badge lpe-type-badge--${panel.type}`}>
-            {panel.type === 'vr_tour' ? '360Â° VR Tour' : 'Text Panel'}
+            {panel.type === 'vr_tour' ? '360° VR Tour' : 'Text Panel'}
           </span>
           <button className="lpe-drawer-close" onClick={onClose} aria-label="Close">
             <IconClose />
@@ -293,7 +293,7 @@ export default function EditDrawer({
               className="lpe-input"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="Panel titleâ€¦"
+              placeholder="Panel title..."
             />
           </div>
         )}
@@ -414,7 +414,7 @@ export default function EditDrawer({
         <div className="lpe-drawer-footer">
           <button className="lpe-btn-ghost" onClick={onClose}>Discard</button>
           <button className="lpe-save-btn" onClick={handleSave} disabled={!dirty || saving}>
-            {saving ? 'Savingâ€¦' : 'Save'}
+            {saving ? 'Saving...' : 'Save'}
           </button>
         </div>
       )}

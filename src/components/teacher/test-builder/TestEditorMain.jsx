@@ -74,7 +74,7 @@ export default function TestEditorMain({
             key={panel.id}
             panel={panel}
             testId={selectedId}
-            departmentId={testDetail.department ?? null}
+            departmentId={testDetail.departments?.[0]?.id ?? null}
             index={i}
             expanded={expandedPanelId === panel.id}
             onExpand={() => onExpand(panel.id)}

@@ -77,6 +77,9 @@
   padding-right: 28px;
 }
 
+.tb-meta-field--wide { min-width: 260px; }
+.tb-meta-field--wide > * { width: 100%; }
+
 .tb-meta-select option {
   background: var(--surface-2);
   color: var(--text);

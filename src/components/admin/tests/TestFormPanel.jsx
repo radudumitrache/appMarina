@@ -1,5 +1,5 @@
 import '../../css/admin/tests/TestFormPanel.css'
-import Dropdown from '../../shared/Dropdown'
+import MultiSelectDropdown from '../../shared/MultiSelectDropdown'
 
 function XIcon() {
   return (
@@ -46,11 +46,11 @@ export default function TestFormPanel({ form, onChange, onClose, onSave, departm
 
           {departments.length > 0 && (
             <div className="form-row">
-              <label className="form-label">Department (optional)</label>
-              <Dropdown
-                value={form.department ?? null}
-                onChange={v => onChange('department', v)}
-                placeholder="— Organisation-wide —"
+              <label className="form-label">Departments (optional)</label>
+              <MultiSelectDropdown
+                value={form.department_ids ?? []}
+                onChange={ids => onChange('department_ids', ids)}
+                placeholder="-- Organisation-wide --"
                 options={departments.map(d => ({ value: d.id, label: `${d.name}${d.code ? ` (${d.code})` : ''}` }))}
               />
             </div>

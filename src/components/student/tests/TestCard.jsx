@@ -30,7 +30,9 @@ export default function TestCard({ test, index }) {
   const dueDateStatus = getDueDateStatus(test.due_date)
   const formattedDate = formatDate(test.due_date)
   const num           = String(test.id).padStart(2, '0')
-  const classLabel    = test.department_name ?? null
+  const classLabel    = test.departments?.length
+    ? test.departments.map(d => d.name).join(', ')
+    : null
 
   if (test.completed) {
     const attemptsUsed    = test.attempts_used ?? 1

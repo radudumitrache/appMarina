@@ -10,8 +10,8 @@ import '../css/student/Tests.css'
 function getClassStats(tests, departmentId) {
   const subset =
     departmentId === 'all'  ? tests :
-    departmentId === 'open' ? tests.filter(t => !t.department_id) :
-    tests.filter(t => t.department_id === departmentId)
+    departmentId === 'open' ? tests.filter(t => !t.departments?.length) :
+    tests.filter(t => t.departments?.some(d => d.id === departmentId))
   return {
     total:   subset.length,
     pending: subset.filter(t => !t.completed).length,
@@ -56,13 +56,13 @@ export default function Tests() {
 
   const byClass =
     activeDepartment === 'all'  ? tests :
-    activeDepartment === 'open' ? tests.filter(t => !t.department_id) :
-    tests.filter(t => t.department_id === activeDepartment)
+    activeDepartment === 'open' ? tests.filter(t => !t.departments?.length) :
+    tests.filter(t => t.departments?.some(d => d.id === activeDepartment))
 
   const bySource =
     sourceFilter === 'all'   ? byClass :
-    sourceFilter === 'class' ? byClass.filter(t => t.department_id) :
-    byClass.filter(t => !t.department_id)
+    sourceFilter === 'class' ? byClass.filter(t => t.departments?.length) :
+    byClass.filter(t => !t.departments?.length)
 
   const filtered  = bySource.filter(t =>
     t.title.toLowerCase().includes(searchQuery.toLowerCase().trim())

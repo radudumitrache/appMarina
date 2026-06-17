@@ -26,7 +26,7 @@ import '../css/admin/CourseDetail.css'
 
 const EMPTY_COURSE_FORM  = { title: '', description: '', department_ids: [], status: 'draft', author_id: '' }
 const EMPTY_MODULE_FORM  = { title: '', duration_minutes: 60, difficulty: 'intermediate', visibility: 'class', department: null, organisation_id: null }
-const EMPTY_TEST_FORM    = { title: '', time_limit_minutes: 30, department: null }
+const EMPTY_TEST_FORM    = { title: '', time_limit_minutes: 30, department_ids: [] }
 const DIFFICULTIES       = ['easy', 'intermediate', 'advanced']
 
 function mapModule(l) {
@@ -625,7 +625,7 @@ export default function Courses() {
     if (!testCreateForm.title.trim()) return
     try {
       const payload = { title: testCreateForm.title.trim(), time_limit_minutes: testCreateForm.time_limit_minutes || 30 }
-      if (testCreateForm.department) payload.department = testCreateForm.department
+      if (testCreateForm.department_ids?.length) payload.department_ids = testCreateForm.department_ids
       const { data } = await createTest(payload)
       setAllTests(prev => [data, ...prev])
       setTestCreatePanel(false)

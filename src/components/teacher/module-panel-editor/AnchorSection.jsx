@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import {
   listTextAnchors,
   createTextAnchor,
@@ -59,7 +59,7 @@ function NavLookPicker({ targetPanel, targetLon, targetLat, onPick, onClear }) {
     }
     for (const na of tour.navigator_anchors ?? []) {
       const { lon, lat } = posToLonLat(na.pos_x, na.pos_y, na.pos_z)
-      out.push({ id: `ref-na-${na.id}`, lon, lat, label: na.title || 'â†’', show_title: false, className: 'vr-hotspot--anchor vr-hotspot--nav lpe-ref-hotspot', onClick: null })
+      out.push({ id: `ref-na-${na.id}`, lon, lat, label: na.title || '->', show_title: false, className: 'vr-hotspot--anchor vr-hotspot--nav lpe-ref-hotspot', onClick: null })
     }
     if (hasDir) {
       out.push({
@@ -104,7 +104,7 @@ function NavLookPicker({ targetPanel, targetLon, targetLat, onPick, onClear }) {
         />
         <div className="lpe-nav-look-hint">
           {hasDir
-            ? `Lon ${targetLon}Â° Â· Lat ${targetLat}Â° â€” click to reposition`
+            ? `Lon ${targetLon}° · Lat ${targetLat}° -- click to reposition`
             : 'Click anywhere to set look direction'}
         </div>
       </div>
@@ -140,7 +140,7 @@ function PanelPicker({ value, onChange, panels }) {
         onClick={() => setOpen(o => !o)}
       >
         <span className={`lpe-panel-picker-label${!selected ? ' lpe-panel-picker-label--placeholder' : ''}`}>
-          {selected ? selected.title : 'â€” select a panel â€”'}
+          {selected ? selected.title : '-- select a panel --'}
         </span>
         <svg className="lpe-panel-picker-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="6 9 12 15 18 9"/>
@@ -151,7 +151,7 @@ function PanelPicker({ value, onChange, panels }) {
         <div className="lpe-panel-picker-list">
           {panels.map(p => {
             const isActive = String(p.id) === String(value)
-            const badge = p.type === 'vr_tour' ? '360Â°' : 'Text'
+            const badge = p.type === 'vr_tour' ? '360°' : 'Text'
             return (
               <div
                 key={p.id}
@@ -232,18 +232,6 @@ function posToLonLat(x, y, z) {
   }
 }
 
-/* â”€â”€ AnchorSection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
- * Manages text, navigator, and polygon anchors for a single VR panel.
- * Rendered inside EditDrawer when the panel type is 'vr_tour'.
- *
- * Props:
- *   moduleId            {string}
- *   panelId             {number}
- *   initialTextAnchors  {Array}
- *   initialNavAnchors   {Array}
- *   initialPolyAnchors  {Array}
- *   onAnchorsChange     {Function}  called with (textAnchors, navAnchors, polyAnchors)
- */
 export default function AnchorSection({
   moduleId,
   panelId,
@@ -253,18 +241,18 @@ export default function AnchorSection({
   initialNavAnchors,
   initialPolyAnchors,
   onAnchorsChange,
-  focusAnchor,         // { anchor, type, ts } â€” opens edit form for an existing anchor
-  onEnterPlacement,    // (type) â†’ void â€” called when Add is clicked; parent enters placement mode
-  newAnchorPlacement,  // { type, x, y, z, ts } â€” on scene click; opens new-anchor form pre-filled
-  onNewAnchorSaved,    // () â†’ void â€” called after a new anchor is created; clears the preview dot
-  newPolyPlacement,    // { points: [{x,y,z,order},...], ts } â€” finished polygon vertices from scene
-  onNewPolySaved,      // () â†’ void â€” called after new polygon + all points are saved
-  newPolyPoint,              // { x,y,z, polygonId, pointId?, ts } â€” single scene-placed point
-  onNewPolyPointSaved,       // () â†’ void
-  onActivePolyPointsChange,  // (hotspots | null) â†’ void â€” scene hotspots for editing polygon points
-  onAnchorEditingChange,     // (boolean) â†’ void â€” true when an anchor edit form is open
-  draggedAnchorPos,          // { x, y, z, ts } | null â€” live drag from VRViewer
-  getViewerCameraDir,        // () => { lon, lat } | null â€” reads live camera direction from VRViewer
+  focusAnchor,
+  onEnterPlacement,
+  newAnchorPlacement,
+  onNewAnchorSaved,
+  newPolyPlacement,
+  onNewPolySaved,
+  newPolyPoint,
+  onNewPolyPointSaved,
+  onActivePolyPointsChange,
+  onAnchorEditingChange,
+  draggedAnchorPos,
+  getViewerCameraDir,
 }) {
   const { user } = useAuth()
   const isAdmin = user?.role === 'admin'
@@ -279,20 +267,16 @@ export default function AnchorSection({
   const [polyDocs,       setPolyDocs]       = useState([])
   const [polyDocUploading, setPolyDocUploading] = useState(false)
 
-  // All panels available as navigation targets (any type, excluding current)
   const targetPanels = useMemo(() =>
     panels.filter(p => p.id !== panelId)
   , [panels, panelId])
 
-  // Map panel.id â†’ panel title for display in the navigator anchor list
   const panelIdToTitle = useMemo(() => {
     const map = {}
     for (const p of panels) map[p.id] = p.title
     return map
   }, [panels])
 
-  // Fetch fresh text anchor data on mount so the description field is always populated
-  // (the panel list endpoint may omit description; the dedicated endpoint includes it)
   useEffect(() => {
     listTextAnchors(moduleId, panelId)
       .then(res => setTextAnchors(res.data))
@@ -305,14 +289,12 @@ export default function AnchorSection({
   const [formFocused, setFormFocused] = useState(false)
   const [openSections, setOpenSections] = useState({ text: false, nav: false, poly: false })
 
-  // Notify parent whenever anchor arrays change (skip initial mount)
   const mountedRef = useRef(false)
   useEffect(() => {
     if (!mountedRef.current) { mountedRef.current = true; return }
     onAnchorsChange?.(textAnchors, navAnchors, polyAnchors)
   }, [textAnchors, navAnchors, polyAnchors])
 
-  // Auto-open form + scroll + highlight when triggered from the context menu (existing anchor)
   useEffect(() => {
     if (!focusAnchor) return
     if (focusAnchor.type === 'poly') {
@@ -327,7 +309,6 @@ export default function AnchorSection({
     setTimeout(() => setFormFocused(false), 1000)
   }, [focusAnchor])
 
-  // Open new-anchor form pre-filled with clicked panorama coordinates
   useEffect(() => {
     if (!newAnchorPlacement) return
     setForm({ type: newAnchorPlacement.type, anchor: null })
@@ -346,7 +327,6 @@ export default function AnchorSection({
     setTimeout(() => setFormFocused(false), 1000)
   }, [newAnchorPlacement])
 
-  // Open polygon form pre-filled with centroid of clicked vertices
   useEffect(() => {
     if (!newPolyPlacement) return
     const pts = newPolyPlacement.points
@@ -364,8 +344,7 @@ export default function AnchorSection({
     setTimeout(() => setFormFocused(false), 1000)
   }, [newPolyPlacement])
 
-  // â”€â”€ Text / Navigator form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const [form,    setForm]          = useState(null)  // { type:'text'|'nav', anchor: obj|null }
+  const [form,    setForm]          = useState(null)
   const [saving,  setAnchorSaving]  = useState(false)
   const [error,   setAnchorError]   = useState(null)
 
@@ -413,7 +392,6 @@ export default function AnchorSection({
     setNavAnchors(prev => prev.filter(a => a.id !== '__preview__'))
   }
 
-  // Sync documents when opening an existing text anchor form
   useEffect(() => {
     if (form?.type === 'text' && form.anchor) {
       setAnchorDocs(form.anchor.documents ?? [])
@@ -437,7 +415,6 @@ export default function AnchorSection({
     setAnchorDocs(prev => prev.filter(d => d.id !== docId))
   }
 
-  // When the user drags an anchor hotspot in the VR scene, update the open form's position
   useEffect(() => {
     if (!draggedAnchorPos || !form) return
     setPosX(draggedAnchorPos.x.toFixed(4))
@@ -519,14 +496,12 @@ export default function AnchorSection({
     }
   }
 
-  // Real-time hotspot preview: sync live pos values into anchor arrays
   useEffect(() => {
     if (!form) return
     const x = parseFloat(posX), y = parseFloat(posY), z = parseFloat(posZ)
     if ([x, y, z].some(Number.isNaN)) return
 
     if (form.anchor) {
-      // Existing anchor â€” update position in place
       if (form.type === 'text') {
         setTextAnchors(prev => prev.map(a =>
           a.id === form.anchor.id ? { ...a, pos_x: x, pos_y: y, pos_z: z } : a
@@ -537,8 +512,7 @@ export default function AnchorSection({
         ))
       }
     } else {
-      // New anchor â€” upsert a temporary preview hotspot
-      const preview = { id: '__preview__', pos_x: x, pos_y: y, pos_z: z, title: 'â—' }
+      const preview = { id: '__preview__', pos_x: x, pos_y: y, pos_z: z, title: '●' }
       if (form.type === 'text') {
         setTextAnchors(prev => [...prev.filter(a => a.id !== '__preview__'), preview])
       } else {
@@ -553,10 +527,8 @@ export default function AnchorSection({
         : (form.type === 'text' ? 'New Text Anchor'  : 'New Navigator Anchor'))
     : ''
 
-  // â”€â”€ Polygon state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [polyForm,    setPolyForm]    = useState(null)
 
-  // Notify parent when anchor edit mode changes (must be after form + polyForm declarations)
   useEffect(() => {
     onAnchorEditingChange?.(!!form || !!polyForm)
   }, [form, polyForm])
@@ -565,7 +537,6 @@ export default function AnchorSection({
   const [polySaving,  setPolySaving]  = useState(false)
   const [polyError,   setPolyError]   = useState(null)
 
-  // Scene-placed single point: add to existing polygon or reposition
   useEffect(() => {
     if (!newPolyPoint) return
     const { x, y, z, polygonId, pointId } = newPolyPoint
@@ -573,7 +544,6 @@ export default function AnchorSection({
     const anchorId = polyForm.anchor.id
 
     if (pointId) {
-      // Reposition existing point
       setPtActionIds(prev => new Set([...prev, pointId]))
       setPolyError(null)
       updatePolygonPoint(moduleId, panelId, anchorId, pointId, { x, y, z })
@@ -593,7 +563,6 @@ export default function AnchorSection({
           onNewPolyPointSaved?.()
         })
     } else {
-      // Add new point
       const order = polyAnchors.find(pa => pa.id === anchorId)?.points?.length ?? 0
       setPtSaving(true)
       setPolyError(null)
@@ -608,15 +577,13 @@ export default function AnchorSection({
     }
   }, [newPolyPoint])
 
-  // â”€â”€ Polygon point editing state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const [editingPoint, setEditingPoint] = useState(null)  // point being edited in-place
+  const [editingPoint, setEditingPoint] = useState(null)
   const [editPtX,      setEditPtX]      = useState('')
   const [editPtY,      setEditPtY]      = useState('')
   const [editPtZ,      setEditPtZ]      = useState('')
   const [ptSaving,     setPtSaving]     = useState(false)
   const [ptActionIds,  setPtActionIds]  = useState(() => new Set())
 
-  // Real-time point position preview while dragging sliders (must be after editPtX/Y/Z declarations)
   useEffect(() => {
     if (!editingPoint || !polyForm?.anchor) return
     const x = parseFloat(editPtX), y = parseFloat(editPtY), z = parseFloat(editPtZ)
@@ -647,7 +614,6 @@ export default function AnchorSection({
     setPolyDocs([])
   }
 
-  // Sync polygon anchor documents when opening an existing polygon form
   useEffect(() => {
     if (polyForm?.anchor) {
       setPolyDocs(polyForm.anchor.documents ?? [])
@@ -705,7 +671,6 @@ export default function AnchorSection({
     if (targetIdx < 0 || targetIdx >= pts.length) return
     const ptA = pts[idx], ptB = pts[targetIdx]
     const orderA = ptB.order, orderB = ptA.order
-    // Optimistic update
     setPolyAnchors(prev => prev.map(pa =>
       pa.id === polyForm.anchor.id
         ? { ...pa, points: pa.points.map(p => {
@@ -721,7 +686,6 @@ export default function AnchorSection({
         updatePolygonPoint(moduleId, panelId, polyForm.anchor.id, ptB.id, { order: orderB }),
       ])
     } catch {
-      // Revert on failure
       setPolyAnchors(prev => prev.map(pa =>
         pa.id === polyForm.anchor.id
           ? { ...pa, points: pa.points.map(p => {
@@ -749,7 +713,6 @@ export default function AnchorSection({
         const res = await createPolygonAnchor(moduleId, panelId, data)
         const newAnchor = { ...res.data, points: [] }
 
-        // Batch-save all vertices that were placed on the scene
         const pending = pendingPolyPointsRef.current
         if (pending.length > 0) {
           const savedPoints = []
@@ -831,7 +794,6 @@ export default function AnchorSection({
       .slice().sort((a, b) => a.order - b.order)
   }, [polyAnchors, polyForm?.anchor?.id])
 
-  // Emit scene hotspots for the currently-open polygon so the parent can highlight them
   useEffect(() => {
     if (!polyForm?.anchor) {
       onActivePolyPointsChange?.(null)
@@ -863,7 +825,6 @@ export default function AnchorSection({
     <div className="lpe-anchor-section">
       <div className="lpe-anchor-divider" />
 
-      {/* â”€â”€ Edit view: focused single-anchor form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {isEditing && (
         <>
           <button className="lpe-anchor-back-btn" onClick={form ? closeForm : closePolyForm}>
@@ -871,7 +832,6 @@ export default function AnchorSection({
             Anchors
           </button>
 
-          {/* Text / Navigator form */}
           {form && (
             <div ref={formRef} className={`lpe-anchor-form${formFocused ? ' lpe-anchor-form--focused' : ''}`}>
               <div className="lpe-anchor-form-title">{formTitle}</div>
@@ -907,7 +867,7 @@ export default function AnchorSection({
                 <>
                   <div className="lpe-field">
                     <label className="lpe-label">Title</label>
-                    <input className="lpe-input" value={aTitle} onChange={e => setATitle(e.target.value)} placeholder="Anchor titleâ€¦" />
+                    <input className="lpe-input" value={aTitle} onChange={e => setATitle(e.target.value)} placeholder="Anchor title..." />
                   </div>
                   <div className="lpe-field">
                     <label className="lpe-label">Description</label>
@@ -916,7 +876,7 @@ export default function AnchorSection({
                       value={aDesc}
                       onChange={setADesc}
                       departmentId={departmentId}
-                      placeholder="Descriptionâ€¦"
+                      placeholder="Description..."
                     />
                   </div>
                   {form.anchor && (
@@ -948,7 +908,7 @@ export default function AnchorSection({
                   </div>
                   <div className="lpe-field">
                     <label className="lpe-label">Label <span className="lpe-label-opt">(optional)</span></label>
-                    <input className="lpe-input" value={aTitle} onChange={e => setATitle(e.target.value)} placeholder="e.g. Engine Room â†’" />
+                    <input className="lpe-input" value={aTitle} onChange={e => setATitle(e.target.value)} placeholder="e.g. Engine Room ->" />
                   </div>
                   <div className="lpe-field">
                     <label className="lpe-label">Description <span className="lpe-label-opt">(optional)</span></label>
@@ -957,7 +917,7 @@ export default function AnchorSection({
                       value={aDesc}
                       onChange={setADesc}
                       departmentId={departmentId}
-                      placeholder="Descriptionâ€¦"
+                      placeholder="Description..."
                     />
                   </div>
                   {targetIsVR && targetPanelObj && (
@@ -982,13 +942,12 @@ export default function AnchorSection({
 
               <div className="lpe-anchor-form-footer">
                 <button className="lpe-anchor-save-btn" onClick={handleSave} disabled={saving}>
-                  {saving ? 'Savingâ€¦' : form.anchor ? 'Update' : 'Create'}
+                  {saving ? 'Saving...' : form.anchor ? 'Update' : 'Create'}
                 </button>
               </div>
             </div>
           )}
 
-          {/* Polygon form */}
           {polyForm && (
             <div ref={polyFormRef} className={`lpe-anchor-form lpe-anchor-form--poly${formFocused ? ' lpe-anchor-form--focused' : ''}`}>
               <div className="lpe-anchor-form-title">
@@ -996,13 +955,13 @@ export default function AnchorSection({
               </div>
               {!polyForm.anchor && pendingPolyPointsRef.current.length > 0 && (
                 <p className="lpe-anchor-empty" style={{ color: 'var(--gold)', marginBottom: 4 }}>
-                  {pendingPolyPointsRef.current.length} vertices ready â€” add a title and save.
+                  {pendingPolyPointsRef.current.length} vertices ready -- add a title and save.
                 </p>
               )}
 
               <div className="lpe-field">
                 <label className="lpe-label">Title</label>
-                <input className="lpe-input" value={polyTitle} onChange={e => setPolyTitle(e.target.value)} placeholder="Polygon region titleâ€¦" />
+                <input className="lpe-input" value={polyTitle} onChange={e => setPolyTitle(e.target.value)} placeholder="Polygon region title..." />
               </div>
 
               <div className="lpe-field">
@@ -1012,7 +971,7 @@ export default function AnchorSection({
                   value={polyContent}
                   onChange={setPolyContent}
                   departmentId={departmentId}
-                  placeholder="Polygon region contentâ€¦"
+                  placeholder="Polygon region content..."
                 />
               </div>
 
@@ -1031,11 +990,10 @@ export default function AnchorSection({
 
               <div className="lpe-anchor-form-footer">
                 <button className="lpe-anchor-save-btn" onClick={handlePolySave} disabled={polySaving}>
-                  {polySaving ? 'Savingâ€¦' : polyForm.anchor ? 'Update' : 'Create & Add Points'}
+                  {polySaving ? 'Saving...' : polyForm.anchor ? 'Update' : 'Create & Add Points'}
                 </button>
               </div>
 
-              {/* Points sub-section â€” only shown after the polygon exists in the backend */}
               {polyForm.anchor && (
                 <div className="lpe-poly-points">
                   <div className="lpe-anchor-group-header" style={{ marginTop: 4 }}>
@@ -1084,7 +1042,7 @@ export default function AnchorSection({
 
                           <div className="lpe-anchor-form-footer" style={{ marginTop: 8 }}>
                             <button className="lpe-anchor-save-btn" onClick={() => handleSavePoint(pt.id)} disabled={ptActionIds.has(pt.id)}>
-                              {ptActionIds.has(pt.id) ? 'Savingâ€¦' : 'Save'}
+                              {ptActionIds.has(pt.id) ? 'Saving...' : 'Save'}
                             </button>
                             <button className="lpe-anchor-cancel-btn" onClick={() => setEditingPoint(null)}>Cancel</button>
                           </div>
@@ -1093,7 +1051,7 @@ export default function AnchorSection({
                         <div className="lpe-poly-point-row">
                           <span className="lpe-poly-point-num">{i + 1}</span>
                           <span className="lpe-anchor-pos lpe-poly-point-coords">
-                            {pt.x.toFixed(1)} Â· {pt.y.toFixed(1)} Â· {pt.z.toFixed(1)}
+                            {pt.x.toFixed(1)} &middot; {pt.y.toFixed(1)} &middot; {pt.z.toFixed(1)}
                           </span>
                           <div className="lpe-poly-point-actions">
                             <button className="lpe-anchor-icon-btn" title="Edit position" onClick={() => openEditPoint(pt)} disabled={!!editingPoint || ptSaving}>
@@ -1120,7 +1078,6 @@ export default function AnchorSection({
         </>
       )}
 
-      {/* â”€â”€ List view: collapsible section dropdowns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {!isEditing && (
         <>
           <div className="lpe-anchor-heading">
@@ -1130,7 +1087,6 @@ export default function AnchorSection({
             </span>
           </div>
 
-          {/* Text section */}
           <div className="lpe-anchor-group">
             <div className="lpe-anchor-group-header">
               <button
@@ -1168,7 +1124,6 @@ export default function AnchorSection({
             )}
           </div>
 
-          {/* Navigator section */}
           <div className="lpe-anchor-group">
             <div className="lpe-anchor-group-header">
               <button
@@ -1196,7 +1151,7 @@ export default function AnchorSection({
                 {panels.length >= 2 && navAnchors.length === 0 && <p className="lpe-anchor-empty">No navigator anchors yet.</p>}
                 {navAnchors.map(a => (
                   <div key={a.id} className="lpe-anchor-item lpe-anchor-item--clickable" onClick={() => openForm('nav', a)}>
-                    <span className="lpe-anchor-item-title">â†’ {a.title || (panelIdToTitle[a.target_panel] ?? `Panel #${a.target_panel}`)}</span>
+                    <span className="lpe-anchor-item-title">{'-> '}{a.title || (panelIdToTitle[a.target_panel] ?? `Panel #${a.target_panel}`)}</span>
                     <div className="lpe-anchor-item-actions">
                       <button className="lpe-anchor-icon-btn lpe-anchor-icon-btn--delete" title="Delete" onClick={e => { e.stopPropagation(); handleDelete('nav', a.id) }} disabled={saving}>
                         <IconTrash />
@@ -1210,7 +1165,6 @@ export default function AnchorSection({
 
           {error && <p className="lpe-anchor-form-error" style={{ marginTop: 4 }}>{error}</p>}
 
-          {/* Polygon section */}
           <div className="lpe-anchor-group">
             <div className="lpe-anchor-group-header">
               <button

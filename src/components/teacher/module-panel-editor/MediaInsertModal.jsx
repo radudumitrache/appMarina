@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { getMediaFiles, getUploadUrl, uploadToGCS, confirmUpload } from '../../../api/media'
 import '../../css/teacher/module-panel-editor/MediaInsertModal.css'
@@ -129,7 +129,7 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
           <div className="mim-upload-bar">
             <button className="mim-upload-btn" onClick={() => fileRef.current.click()} disabled={uploading}>
               {uploading ? (
-                <><span className="mim-spinner" />Uploadingâ€¦</>
+                <><span className="mim-spinner" />Uploading...</>
               ) : (
                 <>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -176,9 +176,9 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
           )}
 
           {loading ? (
-            <p className="mim-hint">Loadingâ€¦</p>
+            <p className="mim-hint">Loading...</p>
           ) : displayed.length === 0 ? (
-            <p className="mim-hint">No {mode === 'image' ? 'images' : 'videos'} yet â€” upload one above.</p>
+            <p className="mim-hint">No {mode === 'image' ? 'images' : 'videos'} yet -- upload one above.</p>
           ) : (
             <div className="mim-file-list">
               {displayed.map(f => (
@@ -229,7 +229,7 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
         {uploading && (
           <div className="mim-upload-overlay">
             <div className="mim-upload-overlay-spinner" />
-            <span className="mim-upload-overlay-label">Uploading imageâ€¦</span>
+            <span className="mim-upload-overlay-label">Uploading image...</span>
           </div>
         )}
       </div>

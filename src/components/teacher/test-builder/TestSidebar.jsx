@@ -101,7 +101,7 @@ export default function TestSidebar({ tests, selectedId, onSelect, onNew, onDele
 
               {!confirming && (
                 <div className="tb-test-item-meta">
-                  <span>{t.department_name || 'No department'}</span>
+                  <span>{t.departments?.length ? t.departments.map(d => d.name).join(', ') : 'No department'}</span>
                   <span>{t.time_limit_minutes} min</span>
                 </div>
               )}

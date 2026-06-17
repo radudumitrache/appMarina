@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import QuestionHtmlEditor from '../test-builder/QuestionHtmlEditor'
 import DocumentSection from '../module-panel-editor/DocumentSection'
 import {
@@ -108,7 +108,7 @@ export default function VRAnchorDrawer({
             className="tb-meta-input vrpe-edit-input"
             value={editForm.title || ''}
             onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
-            placeholder="Anchor title (hotspot label)â€¦"
+            placeholder="Anchor title (hotspot label)..."
           />
 
           <QuestionHtmlEditor
@@ -116,7 +116,7 @@ export default function VRAnchorDrawer({
             value={selectedAnchor.data.text || ''}
             departmentId={departmentId}
             onBlur={html => setEditForm(f => ({ ...f, text: html }))}
-            placeholder="Question / prompt textâ€¦"
+            placeholder="Question / prompt text..."
           />
 
           {selectedAnchor.type === 'mcq' && (
@@ -137,10 +137,12 @@ export default function VRAnchorDrawer({
                       const opts = [...editForm.options]; opts[oi] = e.target.value
                       setEditForm(f => ({ ...f, options: opts }))
                     }}
-                    placeholder={`Option ${oi + 1}â€¦`}
+                    placeholder={`Option ${oi + 1}...`}
                   />
                   {(editForm.options || []).length > 2 && (
-                    <button type="button" className="tb-opt-del" onClick={() => setEditForm(f => ({ ...f, options: f.options.filter((_, i) => i !== oi) }))}>Ã—</button>
+                    <button type="button" className="tb-opt-del" onClick={() => setEditForm(f => ({ ...f, options: f.options.filter((_, i) => i !== oi) }))}>
+                      &times;
+                    </button>
                   )}
                 </label>
               ))}
@@ -157,7 +159,7 @@ export default function VRAnchorDrawer({
                 className="tb-meta-input vrpe-edit-input"
                 value={editForm.correct_word || ''}
                 onChange={e => setEditForm(f => ({ ...f, correct_word: e.target.value }))}
-                placeholder="Expected answerâ€¦"
+                placeholder="Expected answer..."
               />
             </div>
           )}
@@ -173,7 +175,7 @@ export default function VRAnchorDrawer({
 
           <div className="vrpe-edit-actions">
             <button className="vrpe-edit-move-btn" onClick={() => onSetMoving(true)} disabled={moving || saving}>
-              {moving ? 'Click in sceneâ€¦' : 'Move position'}
+              {moving ? 'Click in scene...' : 'Move position'}
             </button>
             <button
               className="vrpe-anchor-del vrpe-edit-del-btn"
@@ -184,7 +186,7 @@ export default function VRAnchorDrawer({
           </div>
 
           <button className="tb-add-q-confirm vrpe-edit-save-btn" onClick={handleSave} disabled={saving}>
-            {saving ? 'Savingâ€¦' : 'Save changes'}
+            {saving ? 'Saving...' : 'Save changes'}
           </button>
         </>
       ) : (

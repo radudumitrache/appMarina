@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { getMediaFiles, getUploadUrl, uploadToGCS, confirmUpload } from '../../../api/media'
 import '../../css/teacher/module-panel-editor/ScenePicker.css'
@@ -71,7 +71,7 @@ export default function ScenePicker({ value, onChange, departmentId, folderName 
           {uploading ? (
             <>
               <span className="sp-upload-spinner" />
-              Uploadingâ€¦
+              Uploading...
             </>
           ) : (
             <>
@@ -97,9 +97,9 @@ export default function ScenePicker({ value, onChange, departmentId, folderName 
       {uploadErr && <p className="sp-error">{uploadErr}</p>}
 
       {loading ? (
-        <p className="sp-hint">Loading scenesâ€¦</p>
+        <p className="sp-hint">Loading scenes...</p>
       ) : scenes.length === 0 ? (
-        <p className="sp-hint">No VR scenes yet â€” upload a 360Â° panorama and mark it as a VR Scene.</p>
+        <p className="sp-hint">No VR scenes yet -- upload a 360° panorama and mark it as a VR Scene.</p>
       ) : (
         <div className="sp-list">
           {scenes.map(scene => (
