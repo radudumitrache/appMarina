@@ -1,11 +1,11 @@
-import { STATUS_META } from '../../../pages/admin/supportMock'
+﻿import { STATUS_META } from '../../../pages/admin/supportMock'
 import '../../css/admin/support/TicketsTable.css'
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-const ROLE_LABEL = { student: 'Student', teacher: 'Teacher' }
+const ROLE_LABEL = { student: 'Student', trainer: 'trainer' }
 
 export default function TicketsTable({ tickets, selectedId, onSelect }) {
   if (tickets.length === 0) {

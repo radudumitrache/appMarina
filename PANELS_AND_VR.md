@@ -1,4 +1,4 @@
-# Panels & VR Tour System
+﻿# Panels & VR Tour System
 
 Each `Lesson` is composed of an ordered list of **Panels**. A panel is either a block of text or an immersive VR tour. VR tours contain spatial **Anchors** — interactive hotspots placed at specific 3-D coordinates inside the scene.
 
@@ -72,7 +72,7 @@ Transitions the viewer to a different VR tour when activated.
 
 ## API reference
 
-All write endpoints require a **teacher** (own lessons only) or **admin** role.
+All write endpoints require a **trainer** (own lessons only) or **admin** role.
 
 Base path: `/api/lessons/<lesson_pk>/panels/`
 
@@ -298,12 +298,12 @@ All panel endpoints require a JWT access token. Obtain one first:
 POST /api/auth/login/
 Content-Type: application/json
 
-{ "username": "teacher@example.com", "password": "..." }
+{ "username": "trainer@example.com", "password": "..." }
 ```
 
 Response:
 ```json
-{ "access": "<jwt_access_token>", "refresh": "<jwt_refresh_token>", "role": "teacher" }
+{ "access": "<jwt_access_token>", "refresh": "<jwt_refresh_token>", "role": "trainer" }
 ```
 
 Include the token on every subsequent request:
@@ -321,11 +321,11 @@ POST /api/auth/token/refresh/
 
 ### Role requirements
 
-Panel endpoints are **restricted to teachers and admins**. Students receive `403 Forbidden` on all panel routes.
+Panel endpoints are **restricted to trainers and admins**. Students receive `403 Forbidden` on all panel routes.
 
 | Role | Can read panels | Can write panels |
 |---|---|---|
-| `teacher` | Own lessons only | Own lessons only |
+| `trainer` | Own lessons only | Own lessons only |
 | `admin` | All lessons | All lessons |
 | `student` | No | No |
 
@@ -361,7 +361,7 @@ The response will contain `"id": <lesson_pk>`. Use that ID for all subsequent pa
 
 #### 403 on any panel endpoint
 
-Your JWT belongs to a user with role `student`. Panel endpoints require `teacher` or `admin`. Log in with a teacher or admin account.
+Your JWT belongs to a user with role `student`. Panel endpoints require `trainer` or `admin`. Log in with a trainer or admin account.
 
 #### 400 on `POST /api/lessons/{lesson_pk}/panels/` with `type: "vr_tour"`
 
@@ -446,14 +446,14 @@ const panels = await GET(`/api/lessons/${lessonId}/panels/`);
 
 ### Complete viewer integration flow
 
-Students view a lesson's panels by reading the lesson detail, then fetching panels. However, since panel endpoints are teacher/admin only, **you must proxy or embed panel data through a separate student-accessible endpoint**, or fetch panels server-side and embed them in the lesson response.
+Students view a lesson's panels by reading the lesson detail, then fetching panels. However, since panel endpoints are trainer/admin only, **you must proxy or embed panel data through a separate student-accessible endpoint**, or fetch panels server-side and embed them in the lesson response.
 
 Currently the `GET /api/lessons/{pk}/` endpoint does **not** include panels in its response (`LessonSerializer` only returns lesson metadata). To display lesson content to students, one of these approaches is needed:
 
 - **Option A (recommended):** Add a read-only `panels` field to `LessonSerializer` that includes the full panel tree. Gate write access on the individual panel endpoints (already done), but allow GET on `PanelListCreateView` for any authenticated user if they have access to the lesson.
 - **Option B:** Create a dedicated student-facing endpoint (e.g. `GET /api/lessons/{pk}/content/`) that returns panels along with the lesson.
 
-Until one of these is implemented, only teachers and admins can retrieve panel content via the API.
+Until one of these is implemented, only trainers and admins can retrieve panel content via the API.
 
 ---
 

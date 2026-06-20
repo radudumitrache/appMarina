@@ -1,4 +1,4 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -36,14 +36,14 @@ src/
       student/
         Dashboard.css
         Modules.css
-      teacher/
+      trainer/
         Dashboard.css
       admin/
         Dashboard.css
     student/
       Dashboard.jsx
       Modules.jsx
-    teacher/
+    trainer/
       Dashboard.jsx
     admin/
       Dashboard.jsx
@@ -53,7 +53,7 @@ src/
     student/
       modules/
         ModuleCard.jsx
-    teacher/                 # Role-specific components go here
+    trainer/                 # Role-specific components go here
     admin/                   # Role-specific components go here
     css/
       shared/
@@ -61,11 +61,11 @@ src/
       student/
         modules/
           ModuleCard.css
-      teacher/
+      trainer/
       admin/
 ```
 
-Route pattern: `/<role>/<page>` — e.g. `/student/dashboard`, `/teacher/dashboard`.
+Route pattern: `/<role>/<page>` — e.g. `/student/dashboard`, `/trainer/dashboard`.
 
 ### File Organisation Rules
 
@@ -107,7 +107,7 @@ The `design-system/` folder is the **authoritative spec**. Read the relevant fil
 | **Orbitron font** | Wordmark (`SEAFARER`) only — never use for UI text |
 | **UI font** | `Plus Jakarta Sans` for all interface text |
 | **Mono font** | `IBM Plex Mono` for all numbers, data, timestamps |
-| **Role accent colors** | Student → teal (`--accent`), Teacher → gold (`--gold`), Admin → red (`--error`) |
+| **Role accent colors** | Student → teal (`--accent`), trainer → gold (`--gold`), Admin → red (`--error`) |
 | **Border radius** | Max `14px` (`--radius-lg`). No pill-shaped buttons |
 | **No glow** | No `box-shadow` glow on cards or buttons |
 | **Glassmorphism** | Only on elements floating over photographic/video backgrounds (login card, control pill over dashboard image). Never on flat pages |
@@ -133,7 +133,7 @@ The `design-system/` folder is the **authoritative spec**. Read the relevant fil
 Each role has its own dashboard with role-specific navigation tiles and accent color treatment:
 
 - **Student** — teal accent, tiles: Modules, Tests, My Progress, My Class, Support
-- **Teacher** — gold accent, different tile set
+- **trainer** — gold accent, different tile set
 - **Admin** — red accent, different tile set
 
 When building components that appear in multiple role contexts, accept a `role` prop and apply the corresponding CSS variable class or data attribute rather than duplicating the component.

@@ -1,4 +1,4 @@
-let _nextCommentId = 20
+﻿let _nextCommentId = 20
 
 export const TAGS = ['Technical', 'Access', 'Account', 'Hardware', 'Other']
 
@@ -76,7 +76,7 @@ export const INITIAL_TICKETS = [
     id: 5,
     ticket_id: 'TK-005',
     author_name: 'Capt. Rodriguez',
-    author_role: 'teacher',
+    author_role: 'trainer',
     subject: 'Student cannot see published course',
     description: 'One of my students reported that the newly published Cargo Handling course is not visible in their Lessons list despite being enrolled in the class.',
     tag: 'Technical',
@@ -91,7 +91,7 @@ export const INITIAL_TICKETS = [
     id: 6,
     ticket_id: 'TK-006',
     author_name: 'Prof. Whitmore',
-    author_role: 'teacher',
+    author_role: 'trainer',
     subject: 'Grade export not generating CSV correctly',
     description: 'When I click Export on the Student Progress page the CSV downloads but dates are formatted incorrectly and several columns (Class, Completion %) are missing.',
     tag: 'Technical',
@@ -106,7 +106,7 @@ export const INITIAL_TICKETS = [
     id: 7,
     ticket_id: 'TK-007',
     author_name: 'Instr. Chen',
-    author_role: 'teacher',
+    author_role: 'trainer',
     subject: 'VR scenario stuck on loading screen',
     description: 'Students in class SEC-2024-B are reporting that the Cargo Stowage VR scenario freezes on the loading screen after approximately 30 seconds and does not progress.',
     tag: 'Hardware',
@@ -119,7 +119,7 @@ export const INITIAL_TICKETS = [
     id: 8,
     ticket_id: 'TK-008',
     author_name: 'Eng. Vasquez',
-    author_role: 'teacher',
+    author_role: 'trainer',
     subject: 'Request to add new lesson to content library',
     description: 'We need a new lesson on Emergency Procedures for Engine Room to be added to the content library for the upcoming SEC-2024-C class starting next month.',
     tag: 'Other',

@@ -1,4 +1,4 @@
-# Color System
+﻿# Color System
 
 ## Base Palette — Deep Ocean Blue
 
@@ -66,7 +66,7 @@ Used as a wayfinding system across badges, borders, and hover states.
 | Role | Color | Token |
 |---|---|---|
 | Student | Teal | `--accent` |
-| Teacher | Gold | `--gold` |
+| trainer | Gold | `--gold` |
 | Admin | Red | `--error` |
 
 ---

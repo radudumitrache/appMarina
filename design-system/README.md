@@ -1,4 +1,4 @@
-# SeaFarer — Design System
+﻿# SeaFarer — Design System
 > **Version 2.0** · Education · Clean · Modern · Minimalistic
 
 This folder is the single source of truth for all visual and interaction decisions in the SeaFarer platform.
@@ -69,5 +69,5 @@ React 18 + Vite + React Router DOM. No UI library — fully custom CSS.
 | `/` | `Login` | Full-screen video bg, glass card login |
 | `/student/dashboard` | `student/Dashboard` | Bridge bg, 5 nav tiles, student role |
 | `/student/lessons` | `student/Lessons` | Sidebar + 4-col lesson grid |
-| `/teacher/dashboard` | `teacher/Dashboard` | Bridge bg, 5 nav tiles, instructor role |
+| `/trainer/dashboard` | `trainer/Dashboard` | Bridge bg, 5 nav tiles, instructor role |
 | `/admin/dashboard` | `admin/Dashboard` | Bridge bg, 5 nav tiles, admin role |

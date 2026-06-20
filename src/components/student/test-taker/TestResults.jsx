@@ -1,4 +1,4 @@
-import '../../css/student/test-taker/TestResults.css'
+﻿import '../../css/student/test-taker/TestResults.css'
 
 function gradeClass(grade) {
   if (grade >= 90) return 'grade--pass'
@@ -28,7 +28,7 @@ export default function TestResults({ result, onBack }) {
               <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
             <p className="tt-results-title">Pending Review</p>
-            <p className="tt-results-sub">Your answers have been submitted. Short answer and argument questions require manual grading by your teacher.</p>
+            <p className="tt-results-sub">Your answers have been submitted. Short answer and argument questions require manual grading by your trainer.</p>
           </>
         )}
 

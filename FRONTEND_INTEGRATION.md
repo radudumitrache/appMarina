@@ -1,4 +1,4 @@
-# Frontend → Backend Integration Guide
+﻿# Frontend → Backend Integration Guide
 
 This guide is written specifically for the SeaFarer React/Vite frontend connecting to this Django backend.
 
@@ -228,9 +228,9 @@ Usage in your router:
   </PrivateRoute>
 } />
 
-<Route path="/teacher/*" element={
-  <PrivateRoute allowedRoles={['teacher']}>
-    <TeacherDashboard />
+<Route path="/trainer/*" element={
+  <PrivateRoute allowedRoles={['trainer']}>
+    <trainerDashboard />
   </PrivateRoute>
 } />
 
@@ -344,7 +344,7 @@ import api from './axios';
 export const getProgress         = ()  => api.get('/progress/');
 export const getActivity         = ()  => api.get('/progress/activity/');
 export const getTestResults      = ()  => api.get('/progress/test-results/');
-export const getTeacherProgress  = (params) => api.get('/teacher/progress/', { params });
+export const gettrainerProgress  = (params) => api.get('/trainer/progress/', { params });
 export const getAchievements     = ()  => api.get('/achievements/');
 export const getCertifications   = ()  => api.get('/certifications/');
 ```
@@ -387,7 +387,7 @@ export default function LoginPage() {
     e.preventDefault();
     const { username, password } = Object.fromEntries(new FormData(e.target));
     const role = await login(username, password);
-    navigate(role === 'teacher' ? '/teacher' : role === 'admin' ? '/admin' : '/student');
+    navigate(role === 'trainer' ? '/trainer' : role === 'admin' ? '/admin' : '/student');
   };
 
   return (
@@ -446,7 +446,7 @@ const answers = [
 ];
 
 const { data } = await submitTest(testId, answers);
-console.log(data.grade); // null if short answers pending teacher grading
+console.log(data.grade); // null if short answers pending trainer grading
 ```
 
 ---

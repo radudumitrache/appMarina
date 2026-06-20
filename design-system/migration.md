@@ -1,4 +1,4 @@
-# Migration — v1 → v2
+﻿# Migration — v1 → v2
 
 Maps every current CSS variable and pattern to its new equivalent.
 
@@ -12,7 +12,7 @@ Maps every current CSS variable and pattern to its new equivalent.
 | `#2de8d0` accent | `#0bbda4` | `--accent` | Less neon, more refined — same teal family |
 | `rgba(45,232,208,0.07)` hover bg | `rgba(11,189,164,0.12)` | `--accent-dim` | Matched to new accent hue |
 | `rgba(45,232,208,0.3)` hover border | `rgba(11,189,164,0.22)` | `--accent-rim` | Reduced opacity — more restrained |
-| `#c8a450` gold | `#d9a030` | `--gold` | Warmer, less washed; used only for teacher/locked |
+| `#c8a450` gold | `#d9a030` | `--gold` | Warmer, less washed; used only for trainer/locked |
 | `#d8e8f0` text | `#e4edf6` | `--text` | Slightly cooler white, better with new base |
 | `rgba(216,232,240,0.38)` muted | `#9db0c5` | `--text-2` | Solid value for consistency |
 | — | `#6b83a0` | `--text-3` | New placeholder/disabled tier |
@@ -45,7 +45,7 @@ Maps every current CSS variable and pattern to its new equivalent.
 1. `src/index.css` — replace all `:root` variables
 2. `src/pages/Login.css` — update color references, font
 3. `src/pages/student/Dashboard.css` — update variables
-4. `src/pages/teacher/Dashboard.css` — update variables
+4. `src/pages/trainer/Dashboard.css` — update variables
 5. `src/pages/admin/Dashboard.css` — update variables
 6. `src/pages/student/Lessons.css` — update variables, remove glass from cards
 7. `src/components/NavBar.css` — update variables, font

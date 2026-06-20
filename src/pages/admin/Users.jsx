@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import NavBar from '../../components/admin/NavBar'
 import UsersSidebar from '../../components/admin/users/UsersSidebar'
 import UsersToolbar from '../../components/admin/users/UsersToolbar'
@@ -40,7 +40,7 @@ function parseCSV(raw) {
       name,
       username,
       email,
-      role: role.toLowerCase() === 'teacher' ? 'teacher' : 'student',
+      role: role.toLowerCase() === 'trainer' ? 'trainer' : 'student',
     }
   }).filter(r => r.name && r.username && r.email)
 }
@@ -81,7 +81,7 @@ export default function Users() {
   const counts = {
     all:     users.length,
     student: users.filter(u => u.role === 'student').length,
-    teacher: users.filter(u => u.role === 'teacher').length,
+    trainer: users.filter(u => u.role === 'trainer').length,
     admin:   users.filter(u => u.role === 'admin').length,
   }
 
@@ -159,7 +159,7 @@ export default function Users() {
       role: form.role,
       ...(form.password && { password: form.password }),
       organisation_id: form.organisation_id,
-      ...(['student', 'teacher'].includes(form.role) && { crew_id: form.crew_id || null }),
+      ...(['student', 'trainer'].includes(form.role) && { crew_id: form.crew_id || null }),
     }
     setSaving(true)
     setFormError('')
@@ -233,7 +233,7 @@ export default function Users() {
   }
 
   const downloadTemplate = () => {
-    const csv = 'name,username,email,role\nJohn Doe,johndoe,john@hansa360.com,student\nJane Smith,janesmith,jane@hansa360.com,teacher\n'
+    const csv = 'name,username,email,role\nJohn Doe,johndoe,john@hansa360.com,student\nJane Smith,janesmith,jane@hansa360.com,trainer\n'
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
     a.download = 'users_template.csv'
@@ -241,7 +241,7 @@ export default function Users() {
   }
 
   const sidebarLabel = roleFilter === 'student' ? 'Students'
-    : roleFilter === 'teacher' ? 'Teachers'
+    : roleFilter === 'trainer' ? 'trainers'
     : 'All Users'
 
   return (

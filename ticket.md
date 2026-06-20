@@ -1,4 +1,4 @@
-# Support Ticket System
+﻿# Support Ticket System
 
 ## Overview
 
@@ -127,7 +127,7 @@ Response (`201 Created`):
 
 ## Permissions Summary
 
-| Action | Student / Teacher | Admin |
+| Action | Student / trainer | Admin |
 |---|---|---|
 | Submit a ticket | Yes | No |
 | View own tickets | Yes | — |

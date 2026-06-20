@@ -1,4 +1,4 @@
-# Do / Don't
+﻿# Do / Don't
 
 Hard rules. These are not suggestions.
 
@@ -10,7 +10,7 @@ Hard rules. These are not suggestions.
 - **Keep the accent color rare and meaningful.** When everything is teal, nothing is.
 - **Use `--font-mono` for all numbers, timestamps, and data values.**
 - **Animate entrance, not idle.** A smooth entry communicates "this appeared for a reason." Looping animations say "look at me."
-- **Use role-color coding as a wayfinding system.** Teal = student, gold = teacher, red = admin — consistently, everywhere.
+- **Use role-color coding as a wayfinding system.** Teal = student, gold = trainer, red = admin — consistently, everywhere.
 - **Let background images do atmospheric work.** Keep UI elements flat and clean on top of them.
 - **Default to solid surface fills** (`--surface-1`, `--surface-2`) on flat pages.
 - **Group related actions** — don't scatter buttons across the screen.

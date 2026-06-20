@@ -1,4 +1,4 @@
-.cls-sidebar {
+﻿.cls-sidebar {
   flex-shrink: 0;
   width: 220px;
   border-right: 1px solid var(--border);
@@ -90,7 +90,7 @@
   width: 100%;
 }
 
-.cls-item-teacher {
+.cls-item-trainer {
   font-family: var(--font-ui);
   font-size: 11px;
   color: var(--text-3);

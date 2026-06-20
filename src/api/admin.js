@@ -1,7 +1,7 @@
 import api from './axios'
 
 export const getUsers        = (params) => api.get('/admin/users/', { params })
-export const getTeachers     = ()       => api.get('/admin/users/', { params: { 'userprofile__role': 'teacher' } })
+export const getTrainers     = ()       => api.get('/admin/users/', { params: { 'userprofile__role': 'trainer' } })
 export const createUser      = (data)   => api.post('/admin/users/', data)
 export const bulkCreateUsers = (data)   => api.post('/admin/users/bulk/', data)
 export const updateUser      = (id, d)  => api.patch(`/admin/users/${id}/`, d)

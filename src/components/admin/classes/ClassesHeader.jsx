@@ -1,4 +1,4 @@
-import '../../css/admin/classes/ClassesHeader.css'
+﻿import '../../css/admin/classes/ClassesHeader.css'
 
 export default function ClassesHeader({ filteredCount, search, onSearchChange, statusFilter, onStatusFilterChange, onCreateNew }) {
   return (
@@ -16,7 +16,7 @@ export default function ClassesHeader({ filteredCount, search, onSearchChange, s
           <input
             className="search-input-inline"
             type="text"
-            placeholder="Search departments or teachers…"
+            placeholder="Search departments or trainers…"
             value={search}
             onChange={e => onSearchChange(e.target.value)}
           />

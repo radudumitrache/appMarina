@@ -1,4 +1,4 @@
-import '../../css/student/my-class/MyClassHeader.css'
+﻿import '../../css/student/my-class/MyClassHeader.css'
 
 export default function MyClassHeader({ classInfo, onBack }) {
   return (
@@ -19,8 +19,8 @@ export default function MyClassHeader({ classInfo, onBack }) {
         </div>
       </div>
       <div className="myclass-header-right">
-        <span className="myclass-teacher-label">Instructor</span>
-        <span className="myclass-teacher-name">{classInfo.teacher}</span>
+        <span className="myclass-trainer-label">Instructor</span>
+        <span className="myclass-trainer-name">{classInfo.trainer}</span>
         <span className="myclass-semester">{classInfo.semester}</span>
       </div>
     </header>

@@ -1,22 +1,24 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router-dom'
 import NavBar         from '../../components/admin/NavBar'
-import TestSidebar    from '../../components/teacher/test-builder/TestSidebar'
-import TestEditorMain from '../../components/teacher/test-builder/TestEditorMain'
+import TestSidebar    from '../../components/trainer/test-builder/TestSidebar'
+import TestEditorMain from '../../components/trainer/test-builder/TestEditorMain'
 import {
   getTests, createTest, updateTest, publishTest, getTest,
   createTestPanel, deleteTest,
 } from '../../api/tests'
 import { getDepartments } from '../../api/departments'
+import { getCourses, addCourseModule, removeCourseModule } from '../../api/modules'
 import { getOrganisations } from '../../api/organisations'
 import { useAuth } from '../../auth/AuthContext'
-import '../css/teacher/TestBuilder.css'
+import '../css/trainer/TestBuilder.css'
 
 export default function AdminTestBuilder() {
   const { user } = useAuth()
   const { state: locationState } = useLocation()
   const [tests,         setTests]         = useState([])
   const [departments,   setDepartments]   = useState([])
+  const [allCourses,    setAllCourses]    = useState([])
   const [organisations, setOrganisations] = useState([])
   const [selectedId,    setSelectedId]    = useState(null)
   const [testDetail,    setTestDetail]    = useState(null)
@@ -28,6 +30,7 @@ export default function AdminTestBuilder() {
   const [newPanelType,    setNewPanelType]    = useState('exercise')
   const [newPanelTitle,   setNewPanelTitle]   = useState('')
   const [sidebarOpen,     setSidebarOpen]     = useState(false)
+  const [toast,           setToast]           = useState(false)
 
   // on mobile, auto-open the sidebar when no test is selected
   useEffect(() => {
@@ -35,11 +38,19 @@ export default function AdminTestBuilder() {
   }, [selectedId])
 
   useEffect(() => {
-    const fetches = [getTests({}), getDepartments()]
-    Promise.all(fetches)
-      .then(([testsRes, classesRes]) => {
+    const t = setTimeout(() => {
+      setToast(true)
+      setTimeout(() => setToast(false), 6000)
+    }, 400)
+    return () => clearTimeout(t)
+  }, [])
+
+  useEffect(() => {
+    Promise.all([getTests({}), getDepartments(), getCourses()])
+      .then(([testsRes, classesRes, coursesRes]) => {
         setTests(testsRes.data)
         setDepartments(classesRes.data)
+        setAllCourses(coursesRes.data ?? [])
         if (locationState?.openTestId) {
           setSelectedId(locationState.openTestId)
         }
@@ -121,6 +132,20 @@ export default function AdminTestBuilder() {
     }
   }
 
+  async function handleCourseUpdate(newCourseIds) {
+    const current = testDetail?.courses ?? []
+    const currentIds = current.map(c => c.course_id)
+    const toAdd    = newCourseIds.filter(id => !currentIds.includes(id))
+    const toRemove = current.filter(c => !newCourseIds.includes(c.course_id))
+    try {
+      await Promise.all([
+        ...toAdd.map(courseId => addCourseModule(courseId, { test: selectedId })),
+        ...toRemove.map(entry => removeCourseModule(entry.course_id, entry.id)),
+      ])
+      loadDetail(selectedId)
+    } catch {}
+  }
+
   async function handleDeleteTest(id) {
     await deleteTest(id)
     setTests(prev => prev.filter(t => t.id !== id))
@@ -171,6 +196,7 @@ export default function AdminTestBuilder() {
             onDelete={handleDeleteTest}
             loading={loading}
             className={sidebarOpen ? 'sidebar--open' : ''}
+            warnNoDept
           />
 
           {selectedId && testDetail ? (
@@ -180,6 +206,8 @@ export default function AdminTestBuilder() {
               panels={panels}
               hasClass={hasClass}
               classes={departments}
+              allCourses={allCourses}
+              onCourseUpdate={handleCourseUpdate}
               organisations={organisations}
               expandedPanelId={expandedPanelId}
               saving={saving}
@@ -210,6 +238,20 @@ export default function AdminTestBuilder() {
           )}
         </div>
       </div>
+      {toast && (
+        <div className="tb-toast tb-toast--warn" role="alert">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Careful — tests with no department selected cannot be seen by students
+          <button className="tb-toast-close" onClick={() => setToast(false)} aria-label="Dismiss">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   )
 }

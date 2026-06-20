@@ -1,6 +1,6 @@
-# Sub-Page Template
+﻿# Sub-Page Template
 
-Used for all future drill-down pages: Teacher's classes list, student progress, admin analytics, etc.
+Used for all future drill-down pages: trainer's classes list, student progress, admin analytics, etc.
 
 ---
 

@@ -1,4 +1,4 @@
-.class-card {
+﻿.class-card {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -58,7 +58,7 @@
   color: var(--text-3);
 }
 
-/* ── Meta row (teacher + dates) ──────────────────────────────────────────── */
+/* ── Meta row (trainer + dates) ──────────────────────────────────────────── */
 .class-card-meta {
   display: flex;
   flex-direction: column;
@@ -74,7 +74,7 @@
   color: var(--text-3);
 }
 
-.class-teacher-name {
+.class-trainer-name {
   font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 500;

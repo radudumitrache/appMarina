@@ -1,4 +1,4 @@
-import '../../css/admin/class-detail/ClassDetailHeader.css'
+﻿import '../../css/admin/class-detail/ClassDetailHeader.css'
 
 function formatDate(iso) {
   if (!iso) return null
@@ -29,12 +29,12 @@ export default function ClassDetailHeader({ cls, studentCount = 0, courseCount =
           <span className={`cd-status-badge cd-status-badge--${cls.status}`}>{cls.status}</span>
         </div>
         {cls.description && <p className="cd-description">{cls.description}</p>}
-        <div className="cd-teacher-row">
+        <div className="cd-trainer-row">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
-          <span className="cd-teacher-name">{cls.teacher_name}</span>
+          <span className="cd-trainer-name">{cls.trainer_name}</span>
         </div>
         <div className="cd-meta-strip">
           <MetaChip

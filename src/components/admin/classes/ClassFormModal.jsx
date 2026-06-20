@@ -1,4 +1,4 @@
-import DatePicker from './DatePicker'
+﻿import DatePicker from './DatePicker'
 import '../../css/admin/classes/ClassFormModal.css'
 
 function generateCode() {
@@ -17,7 +17,7 @@ function XIcon() {
   )
 }
 
-export default function ClassFormModal({ mode, form, errors = {}, onChange, onClose, onSave, teachers }) {
+export default function ClassFormModal({ mode, form, errors = {}, onChange, onClose, onSave, trainers }) {
   const err = field => errors[field]
     ? <span className="form-field-error">{errors[field]}</span>
     : null
@@ -78,20 +78,20 @@ export default function ClassFormModal({ mode, form, errors = {}, onChange, onCl
               {err('subject')}
             </div>
             <div className="form-row">
-              <label className="form-label">Teacher</label>
+              <label className="form-label">trainer</label>
               <select
-                className={`form-select${err('teacher') ? ' form-input--error' : ''}`}
-                value={form.teacher ?? ''}
-                onChange={e => onChange('teacher', Number(e.target.value))}
+                className={`form-select${err('trainer') ? ' form-input--error' : ''}`}
+                value={form.trainer ?? ''}
+                onChange={e => onChange('trainer', Number(e.target.value))}
               >
-                <option value="">— select teacher —</option>
-                {teachers.map(t => (
+                <option value="">— select trainer —</option>
+                {trainers.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.first_name && t.last_name ? `${t.first_name} ${t.last_name}` : t.username}
                   </option>
                 ))}
               </select>
-              {err('teacher')}
+              {err('trainer')}
             </div>
           </div>
 

@@ -1,10 +1,10 @@
-# Design Philosophy
+﻿# Design Philosophy
 
 ## Core Purpose
 
 SeaFarer is a professional maritime VR training platform. The interface is a **tool**, not a spectacle. Every visual decision must serve one of three goals:
 
-1. **Clarity** — the student, teacher, or admin should always know where they are, what they can do, and what matters most.
+1. **Clarity** — the student, trainer, or admin should always know where they are, what they can do, and what matters most.
 2. **Trust** — the aesthetic communicates institutional credibility, not gaming or entertainment.
 3. **Focus** — remove everything that doesn't earn its place. A calm interface produces calm, focused learners.
 

@@ -1,4 +1,4 @@
-import '../../css/student/my-class/JoinClassCard.css'
+﻿import '../../css/student/my-class/JoinClassCard.css'
 
 export default function JoinClassCard({ joinCode, onChange, joining, joinError, onSubmit, codeRef }) {
   return (
@@ -13,7 +13,7 @@ export default function JoinClassCard({ joinCode, onChange, joining, joinError, 
           </svg>
         </div>
         <h2 className="myclass-join-title">Join a Department</h2>
-        <p className="myclass-join-sub">Enter the department code your teacher gave you.</p>
+        <p className="myclass-join-sub">Enter the department code your trainer gave you.</p>
         <form className="myclass-join-form" onSubmit={onSubmit}>
           <input
             ref={codeRef}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
@@ -19,7 +19,7 @@ import {
   deleteCourseDiploma, awardCourseDiploma, revokeCourseDiploma,
   getClassStudents,
 } from '../../api/departments'
-import { getTeachers, getUsers } from '../../api/admin'
+import { getTrainers, getUsers } from '../../api/admin'
 import { getOrganisations } from '../../api/organisations'
 import '../css/admin/Courses.css'
 import '../css/admin/CourseDetail.css'
@@ -269,7 +269,7 @@ function DiplomaCard({ diploma, onEdit, onDelete, onAward }) {
 
 // ── Course Form Modal ─────────────────────────────────────────────────────────
 
-function CourseFormModal({ mode, form, errors, departments, teachers, onChange, onClose, onSave }) {
+function CourseFormModal({ mode, form, errors, departments, trainers, onChange, onClose, onSave }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={e => e.stopPropagation()}>
@@ -315,7 +315,7 @@ function CourseFormModal({ mode, form, errors, departments, teachers, onChange, 
             <label className="form-label">Author</label>
             <select className="form-input form-select" value={form.author_id} onChange={e => onChange('author_id', e.target.value)}>
               <option value="">– Assign to me –</option>
-              {teachers.map(t => (
+              {trainers.map(t => (
                 <option key={t.id} value={t.id}>
                   {t.first_name || t.last_name ? `${t.first_name} ${t.last_name}`.trim() : t.username}
                 </option>
@@ -349,7 +349,7 @@ export default function Courses() {
   // ── Data ───────────────────────────────────────────────────────────────────
   const [courses,       setCourses]       = useState([])
   const [departments,   setDepartments]   = useState([])
-  const [teachers,      setTeachers]      = useState([])
+  const [trainers,      settrainers]      = useState([])
   const [organisations, setOrganisations] = useState([])
   const [moduleBank,    setModuleBank]    = useState([])
   const [allTests,      setAllTests]      = useState([])
@@ -437,7 +437,7 @@ export default function Courses() {
   useEffect(() => {
     setLoadingList(true)
     const safe = p => p.catch(() => null)
-    const promises = [safe(getCourses()), safe(getDepartments()), safe(getTeachers()), safe(getModules()), safe(getTests())]
+    const promises = [safe(getCourses()), safe(getDepartments()), safe(getTrainers()), safe(getModules()), safe(getTests())]
     if (user?.is_staff) promises.push(safe(getOrganisations()))
 
     Promise.all(promises).then(([cRes, dRes, tRes, lRes, testRes, orgRes]) => {
@@ -447,7 +447,7 @@ export default function Courses() {
         if (list.length > 0) setSelectedId(list[0].id)
       }
       if (dRes)    setDepartments(dRes.data)
-      if (tRes)    setTeachers(tRes.data?.results ?? tRes.data ?? [])
+      if (tRes)    settrainers(tRes.data?.results ?? tRes.data ?? [])
       if (lRes)    setModuleBank(lRes.data.map(mapModule))
       if (testRes) setAllTests(testRes.data)
       if (orgRes)  setOrganisations(orgRes.data)
@@ -760,6 +760,15 @@ export default function Courses() {
                     <span className="ca-course-item-meta">
                       {c.modules?.length ?? 0} modules · {c.author_name}
                     </span>
+                    {(c.departments?.length ?? 0) > 0 ? (
+                      <div className="ca-course-item-depts">
+                        {c.departments.map(d => (
+                          <span key={d.id} className="ca-course-item-dept-chip">{d.name}</span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="ca-course-item-no-dept">No departments</span>
+                    )}
                   </div>
                 ))
               )}
@@ -785,9 +794,6 @@ export default function Courses() {
                   <div className="ca-topbar-left">
                     <h2 className="ca-topbar-title">{selectedCourse?.title}</h2>
                     {selectedCourse && <StatusBadge status={selectedCourse.status} />}
-                    {selectedCourse?.departments?.map(d => (
-                      <span key={d.id} className="ca-dept-badge">{d.name}</span>
-                    ))}
                   </div>
                   <div className="ca-topbar-right">
                     <button
@@ -838,6 +844,18 @@ export default function Courses() {
                       </button>
                     )}
                   </div>
+                </div>
+
+                {/* Department assignment row */}
+                <div className="ca-dept-row">
+                  <span className="ca-dept-row-label">Departments</span>
+                  {(selectedCourse?.departments?.length ?? 0) > 0 ? (
+                    selectedCourse.departments.map(d => (
+                      <span key={d.id} className="ca-dept-row-chip">{d.name}</span>
+                    ))
+                  ) : (
+                    <span className="ca-dept-row-empty">Not assigned to any department</span>
+                  )}
                 </div>
 
                 {/* Panel body */}
@@ -1174,7 +1192,7 @@ export default function Courses() {
           form={courseForm}
           errors={courseFormErrors}
           departments={departments}
-          teachers={teachers}
+          trainers={trainers}
           onChange={handleCourseFormChange}
           onClose={() => { setCourseModal(null); setCourseFormErrors({}) }}
           onSave={handleSaveCourse}

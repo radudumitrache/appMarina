@@ -1,4 +1,4 @@
-.users-table-wrap {
+﻿.users-table-wrap {
   flex: 1;
   overflow-y: auto;
 }
@@ -99,7 +99,7 @@
 }
 
 .role-badge--student { color: var(--accent); background: var(--accent-dim); }
-.role-badge--teacher { color: var(--gold);   background: var(--gold-dim);   }
+.role-badge--trainer { color: var(--gold);   background: var(--gold-dim);   }
 .role-badge--admin   { color: var(--error);  background: rgba(224, 82, 82, 0.12); }
 
 /* Hidden on desktop — only shown inside the name cell on mobile via the media query below */

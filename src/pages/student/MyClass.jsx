@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { useNavigate }    from 'react-router-dom'
 import { useAuth }        from '../../auth/AuthContext'
 import NavBar             from '../../components/student/NavBar'
@@ -156,7 +156,7 @@ export default function MyClass() {
   const classInfo = {
     name:     classroom.name,
     code:     classroom.code,
-    teacher:  classroom.teacher_name,
+    trainer:  classroom.trainer_name,
     semester: classroom.semester,
     enrolled: classroom.student_count,
     start:    classroom.start_date,

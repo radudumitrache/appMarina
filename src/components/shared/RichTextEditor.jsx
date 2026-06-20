@@ -3,8 +3,8 @@ import { createPortal } from 'react-dom'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
-import Video from '../teacher/module-panel-editor/VideoExtension'
-import MediaInsertModal from '../teacher/module-panel-editor/MediaInsertModal'
+import Video from '../trainer/module-panel-editor/VideoExtension'
+import MediaInsertModal from '../trainer/module-panel-editor/MediaInsertModal'
 import '../css/shared/RichTextEditor.css'
 
 const TOOLBAR_GROUPS = [

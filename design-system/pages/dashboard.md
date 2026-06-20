@@ -1,7 +1,7 @@
-# Dashboard Pages
+﻿# Dashboard Pages
 
-**Routes:** `/student/dashboard`, `/teacher/dashboard`, `/admin/dashboard`
-**Files:** `src/pages/student/Dashboard.jsx`, `src/pages/teacher/Dashboard.jsx`, `src/pages/admin/Dashboard.jsx`
+**Routes:** `/student/dashboard`, `/trainer/dashboard`, `/admin/dashboard`
+**Files:** `src/pages/student/Dashboard.jsx`, `src/pages/trainer/Dashboard.jsx`, `src/pages/admin/Dashboard.jsx`
 
 ---
 
@@ -51,9 +51,9 @@ Centered on screen, `position: relative, z-index: 10`. See [grid.md](../grid.md)
 | Role | Badge | Control pill position | Actions |
 |---|---|---|---|
 | Student | Teal "Student" | Top-right | Lessons, Tests, My Progress, My Class, Support |
-| Teacher | Gold "Instructor" | Top-left | My Classes, Course Builder, Student Progress, Assignments, Support |
+| trainer | Gold "Instructor" | Top-left | My Classes, Course Builder, Student Progress, Assignments, Support |
 | Admin | Red "Admin" | Top-left | Users, Courses, Analytics, System Settings, Support |
 
 ## Navigation
 
-Each tile navigates to its respective sub-page. All current paths under `/student/`, `/teacher/`, `/admin/`.
+Each tile navigates to its respective sub-page. All current paths under `/student/`, `/trainer/`, `/admin/`.

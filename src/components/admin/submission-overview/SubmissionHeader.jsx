@@ -29,6 +29,12 @@ export default function SubmissionHeader({ submission, pendingCount }) {
             : <span className="so-grade-num">—</span>
           }
         </div>
+        <span className="so-min-grade">
+          {submission.minimum_passing_grade != null
+            ? <>Min. to pass: <strong>{submission.minimum_passing_grade}%</strong></>
+            : 'No minimum specified'
+          }
+        </span>
       </div>
     </div>
   )

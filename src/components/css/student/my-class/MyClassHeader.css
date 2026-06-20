@@ -1,4 +1,4 @@
-.myclass-header {
+﻿.myclass-header {
   flex-shrink: 0;
   min-height: 72px;
   padding: 0 40px;
@@ -77,7 +77,7 @@
   gap: 2px;
 }
 
-.myclass-teacher-label {
+.myclass-trainer-label {
   font-family: var(--font-ui);
   font-size: 10px;
   font-weight: 500;
@@ -86,7 +86,7 @@
   text-transform: uppercase;
 }
 
-.myclass-teacher-name {
+.myclass-trainer-name {
   font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 600;
@@ -119,6 +119,6 @@
     overflow-wrap: break-word;
     word-break: break-word;
   }
-  /* Teacher info: hide on mobile to save space */
+  /* trainer info: hide on mobile to save space */
   .myclass-header-right { display: none; }
 }

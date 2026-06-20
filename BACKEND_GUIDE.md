@@ -1,4 +1,4 @@
-# SeaFarer Platform — Django Backend Implementation Guide
+﻿# SeaFarer Platform — Django Backend Implementation Guide
 
 This document is derived from a full read of the frontend source. Every model field, route, and relationship is grounded in data the UI already uses or will need.
 
@@ -44,7 +44,7 @@ Pillow                          # if profile photos are added later
 
 | Field | Type | Notes |
 |-------|------|-------|
-| `role` | `CharField` | choices: `student`, `teacher`, `admin` |
+| `role` | `CharField` | choices: `student`, `trainer`, `admin` |
 | `student_id` | `CharField` | nullable; format `SF-YYYY-XXXX` |
 | `nationality` | `CharField` | nullable |
 | `date_of_birth` | `DateField` | nullable |
@@ -71,7 +71,7 @@ Pillow                          # if profile photos are added later
 | `name` | `CharField` | e.g. "Maritime Navigation 101" |
 | `code` | `CharField` | unique; e.g. `MN-101` |
 | `subject` | `CharField` | e.g. "Bridge Navigation" |
-| `teacher` | `ForeignKey(User)` | `related_name='taught_classes'` |
+| `trainer` | `ForeignKey(User)` | `related_name='taught_classes'` |
 | `semester` | `CharField` | e.g. "Spring 2026" |
 | `start_date` | `DateField` | |
 | `end_date` | `DateField` | |
@@ -94,7 +94,7 @@ Pillow                          # if profile photos are added later
 | Field | Type | Notes |
 |-------|------|-------|
 | `classroom` | `ForeignKey(Classroom)` | |
-| `author` | `ForeignKey(User)` | teacher or admin |
+| `author` | `ForeignKey(User)` | trainer or admin |
 | `title` | `CharField` | |
 | `body` | `TextField` | |
 | `pinned` | `BooleanField` | default `False` |
@@ -111,10 +111,10 @@ Pillow                          # if profile photos are added later
 | `title` | `CharField` | |
 | `category` | `CharField` | choices: `nav`, `emg`, `eng`, `cargo`, `comm` |
 | `duration_minutes` | `IntegerField` | |
-| `author` | `ForeignKey(User)` | teacher |
+| `author` | `ForeignKey(User)` | trainer |
 | `visibility` | `CharField` | choices: `class`, `public`; default `class` |
 | `difficulty` | `CharField` | choices: `easy`, `intermediate`, `advanced` |
-| `locked` | `BooleanField` | default `False`; teacher can lock/unlock per-class |
+| `locked` | `BooleanField` | default `False`; trainer can lock/unlock per-class |
 | `created_at` | `DateTimeField` | auto_now_add |
 
 #### `ClassLesson` (M2M through table — lessons assigned to a class)
@@ -141,13 +141,13 @@ Pillow                          # if profile photos are added later
 
 `unique_together = ('student', 'lesson')`
 
-#### `Course` (teacher's course builder — a curated, ordered playlist of lessons)
+#### `Course` (trainer's course builder — a curated, ordered playlist of lessons)
 
 | Field | Type | Notes |
 |-------|------|-------|
 | `title` | `CharField` | |
 | `description` | `CharField` | short blurb |
-| `author` | `ForeignKey(User)` | teacher |
+| `author` | `ForeignKey(User)` | trainer |
 | `status` | `CharField` | choices: `draft`, `published`; default `draft` |
 | `created_at` | `DateTimeField` | auto_now_add |
 
@@ -170,7 +170,7 @@ Pillow                          # if profile photos are added later
 | Field | Type | Notes |
 |-------|------|-------|
 | `title` | `CharField` | |
-| `author` | `ForeignKey(User)` | teacher |
+| `author` | `ForeignKey(User)` | trainer |
 | `classroom` | `ForeignKey(Classroom)` | nullable → open access test |
 | `status` | `CharField` | choices: `draft`, `published`; default `draft` |
 | `time_limit_minutes` | `IntegerField` | default `30` |
@@ -188,7 +188,7 @@ Pillow                          # if profile photos are added later
 | `correct_tf` | `BooleanField` | nullable; used when `type='tf'` |
 | `correct_mcq_index` | `IntegerField` | nullable; 0-based index of correct option when `type='mcq'` |
 
-> For `short` questions, correctness is teacher-graded — no stored answer.
+> For `short` questions, correctness is trainer-graded — no stored answer.
 
 #### `QuestionOption` (MCQ choices)
 
@@ -207,7 +207,7 @@ Pillow                          # if profile photos are added later
 | `grade` | `FloatField` | nullable until graded |
 | `submitted_at` | `DateTimeField` | auto_now_add |
 
-`unique_together = ('test', 'student')` — one attempt per student (re-takes need teacher approval)
+`unique_together = ('test', 'student')` — one attempt per student (re-takes need trainer approval)
 
 #### `Answer`
 
@@ -314,63 +314,63 @@ The login response shape the frontend needs:
 
 | Method | URL | Description | Role |
 |--------|-----|-------------|------|
-| `GET` | `/api/classes/` | Teacher: their classes. Student: enrolled classes | Auth |
-| `POST` | `/api/classes/` | Create new class | Teacher |
+| `GET` | `/api/classes/` | trainer: their classes. Student: enrolled classes | Auth |
+| `POST` | `/api/classes/` | Create new class | trainer |
 | `GET` | `/api/classes/{id}/` | Detail + stats | Auth |
-| `PATCH` | `/api/classes/{id}/` | Edit name, code, status, etc. | Teacher |
-| `DELETE` | `/api/classes/{id}/` | Archive or hard-delete | Teacher/Admin |
-| `GET` | `/api/classes/{id}/students/` | Roster with progress + last_active | Teacher |
-| `POST` | `/api/classes/{id}/students/` | Enroll student by `student_id` or email | Teacher |
-| `DELETE` | `/api/classes/{id}/students/{uid}/` | Remove student | Teacher |
+| `PATCH` | `/api/classes/{id}/` | Edit name, code, status, etc. | trainer |
+| `DELETE` | `/api/classes/{id}/` | Archive or hard-delete | trainer/Admin |
+| `GET` | `/api/classes/{id}/students/` | Roster with progress + last_active | trainer |
+| `POST` | `/api/classes/{id}/students/` | Enroll student by `student_id` or email | trainer |
+| `DELETE` | `/api/classes/{id}/students/{uid}/` | Remove student | trainer |
 | `GET` | `/api/classes/{id}/lessons/` | Lessons assigned to this class + completion stats | Auth |
-| `POST` | `/api/classes/{id}/lessons/` | Assign a lesson to the class | Teacher |
-| `PATCH` | `/api/classes/{id}/lessons/{lid}/` | Update order, locked, due_date | Teacher |
-| `DELETE` | `/api/classes/{id}/lessons/{lid}/` | Unassign lesson | Teacher |
+| `POST` | `/api/classes/{id}/lessons/` | Assign a lesson to the class | trainer |
+| `PATCH` | `/api/classes/{id}/lessons/{lid}/` | Update order, locked, due_date | trainer |
+| `DELETE` | `/api/classes/{id}/lessons/{lid}/` | Unassign lesson | trainer |
 | `GET` | `/api/classes/{id}/assignments/` | Tests linked to this class + submission stats | Auth |
-| `POST` | `/api/classes/{id}/announcements/` | Post announcement | Teacher |
+| `POST` | `/api/classes/{id}/announcements/` | Post announcement | trainer |
 | `GET` | `/api/classes/{id}/announcements/` | List announcements (student: their class) | Auth |
-| `PATCH` | `/api/classes/{id}/announcements/{aid}/` | Edit / pin / unpin | Teacher |
-| `DELETE` | `/api/classes/{id}/announcements/{aid}/` | Delete | Teacher |
+| `PATCH` | `/api/classes/{id}/announcements/{aid}/` | Edit / pin / unpin | trainer |
+| `DELETE` | `/api/classes/{id}/announcements/{aid}/` | Delete | trainer |
 
 ### 3.4 Lessons
 
 | Method | URL | Description | Role |
 |--------|-----|-------------|------|
-| `GET` | `/api/lessons/` | Lesson bank. Student sees class + public lessons. Teacher sees all theirs. Supports `?category=`, `?difficulty=`, `?visibility=`, `?author=`, `?search=` | Auth |
-| `POST` | `/api/lessons/` | Create lesson | Teacher |
+| `GET` | `/api/lessons/` | Lesson bank. Student sees class + public lessons. trainer sees all theirs. Supports `?category=`, `?difficulty=`, `?visibility=`, `?author=`, `?search=` | Auth |
+| `POST` | `/api/lessons/` | Create lesson | trainer |
 | `GET` | `/api/lessons/{id}/` | Detail | Auth |
-| `PATCH` | `/api/lessons/{id}/` | Edit | Teacher (own lessons) |
-| `DELETE` | `/api/lessons/{id}/` | Delete | Teacher (own) / Admin |
+| `PATCH` | `/api/lessons/{id}/` | Edit | trainer (own lessons) |
+| `DELETE` | `/api/lessons/{id}/` | Delete | trainer (own) / Admin |
 | `POST` | `/api/lessons/{id}/complete/` | Mark as complete for current student | Student |
 | `DELETE` | `/api/lessons/{id}/complete/` | Unmark complete | Student |
 
-### 3.5 Courses (Teacher's Course Builder)
+### 3.5 Courses (trainer's Course Builder)
 
 | Method | URL | Description | Role |
 |--------|-----|-------------|------|
-| `GET` | `/api/courses/` | Teacher's own courses | Teacher |
-| `POST` | `/api/courses/` | Create | Teacher |
-| `GET` | `/api/courses/{id}/` | Detail with ordered lessons | Teacher |
-| `PATCH` | `/api/courses/{id}/` | Edit title, description, status | Teacher |
-| `DELETE` | `/api/courses/{id}/` | Delete | Teacher |
-| `POST` | `/api/courses/{id}/lessons/` | Add lesson to course | Teacher |
-| `DELETE` | `/api/courses/{id}/lessons/{lid}/` | Remove from course | Teacher |
-| `POST` | `/api/courses/{id}/lessons/reorder/` | `{lesson_id, new_order}` | Teacher |
+| `GET` | `/api/courses/` | trainer's own courses | trainer |
+| `POST` | `/api/courses/` | Create | trainer |
+| `GET` | `/api/courses/{id}/` | Detail with ordered lessons | trainer |
+| `PATCH` | `/api/courses/{id}/` | Edit title, description, status | trainer |
+| `DELETE` | `/api/courses/{id}/` | Delete | trainer |
+| `POST` | `/api/courses/{id}/lessons/` | Add lesson to course | trainer |
+| `DELETE` | `/api/courses/{id}/lessons/{lid}/` | Remove from course | trainer |
+| `POST` | `/api/courses/{id}/lessons/reorder/` | `{lesson_id, new_order}` | trainer |
 
 ### 3.6 Tests
 
 | Method | URL | Description | Role |
 |--------|-----|-------------|------|
-| `GET` | `/api/tests/` | Teacher: their tests. Student: available tests (class + open). Supports `?class=`, `?status=`, `?search=` | Auth |
-| `POST` | `/api/tests/` | Create | Teacher |
+| `GET` | `/api/tests/` | trainer: their tests. Student: available tests (class + open). Supports `?class=`, `?status=`, `?search=` | Auth |
+| `POST` | `/api/tests/` | Create | trainer |
 | `GET` | `/api/tests/{id}/` | Detail. Student sees questions without correct answers | Auth |
-| `PATCH` | `/api/tests/{id}/` | Edit title, class, time_limit, due_date | Teacher |
-| `DELETE` | `/api/tests/{id}/` | Delete | Teacher |
-| `POST` | `/api/tests/{id}/publish/` | Toggle draft ↔ published | Teacher |
-| `GET` | `/api/tests/{id}/questions/` | List questions (teacher sees correct answers) | Teacher |
-| `POST` | `/api/tests/{id}/questions/` | Add question | Teacher |
-| `PATCH` | `/api/tests/{id}/questions/{qid}/` | Edit question/options | Teacher |
-| `DELETE` | `/api/tests/{id}/questions/{qid}/` | Remove | Teacher |
+| `PATCH` | `/api/tests/{id}/` | Edit title, class, time_limit, due_date | trainer |
+| `DELETE` | `/api/tests/{id}/` | Delete | trainer |
+| `POST` | `/api/tests/{id}/publish/` | Toggle draft ↔ published | trainer |
+| `GET` | `/api/tests/{id}/questions/` | List questions (trainer sees correct answers) | trainer |
+| `POST` | `/api/tests/{id}/questions/` | Add question | trainer |
+| `PATCH` | `/api/tests/{id}/questions/{qid}/` | Edit question/options | trainer |
+| `DELETE` | `/api/tests/{id}/questions/{qid}/` | Remove | trainer |
 
 ### 3.7 Test Submissions
 
@@ -378,8 +378,8 @@ The login response shape the frontend needs:
 |--------|-----|-------------|------|
 | `POST` | `/api/tests/{id}/submit/` | Submit answers; auto-grade mcq/tf, leave short as null | Student |
 | `GET` | `/api/tests/{id}/submission/` | Student's own submission + grade | Student |
-| `GET` | `/api/tests/{id}/submissions/` | All submissions for a test | Teacher |
-| `PATCH` | `/api/tests/{id}/submissions/{sid}/` | Grade short-answer questions | Teacher |
+| `GET` | `/api/tests/{id}/submissions/` | All submissions for a test | trainer |
+| `PATCH` | `/api/tests/{id}/submissions/{sid}/` | Grade short-answer questions | trainer |
 
 ### 3.8 Student Progress
 
@@ -389,11 +389,11 @@ The login response shape the frontend needs:
 | `GET` | `/api/progress/activity/` | Recent activity feed (lesson + test events) | Student |
 | `GET` | `/api/progress/test-results/` | All graded test submissions | Student |
 
-### 3.9 Teacher Progress
+### 3.9 trainer Progress
 
 | Method | URL | Description | Role |
 |--------|-----|-------------|------|
-| `GET` | `/api/teacher/progress/` | All students across teacher's classes. Supports `?class=`, `?status=at-risk\|on-track\|complete`, `?search=`, `?sort=` | Teacher |
+| `GET` | `/api/trainer/progress/` | All students across trainer's classes. Supports `?class=`, `?status=at-risk\|on-track\|complete`, `?search=`, `?sort=` | trainer |
 
 The `status` field is computed:
 - `complete` → all lessons done
@@ -441,18 +441,18 @@ Use DRF's permission classes. Define three custom base classes:
 
 ```python
 IsStudent    # request.user.userprofile.role == 'student'
-IsTeacher    # request.user.userprofile.role == 'teacher'
+Istrainer    # request.user.userprofile.role == 'trainer'
 IsAdmin      # request.user.userprofile.role == 'admin'
 ```
 
-For ownership checks (teacher can only edit their own class/lesson/test), implement object-level permissions:
+For ownership checks (trainer can only edit their own class/lesson/test), implement object-level permissions:
 
 ```python
 class IsOwnerOrAdmin(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user.userprofile.role == 'admin':
             return True
-        return obj.teacher == request.user  # or obj.author
+        return obj.trainer == request.user  # or obj.author
 ```
 
 ---
@@ -528,7 +528,7 @@ These are never stored — compute them in the serializer or view:
 | `active_streak_days` | Student progress | Count consecutive days with at least one `ActivityLog` entry going back from today |
 | `avg_grade` | Student / class | `Avg('grade')` on graded `TestSubmission` |
 | `class_rank` | MyClass page | Count students with higher `lessons_done` in the same class |
-| `student status` (at-risk etc.) | Teacher progress | Computed from `lessons_done / lessons_total` ratio + `last_active` |
+| `student status` (at-risk etc.) | trainer progress | Computed from `lessons_done / lessons_total` ratio + `last_active` |
 | `lesson completion %` | ClassDetail | `completed / total` across all enrolled students per lesson |
 
 ---
@@ -572,10 +572,10 @@ When a `TestSubmission` is created (student submits):
    `is_correct = (answer.selected_tf == question.correct_tf)`
 
 3. For each `Answer` where `question.type == 'short'`:  
-   `is_correct = None` — teacher grades manually via `PATCH /api/tests/{id}/submissions/{sid}/`
+   `is_correct = None` — trainer grades manually via `PATCH /api/tests/{id}/submissions/{sid}/`
 
 4. Final grade = `(correct_count / auto_gradeable_count) * 100`  
-   If there are `short` questions, grade stays `null` until teacher submits their marks.
+   If there are `short` questions, grade stays `null` until trainer submits their marks.
 
 ---
 
@@ -633,14 +633,14 @@ Start with the models and auth — everything else depends on them.
 4. `tests` — Test, Question, QuestionOption, TestSubmission, Answer
 5. `progress` — ActivityLog, Achievement, Certification (wire signals)
 6. `support` — SupportTicket
-7. `courses` — Course, CourseLesson (teacher builder)
+7. `courses` — Course, CourseLesson (trainer builder)
 8. Admin analytics endpoint last — it is read-only aggregation over existing tables
 
 ---
 
 ## 12. Quick Reference — Role Access Matrix
 
-| Resource | Student | Teacher | Admin |
+| Resource | Student | trainer | Admin |
 |----------|---------|---------|-------|
 | Own profile | R/W | R/W | R/W |
 | All users | — | — | R/W |

@@ -1,4 +1,4 @@
-import '../../css/admin/users/UserFormModal.css'
+﻿import '../../css/admin/users/UserFormModal.css'
 import Dropdown from '../../shared/Dropdown'
 import { useAuth } from '../../../auth/AuthContext'
 
@@ -52,7 +52,7 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
           <div className="form-row">
             <label className="form-label">Role</label>
             <div className="form-radio-group">
-              {(isSuperAdmin ? ['student', 'teacher', 'admin'] : ['student', 'teacher']).map(r => (
+              {(isSuperAdmin ? ['student', 'trainer', 'admin'] : ['student', 'trainer']).map(r => (
                 <label
                   key={r}
                   className={`form-radio ${form.role === r ? 'form-radio--active' : ''}`}
@@ -83,7 +83,7 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
             />
           </div>
 
-          {/* ── Crew ID (students and teachers only) ── */}
+          {/* ── Crew ID (students and trainers only) ── */}
           {form.role !== 'admin' && (
             <div className="form-row">
               <label className="form-label">

@@ -134,10 +134,22 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 10px;
+  gap: 8px;
   padding: 20px 24px;
   flex-shrink: 0;
   min-width: 180px;
+}
+
+.so-min-grade {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+  text-align: right;
+}
+
+.so-min-grade strong {
+  font-weight: 600;
+  color: var(--text-2);
 }
 
 .so-grade-display {

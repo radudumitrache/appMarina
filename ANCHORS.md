@@ -1,4 +1,4 @@
-# Anchor System
+﻿# Anchor System
 
 Anchors are interactive hotspots placed at specific 3-D coordinates inside a **VR tour** panel. They are always scoped to a `VRTour`, which is itself scoped to a `Panel` of type `vr_tour`, which is scoped to a `Lesson`.
 
@@ -124,7 +124,7 @@ All anchor endpoints require a valid JWT (see [PANELS_AND_VR.md](PANELS_AND_VR.m
 
 | Role | Read | Write (create / update / delete) |
 |---|---|---|
-| `teacher` | Own lessons only | Own lessons only |
+| `trainer` | Own lessons only | Own lessons only |
 | `admin` | All lessons | All lessons |
 | `student` | `403 Forbidden` | `403 Forbidden` |
 
@@ -461,7 +461,7 @@ DELETE /api/lessons/{lesson_pk}/panels/{panel_pk}/polygon-anchors/{anchor_pk}/po
 |---|---|
 | `400 Bad Request` — `"This panel is not a VR tour."` | The `panel_pk` resolves to a `text` panel. Anchors can only be placed on `vr_tour` panels. |
 | `400 Bad Request` — field validation errors | A required field is missing or has an invalid value. |
-| `403 Forbidden` | The authenticated user does not have access to the lesson (wrong role, or teacher accessing another teacher's lesson). |
+| `403 Forbidden` | The authenticated user does not have access to the lesson (wrong role, or trainer accessing another trainer's lesson). |
 | `404 Not Found` | The lesson, panel, or anchor ID does not exist. |
 
 ---

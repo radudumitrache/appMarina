@@ -1,3 +1,5 @@
+import VRLocalizationReview from './VRLocalizationReview'
+
 export function CheckIcon() {
   return (
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
@@ -133,6 +135,19 @@ function WordAnswer({ studentText, correctWord }) {
 }
 
 export function AnswerBody({ resolved, unanswered }) {
+  const { type } = resolved
+
+  // Always show the VR viewer for localization — unanswered just means no marker was placed,
+  // which the viewer already communicates via its legend.
+  if (type === 'localization') return (
+    <VRLocalizationReview
+      sceneUrl={resolved.sceneUrl}
+      studentPosStr={resolved.studentPosStr}
+      polygonPoints={resolved.polygonPoints}
+      anchorPos={resolved.anchorPos}
+    />
+  )
+
   if (unanswered) {
     return (
       <div className="so-unanswered">
@@ -144,19 +159,10 @@ export function AnswerBody({ resolved, unanswered }) {
     )
   }
 
-  const { type } = resolved
   if (type === 'mcq')    return <MCQOptions options={resolved.options} studentOptId={resolved.studentOptId} correctOptId={resolved.correctOptId} />
   if (type === 'tf')     return <TFOptions studentTf={resolved.studentTf} correctTf={resolved.correctTf} />
   if (type === 'arrange') return <ArrangeAnswer correctItems={resolved.correctItems} studentItems={resolved.studentItems} />
   if (type === 'word' || type === 'gap_fill')
     return <WordAnswer studentText={resolved.studentText} correctWord={resolved.correctWord} />
-  if (type === 'localization') return (
-    <div className="so-text-answer">
-      {resolved.placed
-        ? <span className="so-text-answer-value">Student placed a marker in the scene</span>
-        : <em className="so-text-answer-empty">No marker placed</em>
-      }
-    </div>
-  )
   return <TextAnswer text={resolved.studentText} />
 }

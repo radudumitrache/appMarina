@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NavBar from '../../components/admin/NavBar'
 import ClassesHeader from '../../components/admin/classes/ClassesHeader'
@@ -7,18 +7,18 @@ import ClassesSection from '../../components/admin/classes/ClassesSection'
 import ClassFormModal from '../../components/admin/classes/ClassFormModal'
 import DeleteConfirmModal from '../../components/admin/classes/DeleteConfirmModal'
 import { getDepartments, createDepartment, updateDepartment, deleteDepartment } from '../../api/departments'
-import { getTeachers } from '../../api/admin'
+import { getTrainers } from '../../api/admin'
 import '../css/admin/Classes.css'
 
 const EMPTY_FORM = {
-  name: '', code: '', subject: '', teacher: null,
+  name: '', code: '', subject: '', trainer: null,
   start_date: '', end_date: '', status: 'active',
 }
 
 export default function Departments() {
   const navigate = useNavigate()
   const [departments, setDepartments]        = useState([])
-  const [teachers, setTeachers]              = useState([])
+  const [trainers, settrainers]              = useState([])
   const [loading, setLoading]                = useState(true)
   const [search, setSearch]                  = useState('')
   const [statusFilter, setStatusFilter]      = useState('all')
@@ -28,10 +28,10 @@ export default function Departments() {
   const [deleteTarget, setDeleteTarget]      = useState(null)
 
   useEffect(() => {
-    Promise.all([getDepartments(), getTeachers()])
+    Promise.all([getDepartments(), getTrainers()])
       .then(([clsRes, tchRes]) => {
         setDepartments(clsRes.data)
-        setTeachers(tchRes.data)
+        settrainers(tchRes.data)
       })
       .finally(() => setLoading(false))
   }, [])
@@ -42,7 +42,7 @@ export default function Departments() {
       (c.name        || '').toLowerCase().includes(q) ||
       (c.code        || '').toLowerCase().includes(q) ||
       (c.subject     || '').toLowerCase().includes(q) ||
-      (c.teacher_name || '').toLowerCase().includes(q)
+      (c.trainer_name || '').toLowerCase().includes(q)
     )
   }
 
@@ -62,7 +62,7 @@ export default function Departments() {
       name:       cls.name,
       code:       cls.code,
       subject:    cls.subject,
-      teacher:    cls.teacher,
+      trainer:    cls.trainer,
       start_date: cls.start_date,
       end_date:   cls.end_date,
       status:     cls.status,
@@ -83,7 +83,7 @@ export default function Departments() {
     if (!form.subject.trim())  clientErrors.subject    = 'Subject is required.'
     if (!form.start_date)      clientErrors.start_date = 'Start date is required.'
     if (!form.end_date)        clientErrors.end_date   = 'End date is required.'
-    if (modal === 'create' && !form.teacher) clientErrors.teacher = 'Please select a teacher.'
+    if (modal === 'create' && !form.trainer) clientErrors.trainer = 'Please select a trainer.'
     if (Object.keys(clientErrors).length) { setFormErrors(clientErrors); return }
     setFormErrors({})
     try {
@@ -217,7 +217,7 @@ export default function Departments() {
           onChange={handleFormChange}
           onClose={() => { setModal(null); setFormErrors({}) }}
           onSave={handleSave}
-          teachers={teachers}
+          trainers={trainers}
         />
       )}
 

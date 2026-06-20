@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+﻿import { useState, useRef } from 'react'
 import '../../css/student/my-class/ClassSidebar.css'
 
 export default function ClassSidebar({ classes, selectedId, onSelect, onJoin, className = '' }) {
@@ -54,7 +54,7 @@ export default function ClassSidebar({ classes, selectedId, onSelect, onJoin, cl
           >
             <span className="cls-item-name">{cls.name}</span>
             <span className="cls-item-meta">
-              <span className="cls-item-teacher">{cls.teacher_name}</span>
+              <span className="cls-item-trainer">{cls.trainer_name}</span>
               <span className="cls-item-code">{cls.code}</span>
             </span>
           </button>

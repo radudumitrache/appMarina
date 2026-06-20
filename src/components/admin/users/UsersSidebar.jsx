@@ -1,10 +1,10 @@
-import '../../css/admin/users/UsersSidebar.css'
+﻿import '../../css/admin/users/UsersSidebar.css'
 import { useAuth } from '../../../auth/AuthContext'
 
 const BASE_ROLES = [
   { id: 'all',     label: 'All Users' },
   { id: 'student', label: 'Students'  },
-  { id: 'teacher', label: 'Teachers'  },
+  { id: 'trainer', label: 'trainers'  },
 ]
 const ADMIN_ROLE = { id: 'admin', label: 'Admins' }
 
@@ -99,8 +99,8 @@ export default function UsersSidebar({ roleFilter, onRoleFilterChange, counts, c
         <span className="users-sidebar-stat-text">
           <span className="users-sidebar-stat-num">{counts.student}</span>
           {' '}students /{' '}
-          <span className="users-sidebar-stat-num">{counts.teacher}</span>
-          {' '}teachers
+          <span className="users-sidebar-stat-num">{counts.trainer}</span>
+          {' '}trainers
         </span>
       </div>
     </aside>

@@ -45,7 +45,7 @@ export function buildPanels(testPanels, answers) {
       for (const a of vr.word_completion_anchors ?? [])
         items.push({ kind: 'vr', source: { ...a, _type: 'word' },         answer: byVrWord[a.id]  ?? null })
       for (const a of vr.localization_anchors ?? [])
-        items.push({ kind: 'vr', source: { ...a, _type: 'localization' }, answer: byVrLoc[a.id]   ?? null })
+        items.push({ kind: 'vr', source: { ...a, _type: 'localization', _sceneUrl: vr.scene_url ?? null }, answer: byVrLoc[a.id] ?? null })
     }
 
     return { title: panel.title, order: panel.order, items }
@@ -105,7 +105,12 @@ export function resolveQuestion(item) {
         studentText: answer?.text_answer || null, correctWord: source.correct_word }
     if (atype === 'localization')
       return { type: 'localization', typeLabel: 'VR Localize', text: source.text, title: source.title, isCorrect,
-        placed: !!answer?.text_answer }
+        placed: !!answer?.text_answer,
+        studentPosStr: answer?.text_answer ?? null,
+        polygonPoints: source.polygon_points ?? [],
+        anchorPos: { x: source.pos_x ?? 0, y: source.pos_y ?? 0, z: source.pos_z ?? 0 },
+        sceneUrl: source._sceneUrl ?? null,
+      }
   }
 
   return { type: 'unknown', typeLabel: '—', text: '', isCorrect: null }

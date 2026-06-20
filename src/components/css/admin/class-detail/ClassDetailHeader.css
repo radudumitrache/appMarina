@@ -1,4 +1,4 @@
-.cd-header {
+﻿.cd-header {
   padding: 24px 40px 20px;
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -47,14 +47,14 @@
   color: var(--text-3);
 }
 
-.cd-teacher-row {
+.cd-trainer-row {
   display: flex;
   align-items: center;
   gap: 7px;
   color: var(--text-3);
 }
 
-.cd-teacher-name {
+.cd-trainer-name {
   font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 500;

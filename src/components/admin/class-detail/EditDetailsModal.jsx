@@ -1,4 +1,4 @@
-import '../../css/admin/class-detail/EditDetailsModal.css'
+﻿import '../../css/admin/class-detail/EditDetailsModal.css'
 
 function XIcon({ size = 13 }) {
   return (
@@ -9,7 +9,7 @@ function XIcon({ size = 13 }) {
   )
 }
 
-export default function EditDetailsModal({ editForm, onChange, onClose, onSave, teachers }) {
+export default function EditDetailsModal({ editForm, onChange, onClose, onSave, trainers }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal--wide" onClick={e => e.stopPropagation()}>
@@ -52,13 +52,13 @@ export default function EditDetailsModal({ editForm, onChange, onClose, onSave, 
               />
             </div>
             <div className="form-row">
-              <label className="form-label">Teacher</label>
+              <label className="form-label">trainer</label>
               <select
                 className="form-select"
-                value={editForm.teacher ?? ''}
-                onChange={e => onChange('teacher', Number(e.target.value))}
+                value={editForm.trainer ?? ''}
+                onChange={e => onChange('trainer', Number(e.target.value))}
               >
-                {teachers.map(t => (
+                {trainers.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.first_name && t.last_name ? `${t.first_name} ${t.last_name}` : t.username}
                   </option>

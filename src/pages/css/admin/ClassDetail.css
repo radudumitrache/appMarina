@@ -19,6 +19,20 @@
   animation: fadeUp var(--duration-enter) var(--ease-default) 0.08s both;
 }
 
+/* Two-column variant (Students sidebar + Courses main) */
+.cd-panels--two-col {
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: 1fr;
+}
+
+.cd-panels-students,
+.cd-panels-courses {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ─── Not found ──────────────────────────────────────────────────────────── */
 .cd-not-found {
   flex: 1;
