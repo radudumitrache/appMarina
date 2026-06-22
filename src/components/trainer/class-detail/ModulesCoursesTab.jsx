@@ -385,12 +385,9 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                 </button>
 
                 <div className="lct-course-info">
-                  <button
-                    className="lct-course-title lct-course-title--link"
-                    onClick={() => navigate(`/trainer/builder?select=${course.id}`)}
-                  >
+                  <span className="lct-course-title">
                     {course.title}
-                  </button>
+                  </span>
                   <span className={`lct-status lct-status--${course.status}`}>{course.status}</span>
                   {cls && <span className="lct-course-count">{cls.length} item{cls.length !== 1 ? 's' : ''}</span>}
                 </div>
