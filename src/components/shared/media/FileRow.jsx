@@ -81,18 +81,18 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
 
       {/* ── Actions (always visible on desktop, expand on mobile) ── */}
       <td className="file-row-actions" onClick={stopProp}>
-        {file.download_url && (
-          file.file_type !== 'document' || file.mime_type === 'application/pdf' ? (
-            <a className="file-action-btn" href={file.download_url} target="_blank" rel="noreferrer"
-               title={file.file_type === 'document' ? 'Open' : 'Download'}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-            </a>
-          ) : (
-            <a className="file-action-btn" href={file.download_url} download={file.name} title="Download">
+        {(() => {
+          const openUrl = `${import.meta.env.VITE_API_BASE_URL}/media/files/${file.id}/open/`
+          const isOpenable = file.file_type !== 'document' || file.mime_type === 'application/pdf'
+          return (
+            <a
+              className="file-action-btn"
+              href={openUrl}
+              target="_blank"
+              rel="noreferrer"
+              download={!isOpenable ? file.name : undefined}
+              title={file.file_type === 'document' ? 'Open' : 'Download'}
+            >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
@@ -100,7 +100,7 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
               </svg>
             </a>
           )
-        )}
+        })()}
         {canWrite && (
           <>
             {onToggleVrScene && file.file_type !== 'document' && (

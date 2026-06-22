@@ -181,15 +181,18 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
 
 // ── Award Diploma Modal ───────────────────────────────────────────────────────
 
-function AwardDiplomaModal({ diploma, students, onClose, onAward }) {
+function AwardDiplomaModal({ diploma, students, studentsLoading, saving, onClose, onAward }) {
   const [selected, setSelected] = useState(new Set(diploma.recipients.map(r => r.id)))
   const [search, setSearch]     = useState('')
 
-  const toggle = id => setSelected(prev => {
-    const next = new Set(prev)
-    next.has(id) ? next.delete(id) : next.add(id)
-    return next
-  })
+  const toggle = id => {
+    if (saving) return
+    setSelected(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
   const filtered = students.filter(s => {
     const q = search.toLowerCase()
@@ -201,20 +204,28 @@ function AwardDiplomaModal({ diploma, students, onClose, onAward }) {
       <div className="crd-modal-card crd-modal-card--lg" onClick={e => e.stopPropagation()}>
         <div className="crd-modal-header">
           <span className="crd-modal-title">Award – {diploma.title}</span>
-          <button className="crd-modal-close" onClick={onClose}>✕</button>
+          <button className="crd-modal-close" onClick={onClose} disabled={saving}>✕</button>
         </div>
         <div className="crd-modal-body">
           <p className="crd-award-hint">Select students to award this diploma. Deselecting revokes it.</p>
           <div className="crd-form-group">
-            <input className="crd-form-input" placeholder="Search students…" value={search} onChange={e => setSearch(e.target.value)} />
+            <input
+              className="crd-form-input"
+              placeholder="Search students…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              disabled={studentsLoading || saving}
+            />
           </div>
-          {filtered.length === 0 ? (
-            <p className="crd-award-empty">No students found.</p>
+          {studentsLoading ? (
+            <p className="crd-award-empty">Loading students…</p>
+          ) : filtered.length === 0 ? (
+            <p className="crd-award-empty">{students.length === 0 ? 'No students enrolled in this course\'s departments.' : 'No students match your search.'}</p>
           ) : (
             <div className="crd-student-list">
               {filtered.map(s => (
-                <label key={s.id} className="crd-student-row">
-                  <input type="checkbox" checked={selected.has(s.id)} onChange={() => toggle(s.id)} className="crd-student-check" />
+                <label key={s.id} className={`crd-student-row${saving ? ' crd-student-row--disabled' : ''}`}>
+                  <input type="checkbox" checked={selected.has(s.id)} onChange={() => toggle(s.id)} className="crd-student-check" disabled={saving} />
                   <span className="crd-student-name">{s.name}</span>
                   <span className="crd-student-email">{s.email}</span>
                 </label>
@@ -224,8 +235,14 @@ function AwardDiplomaModal({ diploma, students, onClose, onAward }) {
         </div>
         <div className="crd-modal-footer">
           <span className="crd-award-count">{selected.size} selected</span>
-          <button className="crd-btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="crd-btn-primary" onClick={() => onAward(diploma, selected, diploma.recipients)}>Save Awards</button>
+          <button className="crd-btn-ghost" onClick={onClose} disabled={saving}>Cancel</button>
+          <button
+            className="crd-btn-primary"
+            onClick={() => onAward(diploma, selected, diploma.recipients)}
+            disabled={saving || studentsLoading}
+          >
+            {saving ? 'Saving…' : 'Save Awards'}
+          </button>
         </div>
       </div>
     </div>
@@ -393,6 +410,8 @@ export default function Courses() {
   // ── Diploma UI ─────────────────────────────────────────────────────────────
   const [diplomaModal,        setDiplomaModal]        = useState(null)
   const [awardModal,          setAwardModal]          = useState(null)
+  const [awardSaving,         setAwardSaving]         = useState(false)
+  const [studentsLoading,     setStudentsLoading]     = useState(false)
   const [diplomaDeleteTarget, setDiplomaDeleteTarget] = useState(null)
   const [diplomaForm,         setDiplomaForm]         = useState({ title: '', description: '', courseId: null })
   const [diplomaErrors,       setDiplomaErrors]       = useState({})
@@ -667,8 +686,10 @@ export default function Courses() {
   async function openAwardModal(diploma) {
     setAwardModal(diploma)
     if (studentsMap[selectedId]) return
-    if (selectedCourse?.department_ids?.length) {
-      Promise.all(selectedCourse.department_ids.map(id => getClassStudents(id))).then(resList => {
+    setStudentsLoading(true)
+    try {
+      if (selectedCourse?.department_ids?.length) {
+        const resList = await Promise.all(selectedCourse.department_ids.map(id => getClassStudents(id)))
         const merged = new Map()
         for (const res of resList) {
           for (const e of res.data) {
@@ -676,24 +697,32 @@ export default function Courses() {
           }
         }
         setStudentsMap(prev => ({ ...prev, [selectedId]: Array.from(merged.values()) }))
-      }).catch(() => {})
-    } else {
-      getUsers({ 'userprofile__role': 'student' }).then(res => {
+      } else {
+        const res = await getUsers({ 'userprofile__role': 'student' })
         setStudentsMap(prev => ({ ...prev, [selectedId]: res.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })) }))
-      }).catch(() => {})
+      }
+    } catch {
+      setStudentsMap(prev => ({ ...prev, [selectedId]: [] }))
+    } finally {
+      setStudentsLoading(false)
     }
   }
   async function handleAward(diploma, selectedSet, previousRecipients) {
     const prevIds  = new Set(previousRecipients.map(r => r.id))
     const toAdd    = [...selectedSet].filter(uid => !prevIds.has(uid))
     const toRevoke = [...prevIds].filter(uid => !selectedSet.has(uid))
+    setAwardSaving(true)
     try {
       let updated = diploma
       if (toAdd.length) { const { data } = await awardCourseDiploma(selectedId, diploma.id, { user_ids: toAdd }); updated = data }
       for (const uid of toRevoke) { const { data } = await revokeCourseDiploma(selectedId, diploma.id, uid); updated = data }
       setDetailDiplomas(d => d.map(x => x.id === diploma.id ? updated : x))
-    } catch {}
-    setAwardModal(null)
+      setAwardModal(null)
+    } catch {
+      // keep modal open so user knows something went wrong
+    } finally {
+      setAwardSaving(false)
+    }
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -1243,7 +1272,9 @@ export default function Courses() {
         <AwardDiplomaModal
           diploma={awardModal}
           students={students}
-          onClose={() => setAwardModal(null)}
+          studentsLoading={studentsLoading}
+          saving={awardSaving}
+          onClose={() => { if (!awardSaving) setAwardModal(null) }}
           onAward={handleAward}
         />
       )}

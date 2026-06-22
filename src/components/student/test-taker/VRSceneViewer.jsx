@@ -221,6 +221,53 @@ export default function VRSceneViewer({
   useEffect(() => { locAnchorRef.current    = localizingAnchor  }, [localizingAnchor])
   useEffect(() => { onLocPlaceRef.current   = onLocalizationPlace }, [onLocalizationPlace])
 
+  // Native pinch-to-zoom — pointer capture on iOS breaks React's synthetic
+  // multi-touch, so attach directly to the DOM node with passive:false so we
+  // can call preventDefault() and prevent the browser from zooming the page.
+  useEffect(() => {
+    const container = mountRef.current
+    if (!container) return
+    let prevDist = null
+
+    const onTouchStart = (e) => {
+      if (e.touches.length !== 2) return
+      prevDist = Math.hypot(
+        e.touches[1].clientX - e.touches[0].clientX,
+        e.touches[1].clientY - e.touches[0].clientY,
+      )
+    }
+
+    const onTouchMove = (e) => {
+      if (e.touches.length !== 2) { prevDist = null; return }
+      e.preventDefault()
+      const dist = Math.hypot(
+        e.touches[1].clientX - e.touches[0].clientX,
+        e.touches[1].clientY - e.touches[0].clientY,
+      )
+      if (prevDist !== null) {
+        const camera = cameraRef.current
+        if (camera) {
+          camera.fov = THREE.MathUtils.clamp(camera.fov + (prevDist - dist) * 0.1, 30, 100)
+          camera.updateProjectionMatrix()
+        }
+      }
+      prevDist = dist
+    }
+
+    const onTouchEnd = () => { prevDist = null }
+
+    container.addEventListener('touchstart', onTouchStart, { passive: true })
+    container.addEventListener('touchmove',  onTouchMove,  { passive: false })
+    container.addEventListener('touchend',   onTouchEnd)
+    container.addEventListener('touchcancel', onTouchEnd)
+    return () => {
+      container.removeEventListener('touchstart', onTouchStart)
+      container.removeEventListener('touchmove',  onTouchMove)
+      container.removeEventListener('touchend',   onTouchEnd)
+      container.removeEventListener('touchcancel', onTouchEnd)
+    }
+  }, [])
+
   // Localization anchors are intentionally excluded — no scene presence at all
   const exerciseAnchors = [
     ...(vr.mcq_anchors             ?? []).map(a => ({ ...a, _type: 'mcq'      })),
@@ -371,7 +418,6 @@ export default function VRSceneViewer({
   const onDown = useCallback(e => {
     ptrsRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
     ptrRef.current = { down: true, x: e.clientX, y: e.clientY, moved: false }
-    mountRef.current?.setPointerCapture?.(e.pointerId)
   }, [])
 
   const onMove = useCallback(e => {

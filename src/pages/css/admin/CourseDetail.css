@@ -919,6 +919,7 @@
   transition: background var(--duration-fast);
 }
 .crd-student-row:hover { background: var(--surface-2); }
+.crd-student-row--disabled { opacity: 0.5; pointer-events: none; }
 
 .crd-student-check {
   width: 15px;
