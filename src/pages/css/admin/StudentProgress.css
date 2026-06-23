@@ -21,6 +21,22 @@
   margin: 0 auto;
 }
 
+/* ── Topbar / back row ───────────────────────────────────────────────────── */
+.sp-topbar {
+  display: flex;
+  align-items: center;
+}
+
+/* ── Two-column grid for sections ────────────────────────────────────────── */
+.sp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.sp-grid--single {
+  grid-template-columns: 1fr;
+}
+
 /* ── Back button ─────────────────────────────────────────────────────────── */
 .sp-back {
   display: flex;
@@ -147,6 +163,168 @@
   background: var(--error);
   border-radius: 99px;
   transition: width 0.6s var(--ease-default);
+}
+
+/* ── StudentProgressHeader component (sp-header, sp-avatar …) ───────────── */
+.sp-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 24px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  animation: fadeUp var(--duration-enter) var(--ease-default) 0.04s both;
+}
+
+.sp-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: rgba(224, 82, 82, 0.12);
+  border: 1px solid rgba(224, 82, 82, 0.22);
+  color: var(--error);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sp-header-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sp-name {
+  font-family: var(--font-ui);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.sp-email {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.sp-header-stats {
+  display: flex;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+.sp-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.sp-stat-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.sp-stat-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ── TestResultsSection component (sp-section, sp-list, sp-row …) ────────── */
+.sp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: fadeUp var(--duration-enter) var(--ease-default) 0.08s both;
+}
+
+.sp-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.sp-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.sp-row:last-child { border-bottom: none; }
+
+.sp-row--clickable {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background var(--duration-fast);
+  animation: fadeUp var(--duration-enter) var(--ease-default) both;
+}
+.sp-row--clickable:hover { background: var(--surface-2); }
+.sp-row--clickable:hover .sp-chevron { transform: translateX(2px); color: var(--text-2); }
+
+.sp-grade-block {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+  min-width: 52px;
+  font-family: var(--font-mono);
+}
+
+.sp-grade-num {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.sp-grade-pct { font-size: 11px; opacity: 0.6; }
+
+.sp-row-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sp-row-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-row-meta {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-3);
 }
 
 /* ── Section shared ──────────────────────────────────────────────────────── */

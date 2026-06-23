@@ -35,6 +35,7 @@ export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonP
   const mountRef   = useRef(null)
   const studentVec = useMemo(() => parseVec(studentPosStr), [studentPosStr])
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [texLoaded, setTexLoaded]       = useState(false)
 
   // Fullscreen change listener
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonP
 
   // Three.js scene
   useEffect(() => {
+    setTexLoaded(false)
     const container = mountRef.current
     if (!container || !sceneUrl) return
 
@@ -69,7 +71,10 @@ export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonP
     // Panorama sphere (flipped inward)
     const sphGeo = new THREE.SphereGeometry(SPHERE_R, 64, 32)
     sphGeo.scale(-1, 1, 1)
-    const sphTex = new THREE.TextureLoader().load(sceneUrl, () => renderer.render(scene, camera))
+    const sphTex = new THREE.TextureLoader().load(sceneUrl, () => {
+      renderer.render(scene, camera)
+      setTexLoaded(true)
+    })
     const sphMat = new THREE.MeshBasicMaterial({ map: sphTex })
     scene.add(new THREE.Mesh(sphGeo, sphMat))
 
@@ -211,8 +216,14 @@ export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonP
       <div
         className="vrloc-viewport"
         ref={mountRef}
-        style={{ height: isFullscreen ? 'calc(100vh - 72px)' : '320px' }}
-      />
+        style={{ height: isFullscreen ? 'calc(100vh - 72px)' : '320px', position: 'relative' }}
+      >
+        {!texLoaded && (
+          <div className="vrloc-loader">
+            <span className="vrloc-spinner" />
+          </div>
+        )}
+      </div>
       <div className="vrloc-legend">
         <span className="vrloc-legend-item">
           <span className="vrloc-dot vrloc-dot--correct" /> Correct area

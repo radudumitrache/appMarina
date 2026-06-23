@@ -251,7 +251,20 @@ function AwardDiplomaModal({ diploma, students, studentsLoading, saving, onClose
 
 // ── Diploma Card ──────────────────────────────────────────────────────────────
 
+const MAX_RECIP_AVATARS = 6
+
+function recipientInitials(name) {
+  const parts = (name || '').trim().split(/\s+/)
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  return (parts[0]?.[0] ?? '?').toUpperCase()
+}
+
 function DiplomaCard({ diploma, onEdit, onDelete, onAward }) {
+  const recipients = diploma.recipients ?? []
+  const count      = diploma.recipient_count ?? recipients.length
+  const shown      = recipients.slice(0, MAX_RECIP_AVATARS)
+  const overflow   = count - shown.length
+
   return (
     <div className="crd-diploma-card">
       <div className="crd-diploma-top">
@@ -266,15 +279,29 @@ function DiplomaCard({ diploma, onEdit, onDelete, onAward }) {
           {diploma.description && <p className="crd-diploma-desc">{diploma.description}</p>}
         </div>
       </div>
+
       <div className="crd-diploma-recipients">
-        <span className="crd-diploma-recipient-count">{diploma.recipient_count} recipient{diploma.recipient_count !== 1 ? 's' : ''}</span>
-        {diploma.recipients.slice(0, 4).map(r => (
-          <span key={r.id} className="crd-recipient-chip">{r.name}</span>
-        ))}
-        {diploma.recipients.length > 4 && (
-          <span className="crd-recipient-chip crd-recipient-chip--more">+{diploma.recipients.length - 4} more</span>
+        {count === 0 ? (
+          <span className="crd-recip-empty">No recipients yet</span>
+        ) : (
+          <div className="crd-recip-row">
+            <div className="crd-recip-avatars">
+              {shown.map(r => (
+                <span key={r.id} className="crd-recip-avatar" title={r.name}>
+                  {recipientInitials(r.name)}
+                </span>
+              ))}
+              {overflow > 0 && (
+                <span className="crd-recip-avatar crd-recip-avatar--overflow" title={`${overflow} more`}>
+                  +{overflow}
+                </span>
+              )}
+            </div>
+            <span className="crd-recip-label">{count} recipient{count !== 1 ? 's' : ''}</span>
+          </div>
         )}
       </div>
+
       <div className="crd-diploma-actions">
         <button className="crd-diploma-btn crd-diploma-btn--award" onClick={() => onAward(diploma)}>Award</button>
         <button className="crd-diploma-btn" onClick={() => onEdit(diploma)}>Edit</button>

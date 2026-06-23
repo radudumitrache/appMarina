@@ -481,33 +481,71 @@
 }
 
 .crd-diploma-recipients {
+  padding: 10px 16px 12px;
+  border-top: 1px solid var(--border);
+  min-height: 46px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 8px 16px 12px;
-  border-top: 1px solid var(--border);
 }
 
-.crd-diploma-recipient-count {
+.crd-recip-empty {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.crd-recip-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.crd-recip-avatars {
+  display: flex;
+  align-items: center;
+}
+
+.crd-recip-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(224, 82, 82, 0.12);
+  border: 2px solid var(--surface-1);
+  color: var(--error);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -7px;
+  flex-shrink: 0;
+  letter-spacing: 0;
+  position: relative;
+  transition: transform var(--duration-fast);
+  cursor: default;
+}
+
+.crd-recip-avatar:first-child { margin-left: 0; }
+
+.crd-recip-avatars:hover .crd-recip-avatar:hover {
+  transform: translateY(-2px);
+  z-index: 1;
+}
+
+.crd-recip-avatar--overflow {
+  background: var(--surface-3);
+  border-color: var(--surface-1);
+  color: var(--text-3);
+  font-size: 9px;
+}
+
+.crd-recip-label {
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-3);
-  margin-right: 4px;
-}
-
-.crd-recipient-chip {
-  padding: 2px 8px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  color: var(--text-2);
-}
-.crd-recipient-chip--more {
-  color: var(--text-3);
-  border-style: dashed;
+  white-space: nowrap;
 }
 
 .crd-diploma-actions {
