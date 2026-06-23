@@ -453,8 +453,8 @@ export default function AdminCoursesPanel({ departmentId }) {
                 <div className="acp-course-info">
                   <button
                     className="acp-course-title"
-                    onClick={() => navigate(`/admin/tests?course=${course.id}`)}
-                    title="Open course builder"
+                    onClick={() => navigate(`/admin/courses/${course.id}`)}
+                    title="Open course detail"
                   >
                     {course.title}
                   </button>
@@ -531,7 +531,7 @@ export default function AdminCoursesPanel({ departmentId }) {
                                   </button>
                                 ) : item.itemType === 'test' && item.testId ? (
                                   <button className="acp-item-title acp-item-title--link"
-                                    onClick={() => navigate(`/admin/tests`)}>
+                                    onClick={() => navigate('/admin/tests', { state: { openTestId: item.testId } })}>
                                     {item.title}
                                   </button>
                                 ) : (
