@@ -5,22 +5,22 @@ import '../css/landing/WhyVRSection.css'
 
 const BENEFITS = [
   {
-    title: 'Zero Risk',
-    desc: 'Train through emergencies, collisions, and extreme weather — with no crew, no vessel, and no consequence.',
+    title: "1. Spatial Familiarity ",
+    desc: "This spatial immersion allows officers and crew to memorize the exact layouts of specific spaces before they ever physically board the ship. ",
   },
   {
-    title: 'Infinite Repetition',
-    desc: 'Every cadet repeats a maneuver until it is perfect. No fuel cost, no vessel scheduling, no waiting.',
+    title: "2. Contextual Memory ",
+    desc: "Because the human brain is wired to remember where things happen better than what text it reads, learners anchor information to visual landmarks. ",
   },
   {
-    title: 'Real-Time Insight',
-    desc: 'Instructors see every decision the moment it happens. Gap analysis replaces post-hoc debriefs.',
+    title: "3. Interactive Control",
+    desc: "The shift from a passive spectator viewing a 360° image to an active participant who must make choices, find hidden details, and trigger consequences.",
   },
   {
-    title: 'Deploy Anywhere',
-    desc: 'A headset and an internet connection. No vessel, no port, no travel budget required.',
+    title: "4. Lower Cognitive Load ",
+    desc: "Because the digital environment matches real world scale, depth, and perspective, the brain processes the information naturally and effortlessly",
   },
-]
+];
 
 export default function WhyVRSection() {
   const sectionRef = useRef(null)
@@ -64,10 +64,11 @@ export default function WhyVRSection() {
         <div className="whyvr-left" ref={leftRef}>
           <span className="section-tag">THE ADVANTAGE</span>
           <h2 className="whyvr-statement">
-            Traditional maritime training is expensive, logistically complex, and impossible to repeat safely.
+            Zero travel. Zero risk. Total compliance.
           </h2>
           <p className="whyvr-sub">
-            SeaFarer removes every constraint. Train cadets through any scenario, any weather condition, any emergency — with zero risk to vessel or crew.
+            Certify your crew to your precise company standards using immersive
+            360 training that deploys in minutes.
           </p>
         </div>
 
@@ -76,7 +77,9 @@ export default function WhyVRSection() {
             <div
               key={i}
               className="whyvr-benefit"
-              ref={el => { rightRefs.current[i] = el }}
+              ref={(el) => {
+                rightRefs.current[i] = el;
+              }}
             >
               <div className="benefit-bar" aria-hidden="true" />
               <div className="benefit-content">
@@ -88,5 +91,5 @@ export default function WhyVRSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

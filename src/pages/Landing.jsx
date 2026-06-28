@@ -9,6 +9,7 @@ import HowItWorksSection from '../components/landing/HowItWorksSection'
 import WhyVRSection      from '../components/landing/WhyVRSection'
 import TimelineSection   from '../components/landing/TimelineSection'
 import ContactSection    from '../components/landing/ContactSection'
+import Footer           from '../components/landing/Footer'
 import './css/Landing.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -30,6 +31,7 @@ export default function Landing() {
       <WhyVRSection />
       <TimelineSection />
       <ContactSection />
+      <Footer />
     </div>
   )
 }

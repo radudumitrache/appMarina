@@ -6,8 +6,8 @@ import '../css/landing/FeaturesSection.css'
 
 const FEATURES = [
   {
-    title: 'Immersive VR Simulations',
-    body:  'Step onto the bridge of a real cargo vessel. Navigate maritime scenarios in photorealistic environments built to IMO standards, with full physics and weather.',
+    title: 'Immersive 360 training',
+    body:  'One platform. 360° fleet readiness. Empower your teams with immersive, department specific training build to elevate standard operations into exceptional maritime performance',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="7" width="20" height="10" rx="2"/>
@@ -18,8 +18,8 @@ const FEATURES = [
     ),
   },
   {
-    title: 'Adaptive Learning Paths',
-    body:  "AI-driven curriculum that adjusts in real time to each cadet's performance — identifying gaps before they become incidents at sea.",
+    title: 'Adaptive Learning Paths ',
+    body:  "Gaining full control over the learning speed allows crew members to develop a deeper understanding and build far stronger knowledge retention",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 2C9.5 2 7 4 7 7c0 2 1 3.5 2.5 4.5S12 13 12 15"/>
@@ -31,8 +31,8 @@ const FEATURES = [
     ),
   },
   {
-    title: 'Certified Assessment',
-    body:  'Every simulation maps directly to STCW competency frameworks. Instructors get real-time analytics; cadets receive verifiable credentials.',
+    title: 'Scenario-Based Evaluation ',
+    body:  "From ‘Fill-in-the-Gap’ technical terms to ‘Spot the Asset’ drills, we ensure you aren’t just passing a test - you are learning the vessel.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -73,10 +73,10 @@ export default function FeaturesSection() {
     <section className="features-section" id="features" ref={sectionRef}>
       <div className="section-header">
         <span className="section-tag">CAPABILITIES</span>
-        <h2 className="section-title">Why SeaFarer</h2>
+        <h2 className="section-title">Why Hansa360</h2>
         <p className="section-sub">
-          A full-stack training platform — from open-sea navigation to port operations —
-          delivered through photorealistic VR.
+          Crew familiarization is often challenging when training begins only
+          after boarding the vessel. 
         </p>
       </div>
 
@@ -85,12 +85,14 @@ export default function FeaturesSection() {
           <div
             key={i}
             className="card-outer"
-            ref={el => { animRefs.current[i] = el }}
+            ref={(el) => {
+              animRefs.current[i] = el;
+            }}
           >
             <FeatureCard title={f.title} body={f.body} icon={f.icon} />
           </div>
         ))}
       </div>
     </section>
-  )
+  );
 }

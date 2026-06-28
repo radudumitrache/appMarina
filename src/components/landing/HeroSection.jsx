@@ -105,11 +105,10 @@ export default function HeroSection() {
       {/* z:4 — text */}
       <div className="hero-content">
         <h1 className="hero-headline">
-          Maritime Training,<br />Reimagined in VR
+          Sailing into Smarter training solutions
         </h1>
         <p className="hero-sub">
-          Immersive bridge simulations built to IMO&nbsp;standards —<br />
-          for the next generation of seafarers
+          Interactive training experience for the next generation of seafares
         </p>
         <div className="hero-cta-group">
           <button

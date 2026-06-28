@@ -15,7 +15,7 @@ const STEPS = [
       </svg>
     ),
     title: 'Onboard',
-    desc: 'Your institution is set up in minutes. Cadets enroll, and the syllabus maps automatically to STCW competency frameworks.',
+    desc: 'Seamless onboarding for every rank. Set up your company profile account in minutes and enroll your joining officers and crew. ',
   },
   {
     num: '02',
@@ -27,7 +27,7 @@ const STEPS = [
       </svg>
     ),
     title: 'Train',
-    desc: 'Cadets progress through immersive VR modules at their own pace. Instructors monitor every decision in real time through the platform dashboard.',
+    desc: 'Your crew masters company-specific training through self-paced, immersive 360 modules. From the office, you can monitor every operational decision via the platform dashboard.',
   },
   {
     num: '03',
@@ -38,7 +38,7 @@ const STEPS = [
       </svg>
     ),
     title: 'Certify',
-    desc: 'Every simulation maps to IMO standards. Issue verifiable credentials recognised by maritime authorities worldwide — from cadet to officer.',
+    desc: "Certify your crew to your company standards and deliver high-trust, audit-ready certifications that validate your team's readiness for any operational challenge.",
   },
 ]
 
@@ -75,7 +75,9 @@ export default function HowItWorksSection() {
           <span className="section-tag">THE PROCESS</span>
           <h2 className="section-title">From Enrollment to Certification</h2>
           <p className="section-sub">
-            A structured journey designed for maritime academies and their cadets — every step mapped to international standards.
+            A structured development pathway engineered for maritime companies,
+            officers, and crew—with every milestone strictly aligned to
+            international compliance standards.
           </p>
         </div>
 
@@ -86,7 +88,9 @@ export default function HowItWorksSection() {
             <div
               key={i}
               className="how-card"
-              ref={el => { cardRefs.current[i] = el }}
+              ref={(el) => {
+                cardRefs.current[i] = el;
+              }}
             >
               <span className="how-num">{step.num}</span>
               <div className="how-icon">{step.icon}</div>
@@ -97,5 +101,5 @@ export default function HowItWorksSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

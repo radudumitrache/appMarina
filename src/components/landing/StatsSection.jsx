@@ -4,10 +4,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import '../css/landing/StatsSection.css'
 
 const STATS = [
-  { value: '2,400+', label: 'Cadets Trained' },
-  { value: '48',     label: 'Partner Academies' },
-  { value: '5',      label: 'Training Modules' },
-  { value: '100%',   label: 'IMO Compliant' },
+  { value: '100+', label: 'Crew Trained' },
+  { value: '1',     label: 'trusted company' },
+  { value: '3',      label: 'Training Modules' },
+  { value: '100%',   label: 'Compliant' },
 ]
 
 export default function StatsSection() {
@@ -37,7 +37,7 @@ export default function StatsSection() {
   }, [])
 
   return (
-    <section className="stats-section" ref={sectionRef}>
+    <section className="stats-section" id="stats" ref={sectionRef}>
       <div className="stats-grid">
         {STATS.map((s, i) => (
           <div
