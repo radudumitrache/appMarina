@@ -19,7 +19,7 @@ export default function Footer() {
             <nav className="footer-links">
               <a href="#features">Capabilities</a>
               <a href="#how-it-works">How It Works</a>
-              <a href="#why-vr">Why Why 360</a>
+              <a href="#why-vr">Why 360</a>
               <a href="#timeline">The Journey</a>
             </nav>
           </div>
