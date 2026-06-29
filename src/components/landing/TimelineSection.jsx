@@ -6,7 +6,7 @@ const PANELS = [
     title: 'Pre Arrival Safety Training ',
     desc: 'An immersive module that ensures officers and crew are fully briefed on critical emergency procedures within a 360-degree environment, establishing vital safety compliance and situational readiness before they ever join the vessel',
     image: '/shipFromTheFront.png',
-    video: '/vid-vessel-id.mp4',
+    video: '/vid-pre-arrival.mp4',
   },
   {
     num: '03',

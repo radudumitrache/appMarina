@@ -119,10 +119,17 @@
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
 }
+.lpe-text-wrap::-webkit-scrollbar { width: 5px; }
+.lpe-text-wrap::-webkit-scrollbar-track { background: transparent; }
+.lpe-text-wrap::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+.lpe-text-wrap::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
 .lpe-text-main {
-  width: 100%;
-  max-width: 720px;
+  width: 90%;
+  max-width: 90%;
 }
 
 .lpe-text-heading {

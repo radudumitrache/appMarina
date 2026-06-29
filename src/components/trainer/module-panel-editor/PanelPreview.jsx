@@ -104,7 +104,7 @@ export default function PanelPreview({
   }
 
   return (
-    <div className={`lpe-text-wrap${editMode ? ' lpe-text-wrap--editing' : ''}`}>
+    <div className={`lpe-text-wrap${editMode ? ' lpe-text-wrap--editing' : ''}`} style={{ right: drawerWidth || 0 }}>
       <main className="lpe-text-main">
         <h1 className="lpe-text-heading">{panel.title}</h1>
         {editor

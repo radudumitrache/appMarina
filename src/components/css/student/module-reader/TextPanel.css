@@ -14,6 +14,13 @@
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
 }
+.lr-text-sidebar::-webkit-scrollbar { width: 4px; }
+.lr-text-sidebar::-webkit-scrollbar-track { background: transparent; }
+.lr-text-sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+.lr-text-sidebar::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
 .lr-sidebar-label {
   font-family: var(--font-mono);
@@ -93,10 +100,17 @@
 .lr-text-main {
   flex: 1;
   overflow-y: auto;
-  padding: 40px 48px;
+  padding: 40px 56px;
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
 }
+.lr-text-main::-webkit-scrollbar { width: 5px; }
+.lr-text-main::-webkit-scrollbar-track { background: transparent; }
+.lr-text-main::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+.lr-text-main::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
 .lr-text-heading {
   font-family: var(--font-ui);
@@ -112,7 +126,8 @@
   font-size: 15px;
   line-height: 1.85;
   color: var(--text-2);
-  max-width: 680px;
+  max-width: 85%;
+  width: 100%;
 }
 
 /* ── Shared prose styles (used in both text panel and VR anchor popup) ── */
