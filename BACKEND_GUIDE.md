@@ -186,7 +186,7 @@ Pillow                          # if profile photos are added later
 | `text` | `TextField` | question body |
 | `order` | `PositiveIntegerField` | |
 | `correct_tf` | `BooleanField` | nullable; used when `type='tf'` |
-| `correct_mcq_index` | `IntegerField` | nullable; 0-based index of correct option when `type='mcq'` |
+| `correct_mcq_indices` | `JSONField(list)` | list of 0-based option orders that are correct when `type='mcq'`; supports multiple correct answers |
 
 > For `short` questions, correctness is trainer-graded — no stored answer.
 
@@ -216,7 +216,7 @@ Pillow                          # if profile photos are added later
 | `submission` | `ForeignKey(TestSubmission)` | |
 | `question` | `ForeignKey(Question)` | |
 | `text_answer` | `TextField` | nullable; for `short` questions |
-| `selected_option` | `ForeignKey(QuestionOption)` | nullable; for `mcq` |
+| `selected_option_ids` | `JSONField(list)` | list of selected `QuestionOption` PKs; for `mcq` (all-or-nothing grading) |
 | `selected_tf` | `BooleanField` | nullable; for `tf` |
 | `is_correct` | `BooleanField` | nullable; auto-set for `mcq`/`tf`, manual for `short` |
 
@@ -566,7 +566,7 @@ def on_test_graded(sender, instance, **kwargs):
 When a `TestSubmission` is created (student submits):
 
 1. For each `Answer` where `question.type == 'mcq'`:  
-   `is_correct = (answer.selected_option.order == question.correct_mcq_index)`
+   `is_correct = (set of submitted option orders == set of correct_mcq_indices)` — student must select exactly all correct options and no wrong ones (all-or-nothing)
 
 2. For each `Answer` where `question.type == 'tf'`:  
    `is_correct = (answer.selected_tf == question.correct_tf)`

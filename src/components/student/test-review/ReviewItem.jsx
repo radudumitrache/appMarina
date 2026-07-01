@@ -35,8 +35,8 @@ export default function ReviewItem({ item, index }) {
       {info.options ? (
         <OptionsList
           options={info.options}
-          studentOptId={info.studentOptId}
-          correctOptId={info.correctOptId}
+          studentOptIds={info.studentOptIds}
+          correctOptIds={info.correctOptIds}
           isCorrect={info.isCorrect}
         />
       ) : (
@@ -59,12 +59,12 @@ export default function ReviewItem({ item, index }) {
   )
 }
 
-function OptionsList({ options, studentOptId, correctOptId, isCorrect }) {
+function OptionsList({ options, studentOptIds, correctOptIds, isCorrect }) {
   return (
     <div className="tr-options">
       {options.map(opt => {
-        const isStudent    = opt.id === studentOptId
-        const isCorrectOpt = opt.id === correctOptId
+        const isStudent    = (studentOptIds ?? []).includes(opt.id)
+        const isCorrectOpt = (correctOptIds ?? []).includes(opt.id)
 
         let cls = 'tr-option'
         if (isStudent && isCorrect === true)                      cls += ' tr-option--correct'

@@ -62,18 +62,20 @@ export function resolveItem(item) {
     const type = source.type
 
     if (type === 'mcq') {
-      const opts       = source.options ?? []
-      const studentOpt = opts.find(o => o.id === answer.exercise_option)
-      const correctOpt = opts.find(o => o.order === source.correct_mcq_index)
+      const opts          = source.options ?? []
+      const correctOptIds = opts.filter(o => (source.correct_mcq_indices ?? []).includes(o.order)).map(o => o.id)
+      const studentOptIds = answer.selected_option_ids ?? []
+      const studentTexts  = opts.filter(o => studentOptIds.includes(o.id)).map(o => o.text)
+      const correctTexts  = opts.filter(o => correctOptIds.includes(o.id)).map(o => o.text)
       return {
         typeLabel:     'MCQ',
         text:          source.text,
         isCorrect,
-        studentAnswer: studentOpt?.text ?? '—',
-        correctAnswer: isCorrect === false ? (correctOpt?.text ?? '—') : null,
+        studentAnswer: studentTexts.join(', ') || '—',
+        correctAnswer: isCorrect === false ? (correctTexts.join(', ') || '—') : null,
         options:       opts,
-        studentOptId:  answer.exercise_option,
-        correctOptId:  correctOpt?.id ?? null,
+        studentOptIds,
+        correctOptIds,
       }
     }
     if (type === 'tf') {
@@ -114,19 +116,21 @@ export function resolveItem(item) {
     const prefix = 'VR'
 
     if (atype === 'mcq') {
-      const opts       = source.options ?? []
-      const studentOpt = opts.find(o => o.id === answer.vr_mcq_anchor_option)
-      const correctOpt = opts.find(o => o.order === source.correct_mcq_index)
+      const opts          = source.options ?? []
+      const correctOptIds = opts.filter(o => (source.correct_mcq_indices ?? []).includes(o.order)).map(o => o.id)
+      const studentOptIds = answer.selected_option_ids ?? []
+      const studentTexts  = opts.filter(o => studentOptIds.includes(o.id)).map(o => o.text)
+      const correctTexts  = opts.filter(o => correctOptIds.includes(o.id)).map(o => o.text)
       return {
         typeLabel:     `${prefix} MCQ`,
         text:          source.text,
         title:         source.title,
         isCorrect,
-        studentAnswer: studentOpt?.text ?? '—',
-        correctAnswer: isCorrect === false ? (correctOpt?.text ?? '—') : null,
+        studentAnswer: studentTexts.join(', ') || '—',
+        correctAnswer: isCorrect === false ? (correctTexts.join(', ') || '—') : null,
         options:       opts,
-        studentOptId:  answer.vr_mcq_anchor_option,
-        correctOptId:  correctOpt?.id ?? null,
+        studentOptIds,
+        correctOptIds,
       }
     }
     if (atype === 'tf') {

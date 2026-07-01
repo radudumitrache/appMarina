@@ -16,12 +16,12 @@ export function XIcon() {
   )
 }
 
-function MCQOptions({ options, studentOptId, correctOptId }) {
+function MCQOptions({ options, studentOptIds, correctOptIds }) {
   return (
     <div className="so-options">
       {options.map(opt => {
-        const isStudent = opt.id === studentOptId
-        const isCorrect = opt.id === correctOptId
+        const isStudent = (studentOptIds ?? []).includes(opt.id)
+        const isCorrect = (correctOptIds ?? []).includes(opt.id)
         const cls = [
           'so-option',
           isStudent && isCorrect  ? 'so-option--hit'   : '',
@@ -159,7 +159,7 @@ export function AnswerBody({ resolved, unanswered }) {
     )
   }
 
-  if (type === 'mcq')    return <MCQOptions options={resolved.options} studentOptId={resolved.studentOptId} correctOptId={resolved.correctOptId} />
+  if (type === 'mcq')    return <MCQOptions options={resolved.options} studentOptIds={resolved.studentOptIds} correctOptIds={resolved.correctOptIds} />
   if (type === 'tf')     return <TFOptions studentTf={resolved.studentTf} correctTf={resolved.correctTf} />
   if (type === 'arrange') return <ArrangeAnswer correctItems={resolved.correctItems} studentItems={resolved.studentItems} />
   if (type === 'word' || type === 'gap_fill')

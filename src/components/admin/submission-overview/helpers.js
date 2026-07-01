@@ -59,10 +59,10 @@ export function resolveQuestion(item) {
   if (kind === 'exercise') {
     const t = source.type
     if (t === 'mcq') {
-      const opts       = [...(source.options ?? [])].sort((a, b) => a.order - b.order)
-      const correctOpt = opts.find(o => o.order === source.correct_mcq_index)
+      const opts        = [...(source.options ?? [])].sort((a, b) => a.order - b.order)
+      const correctOptIds = opts.filter(o => (source.correct_mcq_indices ?? []).includes(o.order)).map(o => o.id)
       return { type: 'mcq', typeLabel: 'Multiple Choice', text: source.text, isCorrect,
-        options: opts, studentOptId: answer?.exercise_option ?? null, correctOptId: correctOpt?.id ?? null }
+        options: opts, studentOptIds: answer?.selected_option_ids ?? [], correctOptIds }
     }
     if (t === 'tf')
       return { type: 'tf', typeLabel: 'True / False', text: source.text, isCorrect,
@@ -89,10 +89,10 @@ export function resolveQuestion(item) {
   if (kind === 'vr') {
     const atype = source._type
     if (atype === 'mcq') {
-      const opts       = [...(source.options ?? [])].sort((a, b) => a.order - b.order)
-      const correctOpt = opts.find(o => o.order === source.correct_mcq_index)
+      const opts          = [...(source.options ?? [])].sort((a, b) => a.order - b.order)
+      const correctOptIds = opts.filter(o => (source.correct_mcq_indices ?? []).includes(o.order)).map(o => o.id)
       return { type: 'mcq', typeLabel: 'VR Multiple Choice', text: source.text, title: source.title, isCorrect,
-        options: opts, studentOptId: answer?.vr_mcq_anchor_option ?? null, correctOptId: correctOpt?.id ?? null }
+        options: opts, studentOptIds: answer?.selected_option_ids ?? [], correctOptIds }
     }
     if (atype === 'tf')
       return { type: 'tf', typeLabel: 'VR True / False', text: source.text, title: source.title, isCorrect,

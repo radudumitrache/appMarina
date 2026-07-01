@@ -6,7 +6,7 @@ export default function VRPlacementPanel({
   onSetPlacing, onSetLocStep, onCancel, onUndoLocPoint,
   onAddMCQ, onAddWC, onAddLoc,
 }) {
-  const [mcqForm, setMCQForm] = useState({ title: '', text: '', correct_mcq_index: 0, options: ['', ''] })
+  const [mcqForm, setMCQForm] = useState({ title: '', text: '', correct_mcq_indices: [], options: ['', ''] })
   const [wcForm,  setWCForm]  = useState({ title: '', text: '', correct_word: '' })
   const [locForm, setLocForm] = useState({ title: '', text: '' })
 
@@ -16,7 +16,7 @@ export default function VRPlacementPanel({
 
   async function submitMCQ() {
     await onAddMCQ(mcqForm)
-    setMCQForm({ title: '', text: '', correct_mcq_index: 0, options: ['', ''] })
+    setMCQForm({ title: '', text: '', correct_mcq_indices: [], options: ['', ''] })
   }
 
   async function submitWC() {
@@ -68,9 +68,10 @@ export default function VRPlacementPanel({
             placeholder="Question text…"
           />
           <div className="tb-mcq-options" style={{ marginTop: 8 }}>
+            <p className="tb-mcq-hint" style={{ margin: '0 0 6px', fontSize: '0.75rem', opacity: 0.6 }}>Select all correct answers</p>
             {mcqForm.options.map((opt, oi) => (
-              <label key={oi} className={`tb-mcq-option ${mcqForm.correct_mcq_index === oi ? 'tb-mcq-option--correct' : ''}`}>
-                <input type="radio" name="vrpe-mcq-correct" checked={mcqForm.correct_mcq_index === oi} onChange={() => setMCQForm(f => ({ ...f, correct_mcq_index: oi }))} />
+              <label key={oi} className={`tb-mcq-option ${(mcqForm.correct_mcq_indices ?? []).includes(oi) ? 'tb-mcq-option--correct' : ''}`}>
+                <input type="checkbox" checked={(mcqForm.correct_mcq_indices ?? []).includes(oi)} onChange={() => setMCQForm(f => { const cur = f.correct_mcq_indices ?? []; return { ...f, correct_mcq_indices: cur.includes(oi) ? cur.filter(i => i !== oi) : [...cur, oi] } })} />
                 <input className="tb-option-input" type="text" value={opt} onChange={e => updateMCQOption(oi, e.target.value)} placeholder={`Option ${oi + 1}…`} />
                 {mcqForm.options.length > 2 && (
                   <button type="button" className="tb-opt-del" onClick={() => setMCQForm(f => ({ ...f, options: f.options.filter((_, i) => i !== oi) }))}>×</button>

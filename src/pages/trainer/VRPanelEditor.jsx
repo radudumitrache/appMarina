@@ -206,7 +206,7 @@ export default function VRPanelEditor() {
         pos_x: pendingCoords.x, pos_y: pendingCoords.y, pos_z: pendingCoords.z,
         size: 1, color_r: 255, color_g: 255, color_b: 255,
         title: form.title, text: form.text,
-        correct_mcq_index: form.correct_mcq_index,
+        correct_mcq_indices: form.correct_mcq_indices ?? [],
         options: form.options.map((text, i) => ({ text, order: i })),
       })
       cancelPlacement()
@@ -260,7 +260,7 @@ export default function VRPanelEditor() {
       if (type === 'mcq') {
         await updateMCQAnchor(testId, panelId, id, {
           title: form.title, text: form.text,
-          correct_mcq_index: form.correct_mcq_index,
+          correct_mcq_indices: form.correct_mcq_indices ?? [],
           options: form.options.map((text, i) => ({ text, order: i })),
         })
       } else if (type === 'wc') {

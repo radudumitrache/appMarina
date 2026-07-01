@@ -32,13 +32,14 @@ export default function AnchorModal({ anchor, value, onChange, onClose }) {
 
 function AnchorInput({ anchor, value, onChange }) {
   if (anchor._type === 'mcq') {
+    const selected = Array.isArray(value) ? value : []
     return (
       <div className="tt-mcq-options">
         {(anchor.options ?? []).map(opt => (
           <button
             key={opt.id}
-            className={`tt-mcq-option${value === opt.id ? ' tt-mcq-option--selected' : ''}`}
-            onClick={() => onChange(opt.id)}
+            className={`tt-mcq-option${selected.includes(opt.id) ? ' tt-mcq-option--selected' : ''}`}
+            onClick={() => onChange(selected.includes(opt.id) ? selected.filter(id => id !== opt.id) : [...selected, opt.id])}
           >
             <span className="tt-mcq-marker" />
             {opt.text}

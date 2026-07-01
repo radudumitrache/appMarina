@@ -38,7 +38,7 @@ export default function VRAnchorDrawer({
       setEditForm({
         title: data.title || '',
         text: data.text || '',
-        correct_mcq_index: data.correct_mcq_index ?? 0,
+        correct_mcq_indices: data.correct_mcq_indices ?? [],
         options: data.options?.length ? data.options.map(o => o.text) : ['', ''],
       })
     } else if (type === 'wc') {
@@ -121,13 +121,13 @@ export default function VRAnchorDrawer({
 
           {selectedAnchor.type === 'mcq' && (
             <div className="tb-mcq-options vrpe-edit-options">
+              <p className="tb-mcq-hint" style={{ margin: '0 0 6px', fontSize: '0.75rem', opacity: 0.6 }}>Select all correct answers</p>
               {(editForm.options || []).map((opt, oi) => (
-                <label key={oi} className={`tb-mcq-option ${editForm.correct_mcq_index === oi ? 'tb-mcq-option--correct' : ''}`}>
+                <label key={oi} className={`tb-mcq-option ${(editForm.correct_mcq_indices ?? []).includes(oi) ? 'tb-mcq-option--correct' : ''}`}>
                   <input
-                    type="radio"
-                    name="vrpe-edit-mcq-correct"
-                    checked={editForm.correct_mcq_index === oi}
-                    onChange={() => setEditForm(f => ({ ...f, correct_mcq_index: oi }))}
+                    type="checkbox"
+                    checked={(editForm.correct_mcq_indices ?? []).includes(oi)}
+                    onChange={() => setEditForm(f => { const cur = f.correct_mcq_indices ?? []; return { ...f, correct_mcq_indices: cur.includes(oi) ? cur.filter(i => i !== oi) : [...cur, oi] } })}
                   />
                   <input
                     className="tb-option-input"

@@ -354,7 +354,9 @@ function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWri
   }
 
   async function handleCorrect(oi) {
-    await updateMCQAnchor(testId, panelId, anchor.id, { correct_mcq_index: oi })
+    const current = anchor.correct_mcq_indices ?? []
+    const next = current.includes(oi) ? current.filter(i => i !== oi) : [...current, oi]
+    await updateMCQAnchor(testId, panelId, anchor.id, { correct_mcq_indices: next })
     onReload()
   }
 
@@ -393,9 +395,10 @@ function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWri
         placeholder="Question text..."
       />
       <div className="tb-mcq-options">
+        <p className="tb-mcq-hint" style={{ margin: '0 0 6px', fontSize: '0.75rem', opacity: 0.6 }}>Select all correct answers</p>
         {localOpts.map((opt, oi) => (
-          <label key={oi} className={`tb-mcq-option ${anchor.correct_mcq_index === oi ? 'tb-mcq-option--correct' : ''}`}>
-            <input type="radio" name={`anc-${anchor.id}-correct`} checked={anchor.correct_mcq_index === oi} onChange={() => handleCorrect(oi)} />
+          <label key={oi} className={`tb-mcq-option ${(anchor.correct_mcq_indices ?? []).includes(oi) ? 'tb-mcq-option--correct' : ''}`}>
+            <input type="checkbox" checked={(anchor.correct_mcq_indices ?? []).includes(oi)} onChange={() => handleCorrect(oi)} />
             <input className="tb-option-input" type="text" defaultValue={opt} key={`anc-${anchor.id}-opt-${oi}`} onBlur={e => handleOptBlur(oi, e.target.value)} placeholder={`Option ${oi + 1}...`} />
             <button type="button" className="tb-opt-del" onClick={() => handleDelOpt(oi)}>&times;</button>
           </label>
