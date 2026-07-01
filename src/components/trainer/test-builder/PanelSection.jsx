@@ -56,7 +56,9 @@ function MCQOptions({ exercise, panelId, testId, onExerciseUpdate }) {
   }
 
   async function handleCorrect(oi) {
-    const res = await updateExercise(testId, panelId, exercise.id, { correct_mcq_index: oi })
+    const current = exercise.correct_mcq_indices ?? []
+    const next = current.includes(oi) ? current.filter(i => i !== oi) : [...current, oi]
+    const res = await updateExercise(testId, panelId, exercise.id, { correct_mcq_indices: next })
     onExerciseUpdate(exercise.id, res.data)
   }
 
@@ -76,11 +78,10 @@ function MCQOptions({ exercise, panelId, testId, onExerciseUpdate }) {
   return (
     <div className="tb-mcq-options">
       {localOpts.map((opt, oi) => (
-        <label key={oi} className={`tb-mcq-option ${exercise.correct_mcq_index === oi ? 'tb-mcq-option--correct' : ''}`}>
+        <label key={oi} className={`tb-mcq-option ${(exercise.correct_mcq_indices ?? []).includes(oi) ? 'tb-mcq-option--correct' : ''}`}>
           <input
-            type="radio"
-            name={`ex-${exercise.id}-correct`}
-            checked={exercise.correct_mcq_index === oi}
+            type="checkbox"
+            checked={(exercise.correct_mcq_indices ?? []).includes(oi)}
             onChange={() => handleCorrect(oi)}
           />
           <input
@@ -98,7 +99,7 @@ function MCQOptions({ exercise, panelId, testId, onExerciseUpdate }) {
       ))}
       <div className="tb-mcq-footer">
         <button className="tb-add-option-btn" onClick={handleAdd}>+ Add option</button>
-        <span className="tb-mcq-hint">Select the correct answer</span>
+        <span className="tb-mcq-hint">Select all correct answers</span>
       </div>
     </div>
   )
@@ -195,7 +196,8 @@ function ExerciseCard({ exercise, panelId, testId, departmentId, index, onUpdate
 
   async function handleTextBlur(html) {
     if (html === exercise.text) return
-    await updateExercise(testId, panelId, exercise.id, { text: html })
+    const res = await updateExercise(testId, panelId, exercise.id, { text: html })
+    onUpdate(exercise.id, res.data)
   }
 
   async function handleDelete() {
@@ -297,11 +299,13 @@ function ExerciseCard({ exercise, panelId, testId, departmentId, index, onUpdate
 
 function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWrite }) {
   const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
+  const [textLocal,    setTextLocal]    = useState(anchor.text ?? '')
   const [localOpts,    setLocalOpts]    = useState(anchor.options?.map(o => o.text) ?? [])
   const [docs,         setDocs]         = useState(anchor.documents ?? [])
   const [docUploading, setDocUploading] = useState(false)
 
   useEffect(() => { setTitleLocal(anchor.title ?? '') }, [anchor.title])
+  useEffect(() => { setTextLocal(anchor.text ?? '') }, [anchor.text])
   useEffect(() => { setLocalOpts(anchor.options?.map(o => o.text) ?? []) }, [anchor.options])
   useEffect(() => { setDocs(anchor.documents ?? []) }, [anchor.id])
 
@@ -312,6 +316,7 @@ function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWri
 
   async function handleTextBlur(html) {
     if (html === anchor.text) return
+    setTextLocal(html)
     await updateMCQAnchor(testId, panelId, anchor.id, { text: html })
   }
 
@@ -382,7 +387,7 @@ function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWri
         style={{ width: '100%', marginBottom: 8 }}
       />
       <QuestionHtmlEditor
-        value={anchor.text}
+        value={textLocal}
         departmentId={departmentId}
         onBlur={handleTextBlur}
         placeholder="Question text..."
@@ -413,11 +418,13 @@ function MCQAnchorCard({ anchor, panelId, testId, departmentId, onReload, canWri
 
 function WordCompletionCard({ anchor, panelId, testId, departmentId, onReload, canWrite }) {
   const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
+  const [textLocal,    setTextLocal]    = useState(anchor.text ?? '')
   const [wordLocal,    setWordLocal]    = useState(anchor.correct_word)
   const [docs,         setDocs]         = useState(anchor.documents ?? [])
   const [docUploading, setDocUploading] = useState(false)
 
   useEffect(() => { setTitleLocal(anchor.title ?? '') }, [anchor.title])
+  useEffect(() => { setTextLocal(anchor.text ?? '') }, [anchor.text])
   useEffect(() => { setWordLocal(anchor.correct_word) }, [anchor.correct_word])
   useEffect(() => { setDocs(anchor.documents ?? []) }, [anchor.id])
 
@@ -449,6 +456,7 @@ function WordCompletionCard({ anchor, panelId, testId, departmentId, onReload, c
 
   async function handleTextBlur(html) {
     if (html === anchor.text) return
+    setTextLocal(html)
     await updateWordCompletionAnchor(testId, panelId, anchor.id, { text: html })
   }
 
@@ -473,7 +481,7 @@ function WordCompletionCard({ anchor, panelId, testId, departmentId, onReload, c
         style={{ width: '100%', marginBottom: 8 }}
       />
       <QuestionHtmlEditor
-        value={anchor.text}
+        value={textLocal}
         departmentId={departmentId}
         onBlur={handleTextBlur}
         placeholder="Sentence with ___ for the blank..."
@@ -502,11 +510,13 @@ function WordCompletionCard({ anchor, panelId, testId, departmentId, onReload, c
 
 function LocalizationCard({ anchor, panelId, testId, departmentId, onReload, canWrite }) {
   const [titleLocal,   setTitleLocal]   = useState(anchor.title ?? '')
+  const [textLocal,    setTextLocal]    = useState(anchor.text ?? '')
   const [docs,         setDocs]         = useState(anchor.documents ?? [])
   const [docUploading, setDocUploading] = useState(false)
   const points = anchor.polygon_points ?? []
 
   useEffect(() => { setTitleLocal(anchor.title ?? '') }, [anchor.title])
+  useEffect(() => { setTextLocal(anchor.text ?? '') }, [anchor.text])
   useEffect(() => { setDocs(anchor.documents ?? []) }, [anchor.id])
 
   async function handleDelete() {
@@ -537,6 +547,7 @@ function LocalizationCard({ anchor, panelId, testId, departmentId, onReload, can
 
   async function handleTextBlur(html) {
     if (html === anchor.text) return
+    setTextLocal(html)
     await updateLocalizationAnchor(testId, panelId, anchor.id, { text: html })
   }
 
@@ -566,7 +577,7 @@ function LocalizationCard({ anchor, panelId, testId, departmentId, onReload, can
         style={{ width: '100%', marginBottom: 8 }}
       />
       <QuestionHtmlEditor
-        value={anchor.text}
+        value={textLocal}
         departmentId={departmentId}
         onBlur={handleTextBlur}
         placeholder="What should the student locate?..."

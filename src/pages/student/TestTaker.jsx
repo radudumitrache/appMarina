@@ -52,8 +52,8 @@ export default function TestTaker() {
         const ans = { exercise: ex.id }
 
         if (ex.type === 'mcq') {
-          if (val === undefined || val === null) continue
-          ans.selected_option = val
+          if (!Array.isArray(val) || val.length === 0) continue
+          ans.selected_option_ids = val
         } else if (ex.type === 'tf') {
           if (val === undefined || val === null) continue
           ans.selected_tf = val
@@ -77,8 +77,8 @@ export default function TestTaker() {
       if (!vr) continue
       for (const anchor of vr.mcq_anchors ?? []) {
         const val = answers[`vr_mcq_${anchor.id}`]
-        if (val === undefined || val === null) continue
-        answerList.push({ vr_mcq_anchor: anchor.id, vr_mcq_anchor_option: val })
+        if (!Array.isArray(val) || val.length === 0) continue
+        answerList.push({ vr_mcq_anchor: anchor.id, selected_option_ids: val })
       }
       for (const anchor of vr.tf_anchors ?? []) {
         const val = answers[`vr_tf_${anchor.id}`]

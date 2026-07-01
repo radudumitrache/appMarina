@@ -422,7 +422,7 @@ function ExercisePanel({ panel, answers, setAnswer }) {
 }
 
 function ExerciseView({ exercise, index, value, onChange }) {
-  const answered = value !== undefined && value !== null && value !== ''
+  const answered = Array.isArray(value) ? value.length > 0 : (value !== undefined && value !== null && value !== '')
 
   return (
     <div className="tt-exercise-wrap">
@@ -439,18 +439,27 @@ function ExerciseView({ exercise, index, value, onChange }) {
 
 function AnswerInput({ exercise, value, onChange }) {
   if (exercise.type === 'mcq') {
+    const selectedIds = Array.isArray(value) ? value : []
     return (
       <div className="tt-mcq-options">
-        {(exercise.options ?? []).map(opt => (
-          <button
-            key={opt.id}
-            className={`tt-mcq-option${value === opt.id ? ' tt-mcq-option--selected' : ''}`}
-            onClick={() => onChange(opt.id)}
-          >
-            <span className="tt-mcq-marker" />
-            {opt.text}
-          </button>
-        ))}
+        {(exercise.options ?? []).map(opt => {
+          const selected = selectedIds.includes(opt.id)
+          return (
+            <button
+              key={opt.id}
+              className={`tt-mcq-option${selected ? ' tt-mcq-option--selected' : ''}`}
+              onClick={() => {
+                const next = selected
+                  ? selectedIds.filter(id => id !== opt.id)
+                  : [...selectedIds, opt.id]
+                onChange(next)
+              }}
+            >
+              <span className="tt-mcq-marker" />
+              {opt.text}
+            </button>
+          )
+        })}
       </div>
     )
   }

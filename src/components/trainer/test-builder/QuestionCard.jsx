@@ -28,12 +28,15 @@ export default function QuestionCard({ q, index, onUpdate, onDelete }) {
       {q.type === 'mcq' && (
         <div className="tb-mcq-options">
           {q.options.map((opt, oi) => (
-            <label key={oi} className={`tb-mcq-option ${q.correct === oi ? 'tb-mcq-option--correct' : ''}`}>
+            <label key={oi} className={`tb-mcq-option ${(q.correct ?? []).includes(oi) ? 'tb-mcq-option--correct' : ''}`}>
               <input
-                type="radio"
-                name={`q-${q.id}-correct`}
-                checked={q.correct === oi}
-                onChange={() => onUpdate({ correct: oi })}
+                type="checkbox"
+                checked={(q.correct ?? []).includes(oi)}
+                onChange={() => {
+                  const current = q.correct ?? []
+                  const next = current.includes(oi) ? current.filter(i => i !== oi) : [...current, oi]
+                  onUpdate({ correct: next })
+                }}
               />
               <input
                 className="tb-option-input"
@@ -48,7 +51,7 @@ export default function QuestionCard({ q, index, onUpdate, onDelete }) {
               />
             </label>
           ))}
-          <span className="tb-mcq-hint">Select the correct answer</span>
+          <span className="tb-mcq-hint">Select all correct answers</span>
         </div>
       )}
 
