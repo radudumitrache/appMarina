@@ -1,0 +1,98 @@
+.v360-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #000;
+  user-select: none;
+  cursor: grab;
+}
+.v360-overlay:active { cursor: grabbing; }
+
+/* ── Close button ─────────────────────────────────────────────────────────── */
+.v360-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.v360-close:hover { background: rgba(0, 0, 0, 0.8); }
+
+/* ── Bottom controls bar ─────────────────────────────────────────────────── */
+.v360-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+
+.v360-ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.v360-ctrl-btn:hover { background: rgba(255, 255, 255, 0.22); }
+.v360-ctrl-btn--active {
+  background: rgba(11, 189, 164, 0.35);
+  border-color: rgba(11, 189, 164, 0.6);
+  color: #0bbda4;
+}
+
+/* ── Progress bar ────────────────────────────────────────────────────────── */
+.v360-progress {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+.v360-progress:hover { height: 6px; }
+.v360-progress-fill {
+  height: 100%;
+  background: var(--accent, #0bbda4);
+  border-radius: 2px;
+  pointer-events: none;
+  transition: width 0.1s linear;
+}
+
+/* ── Centre play overlay ─────────────────────────────────────────────────── */
+.v360-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+}
+.v360-play-overlay svg {
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+}

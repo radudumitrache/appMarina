@@ -15,7 +15,7 @@ export default function PanelStrip({ panels, panelIdx, onSelect }) {
           className={`lpe-strip-btn ${i === panelIdx ? 'lpe-strip-btn--active' : ''}`}
           onClick={() => onSelect(i)}
         >
-          <span className="lpe-strip-type">{p.type === 'vr_tour' ? '360°' : 'TXT'}</span>
+          <span className="lpe-strip-type">{{ vr_tour: '360°', text: 'TXT', video_360: 'VID' }[p.type] ?? 'PNL'}</span>
           <span className="lpe-strip-name">{p.title}</span>
         </button>
       ))}

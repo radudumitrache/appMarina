@@ -4,6 +4,7 @@ import { getModule, getPanels, completeModule, uncompleteModule, getAnchorIntera
 import ModuleTopBar from '../../components/crew/module-reader/ModuleTopBar'
 import VRPanel from '../../components/crew/module-reader/VRPanel'
 import TextPanel from '../../components/crew/module-reader/TextPanel'
+import Video360Panel from '../../components/crew/module-reader/Video360Panel'
 import '../css/crew/ModuleReader.css'
 
 /**
@@ -195,6 +196,13 @@ export default function ModuleReader() {
           <span>This module has no content yet.</span>
         </div>
 
+      ) : panel?.type === 'video_360' ? (
+        <Video360Panel
+          panel={panel}
+          panels={panels}
+          panelIdx={panelIdx}
+          onPanelChange={setPanelIdx}
+        />
       ) : panel?.type === 'vr_tour' ? (
         <VRPanel
           activeTour={activeTour}

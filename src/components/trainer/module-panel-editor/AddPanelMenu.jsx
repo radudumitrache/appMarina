@@ -1,4 +1,4 @@
-import { IconPlus, IconText, IconVR } from './LPEIcons'
+import { IconPlus, IconText, IconVR, IconVideo360 } from './LPEIcons'
 
 /* ── AddPanelMenu ───────────────────────────────────────────────────────────
  * Bottom-left "Add Panel" trigger + pop-up menu with Text Panel / VR Tour options.
@@ -19,6 +19,9 @@ export default function AddPanelMenu({ addMenuOpen, onToggle, onAdd, saving }) {
           </button>
           <button className="lpe-add-menu-item lpe-add-menu-item--vr" onClick={() => onAdd('vr_tour')} disabled={saving}>
             <IconVR /> VR Tour
+          </button>
+          <button className="lpe-add-menu-item lpe-add-menu-item--v360" onClick={() => onAdd('video_360')} disabled={saving}>
+            <IconVideo360 /> 360° Video
           </button>
         </div>
       )}

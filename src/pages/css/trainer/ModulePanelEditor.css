@@ -1709,6 +1709,86 @@
   background: var(--accent-dim);
   border-color: var(--accent-rim);
 }
+.lpe-type-badge--video_360 {
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.1);
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+/* --- 360 video preview in panel editor ------------------------------------ */
+.lpe-preview-360vid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  overflow: hidden;
+}
+.lpe-preview-360vid-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 56px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color var(--duration-fast), transform var(--duration-fast), background var(--duration-fast);
+  max-width: 420px;
+  width: 100%;
+}
+.lpe-preview-360vid-card:not(:disabled):hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-1));
+  transform: translateY(-2px);
+}
+.lpe-preview-360vid-card:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.lpe-preview-360vid-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+}
+.lpe-preview-360vid-play-ring {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--accent);
+  border-radius: 50%;
+  color: #000;
+  box-shadow: 0 4px 16px rgba(11, 189, 164, 0.35);
+}
+.lpe-preview-360vid-card:not(:disabled):hover .lpe-preview-360vid-play-ring {
+  transform: scale(1.08);
+  transition: transform var(--duration-fast);
+}
+.lpe-preview-360vid-label {
+  font-family: var(--font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  margin: 0;
+}
+.lpe-preview-360vid-hint {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  margin: 0;
+}
+.lpe-scene-thumb--video { background: #000; }
+.lpe-add-menu-item--v360 { color: #a78bfa; }
+.lpe-add-menu-item--v360:hover { background: rgba(167, 139, 250, 0.1); }
 
 /* â”€â”€â”€ Save bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .lpe-save-btn {

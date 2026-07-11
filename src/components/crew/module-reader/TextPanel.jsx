@@ -16,7 +16,7 @@ export default function TextPanel({ panel, panels, panelIdx, onPanelChange }) {
               <div className="lr-sidebar-meta">
                 <span className="lr-sidebar-name">{p.title}</span>
                 <span className="lr-sidebar-kind">
-                  {p.type === 'vr_tour' ? '360° Tour' : 'Text'}
+                  {{ vr_tour: '360° Tour', video_360: '360° Video', text: 'Text' }[p.type] ?? p.type}
                 </span>
               </div>
             </button>

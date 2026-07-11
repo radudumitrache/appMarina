@@ -1,8 +1,45 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { EditorContent } from '@tiptap/react'
 import VRViewer from '../../shared/VRViewer'
 import VRAnchorPanel from '../../shared/VRAnchorPanel'
 import { resolveSceneUrl } from '../../shared/VRSceneRenderer'
+import Video360Viewer from '../../shared/Video360Viewer'
+
+function Video360PreviewCard({ videoUrl, title, drawerWidth }) {
+  const [viewerOpen, setViewerOpen] = useState(false)
+  return (
+    <div className="lpe-preview-360vid" style={{ right: drawerWidth || 0 }}>
+      <button
+        className="lpe-preview-360vid-card"
+        onClick={() => videoUrl && setViewerOpen(true)}
+        disabled={!videoUrl}
+        title={videoUrl ? 'Open 360° viewer' : 'No video selected'}
+      >
+        <div className="lpe-preview-360vid-icon-wrap">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M2 12h20"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <div className="lpe-preview-360vid-play-ring">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </div>
+        </div>
+        <span className="lpe-preview-360vid-label">
+          {videoUrl ? title || '360° Video' : 'No video selected'}
+        </span>
+        <span className="lpe-preview-360vid-hint">
+          {videoUrl ? 'Click to preview 360° video' : '360° Video Panel'}
+        </span>
+      </button>
+      {viewerOpen && (
+        <Video360Viewer src={videoUrl} onClose={() => setViewerOpen(false)} />
+      )}
+    </div>
+  )
+}
 
 function posToLonLat(x, y, z) {
   const r = Math.sqrt(x * x + y * y + z * z)
@@ -77,6 +114,11 @@ export default function PanelPreview({
         : () => onAnchorClick({ type: 'waypoint', label: pa.title, description: pa.content, status: 'active', category: 'Polygon Region', navigate: false, documents: pa.documents ?? [] }),
     }))
   , [panel, editMode, onAnchorClick, onEditModeAnchorClick])
+
+  if (panel.type === 'video_360') {
+    const videoUrl = panel.video_360?.media_file_url ?? null
+    return <Video360PreviewCard videoUrl={videoUrl} title={panel.title} drawerWidth={drawerWidth} />
+  }
 
   if (panel.type === 'vr_tour') {
     return (

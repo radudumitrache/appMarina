@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import ScenePicker from './ScenePicker'
+import Video360Picker from './Video360Picker'
 import MediaInsertModal from './MediaInsertModal'
 import AnchorSection from './AnchorSection'
 import DocumentSection from './DocumentSection'
@@ -170,11 +171,15 @@ export default function EditDrawer({
   const isAdmin = user?.role === 'admin'
 
   const savedBody        = panel.text_content?.body ?? ''
-  const savedMediaFileId = panel.vr_tour?.media_file ?? null
+  const savedMediaFileId = panel.vr_tour?.media_file ?? panel.video_360?.media_file ?? null
 
   const [title,         setTitle]         = useState(panel.title ?? '')
   const [mediaFileId,   setMediaFileId]   = useState(savedMediaFileId)
-  const [previewUrl,    setPreviewUrl]    = useState(savedMediaFileId ? (panel.vr_tour?.scene_url ?? null) : null)
+  const [previewUrl,    setPreviewUrl]    = useState(
+    savedMediaFileId
+      ? (panel.vr_tour?.scene_url ?? panel.video_360?.media_file_url ?? null)
+      : null
+  )
   const [anchorEditing,  setAnchorEditing]  = useState(false)
   const [drawerWidth,    setDrawerWidth]    = useState(380)
   const [dragging,       setDragging]       = useState(false)
@@ -212,8 +217,9 @@ export default function EditDrawer({
 
   const dirty =
     title !== (panel.title ?? '') ||
-    (panel.type === 'text'    && (showHtml ? rawHtml !== savedBody : editorDirty)) ||
-    (panel.type === 'vr_tour' && mediaFileId !== savedMediaFileId)
+    (panel.type === 'text'      && (showHtml ? rawHtml !== savedBody : editorDirty)) ||
+    (panel.type === 'vr_tour'   && mediaFileId !== savedMediaFileId) ||
+    (panel.type === 'video_360' && mediaFileId !== savedMediaFileId)
 
   // â”€â”€ Media insert â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleMediaInsert = (url, type) => {
@@ -230,8 +236,9 @@ export default function EditDrawer({
   // â”€â”€ Save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSave = () => {
     const data = { title }
-    if (panel.type === 'text')    data.body = showHtml ? rawHtml : (editor?.getHTML() ?? savedBody)
-    if (panel.type === 'vr_tour') { data.media_file_id = mediaFileId; data.scene_url = '' }
+    if (panel.type === 'text')      data.body = showHtml ? rawHtml : (editor?.getHTML() ?? savedBody)
+    if (panel.type === 'vr_tour')   { data.media_file_id = mediaFileId; data.scene_url = '' }
+    if (panel.type === 'video_360') { data.media_file_id = mediaFileId }
     onSave(panel.id, data)
     setEditorDirty(false)
   }
@@ -274,7 +281,7 @@ export default function EditDrawer({
       <div className="lpe-drawer-header">
         <div className="lpe-drawer-title-row">
           <span className={`lpe-type-badge lpe-type-badge--${panel.type}`}>
-            {panel.type === 'vr_tour' ? '360° VR Tour' : 'Text Panel'}
+            {{ vr_tour: '360° VR Tour', text: 'Text Panel', video_360: '360° Video' }[panel.type] ?? panel.type}
           </span>
           <button className="lpe-drawer-close" onClick={onClose} aria-label="Close">
             <IconClose />
@@ -346,6 +353,25 @@ export default function EditDrawer({
             {showHtml && (
               <p className="lpe-html-hint">HTML source is shown in the main view.</p>
             )}
+          </div>
+        )}
+
+        {/* 360° video picker */}
+        {panel.type === 'video_360' && !anchorEditing && (
+          <div className="lpe-field">
+            <label className="lpe-label">360° Video</label>
+            <div className="lpe-scene-trigger-row">
+              {previewUrl && (
+                <video key={previewUrl} src={previewUrl} className="lpe-scene-thumb lpe-scene-thumb--video" muted playsInline />
+              )}
+              <button className="lpe-scene-trigger-btn" onClick={() => setScenePickerOpen(true)}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polygon points="10 9 15 12 10 15 10 9" fill="currentColor" stroke="none"/>
+                </svg>
+                {previewUrl ? 'Change video' : 'Select video'}
+              </button>
+            </div>
           </div>
         )}
 
@@ -431,11 +457,19 @@ export default function EditDrawer({
               </button>
             </div>
             <div className="sp-modal-body">
-              <ScenePicker
-                value={mediaFileId}
-                onChange={(id, url) => { setMediaFileId(id); setPreviewUrl(url); setScenePickerOpen(false) }}
-                departmentId={departmentId}
-              />
+              {panel.type === 'video_360' ? (
+                <Video360Picker
+                  value={mediaFileId}
+                  onChange={(id, url) => { setMediaFileId(id); setPreviewUrl(url); setScenePickerOpen(false) }}
+                  departmentId={departmentId}
+                />
+              ) : (
+                <ScenePicker
+                  value={mediaFileId}
+                  onChange={(id, url) => { setMediaFileId(id); setPreviewUrl(url); setScenePickerOpen(false) }}
+                  departmentId={departmentId}
+                />
+              )}
             </div>
           </div>
         </div>,

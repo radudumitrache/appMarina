@@ -1,0 +1,136 @@
+.v360p-page {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.v360p-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px 0;
+  background: var(--surface-1);
+}
+
+.v360p-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.v360p-panel-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--duration-fast);
+}
+.v360p-panel-btn:hover { background: var(--surface-2); }
+.v360p-panel-btn--active { background: var(--surface-2); }
+
+.v360p-panel-kind {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 3px;
+  padding: 2px 5px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.v360p-panel-name {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+.v360p-panel-btn--active .v360p-panel-name { color: var(--text); }
+
+/* ── Main area ───────────────────────────────────────────────────────────── */
+.v360p-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 40px;
+  background: var(--bg);
+}
+
+/* ── Video card ──────────────────────────────────────────────────────────── */
+.v360p-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 56px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color var(--duration-fast), transform var(--duration-fast), background var(--duration-fast);
+  max-width: 420px;
+  width: 100%;
+}
+.v360p-card:not(:disabled):hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-1));
+  transform: translateY(-2px);
+}
+.v360p-card:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.v360p-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+}
+
+.v360p-play-ring {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--accent);
+  border-radius: 50%;
+  color: #000;
+  box-shadow: 0 4px 16px rgba(11, 189, 164, 0.35);
+}
+.v360p-card:not(:disabled):hover .v360p-play-ring {
+  transform: scale(1.08);
+  transition: transform var(--duration-fast);
+}
+
+.v360p-title {
+  font-family: var(--font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  margin: 0;
+}
+
+.v360p-hint {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  margin: 0;
+}
