@@ -12,24 +12,24 @@ function initials(name) {
 
 // Quick diploma award modal
 
-function QuickAwardModal({ classId, student, diplomas, onClose, onDiplomasChange }) {
+function QuickAwardModal({ classId, crew, diplomas, onClose, onDiplomasChange }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
   async function toggle(diploma) {
-    const isAwarded = diploma.recipients.some(r => r.id === student.id)
+    const isAwarded = diploma.recipients.some(r => r.id === crew.id)
     setBusy(true); setError(null)
     try {
       let updated
       if (isAwarded) {
-        await revokeDiploma(classId, diploma.id, student.id)
+        await revokeDiploma(classId, diploma.id, crew.id)
         updated = {
           ...diploma,
-          recipients: diploma.recipients.filter(r => r.id !== student.id),
+          recipients: diploma.recipients.filter(r => r.id !== crew.id),
           recipient_count: diploma.recipient_count - 1,
         }
       } else {
-        const { data } = await awardDiploma(classId, diploma.id, { student_ids: [student.id] })
+        const { data } = await awardDiploma(classId, diploma.id, { crew_ids: [crew.id] })
         updated = data
       }
       onDiplomasChange(prev => prev.map(d => d.id === updated.id ? updated : d))
@@ -46,7 +46,7 @@ function QuickAwardModal({ classId, student, diplomas, onClose, onDiplomasChange
         <div className="lct-qa-header">
           <div className="lct-qa-header-left">
             <span className="lct-qa-title">Grant Diploma</span>
-            <span className="lct-qa-student">{student.name}</span>
+            <span className="lct-qa-crew">{crew.name}</span>
           </div>
           <button className="lct-qa-close" onClick={onClose} disabled={busy}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -62,7 +62,7 @@ function QuickAwardModal({ classId, student, diplomas, onClose, onDiplomasChange
             <p className="lct-qa-empty">No diplomas created for this class yet.</p>
           ) : (
             diplomas.map(d => {
-              const isAwarded = d.recipients.some(r => r.id === student.id)
+              const isAwarded = d.recipients.some(r => r.id === crew.id)
               return (
                 <div key={d.id} className={`lct-qa-row${isAwarded ? ' lct-qa-row--awarded' : ''}`}>
                   <div className="lct-qa-dip-info">
@@ -96,14 +96,14 @@ function gradeColor(grade) {
   return 'fail'
 }
 
-function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
+function CourseProgressView({ data, loading, diplomas, onAwardCrewMember }) {
   if (loading) return <p className="lct-cl-empty">Loading progress...</p>
   if (!data)   return <p className="lct-cl-empty">Could not load progress.</p>
 
-  const { items, students } = data
+  const { items, crew } = data
 
-  if (!students || students.length === 0) {
-    return <p className="lct-cl-empty">No enrolled students in this department.</p>
+  if (!crew || crew.length === 0) {
+    return <p className="lct-cl-empty">No enrolled crew in this department.</p>
   }
   if (!items || items.length === 0) {
     return <p className="lct-cl-empty">This course has no items yet.</p>
@@ -115,7 +115,7 @@ function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
         <table className="lct-ptable">
           <thead>
             <tr>
-              <th className="lct-ptable-th lct-ptable-th--student">Student</th>
+              <th className="lct-ptable-th lct-ptable-th--crew">Crew Member</th>
               {items.map((item, i) => (
                 <th key={`${item.type}-${item.id}`} className={`lct-ptable-th lct-ptable-th--item${item.type === 'test' ? ' lct-ptable-th--test' : ''}`}>
                   <span className="lct-ptable-item-num">{i + 1}</span>
@@ -131,7 +131,7 @@ function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
             </tr>
           </thead>
           <tbody>
-            {students.map(s => {
+            {crew.map(s => {
               const completedModules = new Set(s.module_completed ?? [])
               const testGrades = s.test_grades ?? {}
 
@@ -146,7 +146,7 @@ function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
 
               return (
                 <tr key={s.id} className={`lct-ptable-row${allDone ? ' lct-ptable-row--done' : ''}`}>
-                  <td className="lct-ptable-td lct-ptable-td--student">
+                  <td className="lct-ptable-td lct-ptable-td--crew">
                     <div className={`lct-progress-avatar lct-progress-avatar--sm${allDone ? ' lct-progress-avatar--done' : ''}`}>
                       {initials(s.name)}
                     </div>
@@ -196,7 +196,7 @@ function CourseProgressView({ data, loading, diplomas, onAwardStudent }) {
                   <td className="lct-ptable-td lct-ptable-td--actions">
                     <button
                       className="lct-progress-award-btn"
-                      onClick={() => onAwardStudent(s.id, s.name)}
+                      onClick={() => onAwardCrewMember(s.id, s.name)}
                       title="Grant diploma"
                     >
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -446,7 +446,7 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                         <circle cx="12" cy="8" r="6"/>
                         <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
                       </svg>
-                      Student Progress
+                      Crew Member Progress
                     </button>
                   </div>
 
@@ -508,7 +508,7 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
                       data={progressData[course.id]}
                       loading={progressLoading.has(course.id)}
                       diplomas={diplomas}
-                      onAwardStudent={(studentId, studentName) => setAwardTarget({ id: studentId, name: studentName })}
+                      onAwardCrewMember={(crewId, crewName) => setAwardTarget({ id: crewId, name: crewName })}
                     />
                   )}
                 </>
@@ -542,7 +542,7 @@ export default function ModulesCoursesTab({ departmentId, classModules, onNewMod
     {awardTarget && (
       <QuickAwardModal
         classId={departmentId}
-        student={awardTarget}
+        crew={awardTarget}
         diplomas={diplomas}
         onClose={() => setAwardTarget(null)}
         onDiplomasChange={setDiplomas}

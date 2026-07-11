@@ -510,7 +510,7 @@
   top: 0;
   z-index: 1;
 }
-.lct-ptable-th--student {
+.lct-ptable-th--crew {
   text-align: left;
   min-width: 160px;
   position: sticky;
@@ -570,7 +570,7 @@
   vertical-align: middle;
   text-align: center;
 }
-.lct-ptable-td--student {
+.lct-ptable-td--crew {
   text-align: left;
   position: sticky;
   left: 0;
@@ -578,12 +578,12 @@
   border-right: 1px solid var(--border);
   z-index: 1;
 }
-.lct-ptable-row:hover .lct-ptable-td--student { background: var(--surface-2); }
+.lct-ptable-row:hover .lct-ptable-td--crew { background: var(--surface-2); }
 .lct-ptable-td--cell { padding: 6px 8px; }
 .lct-ptable-td--actions { padding: 4px 8px; }
 
-/* Student cell */
-.lct-ptable-td--student {
+/* Crew cell */
+.lct-ptable-td--crew {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -779,7 +779,7 @@
   color: var(--text);
 }
 
-.lct-qa-student {
+.lct-qa-crew {
   font-family: var(--font-ui);
   font-size: 11px;
   color: var(--gold);

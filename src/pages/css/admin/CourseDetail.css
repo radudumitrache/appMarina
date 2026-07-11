@@ -938,8 +938,8 @@
   color: var(--text-3);
 }
 
-/* â”€â”€â”€ Student list (award modal) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-.crd-student-list {
+/* â”€â”€â”€ Crew list (award modal) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.crd-crew-list {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -947,7 +947,7 @@
   overflow-y: auto;
 }
 
-.crd-student-row {
+.crd-crew-row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -956,10 +956,10 @@
   cursor: pointer;
   transition: background var(--duration-fast);
 }
-.crd-student-row:hover { background: var(--surface-2); }
-.crd-student-row--disabled { opacity: 0.5; pointer-events: none; }
+.crd-crew-row:hover { background: var(--surface-2); }
+.crd-crew-row--disabled { opacity: 0.5; pointer-events: none; }
 
-.crd-student-check {
+.crd-crew-check {
   width: 15px;
   height: 15px;
   accent-color: var(--error);
@@ -967,14 +967,14 @@
   cursor: pointer;
 }
 
-.crd-student-name {
+.crd-crew-name {
   flex: 1;
   font-family: var(--font-ui);
   font-size: 13px;
   color: var(--text);
 }
 
-.crd-student-email {
+.crd-crew-email {
   font-family: var(--font-ui);
   font-size: 11px;
   color: var(--text-3);

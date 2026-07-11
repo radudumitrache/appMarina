@@ -9,7 +9,7 @@ import TestFormPanel from '../../components/admin/tests/TestFormPanel'
 import {
   getCourseDiplomas, createCourseDiploma, updateCourseDiploma,
   deleteCourseDiploma, awardCourseDiploma, revokeCourseDiploma,
-  getClassStudents,
+  getClassCrew,
 } from '../../api/departments'
 import { getUsers } from '../../api/admin'
 import '../css/admin/CourseDetail.css'
@@ -92,7 +92,7 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
 
           <p className="crd-cert-intro">Hereby this diploma is awarded to</p>
           <div className="crd-cert-recipient-placeholder">
-            <span className="crd-cert-recipient-name">Student Name</span>
+            <span className="crd-cert-recipient-name">Crew Member Name</span>
           </div>
 
           <textarea
@@ -121,7 +121,7 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
 
 // ── Award Diploma Modal ───────────────────────────────────────────────────────
 
-function AwardDiplomaModal({ diploma, students, onClose, onAward }) {
+function AwardDiplomaModal({ diploma, crew, onClose, onAward }) {
   const [selected, setSelected] = useState(
     new Set(diploma.recipients.map(r => r.id))
   )
@@ -135,7 +135,7 @@ function AwardDiplomaModal({ diploma, students, onClose, onAward }) {
     })
   }
 
-  const filtered = students.filter(s => {
+  const filtered = crew.filter(s => {
     const q = search.toLowerCase()
     return s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)
   })
@@ -148,29 +148,29 @@ function AwardDiplomaModal({ diploma, students, onClose, onAward }) {
           <button className="crd-modal-close" onClick={onClose}>✕</button>
         </div>
         <div className="crd-modal-body">
-          <p className="crd-award-hint">Select students to award this diploma. Deselecting revokes it.</p>
+          <p className="crd-award-hint">Select crew members to award this diploma. Deselecting revokes it.</p>
           <div className="crd-form-group">
             <input
               className="crd-form-input"
-              placeholder="Search students…"
+              placeholder="Search crew members…"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
           {filtered.length === 0 ? (
-            <p className="crd-award-empty">No students found.</p>
+            <p className="crd-award-empty">No crew members found.</p>
           ) : (
-            <div className="crd-student-list">
+            <div className="crd-crew-list">
               {filtered.map(s => (
-                <label key={s.id} className="crd-student-row">
+                <label key={s.id} className="crd-crew-row">
                   <input
                     type="checkbox"
                     checked={selected.has(s.id)}
                     onChange={() => toggle(s.id)}
-                    className="crd-student-check"
+                    className="crd-crew-check"
                   />
-                  <span className="crd-student-name">{s.name}</span>
-                  <span className="crd-student-email">{s.email}</span>
+                  <span className="crd-crew-name">{s.name}</span>
+                  <span className="crd-crew-email">{s.email}</span>
                 </label>
               ))}
             </div>
@@ -307,7 +307,7 @@ export default function CourseDetail() {
 
   const [course, setCourse]         = useState(null)
   const [diplomas, setDiplomas]     = useState([])
-  const [students, setStudents]     = useState([])
+  const [crew, setCrew]     = useState([])
   const [allModules, setAllModules] = useState([])
   const [allTests, setAllTests]     = useState([])
   const [allCourses, setAllCourses] = useState([])
@@ -350,18 +350,18 @@ export default function CourseDetail() {
 
         const departmentIds = courseData.department_ids ?? []
         if (departmentIds.length) {
-          return Promise.all(departmentIds.map(did => getClassStudents(did))).then(results => {
+          return Promise.all(departmentIds.map(did => getClassCrew(did))).then(results => {
             const merged = new Map()
             for (const res of results) {
               for (const e of res.data) {
-                merged.set(e.student, { id: e.student, name: e.student_name, email: e.student_email })
+                merged.set(e.crew, { id: e.crew, name: e.crew_name, email: e.crew_email })
               }
             }
-            setStudents(Array.from(merged.values()))
+            setCrew(Array.from(merged.values()))
           })
         } else {
-          return getUsers({ 'userprofile__role': 'student' }).then(sRes => {
-            setStudents(sRes.data.map(u => ({
+          return getUsers({ 'userprofile__role': 'crew' }).then(sRes => {
+            setCrew(sRes.data.map(u => ({
               id: u.id,
               name: `${u.first_name} ${u.last_name}`.trim() || u.username,
               email: u.email,
@@ -780,7 +780,7 @@ export default function CourseDetail() {
       {awardModal && (
         <AwardDiplomaModal
           diploma={awardModal}
-          students={students}
+          crew={crew}
           onClose={() => setAwardModal(null)}
           onAward={handleAward}
         />

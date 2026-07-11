@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
@@ -17,7 +17,7 @@ import {
   getDepartments,
   getCourseDiplomas, createCourseDiploma, updateCourseDiploma,
   deleteCourseDiploma, awardCourseDiploma, revokeCourseDiploma,
-  getClassStudents,
+  getClassCrew,
 } from '../../api/departments'
 import { getTrainers, getUsers } from '../../api/admin'
 import { getOrganisations } from '../../api/organisations'
@@ -155,7 +155,7 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
           </div>
           <p className="crd-cert-intro">Hereby this diploma is awarded to</p>
           <div className="crd-cert-recipient-placeholder">
-            <span className="crd-cert-recipient-name">Student Name</span>
+            <span className="crd-cert-recipient-name">Crew Member Name</span>
           </div>
           <textarea
             className="crd-cert-desc-input"
@@ -181,7 +181,7 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
 
 // ── Award Diploma Modal ───────────────────────────────────────────────────────
 
-function AwardDiplomaModal({ diploma, students, studentsLoading, saving, onClose, onAward }) {
+function AwardDiplomaModal({ diploma, crew, crewLoading, saving, onClose, onAward }) {
   const [selected, setSelected] = useState(new Set(diploma.recipients.map(r => r.id)))
   const [search, setSearch]     = useState('')
 
@@ -194,7 +194,7 @@ function AwardDiplomaModal({ diploma, students, studentsLoading, saving, onClose
     })
   }
 
-  const filtered = students.filter(s => {
+  const filtered = crew.filter(s => {
     const q = search.toLowerCase()
     return s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)
   })
@@ -207,27 +207,27 @@ function AwardDiplomaModal({ diploma, students, studentsLoading, saving, onClose
           <button className="crd-modal-close" onClick={onClose} disabled={saving}>✕</button>
         </div>
         <div className="crd-modal-body">
-          <p className="crd-award-hint">Select students to award this diploma. Deselecting revokes it.</p>
+          <p className="crd-award-hint">Select crew members to award this diploma. Deselecting revokes it.</p>
           <div className="crd-form-group">
             <input
               className="crd-form-input"
-              placeholder="Search students…"
+              placeholder="Search crew members…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              disabled={studentsLoading || saving}
+              disabled={crewLoading || saving}
             />
           </div>
-          {studentsLoading ? (
-            <p className="crd-award-empty">Loading students…</p>
+          {crewLoading ? (
+            <p className="crd-award-empty">Loading crew members…</p>
           ) : filtered.length === 0 ? (
-            <p className="crd-award-empty">{students.length === 0 ? 'No students enrolled in this course\'s departments.' : 'No students match your search.'}</p>
+            <p className="crd-award-empty">{crew.length === 0 ? 'No crew members enrolled in this course\'s departments.' : 'No crew members match your search.'}</p>
           ) : (
-            <div className="crd-student-list">
+            <div className="crd-crew-list">
               {filtered.map(s => (
-                <label key={s.id} className={`crd-student-row${saving ? ' crd-student-row--disabled' : ''}`}>
-                  <input type="checkbox" checked={selected.has(s.id)} onChange={() => toggle(s.id)} className="crd-student-check" disabled={saving} />
-                  <span className="crd-student-name">{s.name}</span>
-                  <span className="crd-student-email">{s.email}</span>
+                <label key={s.id} className={`crd-crew-row${saving ? ' crd-crew-row--disabled' : ''}`}>
+                  <input type="checkbox" checked={selected.has(s.id)} onChange={() => toggle(s.id)} className="crd-crew-check" disabled={saving} />
+                  <span className="crd-crew-name">{s.name}</span>
+                  <span className="crd-crew-email">{s.email}</span>
                 </label>
               ))}
             </div>
@@ -239,7 +239,7 @@ function AwardDiplomaModal({ diploma, students, studentsLoading, saving, onClose
           <button
             className="crd-btn-primary"
             onClick={() => onAward(diploma, selected, diploma.recipients)}
-            disabled={saving || studentsLoading}
+            disabled={saving || crewLoading}
           >
             {saving ? 'Saving…' : 'Save Awards'}
           </button>
@@ -400,7 +400,7 @@ export default function Courses() {
 
   const [selectedId,       setSelectedId]       = useState(null)
   const [courseDetailMap,  setCourseDetailMap]  = useState({})
-  const [studentsMap,      setStudentsMap]      = useState({})
+  const [crewMap,      setCrewMap]      = useState({})
   const [loadingList,      setLoadingList]      = useState(true)
   const [loadingDetail,    setLoadingDetail]    = useState(false)
 
@@ -438,7 +438,7 @@ export default function Courses() {
   const [diplomaModal,        setDiplomaModal]        = useState(null)
   const [awardModal,          setAwardModal]          = useState(null)
   const [awardSaving,         setAwardSaving]         = useState(false)
-  const [studentsLoading,     setStudentsLoading]     = useState(false)
+  const [crewLoading,     setStudentsLoading]     = useState(false)
   const [diplomaDeleteTarget, setDiplomaDeleteTarget] = useState(null)
   const [diplomaForm,         setDiplomaForm]         = useState({ title: '', description: '', courseId: null })
   const [diplomaErrors,       setDiplomaErrors]       = useState({})
@@ -447,7 +447,7 @@ export default function Courses() {
   // ── Derived ────────────────────────────────────────────────────────────────
   const selectedCourse = courses.find(c => c.id === selectedId) ?? null
   const detail         = selectedId != null ? (courseDetailMap[selectedId] ?? null) : null
-  const students       = selectedId != null ? (studentsMap[selectedId] ?? []) : []
+  const crew       = selectedId != null ? (crewMap[selectedId] ?? []) : []
 
   const filteredCourses = courses.filter(c => {
     const q = search.toLowerCase().trim()
@@ -712,24 +712,24 @@ export default function Courses() {
   }
   async function openAwardModal(diploma) {
     setAwardModal(diploma)
-    if (studentsMap[selectedId]) return
+    if (crewMap[selectedId]) return
     setStudentsLoading(true)
     try {
       if (selectedCourse?.department_ids?.length) {
-        const resList = await Promise.all(selectedCourse.department_ids.map(id => getClassStudents(id)))
+        const resList = await Promise.all(selectedCourse.department_ids.map(id => getClassCrew(id)))
         const merged = new Map()
         for (const res of resList) {
           for (const e of res.data) {
-            merged.set(e.student, { id: e.student, name: e.student_name, email: e.student_email })
+            merged.set(e.crew, { id: e.crew, name: e.crew_name, email: e.crew_email })
           }
         }
-        setStudentsMap(prev => ({ ...prev, [selectedId]: Array.from(merged.values()) }))
+        setCrewMap(prev => ({ ...prev, [selectedId]: Array.from(merged.values()) }))
       } else {
-        const res = await getUsers({ 'userprofile__role': 'student' })
-        setStudentsMap(prev => ({ ...prev, [selectedId]: res.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })) }))
+        const res = await getUsers({ 'userprofile__role': 'crew' })
+        setCrewMap(prev => ({ ...prev, [selectedId]: res.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })) }))
       }
     } catch {
-      setStudentsMap(prev => ({ ...prev, [selectedId]: [] }))
+      setCrewMap(prev => ({ ...prev, [selectedId]: [] }))
     } finally {
       setStudentsLoading(false)
     }
@@ -1298,8 +1298,8 @@ export default function Courses() {
       {awardModal && (
         <AwardDiplomaModal
           diploma={awardModal}
-          students={students}
-          studentsLoading={studentsLoading}
+          crew={crew}
+          crewLoading={crewLoading}
           saving={awardSaving}
           onClose={() => { if (!awardSaving) setAwardModal(null) }}
           onAward={handleAward}

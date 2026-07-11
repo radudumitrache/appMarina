@@ -53,7 +53,7 @@
   overflow: hidden;
 }
 
-.so-header-student {
+.so-header-crew {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -80,14 +80,14 @@
   text-transform: uppercase;
 }
 
-.so-student-info {
+.so-crew-info {
   display: flex;
   flex-direction: column;
   gap: 3px;
   min-width: 0;
 }
 
-.so-student-name {
+.so-crew-name {
   font-family: var(--font-ui);
   font-size: 15px;
   font-weight: 600;
@@ -97,7 +97,7 @@
   text-overflow: ellipsis;
 }
 
-.so-student-email {
+.so-crew-email {
   font-family: var(--font-ui);
   font-size: 12px;
   color: var(--text-3);
@@ -371,7 +371,7 @@
   color: var(--text);
 }
 
-.so-answer-value--student { color: var(--text-2); }
+.so-answer-value--crew { color: var(--text-2); }
 .so-answer-value--correct { color: var(--success); }
 .so-answer-value--unanswered { color: var(--text-3); font-style: italic; }
 
@@ -413,21 +413,21 @@
   color: var(--text-3);
 }
 
-/* Student chose the correct option */
+/* Crew member chose the correct option */
 .so-option--hit {
   background: rgba(46,199,122,0.08);
   border-color: rgba(46,199,122,0.25);
   color: var(--text);
 }
 
-/* Student chose a wrong option */
+/* Crew member chose a wrong option */
 .so-option--miss {
   background: rgba(224,82,82,0.08);
   border-color: rgba(224,82,82,0.22);
   color: var(--text);
 }
 
-/* The correct option (student did not pick it) */
+/* The correct option (crew member did not pick it) */
 .so-option--answer {
   background: rgba(46,199,122,0.05);
   border-color: rgba(46,199,122,0.18);
@@ -460,8 +460,8 @@
   border-radius: 4px;
   flex-shrink: 0;
 }
-.so-option-tag--student { background: rgba(224,82,82,0.12); color: var(--error); }
-.so-option--hit .so-option-tag--student { background: rgba(46,199,122,0.12); color: var(--success); }
+.so-option-tag--crew { background: rgba(224,82,82,0.12); color: var(--error); }
+.so-option--hit .so-option-tag--crew { background: rgba(46,199,122,0.12); color: var(--success); }
 .so-option-tag--correct { background: rgba(46,199,122,0.12); color: var(--success); }
 
 /* ─── Arrange answer ─────────────────────────────────── */
@@ -588,7 +588,7 @@
   background: var(--surface-2);
 }
 
-.so-word-value--student { color: var(--text-2); }
+.so-word-value--crew { color: var(--text-2); }
 .so-word-value--correct { color: var(--success); background: rgba(46,199,122,0.06); border-color: rgba(46,199,122,0.2); }
 
 /* ─── Toggle controls ────────────────────────────────── */

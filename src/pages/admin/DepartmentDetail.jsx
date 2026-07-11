@@ -4,11 +4,11 @@ import NavBar from '../../components/admin/NavBar'
 import ClassDetailTopbar from '../../components/admin/class-detail/ClassDetailTopbar'
 import ClassDetailHeader from '../../components/admin/class-detail/ClassDetailHeader'
 import EditDetailsModal from '../../components/admin/class-detail/EditDetailsModal'
-import AdminStudentsPanel from '../../components/admin/class-detail/AdminStudentsPanel'
+import AdminCrewPanel from '../../components/admin/class-detail/AdminCrewPanel'
 import AdminCoursesPanel from '../../components/admin/class-detail/AdminCoursesPanel'
 import {
   getDepartment, updateDepartment,
-  getClassStudents, enrollStudent, removeStudent,
+  getClassCrew, enrollCrew, removeCrew,
   getClassTests, getDiplomas, awardDiploma, revokeDiploma,
 } from '../../api/departments'
 import { getUsers, getTrainers } from '../../api/admin'
@@ -16,12 +16,12 @@ import { getCourses } from '../../api/modules'
 import Sk from '../../components/shared/Skeleton'
 import '../css/admin/ClassDetail.css'
 
-function mapStudent(e) {
+function mapCrew(e) {
   return {
-    id:                 e.student,
-    name:               e.student_name,
-    email:              e.student_email,
-    initials:           (e.student_name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+    id:                 e.crew,
+    name:               e.crew_name,
+    email:              e.crew_email,
+    initials:           (e.crew_name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
     courseLessonsDone:  e.course_lessons_done  ?? 0,
     courseLessonsTotal: e.course_lessons_total ?? 0,
     coursesDone:        e.courses_done  ?? 0,
@@ -35,52 +35,52 @@ export default function AdminDepartmentDetail() {
   const { id }   = useParams()
   const navigate = useNavigate()
 
-  const [cls, setCls]                       = useState(null)
-  const [students, setStudents]             = useState([])
-  const [diplomas, setDiplomas]             = useState([])
-  const [courseCount, setCourseCount]       = useState(0)
-  const [testCount,   setTestCount]         = useState(0)
-  const [allStudents, setAllStudents]       = useState([])
-  const [trainers,    setTrainers]          = useState([])
-  const [loading, setLoading]               = useState(true)
-  const [editMode, setEditMode]             = useState(false)
-  const [editForm, setEditForm]             = useState(null)
-  const [studentSearch,  setStudentSearch]  = useState('')
-  const [studentFocus,   setStudentFocus]   = useState(false)
+  const [cls, setCls]                   = useState(null)
+  const [crew, setCrew]                 = useState([])
+  const [diplomas, setDiplomas]         = useState([])
+  const [courseCount, setCourseCount]   = useState(0)
+  const [testCount,   setTestCount]     = useState(0)
+  const [allCrew, setAllCrew]           = useState([])
+  const [trainers,    setTrainers]      = useState([])
+  const [loading, setLoading]           = useState(true)
+  const [editMode, setEditMode]         = useState(false)
+  const [editForm, setEditForm]         = useState(null)
+  const [crewSearch,  setCrewSearch]    = useState('')
+  const [crewFocus,   setCrewFocus]     = useState(false)
 
   useEffect(() => {
     Promise.all([
       getDepartment(id),
-      getClassStudents(id),
+      getClassCrew(id),
       getCourses(),
       getClassTests(id),
-      getUsers({ 'userprofile__role': 'student' }),
+      getUsers({ 'userprofile__role': 'crew' }),
       getTrainers(),
       getDiplomas(id),
-    ]).then(([clsRes, stuRes, coursesRes, tstRes, allStuRes, tchRes, dipRes]) => {
+    ]).then(([clsRes, crewRes, coursesRes, tstRes, allCrewRes, tchRes, dipRes]) => {
       const deptId = Number(id)
       setCls(clsRes.data)
-      setStudents((stuRes.data ?? []).map(mapStudent))
+      setCrew((crewRes.data ?? []).map(mapCrew))
       setCourseCount((coursesRes.data ?? []).filter(c => c.departments?.some(d => d.id === deptId)).length)
       setTestCount((tstRes.data ?? []).length)
-      setAllStudents(allStuRes.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })))
+      setAllCrew(allCrewRes.data.map(u => ({ id: u.id, name: `${u.first_name} ${u.last_name}`.trim() || u.username, email: u.email })))
       setTrainers(tchRes.data)
       setDiplomas(dipRes.data ?? [])
     }).finally(() => setLoading(false))
   }, [id])
 
-  const handleAwardDiploma = async (diplomaId, studentId) => {
+  const handleAwardDiploma = async (diplomaId, crewMemberId) => {
     try {
-      const { data } = await awardDiploma(id, diplomaId, { student_ids: [studentId] })
+      const { data } = await awardDiploma(id, diplomaId, { crew_ids: [crewMemberId] })
       setDiplomas(prev => prev.map(d => d.id === data.id ? data : d))
     } catch {}
   }
 
-  const handleRevokeDiploma = async (diplomaId, studentId) => {
+  const handleRevokeDiploma = async (diplomaId, crewMemberId) => {
     try {
-      await revokeDiploma(id, diplomaId, studentId)
+      await revokeDiploma(id, diplomaId, crewMemberId)
       setDiplomas(prev => prev.map(d => d.id === diplomaId
-        ? { ...d, recipients: (d.recipients ?? []).filter(r => r.id !== studentId) }
+        ? { ...d, recipients: (d.recipients ?? []).filter(r => r.id !== crewMemberId) }
         : d
       ))
     } catch {}
@@ -118,37 +118,37 @@ export default function AdminDepartmentDetail() {
     } catch {}
   }
 
-  const enrolledIds = useMemo(() => new Set(students.map(s => s.id)), [students])
+  const enrolledIds = useMemo(() => new Set(crew.map(s => s.id)), [crew])
 
-  const studentSuggestions = useMemo(() => {
-    const q = studentSearch.trim().toLowerCase()
+  const crewSuggestions = useMemo(() => {
+    const q = crewSearch.trim().toLowerCase()
     if (!q) return []
-    return allStudents.filter(s =>
+    return allCrew.filter(s =>
       !enrolledIds.has(s.id) &&
       (s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q))
     )
-  }, [studentSearch, allStudents, enrolledIds])
+  }, [crewSearch, allCrew, enrolledIds])
 
-  const addStudent = async s => {
-    setStudentSearch('')
+  const addCrew = async s => {
+    setCrewSearch('')
     try {
-      const { data } = await enrollStudent(id, { email: s.email })
-      const mapped = data?.student ? mapStudent(data) : {
+      const { data } = await enrollCrew(id, { email: s.email })
+      const mapped = data?.crew ? mapCrew(data) : {
         id: s.id, name: s.name, email: s.email,
         initials: (s.name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
         courseLessonsDone: 0, courseLessonsTotal: 0, coursesDone: 0, coursesTotal: 0,
         lastActive: '--', status: 'active',
       }
-      setStudents(prev => [...prev, mapped])
+      setCrew(prev => [...prev, mapped])
     } catch {}
   }
 
-  const handleRemoveStudent = async uid => {
-    setStudents(prev => prev.filter(s => s.id !== uid))
+  const handleRemoveCrew = async uid => {
+    setCrew(prev => prev.filter(s => s.id !== uid))
     try {
-      await removeStudent(id, uid)
+      await removeCrew(id, uid)
     } catch {
-      setStudents(prev => [...prev])
+      setCrew(prev => [...prev])
     }
   }
 
@@ -211,21 +211,21 @@ export default function AdminDepartmentDetail() {
         onEdit={openEdit}
       />
 
-      <ClassDetailHeader cls={cls} studentCount={students.length} courseCount={courseCount} testCount={testCount} />
+      <ClassDetailHeader cls={cls} crewCount={crew.length} courseCount={courseCount} testCount={testCount} />
 
       <div className="cd-panels cd-panels--two-col">
-        <div className="cd-panels-students">
-          <AdminStudentsPanel
-            students={students}
+        <div className="cd-panels-crew">
+          <AdminCrewPanel
+            crew={crew}
             diplomas={diplomas}
-            searchValue={studentSearch}
-            onSearchChange={setStudentSearch}
-            suggestions={studentSuggestions}
-            isFocused={studentFocus}
-            onFocus={() => setStudentFocus(true)}
-            onBlur={() => setTimeout(() => setStudentFocus(false), 150)}
-            onAdd={addStudent}
-            onRemove={handleRemoveStudent}
+            searchValue={crewSearch}
+            onSearchChange={setCrewSearch}
+            suggestions={crewSuggestions}
+            isFocused={crewFocus}
+            onFocus={() => setCrewFocus(true)}
+            onBlur={() => setTimeout(() => setCrewFocus(false), 150)}
+            onAdd={addCrew}
+            onRemove={handleRemoveCrew}
             onAward={handleAwardDiploma}
             onRevoke={handleRevokeDiploma}
           />

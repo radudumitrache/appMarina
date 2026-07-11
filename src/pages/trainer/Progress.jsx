@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import NavBar            from '../../components/trainer/NavBar'
 import ProgressStats     from '../../components/trainer/progress/ProgressStats'
@@ -27,11 +27,11 @@ function relativeTime(iso) {
   return `${Math.floor(d / 7)}w ago`
 }
 
-function mapStudent(s) {
+function mapCrew(s) {
   return {
-    id:            s.student_id,
-    name:          s.student_name,
-    initials:      initials(s.student_name),
+    id:            s.crew_member_id,
+    name:          s.crew_name,
+    initials:      initials(s.crew_name),
     departmentId:  s.department_id,
     className:     s.department_name,
     coursesDone:   s.courses_done,
@@ -44,7 +44,7 @@ function mapStudent(s) {
 export default function Progress() {
   const navigate = useNavigate()
 
-  const [students,          setStudents]          = useState([])
+  const [crew,              setCrew]              = useState([])
   const [departments,       setDepartments]       = useState([])
   const [loading,           setLoading]           = useState(true)
   const [departmentFilter,  setDepartmentFilter]  = useState('all')
@@ -56,7 +56,7 @@ export default function Progress() {
   useEffect(() => {
     Promise.all([getTrainerProgress(), getDepartments()])
       .then(([progRes, clsRes]) => {
-        setStudents(progRes.data.map(mapStudent))
+        setCrew(progRes.data.map(mapCrew))
         setDepartments([
           { id: 'all', label: 'All Departments' },
           ...clsRes.data.map(c => ({ id: c.id, label: c.code ? `${c.code} — ${c.name}` : c.name })),
@@ -75,54 +75,54 @@ export default function Progress() {
     return data
   }
 
-  function setStudentStatus(studentId, deptId, status) {
-    setStudents(prev => prev.map(s =>
-      s.id === studentId && s.departmentId === deptId ? { ...s, status } : s
+  function setCrewStatus(crewId, deptId, status) {
+    setCrew(prev => prev.map(s =>
+      s.id === crewId && s.departmentId === deptId ? { ...s, status } : s
     ))
   }
 
-  async function handleAward(student) {
-    const key = `${student.id}-${student.departmentId}`
+  async function handleAward(crewMember) {
+    const key = `${crewMember.id}-${crewMember.departmentId}`
     setBusyIds(prev => new Set([...prev, key]))
     try {
-      const diplomas = await fetchDiplomas(student.departmentId)
+      const diplomas = await fetchDiplomas(crewMember.departmentId)
       await Promise.all(
-        diplomas.map(d => awardDiploma(student.departmentId, d.id, { student_ids: [student.id] }))
+        diplomas.map(d => awardDiploma(crewMember.departmentId, d.id, { crew_ids: [crewMember.id] }))
       )
-      setStudentStatus(student.id, student.departmentId, 'awarded')
+      setCrewStatus(crewMember.id, crewMember.departmentId, 'awarded')
     } catch { /* leave status as-is */ }
     finally { setBusyIds(prev => { const n = new Set(prev); n.delete(key); return n }) }
   }
 
-  async function handleRevoke(student) {
-    if (student.status !== 'awarded') return
-    const key = `${student.id}-${student.departmentId}`
+  async function handleRevoke(crewMember) {
+    if (crewMember.status !== 'awarded') return
+    const key = `${crewMember.id}-${crewMember.departmentId}`
     setBusyIds(prev => new Set([...prev, key]))
     try {
-      const diplomas = await fetchDiplomas(student.departmentId)
-      const awardedDiplomas = diplomas.filter(d => d.recipients?.some(r => r.id === student.id))
+      const diplomas = await fetchDiplomas(crewMember.departmentId)
+      const awardedDiplomas = diplomas.filter(d => d.recipients?.some(r => r.id === crewMember.id))
       await Promise.all(
-        awardedDiplomas.map(d => revokeDiploma(student.departmentId, d.id, student.id))
+        awardedDiplomas.map(d => revokeDiploma(crewMember.departmentId, d.id, crewMember.id))
       )
-      const revertStatus = student.coursesTotal > 0 && student.coursesDone === student.coursesTotal
+      const revertStatus = crewMember.coursesTotal > 0 && crewMember.coursesDone === crewMember.coursesTotal
         ? 'completed'
-        : student.coursesDone > 0 ? 'in-progress' : 'to-begin'
-      setStudentStatus(student.id, student.departmentId, revertStatus)
+        : crewMember.coursesDone > 0 ? 'in-progress' : 'to-begin'
+      setCrewStatus(crewMember.id, crewMember.departmentId, revertStatus)
     } catch { /* leave status as-is */ }
     finally { setBusyIds(prev => { const n = new Set(prev); n.delete(key); return n }) }
   }
 
-  async function handleBulkAward(studentList) {
-    await Promise.allSettled(studentList.map(s => handleAward(s)))
+  async function handleBulkAward(crewList) {
+    await Promise.allSettled(crewList.map(s => handleAward(s)))
   }
 
-  async function handleBulkRevoke(studentList) {
-    await Promise.allSettled(studentList.map(s => handleRevoke(s)))
+  async function handleBulkRevoke(crewList) {
+    await Promise.allSettled(crewList.map(s => handleRevoke(s)))
   }
 
   const visible = useMemo(() => {
     setPage(1)
-    return students
+    return crew
       .filter(s => departmentFilter === 'all' || s.departmentId === departmentFilter)
       .filter(s =>
         s.name.toLowerCase().includes(search.toLowerCase().trim()) ||
@@ -133,13 +133,13 @@ export default function Progress() {
         if (sortBy === 'progress') return (b.coursesDone / (b.coursesTotal || 1)) - (a.coursesDone / (a.coursesTotal || 1))
         return 0
       })
-  }, [students, departmentFilter, search, sortBy])
+  }, [crew, departmentFilter, search, sortBy])
 
   const totalPages = Math.max(1, Math.ceil(visible.length / pageSize))
   const paginated  = visible.slice((page - 1) * pageSize, page * pageSize)
 
-  const avgPct = students.length
-    ? Math.round(students.reduce((sum, s) => sum + (s.coursesDone / (s.coursesTotal || 1)) * 100, 0) / students.length)
+  const avgPct = crew.length
+    ? Math.round(crew.reduce((sum, s) => sum + (s.coursesDone / (s.coursesTotal || 1)) * 100, 0) / crew.length)
     : 0
 
 
@@ -196,13 +196,13 @@ export default function Progress() {
             <button className="tp-crumb-link" onClick={() => navigate('/trainer/dashboard')}>Dashboard</button>
             <span className="tp-crumb-sep">/</span>
           </div>
-          <h1 className="tp-title">Student Progress</h1>
+          <h1 className="tp-title">Crew Progress</h1>
         </div>
       </header>
 
       <div className="tp-content">
         <ProgressStats
-          totalStudents={students.length}
+          totalCrew={crew.length}
           classCount={departments.length - 1}
           avgPct={avgPct}
         />
@@ -210,7 +210,7 @@ export default function Progress() {
         <div className="tp-body">
           <ProgressClassTabs
             departments={departments}
-            students={students}
+            crew={crew}
             departmentFilter={departmentFilter}
             onDepartmentChange={setDepartmentFilter}
           />
@@ -224,12 +224,12 @@ export default function Progress() {
             />
 
             <ProgressTable
-              students={paginated}
+              crew={paginated}
               allVisible={visible}
               filteredCount={visible.length}
-              totalCount={students.length}
+              totalCount={crew.length}
               selectedId={null}
-              onSelect={s => navigate(`/trainer/students/${s.id}/progress`)}
+              onSelect={s => navigate(`/trainer/crew/${s.id}/progress`)}
               page={page}
               pageSize={pageSize}
               totalPages={totalPages}

@@ -48,7 +48,7 @@ export default function CsvImportModal({ csvRows, importing, organisations = [],
         <div className="modal-body">
           <p className="csv-hint">
             Columns: <code className="csv-code">name, username, email, role</code>.
-            {' '}Role must be <code className="csv-code">student</code> or <code className="csv-code">trainer</code>.{' '}
+            {' '}Role must be <code className="csv-code">crew</code> or <code className="csv-code">trainer</code>.{' '}
             <button className="link-btn" onClick={onDownloadTemplate}>Download template</button>
           </p>
 

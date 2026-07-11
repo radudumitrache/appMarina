@@ -16,27 +16,27 @@ export function XIcon() {
   )
 }
 
-function MCQOptions({ options, studentOptIds, correctOptIds }) {
+function MCQOptions({ options, crewOptIds, correctOptIds }) {
   return (
     <div className="so-options">
       {options.map(opt => {
-        const isStudent = (studentOptIds ?? []).includes(opt.id)
+        const isCrew = (crewOptIds ?? []).includes(opt.id)
         const isCorrect = (correctOptIds ?? []).includes(opt.id)
         const cls = [
           'so-option',
-          isStudent && isCorrect  ? 'so-option--hit'   : '',
-          isStudent && !isCorrect ? 'so-option--miss'  : '',
-          !isStudent && isCorrect ? 'so-option--answer' : '',
+          isCrew && isCorrect  ? 'so-option--hit'   : '',
+          isCrew && !isCorrect ? 'so-option--miss'  : '',
+          !isCrew && isCorrect ? 'so-option--answer' : '',
         ].filter(Boolean).join(' ')
         return (
           <div key={opt.id} className={cls}>
             <span className="so-option-icon">
-              {isStudent && isCorrect  && <CheckIcon />}
-              {isStudent && !isCorrect && <XIcon />}
-              {!isStudent && isCorrect && <CheckIcon />}
+              {isCrew && isCorrect  && <CheckIcon />}
+              {isCrew && !isCorrect && <XIcon />}
+              {!isCrew && isCorrect && <CheckIcon />}
             </span>
             <span className="so-option-text">{opt.text}</span>
-            {isStudent && <span className="so-option-tag so-option-tag--student">Student</span>}
+            {isCrew && <span className="so-option-tag so-option-tag--crew">Crew Member</span>}
             {isCorrect && <span className="so-option-tag so-option-tag--correct">Correct</span>}
           </div>
         )
@@ -45,27 +45,27 @@ function MCQOptions({ options, studentOptIds, correctOptIds }) {
   )
 }
 
-function TFOptions({ studentTf, correctTf }) {
+function TFOptions({ crewTf, correctTf }) {
   return (
     <div className="so-options">
       {[true, false].map(val => {
-        const isStudent = studentTf === val
+        const isCrew = crewTf === val
         const isCorrect = correctTf === val
         const cls = [
           'so-option',
-          isStudent && isCorrect  ? 'so-option--hit'   : '',
-          isStudent && !isCorrect ? 'so-option--miss'  : '',
-          !isStudent && isCorrect ? 'so-option--answer' : '',
+          isCrew && isCorrect  ? 'so-option--hit'   : '',
+          isCrew && !isCorrect ? 'so-option--miss'  : '',
+          !isCrew && isCorrect ? 'so-option--answer' : '',
         ].filter(Boolean).join(' ')
         return (
           <div key={String(val)} className={cls}>
             <span className="so-option-icon">
-              {isStudent && isCorrect  && <CheckIcon />}
-              {isStudent && !isCorrect && <XIcon />}
-              {!isStudent && isCorrect && <CheckIcon />}
+              {isCrew && isCorrect  && <CheckIcon />}
+              {isCrew && !isCorrect && <XIcon />}
+              {!isCrew && isCorrect && <CheckIcon />}
             </span>
             <span className="so-option-text">{val ? 'True' : 'False'}</span>
-            {isStudent && <span className="so-option-tag so-option-tag--student">Student</span>}
+            {isCrew && <span className="so-option-tag so-option-tag--crew">Crew Member</span>}
             {isCorrect && <span className="so-option-tag so-option-tag--correct">Correct</span>}
           </div>
         )
@@ -74,7 +74,7 @@ function TFOptions({ studentTf, correctTf }) {
   )
 }
 
-function ArrangeAnswer({ correctItems, studentItems }) {
+function ArrangeAnswer({ correctItems, crewItems }) {
   if (correctItems.length === 0) return null
   return (
     <div className="so-arrange">
@@ -87,10 +87,10 @@ function ArrangeAnswer({ correctItems, studentItems }) {
           </div>
         ))}
       </div>
-      {studentItems.length > 0 && (
+      {crewItems.length > 0 && (
         <div className="so-arrange-col">
-          <span className="so-arrange-col-label">Student's order</span>
-          {studentItems.map((item, i) => {
+          <span className="so-arrange-col-label">Crew member's order</span>
+          {crewItems.map((item, i) => {
             const ok = correctItems[i]?.id === item.id
             return (
               <div key={item.id} className={`so-arrange-item ${ok ? 'so-arrange-item--ok' : 'so-arrange-item--wrong'}`}>
@@ -117,13 +117,13 @@ function TextAnswer({ text, placeholder = 'No answer provided' }) {
   )
 }
 
-function WordAnswer({ studentText, correctWord }) {
+function WordAnswer({ crewText, correctWord }) {
   return (
     <div className="so-word-answer">
       <div className="so-word-row">
-        <span className="so-word-label">Student wrote</span>
-        <span className="so-word-value so-word-value--student">
-          {studentText || <em style={{ color: 'var(--text-3)' }}>—</em>}
+        <span className="so-word-label">Crew member wrote</span>
+        <span className="so-word-value so-word-value--crew">
+          {crewText || <em style={{ color: 'var(--text-3)' }}>—</em>}
         </span>
       </div>
       <div className="so-word-row">
@@ -159,10 +159,10 @@ export function AnswerBody({ resolved, unanswered }) {
     )
   }
 
-  if (type === 'mcq')    return <MCQOptions options={resolved.options} studentOptIds={resolved.studentOptIds} correctOptIds={resolved.correctOptIds} />
-  if (type === 'tf')     return <TFOptions studentTf={resolved.studentTf} correctTf={resolved.correctTf} />
-  if (type === 'arrange') return <ArrangeAnswer correctItems={resolved.correctItems} studentItems={resolved.studentItems} />
+  if (type === 'mcq')    return <MCQOptions options={resolved.options} crewOptIds={resolved.crewOptIds} correctOptIds={resolved.correctOptIds} />
+  if (type === 'tf')     return <TFOptions crewTf={resolved.crewTf} correctTf={resolved.correctTf} />
+  if (type === 'arrange') return <ArrangeAnswer correctItems={resolved.correctItems} crewItems={resolved.crewItems} />
   if (type === 'word' || type === 'gap_fill')
-    return <WordAnswer studentText={resolved.studentText} correctWord={resolved.correctWord} />
-  return <TextAnswer text={resolved.studentText} />
+    return <WordAnswer crewText={resolved.crewText} correctWord={resolved.correctWord} />
+  return <TextAnswer text={resolved.crewText} />
 }

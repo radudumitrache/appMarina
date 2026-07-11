@@ -1,10 +1,10 @@
 ﻿import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { getModule, getPanels, getAnchorInteractions, recordAnchorInteraction } from '../../api/modules'
-import ModuleTopBar from '../../components/student/module-reader/ModuleTopBar'
-import VRPanel from '../../components/student/module-reader/VRPanel'
-import TextPanel from '../../components/student/module-reader/TextPanel'
-import '../css/student/ModuleReader.css'
+import ModuleTopBar from '../../components/crew/module-reader/ModuleTopBar'
+import VRPanel from '../../components/crew/module-reader/VRPanel'
+import TextPanel from '../../components/crew/module-reader/TextPanel'
+import '../css/crew/ModuleReader.css'
 
 function vec3ToLonLat(px, py, pz) {
   const r  = Math.sqrt(px * px + py * py + pz * pz) || 1

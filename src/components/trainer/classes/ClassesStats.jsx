@@ -8,7 +8,7 @@ export default function ClassesStats({ totalClasses, totalStudents, activeCount,
         <span className="stat-value">{totalClasses}</span>
       </div>
       <div className="stat-card">
-        <span className="stat-label">Total Students</span>
+        <span className="stat-label">Total Crew Members</span>
         <span className="stat-value">{totalStudents}</span>
       </div>
       <div className="stat-card">

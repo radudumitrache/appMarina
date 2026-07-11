@@ -69,7 +69,7 @@ export default function QuestionCard({ q, index, onUpdate, onDelete }) {
       )}
 
       {q.type === 'short' && (
-        <div className="tb-short-hint">Students type a free-text response.</div>
+        <div className="tb-short-hint">Crew members type a free-text response.</div>
       )}
 
       {q.type === 'arrange' && (

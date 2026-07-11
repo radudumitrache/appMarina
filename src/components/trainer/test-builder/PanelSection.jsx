@@ -263,7 +263,7 @@ function ExerciseCard({ exercise, panelId, testId, departmentId, index, onUpdate
       )}
 
       {exercise.type === 'short' && (
-        <div className="tb-short-hint">Students type a free-text response.</div>
+        <div className="tb-short-hint">Crew members type a free-text response.</div>
       )}
 
       {exercise.type === 'argument' && (
@@ -271,7 +271,7 @@ function ExerciseCard({ exercise, panelId, testId, departmentId, index, onUpdate
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
           </svg>
-          Students write a long-form argument or composition in response to the prompt above.
+          Crew members write a long-form argument or composition in response to the prompt above.
         </div>
       )}
 
@@ -583,7 +583,7 @@ function LocalizationCard({ anchor, panelId, testId, departmentId, onReload, can
         value={textLocal}
         departmentId={departmentId}
         onBlur={handleTextBlur}
-        placeholder="What should the student locate?..."
+        placeholder="What should the crew member locate?..."
       />
       <div className="tb-anchor-points">
         <span className="tb-anchor-points-label">Polygon points ({points.length})</span>

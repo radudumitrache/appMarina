@@ -21,7 +21,7 @@
   color: var(--text-3);
 }
 
-.tp-col--student  { flex: 2;   min-width: 0; }
+.tp-col--crew  { flex: 2;   min-width: 0; }
 .tp-col--class    { flex: 1.5; min-width: 0; }
 .tp-col--progress { flex: 1.8; min-width: 120px; }
 .tp-col--modules   { width: 70px;  flex-shrink: 0; text-align: center; }
@@ -134,9 +134,9 @@
 .tp-row--completed:hover   { border-left-color: var(--success); }
 .tp-row--awarded:hover     { border-left-color: #a78bfa; }
 
-/* ── Student cell ────────────────────────────────────────────────── */
+/* ── Crew cell ────────────────────────────────────────────────── */
 
-.tp-student-cell {
+.tp-crew-cell {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -160,14 +160,14 @@
   border: 1px solid rgba(217, 160, 48, 0.2);
 }
 
-.tp-student-info {
+.tp-crew-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
 
-.tp-student-name {
+.tp-crew-name {
   font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 600;
@@ -177,7 +177,7 @@
   text-overflow: ellipsis;
 }
 
-.tp-student-sub {
+.tp-crew-sub {
   font-family: var(--font-ui);
   font-size: 11px;
   color: var(--text-3);

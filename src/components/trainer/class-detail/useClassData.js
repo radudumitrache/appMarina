@@ -1,10 +1,10 @@
-﻿import { useState, useEffect } from 'react'
-import { getDepartment, getClassStudents, getClassModules, getAnnouncements } from '../../../api/departments'
+import { useState, useEffect } from 'react'
+import { getDepartment, getClassCrew, getClassModules, getAnnouncements } from '../../../api/departments'
 import { getTests } from '../../../api/tests'
 
 export function useClassData(id) {
   const [cls,           setCls]           = useState(null)
-  const [students,      setStudents]      = useState([])
+  const [crew,          setCrew]          = useState([])
   const [modules,       setModules]       = useState([])
   const [tests,         setTests]         = useState([])
   const [announcements, setAnnouncements] = useState([])
@@ -13,19 +13,19 @@ export function useClassData(id) {
   useEffect(() => {
     Promise.all([
       getDepartment(id),
-      getClassStudents(id),
+      getClassCrew(id),
       getClassModules(id),
       getTests({ class: id }),
       getAnnouncements(id),
-    ]).then(([clsRes, stuRes, modRes, testRes, annRes]) => {
+    ]).then(([clsRes, crewRes, modRes, testRes, annRes]) => {
       setCls(clsRes.data)
       setAnnouncements(annRes.data)
 
-      setStudents(stuRes.data.map(e => ({
-        id:                e.student,
-        initials:          (e.student_name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
-        name:              e.student_name,
-        email:             e.student_email,
+      setCrew(crewRes.data.map(e => ({
+        id:                e.crew,
+        initials:          (e.crew_name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+        name:              e.crew_name,
+        email:             e.crew_email,
         done:              e.modules_done ?? 0,
         testsTotal:        e.tests_total  ?? 0,
         testsDone:         e.tests_done   ?? 0,
@@ -42,8 +42,8 @@ export function useClassData(id) {
         num:      String(i + 1).padStart(2, '0'),
         title:    cl.module_detail?.title ?? '--',
         duration: cl.module_detail?.duration_minutes ? `${cl.module_detail.duration_minutes} min` : '--',
-        completed:      Math.round((cl.completion_pct / 100) * (clsRes.data.student_count || 0)),
-        total:          clsRes.data.student_count || 0,
+        completed:      Math.round((cl.completion_pct / 100) * (clsRes.data.crew_count || 0)),
+        total:          clsRes.data.crew_count || 0,
       })))
 
       setTests(testRes.data)
@@ -81,7 +81,7 @@ export function useClassData(id) {
 
   return {
     cls, setCls,
-    students, modules, tests, announcements,
+    crew, modules, tests, announcements,
     loading,
     handleModuleUpdate,
     handleTestCreated,

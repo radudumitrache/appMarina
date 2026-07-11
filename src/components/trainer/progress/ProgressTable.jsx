@@ -10,41 +10,41 @@ const STATUS_META = {
 }
 
 export default function ProgressTable({
-  students, allVisible = [], filteredCount, totalCount, onSelect, selectedId,
+  crew, allVisible = [], filteredCount, totalCount, onSelect, selectedId,
   page, pageSize, totalPages, onPageChange, onPageSizeChange,
   busyIds = new Set(), onAward, onRevoke, onBulkAward, onBulkRevoke,
 }) {
-  const completedStudents  = allVisible.filter(s => s.status === 'completed')
-  const incompleteStudents = allVisible.filter(s => s.status === 'awarded' && s.coursesDone < s.coursesTotal)
+  const completedCrew  = allVisible.filter(s => s.status === 'completed')
+  const incompleteCrew = allVisible.filter(s => s.status === 'awarded' && s.coursesDone < s.coursesTotal)
 
   return (
     <>
       {/* ── Bulk actions ─────────────────────────────────────────── */}
-      {(completedStudents.length > 0 || incompleteStudents.length > 0) && (
+      {(completedCrew.length > 0 || incompleteCrew.length > 0) && (
         <div className="tp-bulk-bar">
-          {completedStudents.length > 0 && (
+          {completedCrew.length > 0 && (
             <button
               className="tp-bulk-btn tp-bulk-btn--award"
-              onClick={() => onBulkAward(completedStudents)}
+              onClick={() => onBulkAward(completedCrew)}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="8" r="6"/>
                 <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
               </svg>
-              Award completed ({completedStudents.length})
+              Award completed ({completedCrew.length})
             </button>
           )}
-          {incompleteStudents.length > 0 && (
+          {incompleteCrew.length > 0 && (
             <button
               className="tp-bulk-btn tp-bulk-btn--revoke"
-              onClick={() => onBulkRevoke(incompleteStudents)}
+              onClick={() => onBulkRevoke(incompleteCrew)}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="8" r="6"/>
                 <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
                 <line x1="4" y1="4" x2="20" y2="20"/>
               </svg>
-              Revoke awarded incomplete ({incompleteStudents.length})
+              Revoke awarded incomplete ({incompleteCrew.length})
             </button>
           )}
         </div>
@@ -52,7 +52,7 @@ export default function ProgressTable({
 
       <div className="tp-table-wrap">
         <div className="tp-table-head">
-          <span className="tp-col tp-col--student">Student</span>
+          <span className="tp-col tp-col--crew">Crew Member</span>
           <span className="tp-col tp-col--class">Department</span>
           <span className="tp-col tp-col--progress">Progress</span>
           <span className="tp-col tp-col--modules">Items</span>
@@ -60,10 +60,10 @@ export default function ProgressTable({
           <span className="tp-col tp-col--action-hd" />
         </div>
 
-        {students.length === 0 ? (
-          <p className="tp-empty">No students match your filters.</p>
+        {crew.length === 0 ? (
+          <p className="tp-empty">No crew match your filters.</p>
         ) : (
-          students.map((s, i) => {
+          crew.map((s, i) => {
             const pct      = s.coursesTotal > 0 ? Math.round((s.coursesDone / s.coursesTotal) * 100) : 0
             const sm       = STATUS_META[s.status] ?? STATUS_META['to-begin']
             const fillCls  = s.status === 'completed' || s.status === 'awarded' ? 'tp-bar-fill--complete' : ''
@@ -77,12 +77,12 @@ export default function ProgressTable({
                 style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
                 onClick={() => onSelect(s)}
               >
-                {/* Student */}
-                <div className="tp-col tp-col--student tp-student-cell">
+                {/* Crew Member */}
+                <div className="tp-col tp-col--crew tp-crew-cell">
                   <div className="tp-avatar">{s.initials}</div>
-                  <div className="tp-student-info">
-                    <span className="tp-student-name">{s.name}</span>
-                    <span className="tp-student-sub">Last active: {s.lastActive}</span>
+                  <div className="tp-crew-info">
+                    <span className="tp-crew-name">{s.name}</span>
+                    <span className="tp-crew-sub">Last active: {s.lastActive}</span>
                   </div>
                 </div>
 

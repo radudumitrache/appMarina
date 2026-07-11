@@ -52,7 +52,7 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
           <div className="form-row">
             <label className="form-label">Role</label>
             <div className="form-radio-group">
-              {(isSuperAdmin ? ['student', 'trainer', 'admin'] : ['student', 'trainer']).map(r => (
+              {(isSuperAdmin ? ['crew', 'trainer', 'admin'] : ['crew', 'trainer']).map(r => (
                 <label
                   key={r}
                   className={`form-radio ${form.role === r ? 'form-radio--active' : ''}`}
@@ -83,7 +83,7 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
             />
           </div>
 
-          {/* ── Crew ID (students and trainers only) ── */}
+          {/* ── Crew ID (crew members and trainers only) ── */}
           {form.role !== 'admin' && (
             <div className="form-row">
               <label className="form-label">

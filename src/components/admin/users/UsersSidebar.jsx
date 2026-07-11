@@ -3,7 +3,7 @@ import { useAuth } from '../../../auth/AuthContext'
 
 const BASE_ROLES = [
   { id: 'all',     label: 'All Users' },
-  { id: 'student', label: 'Students'  },
+  { id: 'crew', label: 'Crew Members'  },
   { id: 'trainer', label: 'trainers'  },
 ]
 const ADMIN_ROLE = { id: 'admin', label: 'Admins' }
@@ -93,12 +93,12 @@ export default function UsersSidebar({ roleFilter, onRoleFilterChange, counts, c
         <div className="users-sidebar-stat-bar">
           <div
             className="users-sidebar-stat-fill"
-            style={{ width: `${counts.all ? (counts.student / counts.all) * 100 : 0}%` }}
+            style={{ width: `${counts.all ? (counts.crew / counts.all) * 100 : 0}%` }}
           />
         </div>
         <span className="users-sidebar-stat-text">
-          <span className="users-sidebar-stat-num">{counts.student}</span>
-          {' '}students /{' '}
+          <span className="users-sidebar-stat-num">{counts.crew}</span>
+          {' '}crew members /{' '}
           <span className="users-sidebar-stat-num">{counts.trainer}</span>
           {' '}trainers
         </span>

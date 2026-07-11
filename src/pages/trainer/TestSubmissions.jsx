@@ -16,12 +16,12 @@ function GradeBadge({ grade }) {
   return                    <span className="ts-grade-badge ts-grade--low">{pct}%</span>
 }
 
-function groupByStudent(submissions) {
+function groupByCrew(submissions) {
   const map = new Map()
   for (const s of submissions) {
-    const key = s.student_email ?? s.student_name ?? String(s.id)
+    const key = s.crew_email ?? s.crew_name ?? String(s.id)
     if (!map.has(key)) {
-      map.set(key, { name: s.student_name, email: s.student_email, submissions: [] })
+      map.set(key, { name: s.crew_name, email: s.crew_email, submissions: [] })
     }
     map.get(key).submissions.push(s)
   }
@@ -33,7 +33,7 @@ function groupByStudent(submissions) {
   return [...map.values()].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
 }
 
-function StudentGroup({ group, testId, testTitle, index }) {
+function CrewGroup({ group, testId, testTitle, index }) {
   const navigate   = useNavigate()
   const [open, setOpen] = useState(false)
 
@@ -47,9 +47,9 @@ function StudentGroup({ group, testId, testTitle, index }) {
       <div className="ts-group-header" onClick={() => setOpen(o => !o)}>
         <div className="ts-avatar">{initials}</div>
 
-        <div className="ts-student-info">
-          <span className="ts-student-name">{group.name}</span>
-          <span className="ts-student-email">{group.email}</span>
+        <div className="ts-crew-info">
+          <span className="ts-crew-name">{group.name}</span>
+          <span className="ts-crew-email">{group.email}</span>
         </div>
 
         <div className="ts-group-meta">
@@ -112,8 +112,8 @@ export default function TestSubmissions() {
       .finally(() => setLoading(false))
   }, [testId])
 
-  const groups       = groupByStudent(submissions)
-  const studentCount = groups.length
+  const groups       = groupByCrew(submissions)
+  const crewCount = groups.length
   const pendingCount = submissions.filter(s => s.grade == null).length
 
   return (
@@ -133,7 +133,7 @@ export default function TestSubmissions() {
         <div className="ts-header">
           <h1 className="ts-title">{testTitle}</h1>
           <span className="ts-meta">
-            {studentCount} student{studentCount !== 1 ? 's' : ''}
+            {crewCount} crew member{crewCount !== 1 ? 's' : ''}
             {' · '}
             {submissions.length} submission{submissions.length !== 1 ? 's' : ''}
             {pendingCount > 0 && ` · ${pendingCount} pending review`}
@@ -149,7 +149,7 @@ export default function TestSubmissions() {
         ) : (
           <div className="ts-list">
             {groups.map((group, i) => (
-              <StudentGroup
+              <CrewGroup
                 key={group.email ?? group.name}
                 group={group}
                 testId={testId}

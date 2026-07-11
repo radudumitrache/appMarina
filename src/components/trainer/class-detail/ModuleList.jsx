@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ModuleEditModal from '../course-builder/ModuleEditModal'
-import '../../css/trainer/class-detail/StudentList.css'
+import '../../css/trainer/class-detail/CrewList.css'
 
 export default function ModuleList({ modules, departmentId, onRemove, onUpdate }) {
   const navigate = useNavigate()

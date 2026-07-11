@@ -88,7 +88,7 @@
 }
 
 .vrloc-dot--correct { background: #2ec77a; }
-.vrloc-dot--student { background: #e05252; }
+.vrloc-dot--crew { background: #e05252; }
 
 /* ── Loading overlay ────────────────────────────────────────────── */
 .vrloc-loader {

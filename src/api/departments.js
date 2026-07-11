@@ -7,9 +7,9 @@ export const getDepartment           = (id)             => api.get(`/departments
 export const updateDepartment        = (id, data)       => api.patch(`/departments/${id}/`, data)
 export const deleteDepartment        = (id)             => api.delete(`/departments/${id}/`)
 
-export const getClassStudents    = (id)             => api.get(`/departments/${id}/students/`)
-export const enrollStudent       = (id, identifier) => api.post(`/departments/${id}/students/`, identifier)
-export const removeStudent       = (id, uid)        => api.delete(`/departments/${id}/students/${uid}/`)
+export const getClassCrew        = (id)             => api.get(`/departments/${id}/crew/`)
+export const enrollCrew          = (id, identifier) => api.post(`/departments/${id}/crew/`, identifier)
+export const removeCrew          = (id, uid)        => api.delete(`/departments/${id}/crew/${uid}/`)
 
 export const getClassModules     = (id)             => api.get(`/departments/${id}/modules/`)
 export const assignModule        = (id, data)       => api.post(`/departments/${id}/modules/`, data)

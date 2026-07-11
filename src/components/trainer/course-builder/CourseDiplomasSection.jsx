@@ -1,11 +1,11 @@
 ﻿import { useState, useEffect } from 'react'
 import DiplomasTab from '../class-detail/DiplomasTab'
-import { getCourseDiplomas, getClassStudents, getClassCourseProgress } from '../../../api/departments'
+import { getCourseDiplomas, getClassCrew, getClassCourseProgress } from '../../../api/departments'
 import { getCourses } from '../../../api/modules'
 
 export default function CourseDiplomasSection({ courseId, departmentIds = [], composing, onComposeDone }) {
   const [diplomas,           setDiplomas]           = useState([])
-  const [students,           setStudents]           = useState([])
+  const [crew,           setCrew]           = useState([])
   const [courses,            setCourses]            = useState([])
   const [completedStudentIds, setCompletedStudentIds] = useState(new Set())
   const [loading,            setLoading]            = useState(true)
@@ -15,7 +15,7 @@ export default function CourseDiplomasSection({ courseId, departmentIds = [], co
     setLoading(true)
     const reqs = [getCourseDiplomas(courseId)]
     if (departmentIds.length) {
-      reqs.push(Promise.all(departmentIds.map(id => getClassStudents(id))))
+      reqs.push(Promise.all(departmentIds.map(id => getClassCrew(id))))
       reqs.push(Promise.all(departmentIds.map(id => getClassCourseProgress(id, courseId))))
     }
     Promise.all(reqs).then(([dipRes, stuResList, progResList]) => {
@@ -24,15 +24,15 @@ export default function CourseDiplomasSection({ courseId, departmentIds = [], co
         const merged = new Map()
         for (const stuRes of stuResList) {
           for (const e of stuRes.data) {
-            merged.set(e.student, { id: e.student, name: e.student_name, email: e.student_email })
+            merged.set(e.crew, { id: e.crew, name: e.crew_name, email: e.crew_email })
           }
         }
-        setStudents(Array.from(merged.values()))
+        setCrew(Array.from(merged.values()))
       }
       if (progResList) {
         const finished = new Set()
         for (const progRes of progResList) {
-          const { modules, students: progStudents } = progRes.data
+          const { modules, crew: progCrew } = progRes.data
           const totalModules = modules.length
           for (const s of progStudents) {
             if (totalModules > 0 && s.completed.length === totalModules) finished.add(s.id)
@@ -75,7 +75,7 @@ export default function CourseDiplomasSection({ courseId, departmentIds = [], co
       courseId={courseId}
       classId={departmentIds[0] ?? null}
       diplomas={diplomas}
-      students={students}
+      crew={crew}
       courses={courses}
       completedStudentIds={completedStudentIds}
       composing={composing}

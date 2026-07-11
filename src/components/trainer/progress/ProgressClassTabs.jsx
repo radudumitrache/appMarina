@@ -1,14 +1,14 @@
 ﻿import '../../css/trainer/progress/ProgressClassTabs.css'
 
-export default function ProgressClassTabs({ departments, students, departmentFilter, onDepartmentChange }) {
+export default function ProgressClassTabs({ departments, crew, departmentFilter, onDepartmentChange }) {
   return (
     <aside className="tp-class-sidebar">
       <div className="tp-class-sidebar-title">Departments</div>
 
       {departments.map(c => {
         const count  = c.id === 'all'
-          ? students.length
-          : students.filter(s => s.departmentId === c.id).length
+          ? crew.length
+          : crew.filter(s => s.departmentId === c.id).length
         const active = departmentFilter === c.id
 
         if (c.id === 'all') {

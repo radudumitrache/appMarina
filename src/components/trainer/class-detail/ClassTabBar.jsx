@@ -2,7 +2,7 @@
 import '../../css/trainer/class-detail/ClassTabBar.css'
 
 const TABS = [
-  { id: 'students',      label: 'Students'      },
+  { id: 'crew',      label: 'Crew Members'      },
   { id: 'modules',       label: 'Courses'       },
   { id: 'announcements', label: 'Announcements' },
 ]
@@ -22,9 +22,9 @@ export default function ClassTabBar({ tab, onTabChange, search, onSearchChange }
         ))}
       </div>
 
-      {tab === 'students' && (
+      {tab === 'crew' && (
         <div className="cd-toolbar">
-          <SearchBar value={search} onChange={onSearchChange} placeholder="Search students…" />
+          <SearchBar value={search} onChange={onSearchChange} placeholder="Search crew…" />
         </div>
       )}
     </div>

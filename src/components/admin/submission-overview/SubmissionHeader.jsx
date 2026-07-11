@@ -6,11 +6,11 @@ export default function SubmissionHeader({ submission, pendingCount }) {
 
   return (
     <div className="so-header">
-      <div className="so-header-student">
-        <div className="so-avatar">{(submission.student_name ?? '?').charAt(0)}</div>
-        <div className="so-student-info">
-          <span className="so-student-name">{submission.student_name}</span>
-          <span className="so-student-email">{submission.student_email}</span>
+      <div className="so-header-crew">
+        <div className="so-avatar">{(submission.crew_name ?? '?').charAt(0)}</div>
+        <div className="so-crew-info">
+          <span className="so-crew-name">{submission.crew_name}</span>
+          <span className="so-crew-email">{submission.crew_email}</span>
         </div>
       </div>
 

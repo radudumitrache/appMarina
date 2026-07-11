@@ -5,7 +5,7 @@ import '../css/trainer/NavBar.css'
 const LINKS = [
   { label: 'Dashboard',        slug: 'dashboard'   },
   { label: 'My Departments',   slug: 'departments' },
-  { label: 'Student Progress', slug: 'progress'    },
+  { label: 'Crew Progress', slug: 'progress'    },
   { label: 'Tests',            slug: 'assignments' },
   { label: 'Media',            slug: 'media'       },
   { label: 'Support',          slug: 'support'     },

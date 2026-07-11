@@ -19,13 +19,13 @@
   animation: fadeUp var(--duration-enter) var(--ease-default) 0.08s both;
 }
 
-/* Two-column variant (Students sidebar + Courses main) */
+/* Two-column variant (Crew sidebar + Courses main) */
 .cd-panels--two-col {
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: clamp(320px, 38%, 480px) 1fr;
   grid-template-rows: 1fr;
 }
 
-.cd-panels-students,
+.cd-panels-crew,
 .cd-panels-courses {
   min-height: 0;
   overflow: hidden;

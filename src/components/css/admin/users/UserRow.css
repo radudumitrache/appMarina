@@ -98,7 +98,7 @@
   text-transform: uppercase;
 }
 
-.role-badge--student { color: var(--accent); background: var(--accent-dim); }
+.role-badge--crew { color: var(--accent); background: var(--accent-dim); }
 .role-badge--trainer { color: var(--gold);   background: var(--gold-dim);   }
 .role-badge--admin   { color: var(--error);  background: rgba(224, 82, 82, 0.12); }
 

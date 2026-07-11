@@ -10,7 +10,7 @@ import { getOrganisations } from '../../api/organisations'
 import { getDepartments } from '../../api/departments'
 import '../css/admin/Users.css'
 
-const EMPTY_FORM = { name: '', username: '', email: '', role: 'student', password: '', organisation_id: null, crew_id: '' }
+const EMPTY_FORM = { name: '', username: '', email: '', role: 'crew', password: '', organisation_id: null, crew_id: '' }
 
 function mapUser(u) {
   const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username
@@ -19,7 +19,7 @@ function mapUser(u) {
     name: fullName,
     username: u.username,
     email: u.email,
-    role: u.profile?.role ?? 'student',
+    role: u.profile?.role ?? 'crew',
     className: '—',
     status: u.profile?.account_status === 'suspended' ? 'inactive' : 'active',
     organisation_id: u.profile?.organisation_id ?? null,
@@ -40,7 +40,7 @@ function parseCSV(raw) {
       name,
       username,
       email,
-      role: role.toLowerCase() === 'trainer' ? 'trainer' : 'student',
+      role: role.toLowerCase() === 'trainer' ? 'trainer' : 'crew',
     }
   }).filter(r => r.name && r.username && r.email)
 }
@@ -80,7 +80,7 @@ export default function Users() {
 
   const counts = {
     all:     users.length,
-    student: users.filter(u => u.role === 'student').length,
+    crew: users.filter(u => u.role === 'crew').length,
     trainer: users.filter(u => u.role === 'trainer').length,
     admin:   users.filter(u => u.role === 'admin').length,
   }
@@ -159,7 +159,7 @@ export default function Users() {
       role: form.role,
       ...(form.password && { password: form.password }),
       organisation_id: form.organisation_id,
-      ...(['student', 'trainer'].includes(form.role) && { crew_id: form.crew_id || null }),
+      ...(['crew', 'trainer'].includes(form.role) && { crew_id: form.crew_id || null }),
     }
     setSaving(true)
     setFormError('')
@@ -233,14 +233,25 @@ export default function Users() {
   }
 
   const downloadTemplate = () => {
-    const csv = 'name,username,email,role\nJohn Doe,johndoe,john@hansa360.com,student\nJane Smith,janesmith,jane@hansa360.com,trainer\n'
+    const csv = 'name,username,email,role\nJohn Doe,johndoe,john@hansa360.com,crew\nJane Smith,janesmith,jane@hansa360.com,trainer\n'
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
     a.download = 'users_template.csv'
     a.click()
   }
 
-  const sidebarLabel = roleFilter === 'student' ? 'Students'
+  const hasActiveFilters = roleFilter !== 'all' || orgFilter !== null || deptFilter !== null || search !== '' || sortKey !== 'id' || sortDir !== 'desc'
+
+  const clearFilters = () => {
+    setRoleFilter('all')
+    setOrgFilter(null)
+    setDeptFilter(null)
+    setSearch('')
+    setSortKey('id')
+    setSortDir('desc')
+  }
+
+  const sidebarLabel = roleFilter === 'crew' ? 'Crew Members'
     : roleFilter === 'trainer' ? 'trainers'
     : 'All Users'
 
@@ -279,6 +290,8 @@ export default function Users() {
               onSearchChange={setSearch}
               onImportCSV={() => setModal('csv')}
               onNewUser={openCreate}
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={clearFilters}
             />
 
             {loadError && <div className="users-load-error">{loadError}</div>}

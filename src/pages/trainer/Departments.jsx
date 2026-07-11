@@ -31,7 +31,7 @@ export default function Departments() {
     getDepartments()
       .then(({ data }) => setDepartments(data.map(dep => ({
         ...dep,
-        students:      dep.student_count,
+        crew:      dep.crew_count,
         coursesTotal:  dep.course_count,
         modulesTotal:  dep.module_count,
         modulesDone:   0,
@@ -81,7 +81,7 @@ export default function Departments() {
     setSaving(true)
     try {
       const { data } = await createDepartment(form)
-      setDepartments(prev => [{ ...data, students: data.student_count, coursesTotal: data.course_count, modulesTotal: data.module_count, modulesDone: 0 }, ...prev])
+      setDepartments(prev => [{ ...data, crew: data.crew_count, coursesTotal: data.course_count, modulesTotal: data.module_count, modulesDone: 0 }, ...prev])
       closeModal()
     } catch (err) {
       const d = err?.response?.data
@@ -95,7 +95,7 @@ export default function Departments() {
     }
   }
 
-  const totalStudents = departments.reduce((sum, c) => sum + c.student_count, 0)
+  const totalCrew = departments.reduce((sum, c) => sum + c.crew_count, 0)
   const activeCount   = departments.filter(c => c.status === 'active').length
   const avgProgress   = 0
 
@@ -110,7 +110,7 @@ export default function Departments() {
         <div className="classes-content">
           <ClassesStats
             totalClasses={departments.length}
-            totalStudents={totalStudents}
+            totalCrew={totalCrew}
             activeCount={activeCount}
             avgProgress={avgProgress}
           />

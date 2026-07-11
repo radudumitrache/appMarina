@@ -5,7 +5,7 @@ export default function ClassesStats({ stats }) {
     { label: 'Total Departments',  value: stats.total    },
     { label: 'Active',            value: stats.active   },
     { label: 'Archived',          value: stats.archived },
-    { label: 'Students Enrolled', value: stats.students },
+    { label: 'Crew Members Enrolled', value: stats.crew },
   ]
 
   return (

@@ -1,10 +1,10 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import NavBar from '../../components/trainer/NavBar'
 import ClassHeader from '../../components/trainer/class-detail/ClassHeader'
 import ClassStats from '../../components/trainer/class-detail/ClassStats'
 import ClassTabBar from '../../components/trainer/class-detail/ClassTabBar'
-import StudentList from '../../components/trainer/class-detail/StudentList'
+import CrewList from '../../components/trainer/class-detail/CrewList'
 import ModulesCoursesTab from '../../components/trainer/class-detail/ModulesCoursesTab'
 import AnnouncementsTab from '../../components/trainer/class-detail/AnnouncementsTab'
 import ClassFormModal from '../../components/trainer/classes/ClassFormModal'
@@ -16,12 +16,12 @@ import '../css/trainer/ClassDetail.css'
 
 export default function DepartmentDetail() {
   const { id } = useParams()
-  const [tab,    setTab]    = useState('students')
+  const [tab,    setTab]    = useState('crew')
   const [search, setSearch] = useState('')
 
   const {
     cls, setCls,
-    students, modules, announcements,
+    crew, modules, announcements,
     loading,
     handleModuleUpdate,
     handleAnnouncementAdded,
@@ -49,23 +49,23 @@ export default function DepartmentDetail() {
     )
   }
 
-  const totalStudents   = students.length
-  const activeStudents  = students.filter(s => s.status === 'active').length
-  const coursesTotal    = students.length > 0 ? (students[0].coursesTotal ?? 0) : (cls.course_count ?? 0)
-  const coursesDone     = students.length > 0
-    ? Math.min(...students.map(s => s.coursesDone ?? 0))
+  const totalCrew    = crew.length
+  const activeCrew   = crew.filter(s => s.status === 'active').length
+  const coursesTotal = crew.length > 0 ? (crew[0].coursesTotal ?? 0) : (cls.course_count ?? 0)
+  const coursesDone  = crew.length > 0
+    ? Math.min(...crew.map(s => s.coursesDone ?? 0))
     : 0
-  const avgProgress     = totalStudents > 0
+  const avgProgress  = totalCrew > 0
     ? Math.round(
-        students.reduce((sum, s) => {
+        crew.reduce((sum, s) => {
           const total = s.courseLessonsTotal || 0
           const done  = s.courseLessonsDone  || 0
           return sum + (total > 0 ? done / total : 0)
-        }, 0) / totalStudents * 100
+        }, 0) / totalCrew * 100
       )
     : 0
 
-  const filteredStudents = students.filter(s =>
+  const filteredCrew = crew.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase().trim()) ||
     s.email.toLowerCase().includes(search.toLowerCase().trim())
   )
@@ -85,8 +85,8 @@ export default function DepartmentDetail() {
 
           <div className="cd-content">
             <ClassStats
-              totalStudents={totalStudents}
-              activeStudents={activeStudents}
+              totalCrew={totalCrew}
+              activeCrew={activeCrew}
               avgProgress={avgProgress}
               coursesDone={coursesDone}
               coursesTotal={coursesTotal}
@@ -101,8 +101,8 @@ export default function DepartmentDetail() {
             />
 
             <div className="cd-tab-content">
-              {tab === 'students' && (
-                <StudentList students={filteredStudents} />
+              {tab === 'crew' && (
+                <CrewList crew={filteredCrew} />
               )}
               {tab === 'modules' && (
                 <ModulesCoursesTab

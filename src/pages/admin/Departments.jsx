@@ -53,7 +53,7 @@ export default function Departments() {
     total:    departments.length,
     active:   departments.filter(c => c.status === 'active').length,
     archived: departments.filter(c => c.status === 'archived').length,
-    students: departments.reduce((sum, c) => sum + (c.student_count || 0), 0),
+    crew: departments.reduce((sum, c) => sum + (c.crew_count || 0), 0),
   }
 
   const openCreate = () => { setForm(EMPTY_FORM); setFormErrors({}); setModal('create') }

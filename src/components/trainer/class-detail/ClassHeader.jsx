@@ -101,7 +101,7 @@ export default function ClassHeader({ name, code, status, onEdit, onDelete }) {
           </svg>
           <span className="cd-enroll-label">Department Code</span>
           <span className="cd-enroll-code">{code}</span>
-          <span className="cd-enroll-hint">Share this code with students so they can enroll in this department</span>
+          <span className="cd-enroll-hint">Share this code with crew members so they can enroll in this department</span>
         </div>
         <button className="cd-copy-btn" onClick={handleCopy}>
           {copied ? (

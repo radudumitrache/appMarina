@@ -1,6 +1,6 @@
 import '../../css/admin/users/UsersToolbar.css'
 
-export default function UsersToolbar({ title, filteredCount, search, onSearchChange, onImportCSV, onNewUser }) {
+export default function UsersToolbar({ title, filteredCount, search, onSearchChange, onImportCSV, onNewUser, hasActiveFilters, onClearFilters }) {
   return (
     <>
       <div className="users-head">
@@ -26,6 +26,14 @@ export default function UsersToolbar({ title, filteredCount, search, onSearchCha
       </div>
 
       <div className="users-toolbar">
+        {hasActiveFilters && (
+          <button className="users-clear-filters" onClick={onClearFilters}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Clear filters
+          </button>
+        )}
         <div className="search-wrap">
           <svg className="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/>

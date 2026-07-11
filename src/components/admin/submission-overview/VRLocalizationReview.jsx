@@ -30,10 +30,10 @@ function makeCircleSprite(color) {
   return { spr, tex }
 }
 
-export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonPoints = [], anchorPos }) {
+export default function VRLocalizationReview({ sceneUrl, crewPosStr, polygonPoints = [], anchorPos }) {
   const wrapRef    = useRef(null)
   const mountRef   = useRef(null)
-  const studentVec = useMemo(() => parseVec(studentPosStr), [studentPosStr])
+  const crewVec = useMemo(() => parseVec(crewPosStr), [crewPosStr])
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [texLoaded, setTexLoaded]       = useState(false)
 
@@ -116,9 +116,9 @@ export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonP
     }
 
     // Student marker — red dot
-    if (studentVec) {
+    if (crewVec) {
       const { spr, tex } = makeCircleSprite('rgba(224,82,82,0.95)')
-      spr.position.copy(studentVec.clone().normalize().multiplyScalar(MARKER_AT))
+      spr.position.copy(crewVec.clone().normalize().multiplyScalar(MARKER_AT))
       scene.add(spr)
       dispose.push(tex, spr.material)
     }
@@ -126,7 +126,7 @@ export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonP
     // Initial camera orientation — face the anchor or student marker
     const lookTarget = (anchorPos && (anchorPos.x || anchorPos.y || anchorPos.z))
       ? new THREE.Vector3(anchorPos.x, anchorPos.y, anchorPos.z).normalize()
-      : (studentVec ? studentVec.clone().normalize() : null)
+      : (crewVec ? crewVec.clone().normalize() : null)
 
     let lon = lookTarget ? Math.atan2(lookTarget.z, lookTarget.x) * 180 / Math.PI : 0
     let lat = lookTarget ? Math.asin(Math.max(-1, Math.min(1, lookTarget.y))) * 180 / Math.PI : 0
@@ -189,7 +189,7 @@ export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonP
       scene.clear()
       if (container.contains(el)) container.removeChild(el)
     }
-  }, [sceneUrl, polygonPoints, anchorPos, studentVec])
+  }, [sceneUrl, polygonPoints, anchorPos, crewVec])
 
   return (
     <div className="vrloc-wrap" ref={wrapRef}>
@@ -228,9 +228,9 @@ export default function VRLocalizationReview({ sceneUrl, studentPosStr, polygonP
         <span className="vrloc-legend-item">
           <span className="vrloc-dot vrloc-dot--correct" /> Correct area
         </span>
-        {studentVec ? (
+        {crewVec ? (
           <span className="vrloc-legend-item">
-            <span className="vrloc-dot vrloc-dot--student" /> Student's answer
+            <span className="vrloc-dot vrloc-dot--crew" /> Crew member's answer
           </span>
         ) : (
           <span className="vrloc-legend-item vrloc-legend-item--none">No marker placed</span>

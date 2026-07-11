@@ -1,4 +1,4 @@
-﻿import { lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { TransitionProvider } from './context/TransitionContext'
@@ -8,16 +8,16 @@ import PrivateRoute from './components/shared/PrivateRoute'
 const Landing             = lazy(() => import('./pages/Landing'))
 const Login               = lazy(() => import('./pages/Login'))
 const VRDemo              = lazy(() => import('./pages/VRDemo'))
-const StudentDashboard    = lazy(() => import('./pages/student/Dashboard'))
-const StudentModules      = lazy(() => import('./pages/student/Modules'))
-const StudentModuleReader = lazy(() => import('./pages/student/ModuleReader'))
-const StudentTests        = lazy(() => import('./pages/student/Tests'))
-const StudentTestTaker    = lazy(() => import('./pages/student/TestTaker'))
-const StudentProgress     = lazy(() => import('./pages/student/Progress'))
-const StudentTestReview   = lazy(() => import('./pages/student/TestReview'))
-const StudentMyClass      = lazy(() => import('./pages/student/MyClass'))
-const StudentSupport      = lazy(() => import('./pages/student/Support'))
-const StudentProfile      = lazy(() => import('./pages/student/Profile'))
+const CrewDashboard       = lazy(() => import('./pages/crew/Dashboard'))
+const CrewModules         = lazy(() => import('./pages/crew/Modules'))
+const CrewModuleReader    = lazy(() => import('./pages/crew/ModuleReader'))
+const CrewTests           = lazy(() => import('./pages/crew/Tests'))
+const CrewTestTaker       = lazy(() => import('./pages/crew/TestTaker'))
+const CrewProgress        = lazy(() => import('./pages/crew/Progress'))
+const CrewTestReview      = lazy(() => import('./pages/crew/TestReview'))
+const CrewMyClass         = lazy(() => import('./pages/crew/MyClass'))
+const CrewSupport         = lazy(() => import('./pages/crew/Support'))
+const CrewProfile         = lazy(() => import('./pages/crew/Profile'))
 const TrainerDashboard    = lazy(() => import('./pages/trainer/Dashboard'))
 const TrainerClasses      = lazy(() => import('./pages/trainer/Departments'))
 const TrainerClassDetail  = lazy(() => import('./pages/trainer/DepartmentDetail'))
@@ -25,7 +25,7 @@ const TrainerProgress     = lazy(() => import('./pages/trainer/Progress'))
 const TrainerTestBuilder  = lazy(() => import('./pages/trainer/TestBuilder'))
 const TrainerTests        = lazy(() => import('./pages/trainer/Tests'))
 const TrainerVRPanelEditor= lazy(() => import('./pages/trainer/VRPanelEditor'))
-const TrainerStudentProgress    = lazy(() => import('./pages/trainer/StudentProgress'))
+const TrainerCrewProgress       = lazy(() => import('./pages/trainer/CrewProgress'))
 const TrainerSubmissionOverview = lazy(() => import('./pages/trainer/SubmissionOverview'))
 const TrainerTestSubmissions    = lazy(() => import('./pages/trainer/TestSubmissions'))
 const TrainerModuleReader = lazy(() => import('./pages/trainer/ModuleReader'))
@@ -37,7 +37,7 @@ const AdminOrganisations  = lazy(() => import('./pages/admin/Organisations'))
 const AdminUsers          = lazy(() => import('./pages/admin/Users'))
 const AdminClasses        = lazy(() => import('./pages/admin/Departments'))
 const AdminClassDetail        = lazy(() => import('./pages/admin/DepartmentDetail'))
-const AdminStudentProgress    = lazy(() => import('./pages/admin/StudentProgress'))
+const AdminCrewProgress       = lazy(() => import('./pages/admin/CrewProgress'))
 const AdminSubmissionOverview = lazy(() => import('./pages/admin/SubmissionOverview'))
 const AdminMedia          = lazy(() => import('./pages/admin/Media'))
 const AdminSupport        = lazy(() => import('./pages/admin/Support'))
@@ -57,18 +57,18 @@ function PageShell() {
           <Route path="/login"   element={<Login />} />
           <Route path="/vr-demo" element={<VRDemo />} />
 
-          {/* Student */}
-          <Route path="/student/dashboard" element={<PrivateRoute allowedRoles={['student']}><StudentDashboard /></PrivateRoute>} />
-          <Route path="/student/modules"      element={<PrivateRoute allowedRoles={['student']}><StudentModules /></PrivateRoute>} />
-          <Route path="/student/modules/:id" element={<PrivateRoute allowedRoles={['student']}><StudentModuleReader /></PrivateRoute>} />
-          <Route path="/student/tests/:id" element={<PrivateRoute allowedRoles={['student']}><StudentTestTaker /></PrivateRoute>} />
-          <Route path="/student/tests"     element={<Navigate to="/student/modules" replace />} />
-          <Route path="/student/progress"  element={<PrivateRoute allowedRoles={['student']}><StudentProgress /></PrivateRoute>} />
-          <Route path="/student/tests/:id/review" element={<PrivateRoute allowedRoles={['student']}><StudentTestReview /></PrivateRoute>} />
-          <Route path="/student/submissions/:submissionId/review" element={<PrivateRoute allowedRoles={['student']}><StudentTestReview /></PrivateRoute>} />
-          <Route path="/student/my-class"  element={<PrivateRoute allowedRoles={['student']}><StudentMyClass /></PrivateRoute>} />
-          <Route path="/student/support"   element={<PrivateRoute allowedRoles={['student']}><StudentSupport /></PrivateRoute>} />
-          <Route path="/student/profile"   element={<PrivateRoute allowedRoles={['student']}><StudentProfile /></PrivateRoute>} />
+          {/* Crew */}
+          <Route path="/crew/dashboard" element={<PrivateRoute allowedRoles={['crew']}><CrewDashboard /></PrivateRoute>} />
+          <Route path="/crew/modules"      element={<PrivateRoute allowedRoles={['crew']}><CrewModules /></PrivateRoute>} />
+          <Route path="/crew/modules/:id" element={<PrivateRoute allowedRoles={['crew']}><CrewModuleReader /></PrivateRoute>} />
+          <Route path="/crew/tests/:id" element={<PrivateRoute allowedRoles={['crew']}><CrewTestTaker /></PrivateRoute>} />
+          <Route path="/crew/tests"     element={<Navigate to="/crew/modules" replace />} />
+          <Route path="/crew/progress"  element={<PrivateRoute allowedRoles={['crew']}><CrewProgress /></PrivateRoute>} />
+          <Route path="/crew/tests/:id/review" element={<PrivateRoute allowedRoles={['crew']}><CrewTestReview /></PrivateRoute>} />
+          <Route path="/crew/submissions/:submissionId/review" element={<PrivateRoute allowedRoles={['crew']}><CrewTestReview /></PrivateRoute>} />
+          <Route path="/crew/my-class"  element={<PrivateRoute allowedRoles={['crew']}><CrewMyClass /></PrivateRoute>} />
+          <Route path="/crew/support"   element={<PrivateRoute allowedRoles={['crew']}><CrewSupport /></PrivateRoute>} />
+          <Route path="/crew/profile"   element={<PrivateRoute allowedRoles={['crew']}><CrewProfile /></PrivateRoute>} />
 
           {/* Trainer */}
           <Route path="/trainer/dashboard"    element={<PrivateRoute allowedRoles={['trainer']}><TrainerDashboard /></PrivateRoute>} />
@@ -79,7 +79,7 @@ function PageShell() {
           <Route path="/trainer/assignments"  element={<PrivateRoute allowedRoles={['trainer']}><TrainerTestBuilder /></PrivateRoute>} />
           <Route path="/trainer/assignments/:testId/panels/:panelId/vr" element={<PrivateRoute allowedRoles={['trainer', 'admin']}><TrainerVRPanelEditor /></PrivateRoute>} />
           <Route path="/trainer/modules/:id"        element={<PrivateRoute allowedRoles={['trainer']}><TrainerModuleReader /></PrivateRoute>} />
-          <Route path="/trainer/students/:studentId/progress" element={<PrivateRoute allowedRoles={['trainer']}><TrainerStudentProgress /></PrivateRoute>} />
+          <Route path="/trainer/crew/:crewId/progress" element={<PrivateRoute allowedRoles={['trainer']}><TrainerCrewProgress /></PrivateRoute>} />
           <Route path="/trainer/tests/:testId/submissions"    element={<PrivateRoute allowedRoles={['trainer']}><TrainerTestSubmissions /></PrivateRoute>} />
           <Route path="/trainer/submissions/:submissionId"   element={<PrivateRoute allowedRoles={['trainer']}><TrainerSubmissionOverview /></PrivateRoute>} />
           <Route path="/trainer/media"        element={<PrivateRoute allowedRoles={['trainer']}><TrainerMedia /></PrivateRoute>} />
@@ -93,7 +93,7 @@ function PageShell() {
           <Route path="/admin/modules/:id/panels" element={<PrivateRoute allowedRoles={['admin']}><AdminModulePanelEditor /></PrivateRoute>} />
           <Route path="/admin/departments"        element={<PrivateRoute allowedRoles={['admin']}><AdminClasses /></PrivateRoute>} />
           <Route path="/admin/departments/:id"    element={<PrivateRoute allowedRoles={['admin']}><AdminClassDetail /></PrivateRoute>} />
-          <Route path="/admin/students/:studentId/progress" element={<PrivateRoute allowedRoles={['admin']}><AdminStudentProgress /></PrivateRoute>} />
+          <Route path="/admin/crew/:crewId/progress" element={<PrivateRoute allowedRoles={['admin']}><AdminCrewProgress /></PrivateRoute>} />
           <Route path="/admin/submissions/:submissionId"   element={<PrivateRoute allowedRoles={['admin']}><AdminSubmissionOverview /></PrivateRoute>} />
           <Route path="/admin/courses"        element={<PrivateRoute allowedRoles={['admin']}><AdminCourses /></PrivateRoute>} />
           <Route path="/admin/courses/:id"    element={<PrivateRoute allowedRoles={['admin']}><AdminCourseDetail /></PrivateRoute>} />

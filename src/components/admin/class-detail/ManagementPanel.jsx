@@ -18,7 +18,7 @@ function PlusIcon() {
   )
 }
 
-function StudentAvatar({ name }) {
+function CrewAvatar({ name }) {
   return <div className="cd-member-avatar">{name.charAt(0)}</div>
 }
 
@@ -71,17 +71,17 @@ export default function ManagementPanel({
   onRemove,
   onSelectItem,
 }) {
-  const emptyLabel = type === 'student' ? 'students enrolled'
+  const emptyLabel = type === 'crew' ? 'crew members enrolled'
     : type === 'test'   ? 'tests assigned'
     : type === 'course' ? 'courses assigned'
     : 'modules assigned'
 
-  const noMatchLabel = type === 'student' ? 'students'
+  const noMatchLabel = type === 'crew' ? 'crew members'
     : type === 'test'   ? 'tests'
     : type === 'course' ? 'courses'
     : 'modules'
 
-  const removeTitle = type === 'student' ? 'Remove student'
+  const removeTitle = type === 'crew' ? 'Remove crew member'
     : type === 'test'   ? 'Unassign test'
     : type === 'course' ? 'Unassign course'
     : 'Unassign module'
@@ -119,7 +119,7 @@ export default function ManagementPanel({
                   onMouseDown={() => onAdd(item)}
                 >
                   <PlusIcon />
-                  {type === 'student' ? item.name : item.title}
+                  {type === 'crew' ? item.name : item.title}
                 </button>
               ))}
             </div>
@@ -139,7 +139,7 @@ export default function ManagementPanel({
           <p className="cd-empty-hint">No {emptyLabel} yet.</p>
         ) : (
           items.map((item, i) => {
-            const clickable = (type === 'student' || type === 'course') && onSelectItem
+            const clickable = (type === 'crew' || type === 'course') && onSelectItem
             return (
               <div
                 key={item.id}
@@ -147,8 +147,8 @@ export default function ManagementPanel({
                 style={{ animationDelay: `${Math.min(i, 6) * 0.04}s` }}
                 onClick={clickable ? () => onSelectItem(item) : undefined}
               >
-                {type === 'student'
-                  ? <StudentAvatar name={item.name} />
+                {type === 'crew'
+                  ? <CrewAvatar name={item.name} />
                   : type === 'test'
                     ? <TestIcon />
                     : type === 'course'
@@ -156,7 +156,7 @@ export default function ManagementPanel({
                       : <ModuleIcon />
                 }
                 <span className="cd-member-name">
-                  {type === 'student' ? item.name : item.title}
+                  {type === 'crew' ? item.name : item.title}
                 </span>
                 {clickable && (
                   <svg className="cd-member-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

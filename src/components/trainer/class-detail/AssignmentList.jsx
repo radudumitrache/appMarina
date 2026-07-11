@@ -1,4 +1,4 @@
-﻿import '../../css/trainer/class-detail/StudentList.css'
+﻿import '../../css/trainer/class-detail/CrewList.css'
 
 export default function AssignmentList({ assignments }) {
   return (

@@ -5,7 +5,7 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-const ROLE_LABEL = { student: 'Student', trainer: 'trainer' }
+const ROLE_LABEL = { crew: 'Crew Member', trainer: 'Trainer' }
 
 export default function TicketsTable({ tickets, selectedId, onSelect }) {
   if (tickets.length === 0) {

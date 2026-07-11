@@ -15,20 +15,20 @@ function initials(name) {
 
 // ── Diploma quick-award modal ──────────────────────────────────────────────
 
-function DiplomaModal({ departmentId, student, diplomas, onClose, onDiplomasChange }) {
+function DiplomaModal({ departmentId, crewMember, diplomas, onClose, onDiplomasChange }) {
   const [busy, setBusy]   = useState(false)
   const [err,  setErr]    = useState(null)
 
   async function toggle(diploma) {
-    const awarded = diploma.recipients.some(r => r.id === student.id)
+    const awarded = diploma.recipients.some(r => r.id === crewMember.id)
     setBusy(true); setErr(null)
     try {
       let updated
       if (awarded) {
-        await revokeDiploma(departmentId, diploma.id, student.id)
-        updated = { ...diploma, recipients: diploma.recipients.filter(r => r.id !== student.id), recipient_count: diploma.recipient_count - 1 }
+        await revokeDiploma(departmentId, diploma.id, crewMember.id)
+        updated = { ...diploma, recipients: diploma.recipients.filter(r => r.id !== crewMember.id), recipient_count: diploma.recipient_count - 1 }
       } else {
-        const { data } = await awardDiploma(departmentId, diploma.id, { student_ids: [student.id] })
+        const { data } = await awardDiploma(departmentId, diploma.id, { crew_ids: [crewMember.id] })
         updated = data
       }
       onDiplomasChange(prev => prev.map(d => d.id === updated.id ? updated : d))
@@ -42,7 +42,7 @@ function DiplomaModal({ departmentId, student, diplomas, onClose, onDiplomasChan
         <div className="acp-modal-hd">
           <div>
             <div className="acp-modal-title">Grant Diploma</div>
-            <div className="acp-modal-sub">{student.name}</div>
+            <div className="acp-modal-sub">{crewMember.name}</div>
           </div>
           <button className="acp-modal-close" onClick={onClose} disabled={busy}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -55,7 +55,7 @@ function DiplomaModal({ departmentId, student, diplomas, onClose, onDiplomasChan
           {diplomas.length === 0
             ? <p className="acp-modal-empty">No diplomas for this department yet.</p>
             : diplomas.map(d => {
-                const awarded = d.recipients.some(r => r.id === student.id)
+                const awarded = d.recipients.some(r => r.id === crewMember.id)
                 return (
                   <div key={d.id} className={`acp-dip-row${awarded ? ' acp-dip-row--awarded' : ''}`}>
                     <div className="acp-dip-info">
@@ -93,8 +93,8 @@ function ProgressTable({ data, loading, diplomas, onAwardStudent }) {
   if (loading) return <p className="acp-cl-empty">Loading progress…</p>
   if (!data)   return <p className="acp-cl-empty">Could not load progress.</p>
 
-  const { items, students } = data
-  if (!students?.length) return <p className="acp-cl-empty">No enrolled students.</p>
+  const { items, crew } = data
+  if (!crew?.length) return <p className="acp-cl-empty">No enrolled crew members.</p>
   if (!items?.length)    return <p className="acp-cl-empty">This course has no items yet.</p>
 
   return (
@@ -103,7 +103,7 @@ function ProgressTable({ data, loading, diplomas, onAwardStudent }) {
         <table className="acp-ptable">
           <thead>
             <tr>
-              <th className="acp-pth acp-pth--student">Student</th>
+              <th className="acp-pth acp-pth--crew">Crew Member</th>
               {items.map((item, i) => (
                 <th key={`${item.type}-${item.id}`} className={`acp-pth acp-pth--item${item.type === 'test' ? ' acp-pth--test' : ''}`}>
                   <span className="acp-pth-num">{i + 1}</span>
@@ -119,7 +119,7 @@ function ProgressTable({ data, loading, diplomas, onAwardStudent }) {
             </tr>
           </thead>
           <tbody>
-            {students.map(s => {
+            {crew.map(s => {
               const completedModules = new Set(s.module_completed ?? [])
               const testGrades       = s.test_grades ?? {}
               let done = 0
@@ -133,7 +133,7 @@ function ProgressTable({ data, loading, diplomas, onAwardStudent }) {
 
               return (
                 <tr key={s.id} className={`acp-ptr${allDone ? ' acp-ptr--done' : ''}`}>
-                  <td className="acp-ptd acp-ptd--student">
+                  <td className="acp-ptd acp-ptd--crew">
                     <div className={`acp-ptavatar${allDone ? ' acp-ptavatar--done' : ''}`}>{initials(s.name)}</div>
                     <span className="acp-pt-name">{s.name}</span>
                   </td>
@@ -505,7 +505,7 @@ export default function AdminCoursesPanel({ departmentId }) {
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
                       </svg>
-                      Student Progress
+                      Crew Progress
                     </button>
                   </div>
 
@@ -687,7 +687,7 @@ export default function AdminCoursesPanel({ departmentId }) {
       {awardTarget && (
         <DiplomaModal
           departmentId={departmentId}
-          student={awardTarget}
+          crewMember={awardTarget}
           diplomas={diplomas}
           onClose={() => setAwardTarget(null)}
           onDiplomasChange={setDiplomas}

@@ -1,6 +1,6 @@
 ﻿import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../../auth/AuthContext'
-import '../../css/trainer/class-detail/StudentList.css'
+import '../../css/trainer/class-detail/CrewList.css'
 
 const STATUS_MAP = {
   draft:     { label: 'Draft',     cls: 'cd-badge--draft'     },

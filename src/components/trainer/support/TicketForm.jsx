@@ -86,7 +86,7 @@ export default function TicketForm({ onSubmit }) {
             <textarea
               className="ts-textarea"
               rows={5}
-              placeholder="Describe your issue in detail. Include any error messages, affected student IDs, or steps to reproduce."
+              placeholder="Describe your issue in detail. Include any error messages, affected crew member IDs, or steps to reproduce."
               value={body}
               onChange={e => { setBody(e.target.value); setErrors(v => ({ ...v, body: '' })) }}
             />

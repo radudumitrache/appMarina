@@ -49,7 +49,7 @@ export default function ProfileCard({ profile, stats = {}, onSignOut }) {
             </div>
             <div className="tp-summary-stat">
               <span className="tp-summary-value">{stats.totalStudents ?? 'â€”'}</span>
-              <span className="tp-summary-key">Total students</span>
+              <span className="tp-summary-key">Total crew members</span>
             </div>
             <div className="tp-summary-stat">
               <span className="tp-summary-value">{stats.publishedModules ?? 'â€”'}</span>

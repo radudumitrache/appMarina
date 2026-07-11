@@ -145,3 +145,26 @@
 }
 
 .search-clear:hover { color: var(--text); }
+
+.users-clear-filters {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 10px;
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--error);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+
+.users-clear-filters:hover {
+  background: color-mix(in srgb, var(--error) 18%, transparent);
+  border-color: color-mix(in srgb, var(--error) 50%, transparent);
+}

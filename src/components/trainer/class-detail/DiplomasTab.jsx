@@ -127,7 +127,7 @@ function DiplomaFormModal({ courseId, classId, diploma, courses, onSave, onClose
             Hereby this diploma is awarded to
           </p>
           <div className="dip-cert-recipient-placeholder">
-            <span className="dip-cert-recipient-name">Student Name</span>
+            <span className="dip-cert-recipient-name">Crew Member Name</span>
           </div>
 
           <textarea
@@ -156,7 +156,7 @@ function DiplomaFormModal({ courseId, classId, diploma, courses, onSave, onClose
 
 // ── Award modal ───────────────────────────────────────────────────────────────
 
-function AwardModal({ courseId, classId, diploma, students, completedStudentIds, onUpdate, onClose }) {
+function AwardModal({ courseId, classId, diploma, crew, completedCrew MemberIds, onUpdate, onClose }) {
   const awardedIds = new Set(diploma.recipients.map(r => r.id))
   const [pending, setPending] = useState(false)
   const [error,   setError]   = useState(null)
@@ -164,33 +164,33 @@ function AwardModal({ courseId, classId, diploma, students, completedStudentIds,
 
   const q        = search.trim().toLowerCase()
   const filtered = q
-    ? students.filter(s => s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q))
-    : students
+    ? crew.filter(s => s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q))
+    : crew
 
   const awarded   = filtered.filter(s =>  awardedIds.has(s.id))
   const remaining = filtered.filter(s => !awardedIds.has(s.id))
 
-  // students who finished the course but haven't been awarded yet
-  const eligibleForBulk = students.filter(
-    s => completedStudentIds?.has(s.id) && !awardedIds.has(s.id)
+  // crew who finished the course but haven't been awarded yet
+  const eligibleForBulk = crew.filter(
+    s => completedCrew MemberIds?.has(s.id) && !awardedIds.has(s.id)
   )
 
-  async function toggle(student) {
+  async function toggle(crew) {
     setPending(true); setError(null)
     try {
       let updated
-      if (awardedIds.has(student.id)) {
+      if (awardedIds.has(crew.id)) {
         if (courseId) {
-          await revokeCourseDiploma(courseId, diploma.id, student.id)
+          await revokeCourseDiploma(courseId, diploma.id, crew.id)
         } else {
-          await revokeDiploma(classId, diploma.id, student.id)
+          await revokeDiploma(classId, diploma.id, crew.id)
         }
-        updated = { ...diploma, recipients: diploma.recipients.filter(r => r.id !== student.id) }
+        updated = { ...diploma, recipients: diploma.recipients.filter(r => r.id !== crew.id) }
         updated = { ...updated, recipient_count: updated.recipients.length }
       } else {
         const { data } = courseId
-          ? await awardCourseDiploma(courseId, diploma.id, { user_ids: [student.id] })
-          : await awardDiploma(classId, diploma.id, { student_ids: [student.id] })
+          ? await awardCourseDiploma(courseId, diploma.id, { user_ids: [crew.id] })
+          : await awardDiploma(classId, diploma.id, { crew_ids: [crew.id] })
         updated = data
       }
       onUpdate(updated)
@@ -208,7 +208,7 @@ function AwardModal({ courseId, classId, diploma, students, completedStudentIds,
       const ids = eligibleForBulk.map(s => s.id)
       const { data } = courseId
         ? await awardCourseDiploma(courseId, diploma.id, { user_ids: ids })
-        : await awardDiploma(classId, diploma.id, { student_ids: ids })
+        : await awardDiploma(classId, diploma.id, { crew_ids: ids })
       onUpdate(data)
     } catch {
       setError('Could not award all. Please try again.')
@@ -240,17 +240,17 @@ function AwardModal({ courseId, classId, diploma, students, completedStudentIds,
             </svg>
             <input
               className="dip-award-search"
-              placeholder="Search students…"
+              placeholder="Search crew…"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
           </div>
-          {completedStudentIds && eligibleForBulk.length > 0 && (
+          {completedCrew MemberIds && eligibleForBulk.length > 0 && (
             <button
               className="dip-award-all-btn"
               onClick={awardAllFinished}
               disabled={pending}
-              title={`Award ${eligibleForBulk.length} student${eligibleForBulk.length !== 1 ? 's' : ''} who completed the course`}
+              title={`Award ${eligibleForBulk.length} crew${eligibleForBulk.length !== 1 ? 's' : ''} who completed the course`}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
@@ -263,10 +263,10 @@ function AwardModal({ courseId, classId, diploma, students, completedStudentIds,
         {error && <p className="dip-form-error" style={{ padding: '0 16px' }}>{error}</p>}
 
         <div className="dip-award-body">
-          {students.length === 0 ? (
-            <p className="dip-award-empty">No enrolled students in this department.</p>
+          {crew.length === 0 ? (
+            <p className="dip-award-empty">No enrolled crew in this department.</p>
           ) : filtered.length === 0 ? (
-            <p className="dip-award-empty">No students match your search.</p>
+            <p className="dip-award-empty">No crew match your search.</p>
           ) : (
             <>
               {awarded.length > 0 && (
@@ -303,7 +303,7 @@ function AwardModal({ courseId, classId, diploma, students, completedStudentIds,
                       <div className="dip-award-avatar dip-award-avatar--inactive">{initials(s.name)}</div>
                       <div className="dip-award-info">
                         <span className="dip-award-name">{s.name}</span>
-                        {completedStudentIds?.has(s.id) && (
+                        {completedCrew MemberIds?.has(s.id) && (
                           <span className="dip-award-finished-badge">Course complete</span>
                         )}
                         <span className="dip-award-email">{s.email}</span>
@@ -330,7 +330,7 @@ function AwardModal({ courseId, classId, diploma, students, completedStudentIds,
 
 // ── Main tab ──────────────────────────────────────────────────────────────────
 
-export default function DiplomasTab({ courseId, classId, diplomas, students, courses, completedStudentIds, composing, onComposeDone, onCreated, onUpdated, onRemoved }) {
+export default function DiplomasTab({ courseId, classId, diplomas, crew, courses, completedCrew MemberIds, composing, onComposeDone, onCreated, onUpdated, onRemoved }) {
   const navigate = useNavigate()
   const [editTarget,          setEditTarget]          = useState(null)
   const [awardTarget,         setAwardTarget]         = useState(null)
@@ -363,7 +363,7 @@ export default function DiplomasTab({ courseId, classId, diplomas, students, cou
             <circle cx="12" cy="8" r="6"/>
             <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
           </svg>
-          <span>No diplomas yet — create one to award students.</span>
+          <span>No diplomas yet — create one to award crew.</span>
         </div>
       ) : (
         <div className="dip-list">
@@ -462,7 +462,7 @@ export default function DiplomasTab({ courseId, classId, diplomas, students, cou
                     <button
                       key={r.id}
                       className="dip-recipients-panel-row"
-                      onClick={() => navigate(`/trainer/students/${r.id}/progress`)}
+                      onClick={() => navigate(`/trainer/crew/${r.id}/progress`)}
                     >
                       <div className="dip-recipient-chip dip-recipient-chip--sm">{initials(r.name)}</div>
                       <div className="dip-recipients-panel-info">
@@ -510,8 +510,8 @@ export default function DiplomasTab({ courseId, classId, diplomas, students, cou
           courseId={courseId}
           classId={classId}
           diploma={awardTarget}
-          students={students}
-          completedStudentIds={completedStudentIds}
+          crew={crew}
+          completedCrew MemberIds={completedCrew MemberIds}
           onUpdate={updated => {
             onUpdated(updated)
             setAwardTarget(updated)

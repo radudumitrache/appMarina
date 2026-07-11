@@ -160,7 +160,7 @@ export default function VRPlacementPanel({
             value={locForm.text}
             departmentId={departmentId}
             onBlur={html => setLocForm(f => ({ ...f, text: html }))}
-            placeholder="What should the student locate?…"
+            placeholder="What should the crew member locate?…"
           />
           <div className="tb-add-q-actions" style={{ marginTop: 8 }}>
             <button className="tb-add-q-cancel" onClick={onCancel}>Cancel</button>

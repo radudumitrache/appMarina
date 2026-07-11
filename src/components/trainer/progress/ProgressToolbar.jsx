@@ -16,7 +16,7 @@ export default function ProgressToolbar({ search, onSearchChange, sortBy, onSort
         <input
           className="tp-search"
           type="text"
-          placeholder="Search students…"
+          placeholder="Search crew…"
           value={search}
           onChange={e => onSearchChange(e.target.value)}
         />

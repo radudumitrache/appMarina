@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { fmt } from '../../admin/student-progress/helpers'
+import { fmt } from '../../admin/crew-progress/helpers'
 
 function ChevronIcon({ open }) {
   return (
