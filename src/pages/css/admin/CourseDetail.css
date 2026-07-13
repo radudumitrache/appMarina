@@ -1100,3 +1100,29 @@
   color: var(--text-2);
   line-height: 1.6;
 }
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .crd-add-tabs {
+    flex-wrap: wrap;
+  }
+  .crd-add-tabs-create-group {
+    margin-left: 0;
+    width: 100%;
+  }
+  .crd-add-tab { flex: 1; justify-content: center; }
+  .crd-add-tabs-create-group .crd-add-tab { flex: 1; }
+
+  .crd-module-row { flex-wrap: wrap; }
+  .crd-module-goto-label { display: none; }
+  .crd-module-goto { padding: 0 8px; }
+
+  .crd-cert { padding: 28px 20px 24px; }
+  .crd-cert-anchor { width: 32px; height: 32px; }
+
+  .crd-crew-row { flex-wrap: wrap; }
+  .crd-crew-email { width: 100%; margin-left: 25px; }
+
+  .crd-diploma-actions { flex-wrap: wrap; }
+  .crd-diploma-btn { flex-basis: 33.333%; }
+}

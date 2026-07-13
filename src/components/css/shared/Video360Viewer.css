@@ -5,14 +5,16 @@
   background: #000;
   user-select: none;
   cursor: grab;
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 .v360-overlay:active { cursor: grabbing; }
 
 /* ── Close button ─────────────────────────────────────────────────────────── */
 .v360-close {
   position: absolute;
-  top: 14px;
-  right: 16px;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
   z-index: 10;
   display: flex;
   align-items: center;
@@ -38,8 +40,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+
+@media (max-width: 480px) {
+  .v360-controls { gap: 6px; padding-left: 10px; padding-right: 10px; }
+  .v360-ctrl-btn { width: 30px; height: 30px; }
 }
 
 .v360-ctrl-btn {

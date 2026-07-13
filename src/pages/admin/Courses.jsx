@@ -85,7 +85,7 @@ function CourseItemRow({ entry, index, dragOverIndex, onRemove, onNavigate, onDr
           <polyline points="15 3 21 3 21 9"/>
           <line x1="10" y1="14" x2="21" y2="3"/>
         </svg>
-        {isTest ? 'Go to test' : 'Go to module'}
+        <span className="crd-module-goto-label">{isTest ? 'Go to test' : 'Go to module'}</span>
       </button>
       <button className="crd-module-remove" onClick={() => onRemove(entry)}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -403,6 +403,7 @@ export default function Courses() {
   const [crewMap,      setCrewMap]      = useState({})
   const [loadingList,      setLoadingList]      = useState(true)
   const [loadingDetail,    setLoadingDetail]    = useState(false)
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false)
 
   // ── Sidebar UI ─────────────────────────────────────────────────────────────
   const [search,       setSearch]       = useState('')
@@ -527,6 +528,7 @@ export default function Courses() {
     setModuleSearch('')
     setTestSearch('')
     setBankOpen(false)
+    setMobileDetailOpen(true)
   }
 
   // ── Detail helpers ─────────────────────────────────────────────────────────
@@ -758,7 +760,7 @@ export default function Courses() {
       <div className="courses-adm-layout">
         <NavBar />
 
-        <div className="ca-body">
+        <div className={`ca-body${mobileDetailOpen ? ' ca-body--mobile-detail' : ''}`}>
 
           {/* ── Left sidebar ── */}
           <aside className="ca-sidebar">
@@ -848,6 +850,11 @@ export default function Courses() {
                 {/* Topbar */}
                 <div className="ca-topbar">
                   <div className="ca-topbar-left">
+                    <button className="ca-mobile-back-btn" onClick={() => setMobileDetailOpen(false)} aria-label="Back to courses">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 18 9 12 15 6"/>
+                      </svg>
+                    </button>
                     <h2 className="ca-topbar-title">{selectedCourse?.title}</h2>
                     {selectedCourse && <StatusBadge status={selectedCourse.status} />}
                   </div>

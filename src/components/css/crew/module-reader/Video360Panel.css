@@ -134,3 +134,56 @@
   text-align: center;
   margin: 0;
 }
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .v360p-page { flex-direction: column; }
+
+  .v360p-sidebar {
+    width: 100%;
+    max-height: 96px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 8px 0;
+    flex-shrink: 0;
+    overflow-y: hidden;
+  }
+
+  .v360p-panel-list {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 0 12px;
+    scrollbar-width: none;
+  }
+  .v360p-panel-list::-webkit-scrollbar { display: none; }
+  .v360p-panel-list li { flex-shrink: 0; }
+
+  .v360p-panel-btn {
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+  .v360p-panel-btn--active { border-color: var(--accent); }
+
+  .v360p-panel-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+  }
+
+  .v360p-main { padding: 20px 16px; }
+
+  .v360p-card { padding: 32px 24px; gap: 14px; }
+
+  .v360p-icon-wrap svg { width: 56px; height: 56px; }
+  .v360p-play-ring { width: 40px; height: 40px; }
+  .v360p-play-ring svg { width: 22px; height: 22px; }
+
+  .v360p-title { font-size: 17px; }
+}

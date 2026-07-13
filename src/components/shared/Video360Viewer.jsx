@@ -14,6 +14,9 @@ export default function Video360Viewer({ src, onClose }) {
   const [muted,         setMuted]         = useState(false)
   const [gyroAvailable, setGyroAvailable] = useState(false)
   const [gyroOn,        setGyroOn]        = useState(false)
+  const [fullscreenAvailable] = useState(() =>
+    typeof document !== 'undefined' && !!(document.fullscreenEnabled || document.webkitFullscreenEnabled)
+  )
   const gyroOnRef      = useRef(false)
   const progressFillRef = useRef(null)
 
@@ -280,12 +283,14 @@ export default function Video360Viewer({ src, onClose }) {
           </button>
         )}
 
-        {/* Fullscreen */}
-        <button className="v360-ctrl-btn" onClick={toggleFullscreen} title="Fullscreen">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-          </svg>
-        </button>
+        {/* Fullscreen (unsupported on iOS Safari for non-video elements) */}
+        {fullscreenAvailable && (
+          <button className="v360-ctrl-btn" onClick={toggleFullscreen} title="Fullscreen">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Click-to-play overlay when not playing */}
