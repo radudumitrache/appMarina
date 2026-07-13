@@ -12,11 +12,10 @@ export default function Video360Viewer({ src, onClose }) {
 
   const [playing,       setPlaying]       = useState(false)
   const [muted,         setMuted]         = useState(false)
-  const [progress,      setProgress]      = useState(0)
-  const [duration,      setDuration]      = useState(0)
   const [gyroAvailable, setGyroAvailable] = useState(false)
   const [gyroOn,        setGyroOn]        = useState(false)
-  const gyroOnRef = useRef(false)
+  const gyroOnRef      = useRef(false)
+  const progressFillRef = useRef(null)
 
   useEffect(() => { gyroOnRef.current = gyroOn }, [gyroOn])
 
@@ -58,7 +57,7 @@ export default function Video360Viewer({ src, onClose }) {
     const rect = e.currentTarget.getBoundingClientRect()
     const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
     v.currentTime = ratio * v.duration
-    setProgress(ratio)
+    if (progressFillRef.current) progressFillRef.current.style.width = `${ratio * 100}%`
   }, [])
 
   const toggleFullscreen = () => {
@@ -99,7 +98,6 @@ export default function Video360Viewer({ src, onClose }) {
     video.crossOrigin = 'anonymous'
     videoRef.current = video
 
-    video.addEventListener('loadedmetadata', () => setDuration(video.duration))
     video.addEventListener('play',  () => setPlaying(true))
     video.addEventListener('pause', () => setPlaying(false))
 
@@ -195,7 +193,9 @@ export default function Video360Viewer({ src, onClose }) {
 
       if (texture && video && !video.paused && video.readyState >= 2) {
         texture.needsUpdate = true
-        if (video.duration) setProgress(video.currentTime / video.duration)
+        if (video.duration && progressFillRef.current) {
+          progressFillRef.current.style.width = `${(video.currentTime / video.duration) * 100}%`
+        }
       }
 
       renderer.render(scene, camera)
@@ -250,7 +250,7 @@ export default function Video360Viewer({ src, onClose }) {
 
         {/* Progress bar */}
         <div className="v360-progress" onClick={seek} title="Seek">
-          <div className="v360-progress-fill" style={{ width: `${progress * 100}%` }} />
+          <div className="v360-progress-fill" ref={progressFillRef} />
         </div>
 
         {/* Mute */}
