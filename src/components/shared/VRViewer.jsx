@@ -304,8 +304,17 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
     }
 
     // Touch
+    let lastPinchDist = 0
+    const touchDist = (t0, t1) => Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY)
+
     const onTouchStart = (e) => {
-      if (editModeRef.current) return   // no drag in edit mode
+      if (editModeRef.current) return   // no drag/zoom in edit mode
+      if (e.touches.length === 2) {
+        isDragging = false
+        autoRotate = false
+        lastPinchDist = touchDist(e.touches[0], e.touches[1])
+        return
+      }
       if (e.touches.length !== 1) return
       isDragging = true
       autoRotate = false
@@ -315,7 +324,15 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       mouseDownY = lastY
     }
     const onTouchMove = (e) => {
-      if (editModeRef.current) return   // no drag in edit mode
+      if (editModeRef.current) return   // no drag/zoom in edit mode
+      if (e.touches.length === 2) {
+        isDragging = false
+        const dist = touchDist(e.touches[0], e.touches[1])
+        camera.fov = THREE.MathUtils.clamp(camera.fov + (lastPinchDist - dist) * 0.15, 30, 100)
+        camera.updateProjectionMatrix()
+        lastPinchDist = dist
+        return
+      }
       if (!isDragging || e.touches.length !== 1) return
       lon -= (e.touches[0].clientX - lastX) * 0.25
       lat += (e.touches[0].clientY - lastY) * 0.25
@@ -323,6 +340,16 @@ export default function VRViewer({ src, hotspots = [], polygonAnchors = [], onSc
       lastY = e.touches[0].clientY
     }
     const onTouchEnd = (e) => {
+      if (e.touches.length > 0) {
+        // Pinch ended with a finger still down (or dropped from 2→1) — resume
+        // single-finger look-around from here rather than treating this as a tap.
+        if (e.touches.length === 1 && !editModeRef.current) {
+          isDragging = true
+          lastX = mouseDownX = e.touches[0].clientX
+          lastY = mouseDownY = e.touches[0].clientY
+        }
+        return
+      }
       const t = e.changedTouches[0]
       const dx = t.clientX - mouseDownX
       const dy = t.clientY - mouseDownY

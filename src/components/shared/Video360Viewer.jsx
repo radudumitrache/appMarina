@@ -124,18 +124,42 @@ export default function Video360Viewer({ src, onClose }) {
     }
     const onMouseUp = () => { isDragging = false }
 
+    let lastPinchDist = 0
+    const touchDist = (t0, t1) => Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY)
+
     const onTouchStart = e => {
+      if (e.touches.length === 2) {
+        isDragging = false
+        lastPinchDist = touchDist(e.touches[0], e.touches[1])
+        return
+      }
       if (e.touches.length !== 1) return
       isDragging = true
       lastX = e.touches[0].clientX; lastY = e.touches[0].clientY
     }
     const onTouchMove = e => {
+      if (e.touches.length === 2) {
+        isDragging = false
+        const dist = touchDist(e.touches[0], e.touches[1])
+        camera.fov = THREE.MathUtils.clamp(camera.fov + (lastPinchDist - dist) * 0.15, 30, 100)
+        camera.updateProjectionMatrix()
+        lastPinchDist = dist
+        return
+      }
       if (!isDragging || e.touches.length !== 1 || gyroOnRef.current) return
       lon -= (e.touches[0].clientX - lastX) * 0.25
       lat  = Math.max(-LAT_MAX, Math.min(LAT_MAX, lat + (e.touches[0].clientY - lastY) * 0.25))
       lastX = e.touches[0].clientX; lastY = e.touches[0].clientY
     }
-    const onTouchEnd = () => { isDragging = false }
+    const onTouchEnd = e => {
+      if (e.touches.length === 1) {
+        // Dropped from pinch to one finger — resume look-around from here.
+        lastX = e.touches[0].clientX; lastY = e.touches[0].clientY
+        isDragging = true
+        return
+      }
+      isDragging = false
+    }
 
     container.addEventListener('mousedown',  onMouseDown)
     window.addEventListener('mousemove',     onMouseMove)
