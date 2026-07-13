@@ -161,12 +161,18 @@ export default function Video360Viewer({ src, onClose }) {
       isDragging = false
     }
 
+    const onWheel = e => {
+      camera.fov = THREE.MathUtils.clamp(camera.fov + e.deltaY * 0.05, 30, 100)
+      camera.updateProjectionMatrix()
+    }
+
     container.addEventListener('mousedown',  onMouseDown)
     window.addEventListener('mousemove',     onMouseMove)
     window.addEventListener('mouseup',       onMouseUp)
     container.addEventListener('touchstart', onTouchStart, { passive: true })
     container.addEventListener('touchmove',  onTouchMove,  { passive: true })
     container.addEventListener('touchend',   onTouchEnd)
+    container.addEventListener('wheel',      onWheel,      { passive: true })
 
     // Gyroscope
     const gyroData  = { alpha: null, beta: null }
@@ -238,6 +244,7 @@ export default function Video360Viewer({ src, onClose }) {
       container.removeEventListener('touchstart', onTouchStart)
       container.removeEventListener('touchmove',  onTouchMove)
       container.removeEventListener('touchend',   onTouchEnd)
+      container.removeEventListener('wheel',      onWheel)
       window.removeEventListener('resize',        onResize)
       video.pause()
       video.src = ''
