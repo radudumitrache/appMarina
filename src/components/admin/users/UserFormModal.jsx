@@ -105,7 +105,7 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
             <div className="form-row">
               <label className="form-label">
                 Organisation
-                {form.role === 'admin' && <span className="form-hint" style={{ color: 'var(--error)' }}> — required for admins</span>}
+                {form.role === 'admin' && !form.is_staff && <span className="form-hint" style={{ color: 'var(--error)' }}> — required for admins</span>}
               </label>
               <Dropdown
                 value={form.organisation_id}
@@ -145,7 +145,7 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
           <button
             className="btn-primary"
             onClick={onSave}
-            disabled={saving || !form.name.trim() || !form.username.trim() || !form.email.trim() || (isSuperAdmin && form.role === 'admin' && !form.organisation_id)}
+            disabled={saving || !form.name.trim() || !form.username.trim() || !form.email.trim() || (isSuperAdmin && form.role === 'admin' && !form.is_staff && !form.organisation_id)}
           >
             {saving ? 'Saving…' : mode === 'create' ? 'Create User' : 'Save Changes'}
           </button>

@@ -10,7 +10,7 @@ import { getOrganisations } from '../../api/organisations'
 import { getDepartments } from '../../api/departments'
 import '../css/admin/Users.css'
 
-const EMPTY_FORM = { name: '', username: '', email: '', role: 'crew', password: '', organisation_id: null, crew_id: '' }
+const EMPTY_FORM = { name: '', username: '', email: '', role: 'crew', password: '', organisation_id: null, crew_id: '', is_staff: false }
 
 function mapUser(u) {
   const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username
@@ -26,6 +26,7 @@ function mapUser(u) {
     organisation_name: u.profile?.organisation_name ?? null,
     crew_id: u.profile?.crew_id ?? '',
     departments: u.departments ?? [],
+    is_staff: u.is_staff,
   }
 }
 
@@ -137,6 +138,7 @@ export default function Users() {
       password: '',
       organisation_id: user.organisation_id ?? null,
       crew_id: user.crew_id ?? '',
+      is_staff: user.is_staff,
     })
     setModal('edit')
   }
