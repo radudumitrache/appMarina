@@ -132,6 +132,24 @@ export default function ModuleReader() {
         },
       })
     }
+    // Polygon anchors get their title label at the centroid (same show_title /
+    // title_size / title_text_color options as text anchors), plus an explicit
+    // checkmark badge once visited — the mesh's own color/opacity shift (see
+    // VRViewer.jsx) alone isn't a clear enough "seen" signal.
+    for (const pa of activeTour.polygon_anchors ?? []) {
+      if (!pa.points?.length) continue
+      const visited = interactions.has(`${currentPanelId}:polygon:${pa.id}`)
+      if (!visited && pa.show_title === false) continue
+      const cx = pa.points.reduce((s, p) => s + p.x, 0) / pa.points.length
+      const cy = pa.points.reduce((s, p) => s + p.y, 0) / pa.points.length
+      const cz = pa.points.reduce((s, p) => s + p.z, 0) / pa.points.length
+      const { lon, lat } = vec3ToLonLat(cx, cy, cz)
+      out.push({
+        id: `pa-${pa.id}`, lon, lat, label: pa.title,
+        show_title: pa.show_title, title_size: pa.title_size, title_text_color: pa.title_text_color,
+        className: visited ? 'vr-hotspot--poly-check' : '',
+      })
+    }
     return out
   }, [activeTour, interactions, currentPanelId])
 

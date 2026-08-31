@@ -975,6 +975,12 @@ export default function AnchorSection({
                 />
               </div>
 
+              <TitleDisplayControls
+                showTitle={showTitle} setShowTitle={setShowTitle}
+                titleSize={titleSize} setTitleSize={setTitleSize}
+                titleTextColor={titleTextColor} setTitleTextColor={setTitleTextColor}
+              />
+
               {polyForm.anchor && (
                 <DocumentSection
                   documents={polyDocs}

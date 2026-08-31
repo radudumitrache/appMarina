@@ -101,7 +101,22 @@ export default function PanelPreview({
       id: `__poly_pt_${i}__`, lon: pt.lon, lat: pt.lat,
       label: String(i + 1), className: 'vr-hotspot--poly-pt', onClick: null,
     }))
-    return [...text, ...nav, ...pending, ...polyPts, ...(activePolyPoints ?? [])]
+    // Polygon titles aren't drawn by the polygon mesh itself, so mirror text/nav
+    // anchors here too — otherwise toggling "Show Title" for a polygon would be
+    // invisible in this preview even though it works for the crew.
+    const polyTitles = (panel.vr_tour.polygon_anchors ?? []).flatMap(pa => {
+      if (!pa.points?.length || pa.show_title === false) return []
+      const cx = pa.points.reduce((s, p) => s + p.x, 0) / pa.points.length
+      const cy = pa.points.reduce((s, p) => s + p.y, 0) / pa.points.length
+      const cz = pa.points.reduce((s, p) => s + p.z, 0) / pa.points.length
+      const { lon, lat } = posToLonLat(cx, cy, cz)
+      return [{
+        id: `poly-title-${pa.id}`, lon, lat, label: pa.title,
+        show_title: pa.show_title, title_size: pa.title_size, title_text_color: pa.title_text_color,
+        onClick: null,
+      }]
+    })
+    return [...text, ...nav, ...pending, ...polyPts, ...polyTitles, ...(activePolyPoints ?? [])]
   }, [panel, editMode, onAnchorClick, onEditModeAnchorClick, pendingPlacement, pendingPolyPoints, activePolyPoints])
 
   if (!panel) return null

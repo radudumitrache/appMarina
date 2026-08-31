@@ -229,6 +229,30 @@
   box-shadow: 0 1px 6px rgba(0,0,0,0.6);
 }
 
+/* ── Type 6: Polygon "seen" checkmark ─────────────────────────────────────
+ * Polygon anchors signal visited via a mesh color/opacity shift in
+ * VRViewer.jsx, which alone is too subtle (and unreliable for anyone with
+ * color-vision deficiency) — this badge sits at the polygon's centroid as
+ * an explicit, unambiguous "seen" marker, matching the ✓ badge already
+ * used for point/nav anchors above.
+ */
+.vr-hotspot--poly-check::before {
+  content: '✓';
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #15803d;
+  border: 2px solid #bbf7d0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 22px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+  animation: vr-visited-breathe 2.4s ease-in-out infinite;
+}
+
 /* ── Type 3: Info marker ─────────────────────────────────────────────────
  * Compact gold icon circle — replaces the full InfoCard in-scene.
  * Clicking opens the VRAnchorPanel with full detail.
