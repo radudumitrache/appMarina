@@ -1,3 +1,4 @@
+import RichContent from '../../shared/RichContent'
 import '../../css/crew/test-taker/AnchorModal.css'
 import '../../css/crew/test-taker/PanelView.css'
 
@@ -19,7 +20,7 @@ export default function AnchorModal({ anchor, value, onChange, onClose }) {
         )}
 
         {anchor.text && (
-          <div className="anchor-modal__text" dangerouslySetInnerHTML={{ __html: anchor.text }} />
+          <RichContent className="anchor-modal__text" html={anchor.text} />
         )}
 
         <div className="anchor-modal__input">

@@ -1,3 +1,4 @@
+import RichContent from '../../shared/RichContent'
 import '../../css/crew/module-reader/TextPanel.css'
 
 export default function TextPanel({ panel, panels, panelIdx, onPanelChange }) {
@@ -26,10 +27,7 @@ export default function TextPanel({ panel, panels, panelIdx, onPanelChange }) {
 
       <main className="lr-text-main">
         <h1 className="lr-text-heading">{panel.title}</h1>
-        <div
-          className="lr-text-body lr-prose"
-          dangerouslySetInnerHTML={{ __html: panel.text_content?.body ?? '' }}
-        />
+        <RichContent className="lr-text-body lr-prose" html={panel.text_content?.body} />
         {panel.documents?.length > 0 && (
           <div className="lr-panel-docs">
             <div className="lr-panel-docs-label">Attachments</div>

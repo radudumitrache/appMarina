@@ -1,4 +1,5 @@
 import { resolveItem, statusClass, statusLabel } from './reviewHelpers'
+import RichContent from '../../shared/RichContent'
 
 export default function ReviewItem({ item, index }) {
   const info = resolveItem(item)
@@ -27,10 +28,7 @@ export default function ReviewItem({ item, index }) {
 
       {info.title && <p className="tr-item-subtitle">{info.title}</p>}
 
-      <div
-        className="tr-item-text"
-        dangerouslySetInnerHTML={{ __html: info.text }}
-      />
+      <RichContent className="tr-item-text" html={info.text} />
 
       {info.options ? (
         <OptionsList

@@ -1,5 +1,6 @@
 import { resolveQuestion, cardClass } from './helpers'
 import { AnswerBody } from './AnswerRenderers'
+import RichContent from '../../shared/RichContent'
 
 function ToggleBtn({ isCorrect, onClick, saving }) {
   if (isCorrect === true) return (
@@ -48,7 +49,7 @@ export default function QuestionCard({ item, onToggle, saving, delay }) {
         </div>
 
         {text && (
-          <div className="so-q-text" dangerouslySetInnerHTML={{ __html: text }} />
+          <RichContent className="so-q-text" html={text} />
         )}
 
         <AnswerBody resolved={resolved} unanswered={unanswered} />

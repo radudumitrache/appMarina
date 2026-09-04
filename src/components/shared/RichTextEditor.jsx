@@ -2,7 +2,7 @@
 import { createPortal } from 'react-dom'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
+import Image from '../trainer/module-panel-editor/ImageExtension'
 import Video from '../trainer/module-panel-editor/VideoExtension'
 import MediaInsertModal from '../trainer/module-panel-editor/MediaInsertModal'
 import '../css/shared/RichTextEditor.css'
@@ -196,12 +196,12 @@ export default function RichTextEditor({ value = '', onChange, onBlur, departmen
     }
   }
 
-  const handleMediaInsert = (url, type) => {
+  const handleMediaInsert = (mediaId, type) => {
     if (editor) {
       if (type === 'image') {
-        editor.chain().focus().setImage({ src: url, alt: '' }).run()
+        editor.chain().focus().setImage({ mediaId, alt: '' }).run()
       } else {
-        editor.chain().focus().setVideo({ src: url, controls: true, style: 'max-width:100%;' }).run()
+        editor.chain().focus().setVideo({ mediaId, controls: true, style: 'max-width:100%;' }).run()
       }
     }
     setMediaMode(null)

@@ -64,7 +64,7 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
         ...folderParams,
       })
       setFiles(prev => [mediaFile, ...prev])
-      onInsert(mediaFile.download_url, mediaFile.file_type)
+      onInsert(mediaFile.id, mediaFile.file_type)
     } catch {
       setUploadErr('Upload failed. Please try again.')
     } finally {
@@ -185,7 +185,7 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
                 <div key={f.id} className="mim-file-row-wrap">
                   <button
                     className="mim-file-row"
-                    onClick={() => onInsert(f.download_url, f.file_type)}
+                    onClick={() => onInsert(f.id, f.file_type)}
                     title={f.name}
                   >
                     <span className="mim-file-icon">
@@ -254,7 +254,7 @@ export default function MediaInsertModal({ initialMode = 'image', imageOnly = fa
           <div className="mim-lightbox-footer">
             <button
               className="mim-lightbox-insert-btn"
-              onClick={() => { onInsert(previewFile.download_url, previewFile.file_type); setPreviewFile(null) }}
+              onClick={() => { onInsert(previewFile.id, previewFile.file_type); setPreviewFile(null) }}
             >
               Insert
             </button>

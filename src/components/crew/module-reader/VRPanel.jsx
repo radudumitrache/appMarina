@@ -1,5 +1,6 @@
 import '../../css/crew/module-reader/VRPanel.css'
 import VRViewer from '../../shared/VRViewer'
+import RichContent from '../../shared/RichContent'
 import { resolveSceneUrl } from '../../shared/VRSceneRenderer'
 
 function AnchorPopup({ anchor, onClose }) {
@@ -18,7 +19,7 @@ function AnchorPopup({ anchor, onClose }) {
         </button>
       </div>
       <div className="lr-anchor-divider" />
-      <div className="lr-anchor-body lr-prose" dangerouslySetInnerHTML={{ __html: body }} />
+      <RichContent className="lr-anchor-body lr-prose" html={body} />
       {docs.length > 0 && (
         <div className="lr-anchor-docs">
           <div className="lr-anchor-docs-label">Attachments</div>

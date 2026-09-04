@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import VRSceneViewer from './VRSceneViewer'
 import AnchorModal   from './AnchorModal'
+import RichContent   from '../../shared/RichContent'
 import '../../css/crew/test-taker/PanelView.css'
 
 function PanelFooter({ isFirst, isLast, submitting, onPrev, onNext, onSubmit, className }) {
@@ -166,10 +167,7 @@ function LocalizationQuestion({ anchor, answered, onCancel }) {
       {anchor.title && (
         <p className="tt-loc-question-title">{anchor.title}</p>
       )}
-      <div
-        className="tt-loc-question-text"
-        dangerouslySetInnerHTML={{ __html: anchor.text }}
-      />
+      <RichContent className="tt-loc-question-text" html={anchor.text} />
       <p className="tt-loc-question-hint">
         {answered ? 'Click the scene to move your marker.' : 'Click anywhere in the scene to place your marker.'}
       </p>
@@ -331,7 +329,7 @@ function VRAnchorExercise({ anchor, index, value, onChange }) {
         {anchor.title && (
           <p className="tt-vr-anchor-title">{anchor.title}</p>
         )}
-        <div className="tt-exercise-text" dangerouslySetInnerHTML={{ __html: anchor.text }} />
+        <RichContent className="tt-exercise-text" html={anchor.text} />
         <VRAnchorInput anchor={anchor} value={value} onChange={onChange} />
       </div>
     </div>
@@ -431,7 +429,7 @@ function ExerciseView({ exercise, index, value, onChange }) {
         {index + 1}
       </div>
       <div className="tt-exercise-content">
-        <div className="tt-exercise-text" dangerouslySetInnerHTML={{ __html: exercise.text }} />
+        <RichContent className="tt-exercise-text" html={exercise.text} />
         <AnswerInput exercise={exercise} value={value} onChange={onChange} />
       </div>
     </div>

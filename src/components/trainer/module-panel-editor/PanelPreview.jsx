@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { EditorContent } from '@tiptap/react'
 import VRViewer from '../../shared/VRViewer'
 import VRAnchorPanel from '../../shared/VRAnchorPanel'
+import RichContent from '../../shared/RichContent'
 import { resolveSceneUrl } from '../../shared/VRSceneRenderer'
 import Video360Viewer from '../../shared/Video360Viewer'
 
@@ -166,7 +167,7 @@ export default function PanelPreview({
         <h1 className="lpe-text-heading">{panel.title}</h1>
         {editor
           ? <EditorContent editor={editor} />
-          : <div className="lpe-text-body" dangerouslySetInnerHTML={{ __html: panel.text_content?.body ?? '' }} />
+          : <RichContent className="lpe-text-body" html={panel.text_content?.body} />
         }
       </main>
     </div>

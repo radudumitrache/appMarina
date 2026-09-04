@@ -12,6 +12,7 @@
  * directly over the VR photographic background (surfaces.md rule).
  */
 import { useState, useRef, useEffect, useCallback } from 'react'
+import RichContent from './RichContent'
 import '../../components/css/shared/VRAnchorPanel.css'
 
 /* ── Icons ─────────────────────────────────────────────────────────────── */
@@ -136,10 +137,7 @@ function TextPanel({ anchor, onClose }) {
       </div>
       <h2 className="vr-ap-title">{anchor.label}</h2>
       <div className="vr-ap-divider" />
-      <div
-        className="vr-ap-html-body"
-        dangerouslySetInnerHTML={{ __html: anchor.description || '' }}
-      />
+      <RichContent className="vr-ap-html-body" html={anchor.description} />
       {anchor.documents?.length > 0 && (
         <div className="vr-ap-docs">
           <div className="vr-ap-docs-label">Attachments</div>
@@ -199,7 +197,7 @@ function WaypointPanel({ anchor, onClose }) {
 
       <div className="vr-ap-divider" />
 
-      <div className="vr-ap-body" dangerouslySetInnerHTML={{ __html: anchor.description || '' }} />
+      <RichContent className="vr-ap-body" html={anchor.description} />
 
       {anchor.category && (
         <div className="vr-ap-meta-row">
