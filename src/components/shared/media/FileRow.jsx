@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { openMediaFile } from '../../../api/media'
 import '../../css/shared/media/FileRow.css'
 
 function formatBytes(bytes) {
@@ -9,6 +10,29 @@ function formatBytes(bytes) {
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+
+// The /open/ endpoint requires an authenticated request (JWT header), so it can't
+// be used as a plain <a href> — a browser navigation can't attach that header.
+// Open a blank tab synchronously (preserves the click's user-gesture so popup
+// blockers allow it), then point it at the signed URL once fetched.
+async function handleOpenFile(file, isOpenable) {
+  const newTab = isOpenable ? window.open('', '_blank') : null
+  try {
+    const { data } = await openMediaFile(file.id)
+    if (isOpenable) {
+      if (newTab) newTab.location.href = data.url
+    } else {
+      const a = document.createElement('a')
+      a.href = data.url
+      a.download = file.name
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    }
+  } catch {
+    newTab?.close()
+  }
 }
 
 const ChevronIcon = ({ open }) => (
@@ -82,15 +106,11 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
       {/* ── Actions (always visible on desktop, expand on mobile) ── */}
       <td className="file-row-actions" onClick={stopProp}>
         {(() => {
-          const openUrl = `${import.meta.env.VITE_API_BASE_URL}/media/files/${file.id}/open/`
           const isOpenable = file.file_type !== 'document' || file.mime_type === 'application/pdf'
           return (
-            <a
+            <button
               className="file-action-btn"
-              href={openUrl}
-              target="_blank"
-              rel="noreferrer"
-              download={!isOpenable ? file.name : undefined}
+              onClick={() => handleOpenFile(file, isOpenable)}
               title={file.file_type === 'document' ? 'Open' : 'Download'}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -98,7 +118,7 @@ export default function FileRow({ file, index, canWrite, onRename, onDelete, onT
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-            </a>
+            </button>
           )
         })()}
         {canWrite && (
