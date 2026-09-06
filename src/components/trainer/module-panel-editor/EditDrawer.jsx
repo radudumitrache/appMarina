@@ -222,12 +222,12 @@ export default function EditDrawer({
     (panel.type === 'video_360' && mediaFileId !== savedMediaFileId)
 
   // â”€â”€ Media insert â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const handleMediaInsert = (url, type) => {
+  const handleMediaInsert = (mediaId, type) => {
     if (editor) {
       if (type === 'image') {
-        editor.chain().focus().setImage({ src: url, alt: '' }).run()
+        editor.chain().focus().setImage({ mediaId, alt: '' }).run()
       } else {
-        editor.chain().focus().setVideo({ src: url, controls: true, style: 'max-width:100%;' }).run()
+        editor.chain().focus().setVideo({ mediaId, controls: true, style: 'max-width:100%;' }).run()
       }
     }
     setMediaMode(null)

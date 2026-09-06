@@ -3,7 +3,7 @@ import { NodeViewWrapper } from '@tiptap/react'
 import { resolveMediaUrl } from '../../../utils/resolveMediaSrc'
 
 export default function VideoNodeView({ node }) {
-  const { mediaId, src: staticSrc, controls, style } = node.attrs
+  const { mediaId, src: staticSrc, controls } = node.attrs
   const [resolvedSrc, setResolvedSrc] = useState(mediaId ? null : staticSrc)
   const [failed, setFailed] = useState(false)
 
@@ -22,7 +22,7 @@ export default function VideoNodeView({ node }) {
       {failed ? (
         <div className="rte-media-placeholder">Video unavailable</div>
       ) : resolvedSrc ? (
-        <video src={resolvedSrc} controls={controls} style={style} />
+        <video src={resolvedSrc} controls={controls} style={{ maxWidth: '100%' }} />
       ) : (
         <div className="rte-media-placeholder">Loading video…</div>
       )}

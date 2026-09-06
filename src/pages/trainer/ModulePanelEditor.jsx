@@ -2,7 +2,7 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useEditor }          from '@tiptap/react'
 import StarterKit              from '@tiptap/starter-kit'
-import Image                   from '@tiptap/extension-image'
+import Image                   from '../../components/trainer/module-panel-editor/ImageExtension'
 import Video                   from '../../components/trainer/module-panel-editor/VideoExtension'
 import { usePanelEditor }     from '../../components/trainer/module-panel-editor/usePanelEditor'
 import { usePlacement }       from '../../components/trainer/module-panel-editor/usePlacement'
