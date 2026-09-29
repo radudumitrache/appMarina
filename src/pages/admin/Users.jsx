@@ -235,7 +235,7 @@ export default function Users() {
   }
 
   const downloadTemplate = () => {
-    const csv = 'name,username,email,role\nJohn Doe,johndoe,john@hansa360.com,crew\nJane Smith,janesmith,jane@hansa360.com,trainer\n'
+    const csv = 'name,username,email,role\nJohn Doe,johndoe,john@hullmar360.com,crew\nJane Smith,janesmith,jane@hullmar360.com,trainer\n'
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
     a.download = 'users_template.csv'

@@ -44,7 +44,7 @@ export default function UserFormModal({ mode, form, onChange, onClose, onSave, s
             <input
               className="form-input"
               type="email"
-              placeholder="e.g. jane@hansa360.com"
+              placeholder="e.g. jane@hullmar360.com"
               value={form.email}
               onChange={e => onChange('email', e.target.value)}
             />
