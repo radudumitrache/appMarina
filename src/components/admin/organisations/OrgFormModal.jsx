@@ -25,7 +25,7 @@ export default function OrgFormModal({ mode, entityLabel = 'Organisation', name,
             <input
               className={`form-input${error ? ' form-input--error' : ''}`}
               type="text"
-              placeholder={`e.g. ${entityLabel === 'Department' ? 'Navigation & Seamanship' : 'Hansa Maritime Academy'}`}
+              placeholder={`e.g. ${entityLabel === 'Department' ? 'Navigation & Seamanship' : 'Hullmar Maritime Academy'}`}
               value={name}
               onChange={e => onChange(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !saving && onSave()}

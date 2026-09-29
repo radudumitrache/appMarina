@@ -41,7 +41,7 @@ function DiplomaFormModal({ mode, form, errors, courses, saving, onChange, onClo
           <span className="crd-cert-corner crd-cert-corner--bl" aria-hidden="true"/>
           <span className="crd-cert-corner crd-cert-corner--br" aria-hidden="true"/>
 
-          <div className="crd-cert-logo">HANSA360</div>
+          <div className="crd-cert-logo">HULLMAR360</div>
           <div className="crd-cert-logo-sub">Maritime Training Platform</div>
 
           <div className="crd-cert-rule" aria-hidden="true">

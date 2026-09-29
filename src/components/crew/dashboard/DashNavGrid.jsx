@@ -70,7 +70,7 @@ export default function DashNavGrid({ uiLeaving, username }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.52, ease: SPRING, delay: 0.45 }}
       >
-        <span className="dash-wordmark">HANSA360</span>
+        <span className="dash-wordmark">HULLMAR360</span>
         <div className="dash-brand-divider" aria-hidden="true" />
         <p className="dash-greeting">
           Welcome back,{' '}

@@ -57,7 +57,7 @@ function CertificatePreview({ diploma, studentName, onClose }) {
 
           {/* Logo */}
           <div className="sdip-logo">
-            <span className="sdip-logo-word">HANSA</span>
+            <span className="sdip-logo-word">HULLMAR</span>
             <span className="sdip-logo-num">360</span>
           </div>
 

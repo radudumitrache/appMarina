@@ -25,7 +25,7 @@ export default function NavBar() {
   return (
     <nav className="navbar navbar--admin">
       <span className="nav-logo" onClick={() => navigate('/admin/dashboard')}>
-        HANSA360
+        HULLMAR360
       </span>
 
       {menuOpen && <div className="nav-menu-backdrop" onClick={() => setMenuOpen(false)} />}

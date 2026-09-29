@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="footer-inner">
         <div className="footer-top">
           <div className="footer-brand">
-            <span className="footer-wordmark">HANSA360</span>
+            <span className="footer-wordmark">HULLMAR360</span>
             <p className="footer-tagline">Maritime 360 Training Platform</p>
             <p className="footer-desc">
               Advanced 360° training environments engineered to prepare the next

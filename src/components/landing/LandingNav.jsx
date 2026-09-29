@@ -32,7 +32,7 @@ export default function LandingNav() {
 
   return (
     <header className={`landing-nav${scrolled ? ' scrolled' : ''}`}>
-      <span className="landing-wordmark">HANSA360</span>
+      <span className="landing-wordmark">HULLMAR360</span>
 
       <nav ref={menuRef} className={`landing-nav-links${menuOpen ? ' landing-nav-links--open' : ''}`}>
         <a href="#features" onClick={() => closeAndGo('#features')}>Platform</a>

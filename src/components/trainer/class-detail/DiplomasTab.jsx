@@ -71,7 +71,7 @@ function DiplomaFormModal({ courseId, classId, diploma, courses, onSave, onClose
           <span className="dip-cert-corner dip-cert-corner--br" aria-hidden="true"/>
 
           {/* logo */}
-          <div className="dip-cert-logo">HANSA360</div>
+          <div className="dip-cert-logo">HULLMAR360</div>
           <div className="dip-cert-logo-sub">Maritime Training Platform</div>
 
           {/* top rule */}

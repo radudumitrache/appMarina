@@ -63,7 +63,7 @@ export default function Login() {
 
       <div className={`login-card${phase === 'leaving' ? ' login-card--leaving' : ''}`}>
         <div className="login-brand">
-          <span className="login-logo">HANSA360</span>
+          <span className="login-logo">HULLMAR360</span>
           <span className="login-tagline">Maritime Training</span>
         </div>
 

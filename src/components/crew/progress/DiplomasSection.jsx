@@ -55,7 +55,7 @@ function CertificatePreview({ diploma, studentName, onClose }) {
           <span className="ds-corner ds-corner--br"/>
 
           <div className="ds-cert-logo">
-            <span className="ds-cert-logo-word">HANSA</span>
+            <span className="ds-cert-logo-word">HULLMAR</span>
             <span className="ds-cert-logo-num">360</span>
           </div>
 

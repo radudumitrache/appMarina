@@ -73,7 +73,7 @@ export default function FeaturesSection() {
     <section className="features-section" id="features" ref={sectionRef}>
       <div className="section-header">
         <span className="section-tag">CAPABILITIES</span>
-        <h2 className="section-title">Why Hansa360</h2>
+        <h2 className="section-title">Why Hullmar360</h2>
         <p className="section-sub">
           Crew familiarization is often challenging when training begins only
           after boarding the vessel. 
